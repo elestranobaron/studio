@@ -1,0 +1,14 @@
+export type WodType = "For Time" | "AMRAP" | "EMOM" | "Tabata";
+
+export type WOD = {
+  id: string;
+  name: string;
+  type: WodType;
+  date: string;
+  description: string;
+  duration?: number; // in minutes for AMRAP/EMOM
+  rounds?: number; // for EMOM/Tabata
+  result?: string; // e.g., "15:32" or "5 Rounds + 10 Reps"
+  imageUrl?: string;
+  imageHint?: string;
+};
