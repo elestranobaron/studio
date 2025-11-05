@@ -23,11 +23,32 @@ import { signInAnonymously } from "firebase/auth";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "./ui/alert-dialog";
 
 
-const toBase64 = (file: File) =>
-  new Promise<string>((resolve, reject) => {
+const toBase64 = (file: File): Promise<string> =>
+  new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.readAsDataURL(file);
-    reader.onload = () => resolve(reader.result as string);
+    reader.onload = (event) => {
+      const img = document.createElement("img");
+      img.src = event.target?.result as string;
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
+        const MAX_WIDTH = 800;
+        const scaleSize = MAX_WIDTH / img.width;
+        canvas.width = MAX_WIDTH;
+        canvas.height = img.height * scaleSize;
+
+        const ctx = canvas.getContext("2d");
+        if (!ctx) {
+            return reject(new Error("Could not get canvas context"));
+        }
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        
+        // Get data URI from canvas at reduced quality
+        const dataUrl = canvas.toDataURL(file.type, 0.8); 
+        resolve(dataUrl);
+      };
+      img.onerror = (error) => reject(error);
+    };
     reader.onerror = (error) => reject(error);
   });
 
