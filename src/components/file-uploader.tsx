@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { useDropzone } from "react-dropzone";
 import Image from "next/image";
 import { UploadCloud, X, LoaderCircle } from "lucide-react";
@@ -19,10 +19,10 @@ import { doc, collection, query, where, getDocs, setDoc } from "firebase/firesto
 import { useUser, useAuth } from "@/firebase/provider";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
-import { signInAnonymously } from "firebase/auth";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "./ui/alert-dialog";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
+import { initiateAnonymousSignIn } from "@/firebase/non-blocking-login";
 
 
 const toBase64 = (file: File): Promise<string> =>
@@ -67,7 +67,7 @@ export function FileUploader() {
   const router = useRouter();
   const { firestore } = useFirebase();
   const auth = useAuth();
-  const { user } = useUser();
+  const { user, isUserLoading } = useUser();
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
     if (acceptedFiles.length > 0) {
@@ -123,8 +123,8 @@ export function FileUploader() {
             if (!querySnapshot.empty) {
                 const existingWod = querySnapshot.docs[0].data() as WOD;
                 setDuplicateWod(existingWod);
-                setIsSaving(false); // Stop saving process
-                return; // Exit function
+                setIsSaving(false); 
+                return; 
             }
         }
         
@@ -142,7 +142,6 @@ export function FileUploader() {
             imageHint: analysisResult.imageHint,
         };
 
-        // Use non-blocking setDoc with error catching
         setDoc(newWodRef, wodData)
             .then(() => {
                 toast({
@@ -158,9 +157,6 @@ export function FileUploader() {
                     requestResourceData: wodData,
                 });
                 errorEmitter.emit('permission-error', permissionError);
-                
-                // We don't show a toast here because the error listener will throw
-                // which is a better DX.
             })
             .finally(() => {
                 setIsSaving(false);
@@ -184,53 +180,37 @@ export function FileUploader() {
     if (user) {
       await performSave(user.uid);
     } else if (auth) {
-      try {
-        setIsSaving(true);
-        const userCredential = await signInAnonymously(auth);
-        if (userCredential.user) {
-          await performSave(userCredential.user.uid);
-        } else {
-          throw new Error("Anonymous sign-in did not return a user.");
-        }
-      } catch (error) {
-        console.error("Anonymous sign-in or save failed:", error);
-        toast({
-          variant: "destructive",
-          title: "Authentication Failed",
-          description: "Could not create a temporary profile to save your WOD. Please try again.",
-        });
-        setIsSaving(false);
-      }
+        setIsSaving(true); 
+        initiateAnonymousSignIn(auth);
+        // An onAuthStateChanged listener in FirebaseProvider will pick up the new user,
+        // which will re-render this component. We'll add a useEffect to handle the save
+        // once the user is available.
     } else {
         toast({
             variant: "destructive",
             title: "Save Failed",
             description: "Authentication service is not available.",
         });
-        setIsSaving(false);
     }
   };
+  
+  // This effect triggers the save operation after a non-blocking anonymous sign-in
+  useEffect(() => {
+    // Only proceed if we were in the process of saving and now we have a user
+    if (isSaving && user) {
+      performSave(user.uid);
+    }
+  }, [user, isSaving]);
+
 
   const handleForceSave = async () => {
-    setDuplicateWod(null); // Close dialog first
+    setDuplicateWod(null);
     if (user) {
         await performSave(user.uid, true);
     } else if (auth) {
-        try {
-            setIsSaving(true);
-            const userCredential = await signInAnonymously(auth);
-            if(userCredential.user) {
-                await performSave(userCredential.user.uid, true);
-            }
-        } catch(error) {
-            console.error("Anonymous sign-in or force save failed:", error);
-            toast({
-                variant: "destructive",
-                title: "Save Failed",
-                description: "Could not save the WOD. Please try again.",
-            });
-            setIsSaving(false);
-        }
+        setIsSaving(true);
+        initiateAnonymousSignIn(auth);
+        // The useEffect will handle saving after login.
     }
   };
 
@@ -241,7 +221,7 @@ export function FileUploader() {
     setAnalysisResult(null);
   };
   
-  const isActionDisabled = isLoading || isSaving;
+  const isActionDisabled = isLoading || isSaving || isUserLoading;
 
 
   return (

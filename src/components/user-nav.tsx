@@ -17,7 +17,9 @@ export function UserNav() {
   const auth = useAuth();
 
   const handleLogin = () => {
-    initiateAnonymousSignIn(auth);
+    if (auth) {
+      initiateAnonymousSignIn(auth);
+    }
   };
   
   if(isUserLoading) {
@@ -64,7 +66,7 @@ export function UserNav() {
                 </SidebarMenuButton>
             </SidebarMenuItem>
             <SidebarMenuItem>
-                <SidebarMenuButton asChild tooltip={{children: "Log out"}} onClick={() => auth.signOut()}>
+                <SidebarMenuButton asChild tooltip={{children: "Log out"}} onClick={() => auth?.signOut()}>
                     <a href="#">
                         <LogOut />
                         <span>Log out</span>
@@ -78,15 +80,15 @@ export function UserNav() {
                     <AvatarImage src={user.photoURL} alt="User avatar" />
                 )}
                 <AvatarFallback>
-                    {user.displayName ? user.displayName.charAt(0) : <UserIcon />}
+                    {user.isAnonymous ? <UserIcon /> : (user.displayName ? user.displayName.charAt(0) : <UserIcon />)}
                 </AvatarFallback>
             </Avatar>
             <div className="flex flex-col truncate">
                 <span className="font-semibold text-sm text-sidebar-foreground">
-                    {user.displayName || 'Anonymous User'}
+                    {user.isAnonymous ? 'Anonymous User' : (user.displayName || 'User')}
                 </span>
                 <span className="text-xs text-sidebar-foreground/70">
-                    {user.email || user.uid}
+                    {user.isAnonymous ? 'Temporary Profile' : user.email}
                 </span>
             </div>
         </div>
