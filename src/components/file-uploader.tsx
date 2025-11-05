@@ -140,6 +140,7 @@ export function FileUploader() {
             date: format(new Date(), "yyyy-MM-dd"),
             imageUrl: photoDataUri,
             imageHint: analysisResult.imageHint,
+            duration: analysisResult.duration,
         };
 
         setDoc(newWodRef, wodData)
@@ -334,6 +335,17 @@ export function FileUploader() {
                   </SelectContent>
                 </Select>
               </div>
+               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                 <Input
+                    type="number"
+                    value={analysisResult.duration || ''}
+                    onChange={(e) =>
+                        setAnalysisResult({ ...analysisResult, duration: e.target.value ? parseInt(e.target.value) : undefined })
+                    }
+                    placeholder="Duration (minutes)"
+                    disabled={isActionDisabled}
+                    />
+               </div>
 
               <Textarea
                 value={analysisResult.description}

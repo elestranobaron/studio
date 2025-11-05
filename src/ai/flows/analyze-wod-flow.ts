@@ -32,7 +32,8 @@ The image contains a description of a workout. It might be split into multiple c
 1.  **Name**: The title of the workout (e.g., "Fran", "Murph", "Cindy"). If no name is present, create a descriptive name based on the exercises.
 2.  **Type**: The format of the main workout. Choose from "For Time", "AMRAP", "EMOM", "Tabata", or "Other".
 3.  **Description**: The full text of the workout. This MUST include ALL components and maintain the original formatting (line breaks, indentation).
-4.  **Image Hint**: Based on the main exercise(s), provide a one or two-word hint for finding a relevant stock photo. Examples: "running", "barbell", "kettlebell", "pull-up", "rowing".
+4.  **Duration**: If the WOD is an AMRAP or EMOM, calculate its total duration in **minutes**. For example, an AMRAP in 20 minutes is 20. An EMOM for 10 rounds of 1 minute is 10. An EMOM for 6 rounds every 2 minutes 30 seconds is 15 (6 * 2.5). If it's "For Time" or the duration is not specified, leave this field empty.
+5.  **Image Hint**: Based on the main exercise(s), provide a one or two-word hint for finding a relevant stock photo. Examples: "running", "barbell", "kettlebell", "pull-up", "rowing".
 
 Analyze the following image:
 {{media url=photoDataUri}}`,
