@@ -4,9 +4,8 @@ import Image from "next/image";
 export function Logo({ className }: { className?: string }) {
   return (
     <div className={cn("flex items-center gap-2", className)}>
-      {/* Utilisation du fichier logo.jpg depuis le dossier /public */}
       <Image 
-        src="/logo.jpg" 
+        src="/wodburner1.jpg" 
         alt="WODBurner Logo" 
         width={32} 
         height={32} 
