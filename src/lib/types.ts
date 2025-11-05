@@ -1,4 +1,4 @@
-export type WodType = "For Time" | "AMRAP" | "EMOM" | "Tabata";
+export type WodType = "For Time" | "AMRAP" | "EMOM" | "Tabata" | "Other";
 
 export type WOD = {
   id: string;
@@ -11,4 +11,5 @@ export type WOD = {
   result?: string; // e.g., "15:32" or "5 Rounds + 10 Reps"
   imageUrl?: string;
   imageHint?: string;
+  userId?: string;
 };

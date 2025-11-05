@@ -1,19 +1,60 @@
-import Link from "next/link";
-import { notFound } from "next/navigation";
-import { wods } from "@/lib/data";
-import { TimerClient } from "@/components/timer-client";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft } from "lucide-react";
-import { Button } from "@/components/ui/button";
+'use client';
 
-export default function TimerPage({ params }: { params: { id: string } }) {
-  const wod = wods.find((w) => w.id === params.id);
+import Link from 'next/link';
+import { notFound, useParams } from 'next/navigation';
+import { TimerClient } from '@/components/timer-client';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { ArrowLeft } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { useDoc, useFirebase, useMemoFirebase, useUser } from '@/firebase';
+import { doc } from 'firebase/firestore';
+import type { WOD } from '@/lib/types';
+import { Skeleton } from '@/components/ui/skeleton';
 
-  if (!wod) {
+export default function TimerPage() {
+  const params = useParams();
+  const { id } = params;
+  const { firestore } = useFirebase();
+  const { user } = useUser();
+
+  const wodRef = useMemoFirebase(() => {
+    if (!firestore || !user || typeof id !== 'string') return null;
+    return doc(firestore, 'users', user.uid, 'wods', id);
+  }, [firestore, user, id]);
+
+  const { data: wod, isLoading } = useDoc<WOD>(wodRef);
+
+  if (isLoading) {
+    return (
+       <div className="relative flex flex-col items-center justify-center h-screen bg-background p-4">
+         <div className="grid lg:grid-cols-2 gap-16 items-center w-full max-w-6xl">
+            <div className="space-y-4">
+              <Skeleton className="h-12 w-3/4" />
+              <Skeleton className="h-6 w-1/4" />
+              <Card>
+                <CardHeader>
+                  <CardTitle>The Workout</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-2">
+                    <Skeleton className="h-4 w-full" />
+                    <Skeleton className="h-4 w-full" />
+                    <Skeleton className="h-4 w-3/4" />
+                </CardContent>
+              </Card>
+            </div>
+            <div className="flex items-center justify-center">
+               <Skeleton className="h-64 w-64 rounded-full" />
+            </div>
+         </div>
+       </div>
+    )
+  }
+
+  if (!wod && !isLoading) {
     notFound();
   }
 
-  return (
+  return wod ? (
     <div className="relative flex flex-col items-center justify-center h-screen bg-background p-4">
       <div className="absolute top-4 left-4">
         <Button asChild variant="ghost">
@@ -42,5 +83,5 @@ export default function TimerPage({ params }: { params: { id: string } }) {
         </div>
       </div>
     </div>
-  );
+  ) : null;
 }

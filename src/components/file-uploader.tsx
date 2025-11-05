@@ -7,11 +7,15 @@ import { UploadCloud, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
-import { analyzeWod, AnalyzeWodOutput } from "@/ai/flows/analyze-wod-flow";
+import { analyzeWod } from "@/ai/flows/analyze-wod-flow";
+import type { AnalyzeWodOutput } from "@/ai/schema/wod-schema";
 import { Input } from "./ui/input";
 import { Textarea } from "./ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
 import { WodType } from "@/lib/types";
+import { addDocumentNonBlocking, useFirebase } from "@/firebase";
+import { collection } from "firebase/firestore";
+import { useUser } from "@/firebase/provider";
 
 const toBase64 = (file: File) =>
   new Promise<string>((resolve, reject) => {
@@ -30,6 +34,8 @@ export function FileUploader() {
   );
   const { toast } = useToast();
   const router = useRouter();
+  const { firestore } = useFirebase();
+  const { user } = useUser();
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
     if (acceptedFiles.length > 0) {
@@ -65,15 +71,35 @@ export function FileUploader() {
     }
   };
 
-  const handleSave = () => {
-    // This is where you would save the new WOD.
-    // For now, we just show a toast and redirect.
-    console.log("Saving WOD:", analysisResult);
-    toast({
-      title: "WOD Saved!",
-      description: "Your new WOD has been added to your dashboard.",
-    });
-    router.push("/dashboard");
+  const handleSave = async () => {
+    if (!analysisResult || !firestore || !user) return;
+    
+    setIsLoading(true);
+    
+    const wodsCollection = collection(firestore, 'users', user.uid, 'wods');
+
+    try {
+      await addDocumentNonBlocking(wodsCollection, {
+        ...analysisResult,
+        date: new Date().toISOString().split('T')[0], // Add current date
+        userId: user.uid,
+      });
+
+      toast({
+        title: "WOD Saved!",
+        description: "Your new WOD has been added to your dashboard.",
+      });
+      router.push("/dashboard");
+    } catch (error) {
+        console.error("Error saving WOD: ", error);
+        toast({
+            variant: "destructive",
+            title: "Save Failed",
+            description: "Could not save the WOD. Please try again.",
+        });
+    } finally {
+        setIsLoading(false);
+    }
   };
 
   const handleRemove = () => {
@@ -172,8 +198,8 @@ export function FileUploader() {
                 className="font-mono text-sm"
                 placeholder="WOD Description"
               />
-              <Button onClick={handleSave} className="w-full">
-                Save WOD
+              <Button onClick={handleSave} className="w-full" disabled={isLoading}>
+                {isLoading ? "Saving..." : "Save WOD"}
               </Button>
             </div>
           )}
