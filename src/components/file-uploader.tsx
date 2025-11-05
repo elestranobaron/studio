@@ -15,12 +15,14 @@ import { Textarea } from "./ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
 import { WodType, type WOD } from "@/lib/types";
 import { useFirebase } from "@/firebase";
-import { doc, collection } from "firebase/firestore";
+import { doc, collection, query, where, getDocs } from "firebase/firestore";
 import { useUser, useAuth } from "@/firebase/provider";
 import { setDocumentNonBlocking } from "@/firebase/non-blocking-updates";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { signInAnonymously } from "firebase/auth";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "./ui/alert-dialog";
+
 
 const toBase64 = (file: File) =>
   new Promise<string>((resolve, reject) => {
@@ -38,6 +40,8 @@ export function FileUploader() {
   const [analysisResult, setAnalysisResult] = useState<AnalyzeWodOutput | null>(
     null
   );
+  const [duplicateWod, setDuplicateWod] = useState<WOD | null>(null);
+
   const { toast } = useToast();
   const router = useRouter();
   const { firestore } = useFirebase();
@@ -78,58 +82,80 @@ export function FileUploader() {
     }
   };
 
-  const performSave = async (userId: string) => {
+  const saveWod = async (userId: string, force: boolean = false) => {
     if (!analysisResult || !firestore || !file) return;
-
+  
     setIsSaving(true);
     try {
-        const photoDataUri = await toBase64(file);
-        const wodsCollection = collection(firestore, 'users', userId, 'wods');
-        const newWodRef = doc(wodsCollection);
-
-        const wodData: WOD = {
-            id: newWodRef.id,
-            name: analysisResult.name,
-            type: analysisResult.type,
-            description: analysisResult.description,
-            date: format(new Date(), "yyyy-MM-dd"),
-            userId: userId,
-            imageUrl: photoDataUri, // Use the uploaded image data URI
-            imageHint: analysisResult.imageHint,
-        };
-
-        setDocumentNonBlocking(newWodRef, wodData, { merge: false });
-
-        toast({
-            title: "WOD Saved!",
-            description: "Your new WOD has been added to your dashboard.",
-        });
-
-        router.push("/dashboard");
-
+      // Check for duplicates only if not forcing
+      if (!force) {
+        const q = query(
+          collection(firestore, 'users', userId, 'wods'),
+          where("name", "==", analysisResult.name),
+          where("type", "==", analysisResult.type),
+          where("description", "==", analysisResult.description)
+        );
+        const querySnapshot = await getDocs(q);
+        if (!querySnapshot.empty) {
+          const existingWod = querySnapshot.docs[0].data() as WOD;
+          setDuplicateWod(existingWod);
+          setIsSaving(false);
+          return; // Stop execution and show dialog
+        }
+      }
+  
+      // Proceed with saving
+      const photoDataUri = await toBase64(file);
+      const wodsCollection = collection(firestore, 'users', userId, 'wods');
+      const newWodRef = doc(wodsCollection);
+  
+      const wodData: WOD = {
+        id: newWodRef.id,
+        name: analysisResult.name,
+        type: analysisResult.type,
+        description: analysisResult.description,
+        date: format(new Date(), "yyyy-MM-dd"),
+        userId: userId,
+        imageUrl: photoDataUri,
+        imageHint: analysisResult.imageHint,
+      };
+  
+      setDocumentNonBlocking(newWodRef, wodData, { merge: false });
+  
+      toast({
+        title: "WOD Saved!",
+        description: "Your new WOD has been added to your dashboard.",
+      });
+  
+      router.push("/dashboard");
+  
     } catch (error) {
-        console.error("Failed to save WOD:", error);
-        toast({
-            variant: "destructive",
-            title: "Save Failed",
-            description: "An unexpected error occurred while saving the WOD.",
-        });
+      console.error("Failed to save WOD:", error);
+      toast({
+        variant: "destructive",
+        title: "Save Failed",
+        description: "An unexpected error occurred while saving the WOD.",
+      });
     } finally {
-        setIsSaving(false);
+      setIsSaving(false);
+      setDuplicateWod(null); // Close dialog
     }
-  }
+  };
 
   const handleSave = async () => {
     if (!analysisResult) return;
 
     if (user) {
-        performSave(user.uid);
+        saveWod(user.uid);
     } else if (auth) {
-        setIsSaving(true); // Show loading state on the save button
+        setIsSaving(true);
         try {
             const userCredential = await signInAnonymously(auth);
+            // The onAuthStateChanged listener will update the user state,
+            // and we can't guarantee it will be available immediately.
+            // So we'll directly use the user from the credential for this one-off action.
             if (userCredential.user) {
-                performSave(userCredential.user.uid);
+                saveWod(userCredential.user.uid);
             } else {
                  throw new Error("Anonymous sign-in did not return a user.");
             }
@@ -145,6 +171,18 @@ export function FileUploader() {
     }
   };
 
+  const handleForceSave = () => {
+    if (user) {
+        saveWod(user.uid, true);
+    }
+    // If user is not logged in, the original handleSave logic will take care of it
+    // but we can assume if the dialog is open, the anonymous login already happened.
+    else {
+        handleSave();
+    }
+  };
+
+
   const handleRemove = () => {
     setFile(null);
     setPreview(null);
@@ -156,6 +194,23 @@ export function FileUploader() {
 
   return (
     <div className="w-full max-w-2xl mx-auto">
+      <AlertDialog open={!!duplicateWod} onOpenChange={() => setDuplicateWod(null)}>
+        <AlertDialogContent>
+            <AlertDialogHeader>
+                <AlertDialogTitle>Duplicate WOD Detected</AlertDialogTitle>
+                <AlertDialogDescription>
+                    This workout looks identical to a WOD you saved on {duplicateWod?.date ? format(new Date(duplicateWod.date), 'PPP') : 'a previous date'}.
+                    <br/><br/>
+                    Do you still want to save this new one?
+                </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+                <AlertDialogCancel onClick={() => setDuplicateWod(null)}>Cancel</AlertDialogCancel>
+                <AlertDialogAction onClick={handleForceSave}>Save Anyway</AlertDialogAction>
+            </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
       {!preview ? (
         <div
           {...getRootProps()}
