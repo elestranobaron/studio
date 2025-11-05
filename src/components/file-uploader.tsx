@@ -102,10 +102,13 @@ export function FileUploader() {
     }
   };
 
-  const saveWod = async (userId: string, force: boolean = false) => {
+  const performSave = async (userId: string, force: boolean = false) => {
     if (!analysisResult || !firestore || !file) return;
-  
+    
+    setIsSaving(true);
+
     try {
+      // Duplicate check logic
       if (!force) {
         const q = query(
           collection(firestore, 'users', userId, 'wods'),
@@ -117,8 +120,8 @@ export function FileUploader() {
         if (!querySnapshot.empty) {
           const existingWod = querySnapshot.docs[0].data() as WOD;
           setDuplicateWod(existingWod);
-          setIsSaving(false); 
-          return;
+          setIsSaving(false); // Stop saving process
+          return; // Exit function
         }
       }
   
@@ -155,21 +158,21 @@ export function FileUploader() {
       });
     } finally {
         setIsSaving(false);
-        if (duplicateWod) setDuplicateWod(null);
+        if (force) setDuplicateWod(null);
     }
   };
 
   const handleSave = async () => {
     if (!analysisResult) return;
-    setIsSaving(true);
   
     if (user) {
-      await saveWod(user.uid);
+      await performSave(user.uid);
     } else if (auth) {
       try {
+        setIsSaving(true);
         const userCredential = await signInAnonymously(auth);
         if (userCredential.user) {
-          await saveWod(userCredential.user.uid);
+          await performSave(userCredential.user.uid);
         } else {
           throw new Error("Anonymous sign-in did not return a user.");
         }
@@ -194,14 +197,14 @@ export function FileUploader() {
 
   const handleForceSave = async () => {
     setDuplicateWod(null); // Close dialog first
-    setIsSaving(true);
     if (user) {
-      await saveWod(user.uid, true);
+        await performSave(user.uid, true);
     } else if (auth) {
         try {
+            setIsSaving(true);
             const userCredential = await signInAnonymously(auth);
             if(userCredential.user) {
-                await saveWod(userCredential.user.uid, true);
+                await performSave(userCredential.user.uid, true);
             }
         } catch(error) {
             console.error("Anonymous sign-in or force save failed:", error);
@@ -358,3 +361,5 @@ export function FileUploader() {
     </div>
   );
 }
+
+    
