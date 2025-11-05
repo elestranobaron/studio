@@ -55,7 +55,7 @@ export default function TimerPage() {
   }
 
   return wod ? (
-    <div className="relative flex flex-col items-center justify-center h-screen bg-background p-4">
+    <div className="relative flex flex-col items-center justify-center h-screen bg-gradient-to-br from-background to-card p-4">
       <div className="absolute top-4 left-4">
         <Button asChild variant="ghost">
           <Link href="/dashboard">
