@@ -11,5 +11,5 @@ export type WOD = {
   result?: string; // e.g., "15:32" or "5 Rounds + 10 Reps"
   imageUrl: string; // Now stores the Data URI of the uploaded image
   imageHint?: string;
-  userId?: string;
+  userId: string;
 };
