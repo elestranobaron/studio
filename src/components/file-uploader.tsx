@@ -15,10 +15,9 @@ import { Textarea } from "./ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
 import { WodType, type WOD } from "@/lib/types";
 import { useFirebase } from "@/firebase";
-import { doc, collection, setDoc } from "firebase/firestore";
+import { doc, collection } from "firebase/firestore";
 import { useUser } from "@/firebase/provider";
-import { errorEmitter } from "@/firebase/error-emitter";
-import { FirestorePermissionError } from "@/firebase/errors";
+import { setDocumentNonBlocking } from "@/firebase/non-blocking-updates";
 import { format } from "date-fns";
 
 const toBase64 = (file: File) =>
@@ -75,7 +74,7 @@ export function FileUploader() {
     }
   };
 
-  const handleSave = async () => {
+  const handleSave = () => {
     if (!analysisResult || !firestore || !user) {
       console.error("Save preconditions not met:", { analysisResult, firestore, user });
       toast({
@@ -87,54 +86,33 @@ export function FileUploader() {
     }
 
     setIsLoading(true);
-    let newWodRef; // Define here to be accessible in catch block
 
-    try {
-      const wodsCollection = collection(firestore, 'users', user.uid, 'wods');
-      newWodRef = doc(wodsCollection);
-      const randomImageId = Math.floor(Math.random() * 1000);
+    const wodsCollection = collection(firestore, 'users', user.uid, 'wods');
+    const newWodRef = doc(wodsCollection);
+    const randomImageId = Math.floor(Math.random() * 1000);
 
-      const wodData: WOD = {
-          id: newWodRef.id,
-          name: analysisResult.name,
-          type: analysisResult.type,
-          description: analysisResult.description,
-          date: format(new Date(), "yyyy-MM-dd"),
-          userId: user.uid,
-          imageUrl: `https://picsum.photos/seed/${randomImageId}/600/400`,
-          imageHint: 'crossfit workout'
-      };
+    const wodData: WOD = {
+        id: newWodRef.id,
+        name: analysisResult.name,
+        type: analysisResult.type,
+        description: analysisResult.description,
+        date: format(new Date(), "yyyy-MM-dd"),
+        userId: user.uid,
+        imageUrl: `https://picsum.photos/seed/${randomImageId}/600/400`,
+        imageHint: 'crossfit workout'
+    };
 
-      await setDoc(newWodRef, wodData);
+    // Use the non-blocking function
+    setDocumentNonBlocking(newWodRef, wodData, { merge: false });
 
-      toast({
-          title: "WOD Saved!",
-          description: "Your new WOD has been added to your dashboard.",
-      });
-      router.push("/dashboard");
+    // This part now executes immediately, providing optimistic UI updates
+    toast({
+        title: "WOD Saved!",
+        description: "Your new WOD has been added to your dashboard.",
+    });
 
-    } catch (error) {
-      console.error("Error saving WOD: ", error);
-
-      // This will help us debug Firestore permission errors
-      if (newWodRef && error instanceof Error && 'code' in error && (error as any).code === 'permission-denied') {
-          const permissionError = new FirestorePermissionError({
-            path: newWodRef.path,
-            operation: 'create',
-            requestResourceData: analysisResult, // Use the data we tried to save
-          });
-          errorEmitter.emit('permission-error', permissionError);
-      }
-      
-      // Also show a generic toast to the user for any kind of error
-      toast({
-          variant: "destructive",
-          title: "Save Failed",
-          description: "Could not save the WOD. Please check the console for details.",
-      });
-    } finally {
-      setIsLoading(false);
-    }
+    router.push("/dashboard");
+    // No need to set isLoading to false here as we are navigating away.
   };
 
   const handleRemove = () => {
