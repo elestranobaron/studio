@@ -74,7 +74,7 @@ export function FileUploader() {
     }
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!analysisResult || !firestore || !user) {
       console.error("Save preconditions not met:", { analysisResult, firestore, user });
       toast({
@@ -87,32 +87,41 @@ export function FileUploader() {
 
     setIsLoading(true);
 
-    const wodsCollection = collection(firestore, 'users', user.uid, 'wods');
-    const newWodRef = doc(wodsCollection);
-    const randomImageId = Math.floor(Math.random() * 1000);
+    try {
+        const wodsCollection = collection(firestore, 'users', user.uid, 'wods');
+        const newWodRef = doc(wodsCollection);
+        const randomImageId = Math.floor(Math.random() * 1000);
 
-    const wodData: WOD = {
-        id: newWodRef.id,
-        name: analysisResult.name,
-        type: analysisResult.type,
-        description: analysisResult.description,
-        date: format(new Date(), "yyyy-MM-dd"),
-        userId: user.uid,
-        imageUrl: `https://picsum.photos/seed/${randomImageId}/600/400`,
-        imageHint: 'crossfit workout'
-    };
+        const wodData: WOD = {
+            id: newWodRef.id,
+            name: analysisResult.name,
+            type: analysisResult.type,
+            description: analysisResult.description,
+            date: format(new Date(), "yyyy-MM-dd"),
+            userId: user.uid,
+            imageUrl: `https://picsum.photos/seed/${randomImageId}/600/400`,
+            imageHint: 'crossfit workout'
+        };
 
-    // Use the non-blocking function
-    setDocumentNonBlocking(newWodRef, wodData, { merge: false });
+        // Use the non-blocking function but await its underlying promise for navigation
+        await setDocumentNonBlocking(newWodRef, wodData, { merge: false });
 
-    // This part now executes immediately, providing optimistic UI updates
-    toast({
-        title: "WOD Saved!",
-        description: "Your new WOD has been added to your dashboard.",
-    });
+        toast({
+            title: "WOD Saved!",
+            description: "Your new WOD has been added to your dashboard.",
+        });
 
-    router.push("/dashboard");
-    // No need to set isLoading to false here as we are navigating away.
+        router.push("/dashboard");
+
+    } catch (error) {
+        console.error("Failed to save WOD:", error);
+        toast({
+            variant: "destructive",
+            title: "Save Failed",
+            description: "An unexpected error occurred while saving the WOD.",
+        });
+        setIsLoading(false);
+    }
   };
 
   const handleRemove = () => {
@@ -208,7 +217,7 @@ export function FileUploader() {
                   })
                 }
                 rows={10}
-                className="font-mono text-sm"
+                className="font-mono text-sm whitespace-pre-wrap"
                 placeholder="WOD Description"
               />
               <Button onClick={handleSave} className="w-full" disabled={isLoading}>
