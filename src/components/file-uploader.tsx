@@ -75,53 +75,66 @@ export function FileUploader() {
     }
   };
 
-  const handleSave = () => {
-    if (!analysisResult || !firestore || !user || !file) return;
+  const handleSave = async () => {
+    if (!analysisResult || !firestore || !user) {
+      console.error("Save preconditions not met:", { analysisResult, firestore, user });
+      toast({
+        variant: "destructive",
+        title: "Cannot Save",
+        description: "Missing required information to save the WOD.",
+      });
+      return;
+    }
 
     setIsLoading(true);
+    let newWodRef; // Define here to be accessible in catch block
 
-    const wodsCollection = collection(firestore, 'users', user.uid, 'wods');
-    const newWodRef = doc(wodsCollection);
-    const randomImageId = Math.floor(Math.random() * 1000);
+    try {
+      const wodsCollection = collection(firestore, 'users', user.uid, 'wods');
+      newWodRef = doc(wodsCollection);
+      const randomImageId = Math.floor(Math.random() * 1000);
 
-    const wodData: WOD = {
-        id: newWodRef.id,
-        name: analysisResult.name,
-        type: analysisResult.type,
-        description: analysisResult.description,
-        date: format(new Date(), "yyyy-MM-dd"),
-        userId: user.uid,
-        imageUrl: `https://picsum.photos/seed/${randomImageId}/600/400`,
-        imageHint: 'crossfit workout'
-    };
-    
-    setDoc(newWodRef, wodData)
-      .then(() => {
-        toast({
-            title: "WOD Saved!",
-            description: "Your new WOD has been added to your dashboard.",
-        });
-        router.push("/dashboard");
-      })
-      .catch((error) => {
-          console.error("Error saving WOD: ", error);
+      const wodData: WOD = {
+          id: newWodRef.id,
+          name: analysisResult.name,
+          type: analysisResult.type,
+          description: analysisResult.description,
+          date: format(new Date(), "yyyy-MM-dd"),
+          userId: user.uid,
+          imageUrl: `https://picsum.photos/seed/${randomImageId}/600/400`,
+          imageHint: 'crossfit workout'
+      };
+
+      await setDoc(newWodRef, wodData);
+
+      toast({
+          title: "WOD Saved!",
+          description: "Your new WOD has been added to your dashboard.",
+      });
+      router.push("/dashboard");
+
+    } catch (error) {
+      console.error("Error saving WOD: ", error);
+
+      // This will help us debug Firestore permission errors
+      if (newWodRef && error instanceof Error && 'code' in error && (error as any).code === 'permission-denied') {
           const permissionError = new FirestorePermissionError({
             path: newWodRef.path,
             operation: 'create',
-            requestResourceData: wodData,
+            requestResourceData: analysisResult, // Use the data we tried to save
           });
           errorEmitter.emit('permission-error', permissionError);
-          
-          // Also show a generic toast to the user
-          toast({
-              variant: "destructive",
-              title: "Save Failed",
-              description: "Could not save the WOD. Please check permissions and try again.",
-          });
-      })
-      .finally(() => {
-          setIsLoading(false);
+      }
+      
+      // Also show a generic toast to the user for any kind of error
+      toast({
+          variant: "destructive",
+          title: "Save Failed",
+          description: "Could not save the WOD. Please check the console for details.",
       });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleRemove = () => {
