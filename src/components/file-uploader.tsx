@@ -14,8 +14,8 @@ import { Input } from "./ui/input";
 import { Textarea } from "./ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
 import { WodType, type WOD } from "@/lib/types";
-import { useFirebase, setDocumentNonBlocking } from "@/firebase";
-import { doc, collection } from "firebase/firestore";
+import { useFirebase } from "@/firebase";
+import { doc, collection, setDoc } from "firebase/firestore";
 import { useUser } from "@/firebase/provider";
 
 const toBase64 = (file: File) =>
@@ -72,34 +72,45 @@ export function FileUploader() {
     }
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!analysisResult || !firestore || !user || !file) return;
     
     setIsLoading(true);
     
-    const wodsCollection = collection(firestore, 'users', user.uid, 'wods');
-    // Create a new document reference with a unique ID
-    const newWodRef = doc(wodsCollection);
+    try {
+      const wodsCollection = collection(firestore, 'users', user.uid, 'wods');
+      const newWodRef = doc(wodsCollection);
 
-    const wodData: WOD = {
-        id: newWodRef.id,
-        ...analysisResult,
-        date: new Date().toISOString(),
-        userId: user.uid,
-        imageUrl: preview || '', // Use preview which is a local URL for display, but you might want to upload it
-    };
-    
-    // Use the non-blocking function to save the document
-    setDocumentNonBlocking(newWodRef, wodData, { merge: true });
+      const wodData: WOD = {
+          id: newWodRef.id,
+          name: analysisResult.name,
+          type: analysisResult.type,
+          description: analysisResult.description,
+          date: new Date().toISOString(),
+          userId: user.uid,
+          imageUrl: preview || '', // Note: This is a temporary local URL
+          imageHint: 'crossfit workout'
+      };
+      
+      await setDoc(newWodRef, wodData);
 
-    toast({
-        title: "WOD Saved!",
-        description: "Your new WOD has been added to your dashboard.",
-    });
+      toast({
+          title: "WOD Saved!",
+          description: "Your new WOD has been added to your dashboard.",
+      });
 
-    // Reset loading state and navigate
-    setIsLoading(false);
-    router.push("/dashboard");
+      router.push("/dashboard");
+
+    } catch (error) {
+        console.error("Error saving WOD: ", error);
+        toast({
+            variant: "destructive",
+            title: "Save Failed",
+            description: "Could not save the WOD. Please try again.",
+        });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleRemove = () => {
