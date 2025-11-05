@@ -19,6 +19,7 @@ import { doc, collection } from "firebase/firestore";
 import { useUser } from "@/firebase/provider";
 import { setDocumentNonBlocking } from "@/firebase/non-blocking-updates";
 import { format } from "date-fns";
+import { cn } from "@/lib/utils";
 
 const toBase64 = (file: File) =>
   new Promise<string>((resolve, reject) => {
@@ -104,7 +105,7 @@ export function FileUploader() {
             imageHint: 'crossfit workout'
         };
 
-        await setDocumentNonBlocking(newWodRef, wodData, { merge: false });
+        setDocumentNonBlocking(newWodRef, wodData, { merge: false });
 
         toast({
             title: "WOD Saved!",
@@ -247,7 +248,7 @@ export function FileUploader() {
                   })
                 }
                 rows={10}
-                className="font-mono text-sm whitespace-pre-wrap"
+                className="whitespace-pre-wrap font-mono text-sm"
                 placeholder="WOD Description"
                 disabled={isLoading}
               />
