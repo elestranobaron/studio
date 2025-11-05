@@ -4,7 +4,7 @@
 import { useState, useCallback } from "react";
 import { useDropzone } from "react-dropzone";
 import Image from "next/image";
-import { UploadCloud, X } from "lucide-react";
+import { UploadCloud, X, LoaderCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
@@ -38,7 +38,7 @@ export function FileUploader() {
   const { toast } = useToast();
   const router = useRouter();
   const { firestore } = useFirebase();
-  const { user } = useUser();
+  const { user, isUserLoading } = useUser();
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
     if (acceptedFiles.length > 0) {
@@ -53,6 +53,7 @@ export function FileUploader() {
     onDrop,
     accept: { "image/*": [] },
     multiple: false,
+    disabled: isUserLoading || !user,
   });
 
   const handleAnalyze = async () => {
@@ -63,7 +64,7 @@ export function FileUploader() {
       const result = await analyzeWod({ photoDataUri });
       setAnalysisResult(result);
     } catch (error) {
-      console.error(error);
+      console.error("Analysis Error:", error);
       toast({
         variant: "destructive",
         title: "Analysis Failed",
@@ -80,7 +81,7 @@ export function FileUploader() {
       toast({
         variant: "destructive",
         title: "Cannot Save",
-        description: "Missing required information to save the WOD.",
+        description: "User not logged in or data is missing.",
       });
       return;
     }
@@ -103,7 +104,6 @@ export function FileUploader() {
             imageHint: 'crossfit workout'
         };
 
-        // Use the non-blocking function but await its underlying promise for navigation
         await setDocumentNonBlocking(newWodRef, wodData, { merge: false });
 
         toast({
@@ -129,25 +129,52 @@ export function FileUploader() {
     setPreview(null);
     setAnalysisResult(null);
   };
+  
+  const isActionDisabled = isLoading || isUserLoading || !user;
+
 
   return (
     <div className="w-full max-w-2xl mx-auto">
       {!preview ? (
         <div
           {...getRootProps()}
-          className="relative flex flex-col items-center justify-center w-full h-64 border-2 border-dashed rounded-lg cursor-pointer border-primary/50 bg-primary/10 hover:bg-primary/20 transition-colors"
+          className={cn("relative flex flex-col items-center justify-center w-full h-64 border-2 border-dashed rounded-lg cursor-pointer border-primary/50 bg-primary/10 transition-colors", {
+            "hover:bg-primary/20": !isActionDisabled,
+            "cursor-not-allowed opacity-50": isActionDisabled,
+          })}
         >
           <input {...getInputProps()} />
           <div className="text-center">
-            <UploadCloud className="w-16 h-16 mx-auto text-primary" />
-            <p className="mt-4 text-lg font-semibold text-foreground">
-              {isDragActive
-                ? "Drop the image here..."
-                : "Drag & drop your WOD image, or click to select"}
-            </p>
-            <p className="mt-1 text-sm text-muted-foreground">
-              PNG, JPG, or GIF (max 5MB)
-            </p>
+            {isUserLoading ? (
+                <>
+                 <LoaderCircle className="w-16 h-16 mx-auto text-primary animate-spin" />
+                 <p className="mt-4 text-lg font-semibold text-foreground">
+                    Connecting to your account...
+                 </p>
+                </>
+            ) : !user ? (
+                 <>
+                 <UploadCloud className="w-16 h-16 mx-auto text-primary" />
+                 <p className="mt-4 text-lg font-semibold text-foreground">
+                    Please log in to upload a WOD
+                 </p>
+                 <p className="mt-1 text-sm text-muted-foreground">
+                    You can log in from the user menu in the sidebar.
+                 </p>
+                </>
+            ) : (
+                <>
+                <UploadCloud className="w-16 h-16 mx-auto text-primary" />
+                <p className="mt-4 text-lg font-semibold text-foreground">
+                {isDragActive
+                    ? "Drop the image here..."
+                    : "Drag & drop your WOD image, or click to select"}
+                </p>
+                <p className="mt-1 text-sm text-muted-foreground">
+                PNG, JPG, or GIF (max 5MB)
+                </p>
+                </>
+            )}
           </div>
         </div>
       ) : (
@@ -165,6 +192,7 @@ export function FileUploader() {
               size="icon"
               className="absolute top-2 right-2 rounded-full h-8 w-8"
               onClick={handleRemove}
+              disabled={isLoading}
             >
               <X className="h-4 w-4" />
             </Button>
@@ -173,7 +201,7 @@ export function FileUploader() {
           {!analysisResult ? (
             <Button
               onClick={handleAnalyze}
-              disabled={isLoading}
+              disabled={isActionDisabled}
               className="w-full"
             >
               {isLoading ? "Analyzing..." : "Analyze WOD"}
@@ -190,10 +218,12 @@ export function FileUploader() {
                     setAnalysisResult({ ...analysisResult, name: e.target.value })
                   }
                   placeholder="WOD Name"
+                  disabled={isLoading}
                 />
                  <Select
                   value={analysisResult.type}
                   onValueChange={(value: WodType) => setAnalysisResult({...analysisResult, type: value})}
+                  disabled={isLoading}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="WOD Type" />
@@ -219,8 +249,9 @@ export function FileUploader() {
                 rows={10}
                 className="font-mono text-sm whitespace-pre-wrap"
                 placeholder="WOD Description"
+                disabled={isLoading}
               />
-              <Button onClick={handleSave} className="w-full" disabled={isLoading}>
+              <Button onClick={handleSave} className="w-full" disabled={isActionDisabled}>
                 {isLoading ? "Saving..." : "Save WOD"}
               </Button>
             </div>
