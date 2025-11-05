@@ -30,6 +30,7 @@ The image contains a description of a workout. It might be split into multiple c
 1.  **Name**: The title of the workout (e.g., "Fran", "Murph", "Cindy"). If no name is present, create a descriptive name based on the exercises.
 2.  **Type**: The format of the main workout. Choose from "For Time", "AMRAP", "EMOM", "Tabata", or "Other".
 3.  **Description**: The full text of the workout, including ALL components like warm-ups, strength parts, and metcons (e.g., "Hybrid Metcon"). Include all movements, repetition schemes, weights, and any other relevant instructions. Please maintain the original formatting, including line breaks, and combine all sections into one cohesive description.
+4.  **Image Hint**: Based on the main exercise(s), provide a one or two-word hint for finding a relevant stock photo. Examples: "running", "barbell", "kettlebell", "pull-up", "rowing".
 
 Analyze the following image:
 {{media url=photoDataUri}}`,

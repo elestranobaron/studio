@@ -22,5 +22,6 @@ export const AnalyzeWodOutputSchema = z.object({
     name: z.string().describe("The name of the workout, e.g., 'Fran', 'Murph'."),
     type: z.enum(["For Time", "AMRAP", "EMOM", "Tabata", "Other"]).describe("The type of workout."),
     description: z.string().describe("The full description of the workout, including exercises, reps, rounds, and weights. Preserve formatting like newlines."),
+    imageHint: z.string().describe("A one or two-word hint for a relevant stock photo, e.g., 'running', 'barbell', 'kettlebell', 'pull-up'."),
 });
 export type AnalyzeWodOutput = z.infer<typeof AnalyzeWodOutputSchema>;

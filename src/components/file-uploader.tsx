@@ -81,6 +81,7 @@ export function FileUploader() {
   const performSave = (userId: string) => {
     if (!analysisResult || !firestore) return;
 
+    setIsSaving(true);
     try {
         const wodsCollection = collection(firestore, 'users', userId, 'wods');
         const newWodRef = doc(wodsCollection);
@@ -94,7 +95,7 @@ export function FileUploader() {
             date: format(new Date(), "yyyy-MM-dd"),
             userId: userId,
             imageUrl: `https://picsum.photos/seed/${randomImageId}/600/400`,
-            imageHint: 'crossfit workout'
+            imageHint: analysisResult.imageHint,
         };
 
         setDocumentNonBlocking(newWodRef, wodData, { merge: false });
@@ -121,11 +122,10 @@ export function FileUploader() {
   const handleSave = async () => {
     if (!analysisResult) return;
 
-    setIsSaving(true);
-
     if (user) {
         performSave(user.uid);
     } else if (auth) {
+        setIsSaving(true); // Show loading state on the save button
         try {
             const userCredential = await signInAnonymously(auth);
             if (userCredential.user) {
@@ -270,5 +270,3 @@ export function FileUploader() {
     </div>
   );
 }
-
-    
