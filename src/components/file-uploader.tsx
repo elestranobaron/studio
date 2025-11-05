@@ -109,10 +109,12 @@ export function FileUploader() {
     setIsSaving(true);
     
     try {
+        const wodsCollection = collection(firestore, 'users', userId, 'wods');
+
         // Duplicate check logic
         if (!force) {
             const q = query(
-                collection(firestore, 'users', userId, 'wods'),
+                wodsCollection,
                 where("name", "==", analysisResult.name),
                 where("type", "==", analysisResult.type),
                 where("description", "==", analysisResult.description)
@@ -125,18 +127,17 @@ export function FileUploader() {
                 return; // Exit function
             }
         }
-
+        
         const photoDataUri = await toBase64(file);
-        const wodsCollection = collection(firestore, 'users', userId, 'wods');
         const newWodRef = doc(wodsCollection);
 
         const wodData: WOD = {
             id: newWodRef.id,
+            userId: userId,
             name: analysisResult.name,
             type: analysisResult.type,
             description: analysisResult.description,
             date: format(new Date(), "yyyy-MM-dd"),
-            userId: userId,
             imageUrl: photoDataUri,
             imageHint: analysisResult.imageHint,
         };
@@ -151,7 +152,6 @@ export function FileUploader() {
                 router.push("/dashboard");
             })
             .catch(async (serverError) => {
-                // This is the crucial part for debugging security rules
                 const permissionError = new FirestorePermissionError({
                     path: newWodRef.path,
                     operation: 'create',
@@ -159,11 +159,10 @@ export function FileUploader() {
                 });
                 errorEmitter.emit('permission-error', permissionError);
                 
-                // Also show a generic toast to the user
                 toast({
                     variant: "destructive",
                     title: "Save Failed",
-                    description: "Could not save the WOD due to a permission issue.",
+                    description: "Could not save the WOD due to a permission issue. Check the error overlay for details.",
                 });
             })
             .finally(() => {
@@ -255,8 +254,13 @@ export function FileUploader() {
             <AlertDialogHeader>
                 <AlertDialogTitle>Duplicate WOD Detected</AlertDialogTitle>
                 <AlertDialogDescription>
-                    This workout looks identical to a WOD you saved on {duplicateWod?.date ? format(new Date(duplicateWod.date), 'PPP') : 'a previous date'}.
+                    This workout looks identical to a WOD you've already saved.
                     <br/><br/>
+                    <div className="p-4 border rounded-md bg-muted/50">
+                        <p className="font-bold">{duplicateWod?.name}</p>
+                        <p className="text-sm text-muted-foreground">{duplicateWod?.date ? `Saved on ${format(new Date(duplicateWod.date), 'PPP')}` : ''}</p>
+                    </div>
+                    <br/>
                     Do you still want to save this new one?
                 </AlertDialogDescription>
             </AlertDialogHeader>

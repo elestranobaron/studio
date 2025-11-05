@@ -3,45 +3,20 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    match /users/{userId}/wods/{wodId} {
-      allow read, write: if isSignedIn() && isOwner(userId) && isWodDocumentValid();
-    }
-
-    // ---- Helper functions ----
-
-    /**
-     * Checks if the user is signed in.
-     */
+    // Helper function to check if the user is authenticated.
     function isSignedIn() {
       return request.auth != null;
     }
 
-    /**
-     * Checks if the requesting user is the owner of the document.
-     */
+    // Helper function to check if the requesting user is the owner of the document.
     function isOwner(userId) {
       return request.auth.uid == userId;
     }
 
-    /**
-     * Validates the WOD document on create and update.
-     */
-    function isWodDocumentValid() {
-      // On create, ensure the userId in the document matches the owner's uid.
-      // Also ensure the document's id matches the ID in the path.
-      if (request.method == 'create') {
-        return request.resource.data.userId == request.auth.uid
-            && request.resource.data.id == wodId;
-      }
-      
-      // On update, prevent the user from changing the userId or the id.
-      if (request.method == 'update') {
-        return request.resource.data.userId == resource.data.userId
-            && request.resource.data.id == resource.data.id;
-      }
-      
-      // Allow get, list, delete without checking the document body.
-      return true;
+    // Rules for WODs subcollection
+    match /users/{userId}/wods/{wodId} {
+      // Only the owner can read or write their own WODs.
+      allow read, write: if isSignedIn() && isOwner(userId);
     }
   }
 }
