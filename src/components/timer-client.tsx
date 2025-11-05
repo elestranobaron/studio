@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
@@ -5,7 +6,7 @@ import {
   Play,
   Pause,
   RotateCcw,
-  FlagCheckered,
+  Flag,
   Share2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -168,7 +169,7 @@ export function TimerClient({ wod }: { wod: WOD }) {
         </Button>
       </div>
       <Button onClick={handleFinish} variant="destructive" size="lg" disabled={!isActive && time === 0}>
-        <FlagCheckered className="mr-2 h-5 w-5" /> Finish
+        <Flag className="mr-2 h-5 w-5" /> Finish
       </Button>
     </div>
   );
