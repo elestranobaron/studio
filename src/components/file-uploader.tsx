@@ -1,4 +1,5 @@
 
+
 "use client";
 
 import { useState, useCallback, useEffect } from "react";
@@ -235,7 +236,7 @@ export function FileUploader() {
           loop
           muted
           playsInline
-          className="w-48 h-48"
+          className="w-48 h-48 rounded-lg"
         />
         <h2 className="text-2xl font-headline font-bold text-foreground">Analyzing WOD...</h2>
         <p className="text-muted-foreground">The AI is warming up. This might take a moment.</p>
@@ -388,5 +389,3 @@ export function FileUploader() {
     </div>
   );
 }
-
-    

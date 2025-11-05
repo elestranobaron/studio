@@ -1,4 +1,5 @@
 
+
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
@@ -14,6 +15,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import type { WOD } from "@/lib/types";
 import { cn } from "@/lib/utils";
+import { Logo } from "./icons";
 
 const formatTime = (time: number) => {
   const minutes = Math.floor(time / 60);
@@ -41,7 +43,9 @@ function ShareModal({ wod, finalTime }: { wod: WOD; finalTime: string }) {
                         <p className="text-5xl font-bold font-mono text-foreground">{finalTime}</p>
                         <p className="text-lg text-muted-foreground">Final Time</p>
                     </div>
-                    <p className="text-center text-sm text-muted-foreground">🔥 WODBurner</p>
+                    <div className="flex justify-center opacity-70">
+                      <Logo />
+                    </div>
                 </div>
                  <p className="text-center text-sm text-muted-foreground">
                     Take a screenshot to share on Instagram!
@@ -143,6 +147,9 @@ export function TimerClient({ wod }: { wod: WOD }) {
         <div className="flex gap-4">
             <Button onClick={resetTimer} size="lg"><RotateCcw className="mr-2 h-4 w-4" /> Go Again</Button>
             <ShareModal wod={wod} finalTime={formatTime(time)} />
+        </div>
+         <div className="pt-8 opacity-50">
+            <Logo />
         </div>
       </div>
     );
