@@ -17,6 +17,9 @@ import { WodType, type WOD } from "@/lib/types";
 import { useFirebase } from "@/firebase";
 import { doc, collection, setDoc } from "firebase/firestore";
 import { useUser } from "@/firebase/provider";
+import { errorEmitter } from "@/firebase/error-emitter";
+import { FirestorePermissionError } from "@/firebase/errors";
+import { format } from "date-fns";
 
 const toBase64 = (file: File) =>
   new Promise<string>((resolve, reject) => {
@@ -72,45 +75,53 @@ export function FileUploader() {
     }
   };
 
-  const handleSave = async () => {
+  const handleSave = () => {
     if (!analysisResult || !firestore || !user || !file) return;
-    
+
     setIsLoading(true);
+
+    const wodsCollection = collection(firestore, 'users', user.uid, 'wods');
+    const newWodRef = doc(wodsCollection);
+    const randomImageId = Math.floor(Math.random() * 1000);
+
+    const wodData: WOD = {
+        id: newWodRef.id,
+        name: analysisResult.name,
+        type: analysisResult.type,
+        description: analysisResult.description,
+        date: format(new Date(), "yyyy-MM-dd"),
+        userId: user.uid,
+        imageUrl: `https://picsum.photos/seed/${randomImageId}/600/400`,
+        imageHint: 'crossfit workout'
+    };
     
-    try {
-      const wodsCollection = collection(firestore, 'users', user.uid, 'wods');
-      const newWodRef = doc(wodsCollection);
-
-      const wodData: WOD = {
-          id: newWodRef.id,
-          name: analysisResult.name,
-          type: analysisResult.type,
-          description: analysisResult.description,
-          date: new Date().toISOString(),
-          userId: user.uid,
-          imageUrl: preview || '', // Note: This is a temporary local URL
-          imageHint: 'crossfit workout'
-      };
-      
-      await setDoc(newWodRef, wodData);
-
-      toast({
-          title: "WOD Saved!",
-          description: "Your new WOD has been added to your dashboard.",
-      });
-
-      router.push("/dashboard");
-
-    } catch (error) {
-        console.error("Error saving WOD: ", error);
+    setDoc(newWodRef, wodData)
+      .then(() => {
         toast({
-            variant: "destructive",
-            title: "Save Failed",
-            description: "Could not save the WOD. Please try again.",
+            title: "WOD Saved!",
+            description: "Your new WOD has been added to your dashboard.",
         });
-    } finally {
-      setIsLoading(false);
-    }
+        router.push("/dashboard");
+      })
+      .catch((error) => {
+          console.error("Error saving WOD: ", error);
+          const permissionError = new FirestorePermissionError({
+            path: newWodRef.path,
+            operation: 'create',
+            requestResourceData: wodData,
+          });
+          errorEmitter.emit('permission-error', permissionError);
+          
+          // Also show a generic toast to the user
+          toast({
+              variant: "destructive",
+              title: "Save Failed",
+              description: "Could not save the WOD. Please check permissions and try again.",
+          });
+      })
+      .finally(() => {
+          setIsLoading(false);
+      });
   };
 
   const handleRemove = () => {

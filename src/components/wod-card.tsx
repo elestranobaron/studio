@@ -12,6 +12,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Clock, Calendar, Repeat, Hourglass, Timer } from "lucide-react";
+import { format } from 'date-fns';
 
 function WodIcon({ type }: { type: WOD["type"] }) {
   switch (type) {
@@ -29,6 +30,9 @@ function WodIcon({ type }: { type: WOD["type"] }) {
 }
 
 export function WodCard({ wod }: { wod: WOD }) {
+    
+    const formattedDate = wod.date ? format(new Date(wod.date), "PPP") : "No date";
+
   return (
     <Card className="flex flex-col overflow-hidden transition-all hover:shadow-lg">
       {wod.imageUrl && (
@@ -52,7 +56,7 @@ export function WodCard({ wod }: { wod: WOD }) {
         </div>
         <CardDescription className="flex items-center gap-2 pt-2">
           <Calendar className="h-4 w-4" />
-          <span>{wod.date}</span>
+          <span>{formattedDate}</span>
         </CardDescription>
       </CardHeader>
       <CardContent className="flex-grow">
