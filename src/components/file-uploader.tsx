@@ -23,6 +23,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
 import { initiateAnonymousSignIn } from "@/firebase/non-blocking-login";
+import { Logo } from "./icons";
 
 
 const toBase64 = (file: File): Promise<string> =>
@@ -225,6 +226,18 @@ export function FileUploader() {
   
   const isActionDisabled = isLoading || isSaving || isUserLoading;
 
+  if (isLoading) {
+    return (
+      <div className="w-full flex-1 flex flex-col items-center justify-center gap-4 text-center">
+        <div className="animate-logo-pulse">
+            <Logo className="w-24 h-24" />
+        </div>
+        <h2 className="text-2xl font-headline font-bold text-foreground">Analyzing WOD...</h2>
+        <p className="text-muted-foreground">The AI is warming up. This might take a moment.</p>
+      </div>
+    );
+  }
+
 
   return (
     <div className="w-full max-w-2xl mx-auto">
@@ -297,12 +310,7 @@ export function FileUploader() {
               disabled={isActionDisabled}
               className="w-full"
             >
-              {isLoading ? (
-                <>
-                  <LoaderCircle className="animate-spin mr-2" />
-                  Analyzing...
-                </>
-              ) : "Analyze WOD"}
+              Analyze WOD
             </Button>
           ) : (
             <div className="space-y-4">

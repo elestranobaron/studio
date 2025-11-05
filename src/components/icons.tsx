@@ -9,9 +9,9 @@ export function Logo({ className }: { className?: string }) {
         alt="WODBurner Logo" 
         width={32} 
         height={32} 
-        className="h-8 w-8 rounded-md object-contain"
+        className="h-full w-full object-contain"
       />
-      <span className="text-xl font-bold font-headline text-foreground">
+      <span className="text-xl font-bold font-headline text-foreground group-data-[collapsible=icon]:hidden">
         WODBurner
       </span>
     </div>

@@ -87,10 +87,21 @@ export default {
           from: { height: "var(--radix-accordion-content-height)" },
           to: { height: "0" },
         },
+        "logo-pulse": {
+            "0%, 100%": {
+                transform: "scale(1)",
+                filter: "drop-shadow(0 0 10px hsl(var(--primary) / 0.5))",
+            },
+            "50%": {
+                transform: "scale(1.05)",
+                filter: "drop-shadow(0 0 20px hsl(var(--primary) / 0.8))",
+            }
+        }
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
+        "logo-pulse": "logo-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite"
       },
     },
   },
