@@ -16,10 +16,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
 import { WodType, type WOD } from "@/lib/types";
 import { useFirebase } from "@/firebase";
 import { doc, collection } from "firebase/firestore";
-import { useUser } from "@/firebase/provider";
+import { useUser, useAuth } from "@/firebase/provider";
 import { setDocumentNonBlocking } from "@/firebase/non-blocking-updates";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
+import { signInAnonymously } from "firebase/auth";
 
 const toBase64 = (file: File) =>
   new Promise<string>((resolve, reject) => {
@@ -33,13 +34,15 @@ export function FileUploader() {
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
   const [analysisResult, setAnalysisResult] = useState<AnalyzeWodOutput | null>(
     null
   );
   const { toast } = useToast();
   const router = useRouter();
   const { firestore } = useFirebase();
-  const { user, isUserLoading } = useUser();
+  const auth = useAuth();
+  const { user } = useUser();
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
     if (acceptedFiles.length > 0) {
@@ -54,7 +57,6 @@ export function FileUploader() {
     onDrop,
     accept: { "image/*": [] },
     multiple: false,
-    disabled: isUserLoading || !user,
   });
 
   const handleAnalyze = async () => {
@@ -76,21 +78,11 @@ export function FileUploader() {
     }
   };
 
-  const handleSave = async () => {
-    if (!analysisResult || !firestore || !user) {
-      console.error("Save preconditions not met:", { analysisResult, firestore, user });
-      toast({
-        variant: "destructive",
-        title: "Cannot Save",
-        description: "User not logged in or data is missing.",
-      });
-      return;
-    }
-
-    setIsLoading(true);
+  const performSave = (userId: string) => {
+    if (!analysisResult || !firestore) return;
 
     try {
-        const wodsCollection = collection(firestore, 'users', user.uid, 'wods');
+        const wodsCollection = collection(firestore, 'users', userId, 'wods');
         const newWodRef = doc(wodsCollection);
         const randomImageId = Math.floor(Math.random() * 1000);
 
@@ -100,7 +92,7 @@ export function FileUploader() {
             type: analysisResult.type,
             description: analysisResult.description,
             date: format(new Date(), "yyyy-MM-dd"),
-            userId: user.uid,
+            userId: userId,
             imageUrl: `https://picsum.photos/seed/${randomImageId}/600/400`,
             imageHint: 'crossfit workout'
         };
@@ -121,7 +113,35 @@ export function FileUploader() {
             title: "Save Failed",
             description: "An unexpected error occurred while saving the WOD.",
         });
-        setIsLoading(false);
+    } finally {
+        setIsSaving(false);
+    }
+  }
+
+  const handleSave = async () => {
+    if (!analysisResult) return;
+
+    setIsSaving(true);
+
+    if (user) {
+        performSave(user.uid);
+    } else if (auth) {
+        try {
+            const userCredential = await signInAnonymously(auth);
+            if (userCredential.user) {
+                performSave(userCredential.user.uid);
+            } else {
+                 throw new Error("Anonymous sign-in did not return a user.");
+            }
+        } catch(error) {
+            console.error("Anonymous sign-in failed:", error);
+            toast({
+                variant: "destructive",
+                title: "Authentication Failed",
+                description: "Could not create a temporary profile to save your WOD. Please try again.",
+            });
+            setIsSaving(false);
+        }
     }
   };
 
@@ -131,7 +151,7 @@ export function FileUploader() {
     setAnalysisResult(null);
   };
   
-  const isActionDisabled = isLoading || isUserLoading || !user;
+  const isActionDisabled = isLoading || isSaving;
 
 
   return (
@@ -139,43 +159,21 @@ export function FileUploader() {
       {!preview ? (
         <div
           {...getRootProps()}
-          className={cn("relative flex flex-col items-center justify-center w-full h-64 border-2 border-dashed rounded-lg cursor-pointer border-primary/50 bg-primary/10 transition-colors", {
-            "hover:bg-primary/20": !isActionDisabled,
+          className={cn("relative flex flex-col items-center justify-center w-full h-64 border-2 border-dashed rounded-lg cursor-pointer border-primary/50 bg-primary/10 transition-colors hover:bg-primary/20", {
             "cursor-not-allowed opacity-50": isActionDisabled,
           })}
         >
-          <input {...getInputProps()} />
+          <input {...getInputProps()} disabled={isActionDisabled}/>
           <div className="text-center">
-            {isUserLoading ? (
-                <>
-                 <LoaderCircle className="w-16 h-16 mx-auto text-primary animate-spin" />
-                 <p className="mt-4 text-lg font-semibold text-foreground">
-                    Connecting to your account...
-                 </p>
-                </>
-            ) : !user ? (
-                 <>
-                 <UploadCloud className="w-16 h-16 mx-auto text-primary" />
-                 <p className="mt-4 text-lg font-semibold text-foreground">
-                    Please log in to upload a WOD
-                 </p>
-                 <p className="mt-1 text-sm text-muted-foreground">
-                    You can log in from the user menu in the sidebar.
-                 </p>
-                </>
-            ) : (
-                <>
-                <UploadCloud className="w-16 h-16 mx-auto text-primary" />
-                <p className="mt-4 text-lg font-semibold text-foreground">
-                {isDragActive
-                    ? "Drop the image here..."
-                    : "Drag & drop your WOD image, or click to select"}
-                </p>
-                <p className="mt-1 text-sm text-muted-foreground">
-                PNG, JPG, or GIF (max 5MB)
-                </p>
-                </>
-            )}
+            <UploadCloud className="w-16 h-16 mx-auto text-primary" />
+            <p className="mt-4 text-lg font-semibold text-foreground">
+            {isDragActive
+                ? "Drop the image here..."
+                : "Drag & drop your WOD image, or click to select"}
+            </p>
+            <p className="mt-1 text-sm text-muted-foreground">
+            PNG, JPG, or GIF (max 5MB)
+            </p>
           </div>
         </div>
       ) : (
@@ -193,7 +191,7 @@ export function FileUploader() {
               size="icon"
               className="absolute top-2 right-2 rounded-full h-8 w-8"
               onClick={handleRemove}
-              disabled={isLoading}
+              disabled={isActionDisabled}
             >
               <X className="h-4 w-4" />
             </Button>
@@ -205,7 +203,12 @@ export function FileUploader() {
               disabled={isActionDisabled}
               className="w-full"
             >
-              {isLoading ? "Analyzing..." : "Analyze WOD"}
+              {isLoading ? (
+                <>
+                  <LoaderCircle className="animate-spin mr-2" />
+                  Analyzing...
+                </>
+              ) : "Analyze WOD"}
             </Button>
           ) : (
             <div className="space-y-4">
@@ -219,12 +222,12 @@ export function FileUploader() {
                     setAnalysisResult({ ...analysisResult, name: e.target.value })
                   }
                   placeholder="WOD Name"
-                  disabled={isLoading}
+                  disabled={isActionDisabled}
                 />
                  <Select
                   value={analysisResult.type}
                   onValueChange={(value: WodType) => setAnalysisResult({...analysisResult, type: value})}
-                  disabled={isLoading}
+                  disabled={isActionDisabled}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="WOD Type" />
@@ -250,10 +253,15 @@ export function FileUploader() {
                 rows={10}
                 className="whitespace-pre-wrap font-mono text-sm"
                 placeholder="WOD Description"
-                disabled={isLoading}
+                disabled={isActionDisabled}
               />
               <Button onClick={handleSave} className="w-full" disabled={isActionDisabled}>
-                {isLoading ? "Saving..." : "Save WOD"}
+                {isSaving ? (
+                     <>
+                        <LoaderCircle className="animate-spin mr-2" />
+                        Saving...
+                    </>
+                ): "Save WOD"}
               </Button>
             </div>
           )}
@@ -262,3 +270,5 @@ export function FileUploader() {
     </div>
   );
 }
+
+    
