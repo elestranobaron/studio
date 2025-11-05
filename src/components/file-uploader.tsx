@@ -78,14 +78,14 @@ export function FileUploader() {
     }
   };
 
-  const performSave = (userId: string) => {
-    if (!analysisResult || !firestore) return;
+  const performSave = async (userId: string) => {
+    if (!analysisResult || !firestore || !file) return;
 
     setIsSaving(true);
     try {
+        const photoDataUri = await toBase64(file);
         const wodsCollection = collection(firestore, 'users', userId, 'wods');
         const newWodRef = doc(wodsCollection);
-        const randomImageId = Math.floor(Math.random() * 1000);
 
         const wodData: WOD = {
             id: newWodRef.id,
@@ -94,7 +94,7 @@ export function FileUploader() {
             description: analysisResult.description,
             date: format(new Date(), "yyyy-MM-dd"),
             userId: userId,
-            imageUrl: `https://picsum.photos/seed/${randomImageId}/600/400`,
+            imageUrl: photoDataUri, // Use the uploaded image data URI
             imageHint: analysisResult.imageHint,
         };
 

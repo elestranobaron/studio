@@ -24,8 +24,7 @@
         },
         "imageUrl": {
           "type": "string",
-          "description": "URL of the image of the whiteboard WOD.",
-          "format": "uri"
+          "description": "Data URI of the image of the whiteboard WOD."
         },
         "dateCreated": {
           "type": "string",
