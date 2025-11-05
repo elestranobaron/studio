@@ -1,5 +1,4 @@
 
-
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
@@ -59,6 +58,7 @@ export function TimerClient({ wod }: { wod: WOD }) {
   const [time, setTime] = useState(0);
   const [isActive, setIsActive] = useState(false);
   const [isFinished, setIsFinished] = useState(false);
+  const [finalTime, setFinalTime] = useState(0);
 
   const totalDuration = wod.duration ? wod.duration * 60 : 0;
 
@@ -86,6 +86,7 @@ export function TimerClient({ wod }: { wod: WOD }) {
   const resetTimer = useCallback(() => {
     setIsActive(false);
     setIsFinished(false);
+    setFinalTime(0);
     if (wod.type === "AMRAP" || wod.type === "EMOM") {
       setTime(totalDuration);
     } else {
@@ -107,6 +108,7 @@ export function TimerClient({ wod }: { wod: WOD }) {
   const handleFinish = () => {
     setIsActive(false);
     setIsFinished(true);
+    setFinalTime(time);
   };
 
   const renderTime = () => {
@@ -140,13 +142,13 @@ export function TimerClient({ wod }: { wod: WOD }) {
                 <CardTitle className="font-headline text-primary">{wod.name}</CardTitle>
             </CardHeader>
             <CardContent>
-                <p className="text-6xl font-bold font-mono">{formatTime(time)}</p>
+                <p className="text-6xl font-bold font-mono">{formatTime(finalTime)}</p>
                 <p className="text-muted-foreground">{wod.type === "For Time" ? "Total Time" : "Time Completed"}</p>
             </CardContent>
         </Card>
         <div className="flex gap-4">
             <Button onClick={resetTimer} size="lg"><RotateCcw className="mr-2 h-4 w-4" /> Go Again</Button>
-            <ShareModal wod={wod} finalTime={formatTime(time)} />
+            <ShareModal wod={wod} finalTime={formatTime(finalTime)} />
         </div>
          <div className="pt-8 opacity-50">
             <Logo />
