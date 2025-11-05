@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useCallback } from "react";
@@ -12,9 +13,9 @@ import type { AnalyzeWodOutput } from "@/ai/schema/wod-schema";
 import { Input } from "./ui/input";
 import { Textarea } from "./ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
-import { WodType } from "@/lib/types";
-import { addDocumentNonBlocking, useFirebase } from "@/firebase";
-import { collection } from "firebase/firestore";
+import { WodType, type WOD } from "@/lib/types";
+import { useFirebase, setDocumentNonBlocking } from "@/firebase";
+import { doc, collection } from "firebase/firestore";
 import { useUser } from "@/firebase/provider";
 
 const toBase64 = (file: File) =>
@@ -71,35 +72,32 @@ export function FileUploader() {
     }
   };
 
-  const handleSave = async () => {
-    if (!analysisResult || !firestore || !user) return;
+  const handleSave = () => {
+    if (!analysisResult || !firestore || !user || !file) return;
     
     setIsLoading(true);
     
     const wodsCollection = collection(firestore, 'users', user.uid, 'wods');
+    // Create a new document reference with a unique ID
+    const newWodRef = doc(wodsCollection);
 
-    try {
-      await addDocumentNonBlocking(wodsCollection, {
+    const wodData: WOD = {
+        id: newWodRef.id,
         ...analysisResult,
-        date: new Date().toISOString().split('T')[0], // Add current date
+        date: new Date().toISOString().split('T')[0],
         userId: user.uid,
-      });
+        imageUrl: preview || '', // Use preview which is a local URL
+    };
+    
+    // Use the non-blocking function to save the document
+    setDocumentNonBlocking(newWodRef, wodData, { merge: true });
 
-      toast({
+    toast({
         title: "WOD Saved!",
         description: "Your new WOD has been added to your dashboard.",
-      });
-      router.push("/dashboard");
-    } catch (error) {
-        console.error("Error saving WOD: ", error);
-        toast({
-            variant: "destructive",
-            title: "Save Failed",
-            description: "Could not save the WOD. Please try again.",
-        });
-    } finally {
-        setIsLoading(false);
-    }
+    });
+    router.push("/dashboard");
+    setIsLoading(false);
   };
 
   const handleRemove = () => {
@@ -208,3 +206,4 @@ export function FileUploader() {
     </div>
   );
 }
+
