@@ -4,24 +4,24 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
-    --primary: 24 96% 53%;
+    --background: 224 22% 10%; /* Very dark cool gray */
+    --foreground: 210 40% 98%;
+    --card: 224 22% 13%; /* Slightly lighter gray for cards */
+    --card-foreground: 210 40% 98%;
+    --popover: 224 22% 10%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 24 96% 53%; /* Bright, energetic orange */
     --primary-foreground: 0 0% 100%;
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 215.4 16.3% 46.9%;
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 24 90% 95%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 224 22% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 24 85% 25%; /* Darker orange for hover states */
     --accent-foreground: 24 96% 53%;
-    --destructive: 0 84.2% 60.2%;
+    --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 210 40% 98%;
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
     --ring: 24 96% 53%;
     --radius: 0.75rem;
     --chart-1: 12 76% 61%;
@@ -29,13 +29,13 @@
     --chart-3: 197 37% 24%;
     --chart-4: 43 74% 66%;
     --chart-5: 27 87% 67%;
-    --sidebar-background: 0 0% 100%;
-    --sidebar-foreground: 222.2 84% 4.9%;
+    --sidebar-background: 224 22% 10%;
+    --sidebar-foreground: 210 40% 98%;
     --sidebar-primary: 24 96% 53%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 24 90% 95%;
+    --sidebar-accent: 24 85% 25%;
     --sidebar-accent-foreground: 24 96% 53%;
-    --sidebar-border: 214.3 31.8% 91.4%;
+    --sidebar-border: 217.2 32.6% 17.5%;
     --sidebar-ring: 24 96% 53%;
   }
 
@@ -82,21 +82,4 @@
   body {
     @apply bg-background text-foreground;
   }
-}
-
-@layer utilities {
-    @keyframes logo-pulse {
-        0%, 100% {
-            transform: scale(1);
-            filter: drop-shadow(0 0 10px hsl(var(--primary) / 0.5));
-        }
-        50% {
-            transform: scale(1.05);
-            filter: drop-shadow(0 0 20px hsl(var(--primary) / 0.8));
-        }
-    }
-
-    .animate-logo-pulse {
-        animation: logo-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-    }
 }

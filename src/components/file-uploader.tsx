@@ -229,9 +229,14 @@ export function FileUploader() {
   if (isLoading) {
     return (
       <div className="w-full flex-1 flex flex-col items-center justify-center gap-4 text-center">
-        <div className="animate-logo-pulse">
-            <Logo className="w-24 h-24" />
-        </div>
+        <video
+          src="/loading-animation.mp4"
+          autoPlay
+          loop
+          muted
+          playsInline
+          className="w-48 h-48"
+        />
         <h2 className="text-2xl font-headline font-bold text-foreground">Analyzing WOD...</h2>
         <p className="text-muted-foreground">The AI is warming up. This might take a moment.</p>
       </div>
