@@ -15,9 +15,8 @@ import { Textarea } from "./ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
 import { WodType, type WOD } from "@/lib/types";
 import { useFirebase } from "@/firebase";
-import { doc, collection, query, where, getDocs } from "firebase/firestore";
+import { doc, collection, query, where, getDocs, setDoc } from "firebase/firestore";
 import { useUser, useAuth } from "@/firebase/provider";
-import { setDocumentNonBlocking } from "@/firebase/non-blocking-updates";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { signInAnonymously } from "firebase/auth";
@@ -120,7 +119,7 @@ export function FileUploader() {
         imageHint: analysisResult.imageHint,
       };
   
-      setDocumentNonBlocking(newWodRef, wodData, { merge: false });
+      await setDoc(newWodRef, wodData);
   
       toast({
         title: "WOD Saved!",
@@ -151,9 +150,6 @@ export function FileUploader() {
         setIsSaving(true);
         try {
             const userCredential = await signInAnonymously(auth);
-            // The onAuthStateChanged listener will update the user state,
-            // and we can't guarantee it will be available immediately.
-            // So we'll directly use the user from the credential for this one-off action.
             if (userCredential.user) {
                 saveWod(userCredential.user.uid);
             } else {
@@ -175,8 +171,6 @@ export function FileUploader() {
     if (user) {
         saveWod(user.uid, true);
     }
-    // If user is not logged in, the original handleSave logic will take care of it
-    // but we can assume if the dialog is open, the anonymous login already happened.
     else {
         handleSave();
     }
@@ -325,3 +319,5 @@ export function FileUploader() {
     </div>
   );
 }
+
+  
