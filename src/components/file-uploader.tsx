@@ -21,6 +21,8 @@ import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { signInAnonymously } from "firebase/auth";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "./ui/alert-dialog";
+import { errorEmitter } from "@/firebase/error-emitter";
+import { FirestorePermissionError } from "@/firebase/errors";
 
 
 const toBase64 = (file: File): Promise<string> =>
@@ -43,7 +45,6 @@ const toBase64 = (file: File): Promise<string> =>
         }
         ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
         
-        // Get data URI from canvas at reduced quality
         const dataUrl = canvas.toDataURL(file.type, 0.8); 
         resolve(dataUrl);
       };
@@ -104,61 +105,80 @@ export function FileUploader() {
 
   const performSave = async (userId: string, force: boolean = false) => {
     if (!analysisResult || !firestore || !file) return;
-    
-    setIsSaving(true);
 
+    setIsSaving(true);
+    
     try {
-      // Duplicate check logic
-      if (!force) {
-        const q = query(
-          collection(firestore, 'users', userId, 'wods'),
-          where("name", "==", analysisResult.name),
-          where("type", "==", analysisResult.type),
-          where("description", "==", analysisResult.description)
-        );
-        const querySnapshot = await getDocs(q);
-        if (!querySnapshot.empty) {
-          const existingWod = querySnapshot.docs[0].data() as WOD;
-          setDuplicateWod(existingWod);
-          setIsSaving(false); // Stop saving process
-          return; // Exit function
+        // Duplicate check logic
+        if (!force) {
+            const q = query(
+                collection(firestore, 'users', userId, 'wods'),
+                where("name", "==", analysisResult.name),
+                where("type", "==", analysisResult.type),
+                where("description", "==", analysisResult.description)
+            );
+            const querySnapshot = await getDocs(q);
+            if (!querySnapshot.empty) {
+                const existingWod = querySnapshot.docs[0].data() as WOD;
+                setDuplicateWod(existingWod);
+                setIsSaving(false); // Stop saving process
+                return; // Exit function
+            }
         }
-      }
-  
-      const photoDataUri = await toBase64(file);
-      const wodsCollection = collection(firestore, 'users', userId, 'wods');
-      const newWodRef = doc(wodsCollection);
-  
-      const wodData: WOD = {
-        id: newWodRef.id,
-        name: analysisResult.name,
-        type: analysisResult.type,
-        description: analysisResult.description,
-        date: format(new Date(), "yyyy-MM-dd"),
-        userId: userId, // Ensure userId is included
-        imageUrl: photoDataUri,
-        imageHint: analysisResult.imageHint,
-      };
-  
-      await setDoc(newWodRef, wodData);
-  
-      toast({
-        title: "WOD Saved!",
-        description: "Your new WOD has been added to your dashboard.",
-      });
-  
-      router.push("/dashboard");
-  
+
+        const photoDataUri = await toBase64(file);
+        const wodsCollection = collection(firestore, 'users', userId, 'wods');
+        const newWodRef = doc(wodsCollection);
+
+        const wodData: WOD = {
+            id: newWodRef.id,
+            name: analysisResult.name,
+            type: analysisResult.type,
+            description: analysisResult.description,
+            date: format(new Date(), "yyyy-MM-dd"),
+            userId: userId,
+            imageUrl: photoDataUri,
+            imageHint: analysisResult.imageHint,
+        };
+
+        // Use non-blocking setDoc with error catching
+        setDoc(newWodRef, wodData)
+            .then(() => {
+                toast({
+                    title: "WOD Saved!",
+                    description: "Your new WOD has been added to your dashboard.",
+                });
+                router.push("/dashboard");
+            })
+            .catch(async (serverError) => {
+                // This is the crucial part for debugging security rules
+                const permissionError = new FirestorePermissionError({
+                    path: newWodRef.path,
+                    operation: 'create',
+                    requestResourceData: wodData,
+                });
+                errorEmitter.emit('permission-error', permissionError);
+                
+                // Also show a generic toast to the user
+                toast({
+                    variant: "destructive",
+                    title: "Save Failed",
+                    description: "Could not save the WOD due to a permission issue.",
+                });
+            })
+            .finally(() => {
+                setIsSaving(false);
+                if (force) setDuplicateWod(null);
+            });
+
     } catch (error) {
-      console.error("Failed to save WOD:", error);
-      toast({
-        variant: "destructive",
-        title: "Save Failed",
-        description: "An unexpected error occurred while saving the WOD.",
-      });
-    } finally {
+        console.error("An unexpected error occurred during the save process:", error);
+        toast({
+            variant: "destructive",
+            title: "Save Failed",
+            description: "An unexpected error occurred while saving the WOD.",
+        });
         setIsSaving(false);
-        if (force) setDuplicateWod(null);
     }
   };
 
@@ -361,5 +381,3 @@ export function FileUploader() {
     </div>
   );
 }
-
-    

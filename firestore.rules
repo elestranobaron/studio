@@ -1,61 +1,47 @@
 
-/**
- * @fileoverview Firestore Security Rules for WOD management.
- *
- * Core Philosophy:
- * This ruleset enforces a strict user-ownership model, where each user has full control over their own WODs.
- *
- * Data Structure:
- * All WOD data is nested under /users/{userId}/wods/{wodId}, ensuring data isolation between users.
- *
- * Key Security Decisions:
- * - Users can only access their own WODs.
- * - WOD listing is restricted to the owner.
- *
- * Denormalization for Authorization:
- * The rules rely on the path-based userId to ensure authorization. The data within the WOD documents does not need to be read to determine ownership.
- */
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    /**
-     * @description Secures WOD documents created by a specific user.
-     * @path /users/{userId}/wods/{wodId}
-     * @allow (create) - User 'user123' creates a new WOD under /users/user123/wods/wod456.
-     * @allow (get) - User 'user123' retrieves their WOD from /users/user123/wods/wod456.
-     * @allow (update) - User 'user123' updates their WOD at /users/user123/wods/wod456.
-     * @allow (delete) - User 'user123' deletes their WOD at /users/user123/wods/wod456.
-     * @deny (create) - User 'user456' attempts to create a WOD under /users/user123/wods/wod456.
-     * @deny (get) - User 'user456' attempts to retrieve WOD from /users/user123/wods/wod456.
-     * @deny (update) - User 'user456' attempts to update WOD at /users/user123/wods/wod456.
-     * @deny (delete) - User 'user456' attempts to delete WOD at /users/user123/wods/wod456.
-     * @principle Enforces document ownership for all operations.
-     */
     match /users/{userId}/wods/{wodId} {
-      // Allow reads (get, list) and writes (create, update, delete) if the user is the owner.
-      allow read, write: if isSignedIn() && isOwner(userId);
+      allow read, write: if isSignedIn() && isOwner(userId) && isWodDocumentValid();
     }
 
     // ---- Helper functions ----
 
     /**
-     * @description Checks if the user is signed in.
-     * @return {bool} True if the user is signed in, false otherwise.
+     * Checks if the user is signed in.
      */
     function isSignedIn() {
       return request.auth != null;
     }
 
     /**
-     * @description Checks if the requesting user is the owner of the document based on the path.
-     * @param {string} userId The user ID from the path.
-     * @return {bool} True if the user is the owner, false otherwise.
+     * Checks if the requesting user is the owner of the document.
      */
     function isOwner(userId) {
       return request.auth.uid == userId;
     }
+
+    /**
+     * Validates the WOD document on create and update.
+     */
+    function isWodDocumentValid() {
+      // On create, ensure the userId in the document matches the owner's uid.
+      // Also ensure the document's id matches the ID in the path.
+      if (request.method == 'create') {
+        return request.resource.data.userId == request.auth.uid
+            && request.resource.data.id == wodId;
+      }
+      
+      // On update, prevent the user from changing the userId or the id.
+      if (request.method == 'update') {
+        return request.resource.data.userId == resource.data.userId
+            && request.resource.data.id == resource.data.id;
+      }
+      
+      // Allow get, list, delete without checking the document body.
+      return true;
+    }
   }
 }
-
-    
