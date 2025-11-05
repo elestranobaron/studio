@@ -44,50 +44,58 @@ export function useDoc<T = any>(
   type StateDataType = WithId<T> | null;
 
   const [data, setData] = useState<StateDataType>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  // isLoading is now true if we have a ref but no data/error yet.
+  const [isLoading, setIsLoading] = useState<boolean>(!!memoizedDocRef);
   const [error, setError] = useState<FirestoreError | Error | null>(null);
 
   useEffect(() => {
+    // If there's no reference, we're not loading and have no data/error.
     if (!memoizedDocRef) {
-      setData(null);
       setIsLoading(false);
+      setData(null);
       setError(null);
       return;
     }
 
+    // We have a reference, so we are now loading. Clear previous state.
     setIsLoading(true);
     setError(null);
-    // Optional: setData(null); // Clear previous data instantly
+    // DO NOT clear data here to prevent flickering. The new data/error state
+    // will overwrite it on the first snapshot event.
 
     const unsubscribe = onSnapshot(
       memoizedDocRef,
       (snapshot: DocumentSnapshot<DocumentData>) => {
+        // We received a snapshot, so loading is complete.
+        setIsLoading(false);
         if (snapshot.exists()) {
           setData({ ...(snapshot.data() as T), id: snapshot.id });
         } else {
-          // Document does not exist
+          // Document does not exist. This is a valid state, not an error.
           setData(null);
         }
-        setError(null); // Clear any previous error on successful snapshot (even if doc doesn't exist)
-        setIsLoading(false);
+        setError(null); // Clear any previous error.
       },
       (error: FirestoreError) => {
+        // An error occurred (e.g., permission denied).
+        setIsLoading(false);
+        setData(null);
+        
         const contextualError = new FirestorePermissionError({
           operation: 'get',
           path: memoizedDocRef.path,
-        })
+        });
 
-        setError(contextualError)
-        setData(null)
-        setIsLoading(false)
-
-        // trigger global error propagation
+        setError(contextualError);
+        
+        // Globally emit the rich, contextual error for debugging overlays.
         errorEmitter.emit('permission-error', contextualError);
       }
     );
 
+    // Cleanup subscription on unmount or if the reference changes.
     return () => unsubscribe();
-  }, [memoizedDocRef]); // Re-run if the memoizedDocRef changes.
+  }, [memoizedDocRef]);
 
   return { data, isLoading, error };
 }
