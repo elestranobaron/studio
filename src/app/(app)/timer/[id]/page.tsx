@@ -6,16 +6,17 @@ import { TimerClient } from '@/components/timer-client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useDoc, useFirebase, useMemoFirebase, useUser } from '@/firebase';
+import { useDoc, useFirebase, useMemoFirebase } from '@/firebase';
 import { doc } from 'firebase/firestore';
 import type { WOD } from '@/lib/types';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useUser } from '@/firebase/provider';
 
 export default function TimerPage() {
   const params = useParams();
   const { id } = params;
   const { firestore } = useFirebase();
-  const { user } = useUser();
+  const { user, isUserLoading } = useUser();
 
   const wodRef = useMemoFirebase(() => {
     if (!firestore || !user || typeof id !== 'string') return null;
@@ -24,7 +25,7 @@ export default function TimerPage() {
 
   const { data: wod, isLoading } = useDoc<WOD>(wodRef);
 
-  if (isLoading) {
+  if (isLoading || isUserLoading) {
     return (
        <div className="relative flex flex-col items-center justify-center h-screen bg-background p-4">
          <div className="grid lg:grid-cols-2 gap-16 items-center w-full max-w-6xl">
