@@ -1,0 +1,77 @@
+{
+  "entities": {
+    "Wod": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Wod",
+      "type": "object",
+      "description": "Represents a Workout of the Day (WOD) in CrossFit.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the WOD entity."
+        },
+        "name": {
+          "type": "string",
+          "description": "Name or title of the WOD."
+        },
+        "description": {
+          "type": "string",
+          "description": "Detailed description of the WOD, including exercises, sets, and reps."
+        },
+        "wodType": {
+          "type": "string",
+          "description": "Type of WOD (e.g., AMRAP, For Time, EMOM)."
+        },
+        "imageUrl": {
+          "type": "string",
+          "description": "URL of the image of the whiteboard WOD.",
+          "format": "uri"
+        },
+        "dateCreated": {
+          "type": "string",
+          "description": "Date and time when the WOD was created.",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "description",
+        "wodType",
+        "imageUrl",
+        "dateCreated"
+      ]
+    }
+  },
+  "auth": {
+    "providers": [
+      "password",
+      "anonymous"
+    ]
+  },
+  "firestore": {
+    "structure": [
+      {
+        "path": "/users/{userId}/wods/{wodId}",
+        "definition": {
+          "entityName": "Wod",
+          "schema": {
+            "$ref": "#/backend/entities/Wod"
+          },
+          "description": "Stores WODs created by a specific user. Access is restricted to the owner (user identified by userId).",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The unique identifier of the user who created the WOD."
+            },
+            {
+              "name": "wodId",
+              "description": "The unique identifier of the WOD."
+            }
+          ]
+        }
+      }
+    ],
+    "reasoning": "The data structure is designed to securely store and manage WODs (Workouts of the Day) for CrossFit users.  It leverages path-based ownership for user-created WODs and ensures authorization independence by avoiding `get()` calls in security rules. The structure is segregated to maintain a homogeneous security posture within each collection. This structure supports secure `list` operations (QAPs) using path-based ownership and simplifies security rules.\n\nAuthorization Independence: Authorization independence is achieved by relying on path-based ownership (`/users/{userId}/wods/{wodId}`). The security rules can directly verify if the requesting user ID matches the user ID in the path without needing to fetch any data from other documents using `get()`. This allows for atomic operations.\n\nQAPs (Rules Are Not Filters): The path-based ownership structure inherently supports secure `list` operations. Security rules can efficiently filter based on the `userId` in the path, ensuring that users can only list WODs they own. Because authorization can be determined solely from the path, there's no need to filter documents based on their content, which is a key principle of QAPs."
+  }
+}
