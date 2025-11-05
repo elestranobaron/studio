@@ -84,9 +84,9 @@ export function FileUploader() {
     const wodData: WOD = {
         id: newWodRef.id,
         ...analysisResult,
-        date: new Date().toISOString().split('T')[0],
+        date: new Date().toISOString(),
         userId: user.uid,
-        imageUrl: preview || '', // Use preview which is a local URL
+        imageUrl: preview || '', // Use preview which is a local URL for display, but you might want to upload it
     };
     
     // Use the non-blocking function to save the document
@@ -96,8 +96,10 @@ export function FileUploader() {
         title: "WOD Saved!",
         description: "Your new WOD has been added to your dashboard.",
     });
-    router.push("/dashboard");
+
+    // Reset loading state and navigate
     setIsLoading(false);
+    router.push("/dashboard");
   };
 
   const handleRemove = () => {
