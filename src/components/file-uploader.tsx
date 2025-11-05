@@ -204,13 +204,14 @@ export function FileUploader() {
 
 
   const handleForceSave = async () => {
-    setDuplicateWod(null);
     if (user) {
         await performSave(user.uid, true);
     } else if (auth) {
         setIsSaving(true);
         initiateAnonymousSignIn(auth);
-        // The useEffect will handle saving after login.
+        // The useEffect will handle saving after login. We can rely on it
+        // and just close the dialog.
+        setDuplicateWod(null);
     }
   };
 
@@ -226,7 +227,7 @@ export function FileUploader() {
 
   return (
     <div className="w-full max-w-2xl mx-auto">
-      <AlertDialog open={!!duplicateWod} onOpenChange={() => setDuplicateWod(null)}>
+      <AlertDialog open={!!duplicateWod} onOpenChange={(open) => !open && setDuplicateWod(null)}>
         <AlertDialogContent>
             <AlertDialogHeader>
                 <AlertDialogTitle>Duplicate WOD Detected</AlertDialogTitle>
@@ -362,3 +363,5 @@ export function FileUploader() {
     </div>
   );
 }
+
+    
