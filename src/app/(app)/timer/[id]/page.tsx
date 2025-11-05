@@ -19,6 +19,9 @@ export default function TimerPage() {
   const { user, isUserLoading } = useUser();
 
   const wodRef = useMemoFirebase(() => {
+    // CRITICAL FIX: Do not generate a ref until both firestore AND the user are available.
+    // This prevents a race condition where the hook tries to fetch data before the user
+    // is authenticated, leading to a permission denied error that looks like a 404.
     if (!firestore || !user || typeof id !== 'string') return null;
     return doc(firestore, 'users', user.uid, 'wods', id);
   }, [firestore, user, id]);
@@ -51,6 +54,7 @@ export default function TimerPage() {
     )
   }
 
+  // After loading, if there's still no WOD, then it's a true 404.
   if (!wod && !isLoading) {
     notFound();
   }
