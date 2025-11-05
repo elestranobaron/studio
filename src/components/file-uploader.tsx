@@ -159,11 +159,8 @@ export function FileUploader() {
                 });
                 errorEmitter.emit('permission-error', permissionError);
                 
-                toast({
-                    variant: "destructive",
-                    title: "Save Failed",
-                    description: "Could not save the WOD due to a permission issue. Check the error overlay for details.",
-                });
+                // We don't show a toast here because the error listener will throw
+                // which is a better DX.
             })
             .finally(() => {
                 setIsSaving(false);
