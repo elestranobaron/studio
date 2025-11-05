@@ -4,9 +4,9 @@ import Image from "next/image";
 export function Logo({ className }: { className?: string }) {
   return (
     <div className={cn("flex items-center gap-2", className)}>
-      {/* Utilisation de votre fichier logo depuis le dossier /public */}
+      {/* Utilisation de votre fichier logo .jpg depuis le dossier /public */}
       <Image 
-        src="/logo.svg" 
+        src="/logo.jpg" 
         alt="WODBurner Logo" 
         width={32} 
         height={32} 
