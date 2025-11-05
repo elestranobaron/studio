@@ -5,21 +5,29 @@ import { useDropzone } from "react-dropzone";
 import Image from "next/image";
 import { UploadCloud, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
+import { analyzeWod, AnalyzeWodOutput } from "@/ai/flows/analyze-wod-flow";
+import { Input } from "./ui/input";
+import { Textarea } from "./ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
+import { WodType } from "@/lib/types";
 
-const mockAnalysisResult = `FRAN
-
-21-15-9 Reps For Time:
-- Thrusters (95/65 lb)
-- Pull-ups`;
+const toBase64 = (file: File) =>
+  new Promise<string>((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result as string);
+    reader.onerror = (error) => reject(error);
+  });
 
 export function FileUploader() {
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [analysisResult, setAnalysisResult] = useState<string | null>(null);
+  const [analysisResult, setAnalysisResult] = useState<AnalyzeWodOutput | null>(
+    null
+  );
   const { toast } = useToast();
   const router = useRouter();
 
@@ -38,15 +46,29 @@ export function FileUploader() {
     multiple: false,
   });
 
-  const handleAnalyze = () => {
+  const handleAnalyze = async () => {
+    if (!file) return;
     setIsLoading(true);
-    setTimeout(() => {
-      setAnalysisResult(mockAnalysisResult);
+    try {
+      const photoDataUri = await toBase64(file);
+      const result = await analyzeWod({ photoDataUri });
+      setAnalysisResult(result);
+    } catch (error) {
+      console.error(error);
+      toast({
+        variant: "destructive",
+        title: "Analysis Failed",
+        description: "Could not analyze the WOD image. Please try again.",
+      });
+    } finally {
       setIsLoading(false);
-    }, 1500);
+    }
   };
 
   const handleSave = () => {
+    // This is where you would save the new WOD.
+    // For now, we just show a toast and redirect.
+    console.log("Saving WOD:", analysisResult);
     toast({
       title: "WOD Saved!",
       description: "Your new WOD has been added to your dashboard.",
@@ -101,17 +123,54 @@ export function FileUploader() {
           </div>
 
           {!analysisResult ? (
-            <Button onClick={handleAnalyze} disabled={isLoading} className="w-full">
+            <Button
+              onClick={handleAnalyze}
+              disabled={isLoading}
+              className="w-full"
+            >
               {isLoading ? "Analyzing..." : "Analyze WOD"}
             </Button>
           ) : (
             <div className="space-y-4">
-              <h3 className="text-lg font-semibold font-headline">Analysis Result</h3>
+              <h3 className="text-lg font-semibold font-headline">
+                Analysis Result
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                 <Input
+                  value={analysisResult.name}
+                  onChange={(e) =>
+                    setAnalysisResult({ ...analysisResult, name: e.target.value })
+                  }
+                  placeholder="WOD Name"
+                />
+                 <Select
+                  value={analysisResult.type}
+                  onValueChange={(value: WodType) => setAnalysisResult({...analysisResult, type: value})}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="WOD Type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="For Time">For Time</SelectItem>
+                    <SelectItem value="AMRAP">AMRAP</SelectItem>
+                    <SelectItem value="EMOM">EMOM</SelectItem>
+                    <SelectItem value="Tabata">Tabata</SelectItem>
+                    <SelectItem value="Other">Other</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
               <Textarea
-                value={analysisResult}
-                onChange={(e) => setAnalysisResult(e.target.value)}
-                rows={8}
+                value={analysisResult.description}
+                onChange={(e) =>
+                  setAnalysisResult({
+                    ...analysisResult,
+                    description: e.target.value,
+                  })
+                }
+                rows={10}
                 className="font-mono text-sm"
+                placeholder="WOD Description"
               />
               <Button onClick={handleSave} className="w-full">
                 Save WOD
