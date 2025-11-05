@@ -1,3 +1,4 @@
+
 import Link from "next/link";
 import {
   Card,
@@ -47,8 +48,7 @@ export default function TimersPage() {
       <main className="flex-1 p-4 md:p-6">
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {timerTypes.map((timer) => (
-            <Link href={timer.href} key={timer.name} legacyBehavior passHref>
-              <a className="block h-full">
+            <Link href={timer.href} key={timer.name} className="block h-full">
                 <Card className="h-full flex flex-col justify-center text-center p-6 hover:border-primary hover:shadow-xl transition-all">
                   <CardHeader>
                     <timer.icon className="h-12 w-12 mx-auto text-primary" />
@@ -60,7 +60,6 @@ export default function TimersPage() {
                     </CardDescription>
                   </CardHeader>
                 </Card>
-              </a>
             </Link>
           ))}
         </div>
