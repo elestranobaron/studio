@@ -81,10 +81,9 @@ export function FileUploader() {
     }
   };
 
-  const saveWod = async (userId: string, force: boolean = false) => {
+  const performSave = async (userId: string, force: boolean = false) => {
     if (!analysisResult || !firestore || !file) return;
   
-    setIsSaving(true);
     try {
       // Check for duplicates only if not forcing
       if (!force) {
@@ -98,8 +97,8 @@ export function FileUploader() {
         if (!querySnapshot.empty) {
           const existingWod = querySnapshot.docs[0].data() as WOD;
           setDuplicateWod(existingWod);
-          setIsSaving(false);
-          return; // Stop execution and show dialog
+          setIsSaving(false); // Stop saving spinner, dialog will show
+          return;
         }
       }
   
@@ -136,43 +135,69 @@ export function FileUploader() {
         description: "An unexpected error occurred while saving the WOD.",
       });
     } finally {
-      setIsSaving(false);
-      setDuplicateWod(null); // Close dialog
+        // This will only be called if the save operation completes or fails,
+        // not if the duplicate dialog is shown.
+      if (isSaving) {
+          setIsSaving(false);
+      }
+      setDuplicateWod(null);
     }
   };
 
   const handleSave = async () => {
     if (!analysisResult) return;
-
+    setIsSaving(true);
+  
     if (user) {
-        saveWod(user.uid);
+      await performSave(user.uid);
     } else if (auth) {
-        setIsSaving(true);
-        try {
-            const userCredential = await signInAnonymously(auth);
-            if (userCredential.user) {
-                saveWod(userCredential.user.uid);
-            } else {
-                 throw new Error("Anonymous sign-in did not return a user.");
-            }
-        } catch(error) {
-            console.error("Anonymous sign-in failed:", error);
-            toast({
-                variant: "destructive",
-                title: "Authentication Failed",
-                description: "Could not create a temporary profile to save your WOD. Please try again.",
-            });
-            setIsSaving(false);
+      try {
+        const userCredential = await signInAnonymously(auth);
+        if (userCredential.user) {
+          await performSave(userCredential.user.uid);
+        } else {
+          throw new Error("Anonymous sign-in did not return a user.");
         }
+      } catch (error) {
+        console.error("Anonymous sign-in or save failed:", error);
+        toast({
+          variant: "destructive",
+          title: "Authentication Failed",
+          description: "Could not create a temporary profile to save your WOD. Please try again.",
+        });
+        setIsSaving(false); // Ensure spinner stops on failure
+      }
+    } else {
+        toast({
+            variant: "destructive",
+            title: "Save Failed",
+            description: "Authentication service is not available.",
+        });
+        setIsSaving(false);
     }
   };
 
-  const handleForceSave = () => {
+  const handleForceSave = async () => {
+    setDuplicateWod(null); // Close dialog first
+    setIsSaving(true);
     if (user) {
-        saveWod(user.uid, true);
-    }
-    else {
-        handleSave();
+      await performSave(user.uid, true);
+    } else if (auth) {
+        // This case is unlikely if they already tried to save once, but good to handle
+        try {
+            const userCredential = await signInAnonymously(auth);
+            if(userCredential.user) {
+                await performSave(userCredential.user.uid, true);
+            }
+        } catch(error) {
+            console.error("Anonymous sign-in or force save failed:", error);
+            toast({
+                variant: "destructive",
+                title: "Save Failed",
+                description: "Could not save the WOD. Please try again.",
+            });
+            setIsSaving(false);
+        }
     }
   };
 
@@ -319,5 +344,3 @@ export function FileUploader() {
     </div>
   );
 }
-
-  
