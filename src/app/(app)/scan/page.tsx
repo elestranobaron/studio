@@ -28,7 +28,7 @@ export default function ScanPage() {
                 <div className="flex items-center gap-4">
                     <SidebarTrigger className="md:hidden" />
                     <h1 className="text-2xl font-bold tracking-tight font-headline md:text-3xl">
-                        Scan WOD
+                        Scanner un WOD
                     </h1>
                 </div>
                 <Button onClick={handleManualAddClick} variant="outline">

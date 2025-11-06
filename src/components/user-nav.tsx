@@ -29,7 +29,7 @@ export function UserNav() {
                     <SidebarMenuItem>
                         <SidebarMenuButton disabled>
                             <LoaderCircle className="animate-spin" />
-                            <span>Logging in...</span>
+                            <span>Chargement...</span>
                         </SidebarMenuButton>
                     </SidebarMenuItem>
                 </SidebarMenu>
@@ -45,7 +45,7 @@ export function UserNav() {
                 <SidebarMenuItem>
                     <SidebarMenuButton onClick={handleLogin}>
                         <LogIn />
-                        <span>Log in</span>
+                        <span>Se connecter</span>
                     </SidebarMenuButton>
                 </SidebarMenuItem>
             </SidebarMenu>
@@ -57,18 +57,18 @@ export function UserNav() {
     <div>
         <SidebarMenu>
             <SidebarMenuItem>
-                <SidebarMenuButton asChild tooltip={{children: "Settings"}}>
+                <SidebarMenuButton asChild tooltip={{children: "Paramètres"}}>
                     <a href="#">
                         <Settings />
-                        <span>Settings</span>
+                        <span>Paramètres</span>
                     </a>
                 </SidebarMenuButton>
             </SidebarMenuItem>
             <SidebarMenuItem>
-                <SidebarMenuButton asChild tooltip={{children: "Log out"}} onClick={() => auth?.signOut()}>
+                <SidebarMenuButton asChild tooltip={{children: "Déconnexion"}} onClick={() => auth?.signOut()}>
                     <a href="#">
                         <LogOut />
-                        <span>Log out</span>
+                        <span>Déconnexion</span>
                     </a>
                 </SidebarMenuButton>
             </SidebarMenuItem>
@@ -84,10 +84,10 @@ export function UserNav() {
             </Avatar>
             <div className="flex flex-col truncate">
                 <span className="font-semibold text-sm text-sidebar-foreground">
-                    {user.isAnonymous ? 'Anonymous User' : (user.email || 'User')}
+                    {user.isAnonymous ? 'Utilisateur Anonyme' : (user.email || 'Utilisateur')}
                 </span>
                 <span className="text-xs text-sidebar-foreground/70">
-                    {user.isAnonymous ? 'Temporary Profile' : user.email}
+                    {user.isAnonymous ? 'Profil temporaire' : user.email}
                 </span>
             </div>
         </div>

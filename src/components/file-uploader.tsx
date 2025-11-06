@@ -97,8 +97,8 @@ export function FileUploader() {
       console.error("Analysis Error:", error);
       toast({
         variant: "destructive",
-        title: "Analysis Failed",
-        description: "Could not analyze the WOD image. Please try again.",
+        title: "Échec de l'analyse",
+        description: "L'image du WOD n'a pas pu être analysée. Veuillez réessayer.",
       });
     } finally {
       setIsLoading(false);
@@ -148,8 +148,8 @@ export function FileUploader() {
         setDoc(newWodRef, wodData)
             .then(() => {
                 toast({
-                    title: "WOD Saved!",
-                    description: "Your new WOD has been added to your dashboard.",
+                    title: "WOD Enregistré!",
+                    description: "Votre nouveau WOD a été ajouté à votre tableau de bord.",
                 });
                 router.push("/dashboard");
             })
@@ -170,8 +170,8 @@ export function FileUploader() {
         console.error("An unexpected error occurred during the save process:", error);
         toast({
             variant: "destructive",
-            title: "Save Failed",
-            description: "An unexpected error occurred while saving the WOD.",
+            title: "Échec de la Sauvegarde",
+            description: "Une erreur inattendue est survenue lors de la sauvegarde du WOD.",
         });
         setIsSaving(false);
     }
@@ -191,8 +191,8 @@ export function FileUploader() {
     } else {
         toast({
             variant: "destructive",
-            title: "Save Failed",
-            description: "Authentication service is not available.",
+            title: "Échec de la Sauvegarde",
+            description: "Le service d'authentification n'est pas disponible.",
         });
     }
   };
@@ -238,8 +238,8 @@ export function FileUploader() {
           playsInline
           className="w-48 h-48 rounded-lg"
         />
-        <h2 className="text-2xl font-headline font-bold text-foreground">Analyzing WOD...</h2>
-        <p className="text-muted-foreground">The AI is warming up. This might take a moment.</p>
+        <h2 className="text-2xl font-headline font-bold text-foreground">Analyse du WOD...</h2>
+        <p className="text-muted-foreground">L'IA s'échauffe. Cela peut prendre un moment.</p>
       </div>
     );
   }
@@ -250,21 +250,21 @@ export function FileUploader() {
       <AlertDialog open={!!duplicateWod} onOpenChange={(open) => !open && setDuplicateWod(null)}>
         <AlertDialogContent>
             <AlertDialogHeader>
-                <AlertDialogTitle>Duplicate WOD Detected</AlertDialogTitle>
+                <AlertDialogTitle>WOD Dupliqué Détecté</AlertDialogTitle>
                 <AlertDialogDescription>
-                    This workout looks identical to a WOD you've already saved.
+                    Cet entraînement semble identique à un WOD que vous avez déjà enregistré.
                     <br/><br/>
                     <div className="p-4 border rounded-md bg-muted/50">
                         <p className="font-bold">{duplicateWod?.name}</p>
-                        <p className="text-sm text-muted-foreground">{duplicateWod?.date ? `Saved on ${format(new Date(duplicateWod.date), 'PPP')}` : ''}</p>
+                        <p className="text-sm text-muted-foreground">{duplicateWod?.date ? `Enregistré le ${format(new Date(duplicateWod.date), 'PPP')}` : ''}</p>
                     </div>
                     <br/>
-                    Do you still want to save this new one?
+                    Voulez-vous quand même enregistrer ce nouveau?
                 </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
-                <AlertDialogCancel onClick={() => setDuplicateWod(null)}>Cancel</AlertDialogCancel>
-                <AlertDialogAction onClick={handleForceSave}>Save Anyway</AlertDialogAction>
+                <AlertDialogCancel onClick={() => setDuplicateWod(null)}>Annuler</AlertDialogCancel>
+                <AlertDialogAction onClick={handleForceSave}>Enregistrer quand même</AlertDialogAction>
             </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
@@ -281,11 +281,11 @@ export function FileUploader() {
             <UploadCloud className="w-16 h-16 mx-auto text-primary" />
             <p className="mt-4 text-lg font-semibold text-foreground">
             {isDragActive
-                ? "Drop the image here..."
-                : "Drag & drop your WOD image, or click to select"}
+                ? "Déposez l'image ici..."
+                : "Glissez-déposez l'image de votre WOD, ou cliquez pour sélectionner"}
             </p>
             <p className="mt-1 text-sm text-muted-foreground">
-            PNG, JPG, or GIF (max 5MB)
+            PNG, JPG, ou GIF (max 5MB)
             </p>
           </div>
         </div>
@@ -316,12 +316,12 @@ export function FileUploader() {
               disabled={isActionDisabled}
               className="w-full"
             >
-              Analyze WOD
+              Analyser le WOD
             </Button>
           ) : (
             <div className="space-y-4">
               <h3 className="text-lg font-semibold font-headline">
-                Analysis Result
+                Résultat de l'analyse
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                  <Input
@@ -329,7 +329,7 @@ export function FileUploader() {
                   onChange={(e) =>
                     setAnalysisResult({ ...analysisResult, name: e.target.value })
                   }
-                  placeholder="WOD Name"
+                  placeholder="Nom du WOD"
                   disabled={isActionDisabled}
                 />
                  <Select
@@ -338,7 +338,7 @@ export function FileUploader() {
                   disabled={isActionDisabled}
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder="WOD Type" />
+                    <SelectValue placeholder="Type de WOD" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="For Time">For Time</SelectItem>
@@ -356,7 +356,7 @@ export function FileUploader() {
                     onChange={(e) =>
                         setAnalysisResult({ ...analysisResult, duration: e.target.value ? parseInt(e.target.value) : undefined })
                     }
-                    placeholder="Duration (minutes)"
+                    placeholder="Durée (minutes)"
                     disabled={isActionDisabled}
                     />
                </div>
@@ -371,16 +371,16 @@ export function FileUploader() {
                 }
                 rows={10}
                 className="whitespace-pre-wrap font-mono text-sm"
-                placeholder="WOD Description"
+                placeholder="Description du WOD"
                 disabled={isActionDisabled}
               />
               <Button onClick={handleSave} className="w-full" disabled={isActionDisabled}>
                 {isSaving ? (
                      <>
                         <LoaderCircle className="animate-spin mr-2" />
-                        Saving...
+                        Sauvegarde en cours...
                     </>
-                ): "Save WOD"}
+                ): "Enregistrer le WOD"}
               </Button>
             </div>
           )}

@@ -4,12 +4,12 @@
 import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth, useUser } from '@/firebase/provider';
-import { sendSignInLinkToEmail, isSignInWithEmailLink, signInWithEmailLink } from 'firebase/auth';
+import { sendSignInLinkToEmail, isSignInWithEmailLink, signInWithEmailLink, linkWithCredential, EmailAuthProvider } from 'firebase/auth';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
-import { LoaderCircle, CheckCircle, Barbell, Archive, LineChart } from 'lucide-react';
+import { LoaderCircle, CheckCircle, Dumbbell, Archive, LineChart } from 'lucide-react';
 import { Logo } from '@/components/icons';
 
 const actionCodeSettings = {
@@ -26,47 +26,76 @@ export default function LoginPage() {
     const router = useRouter();
     const { toast } = useToast();
     const searchParams = useSearchParams();
-    const { user } = useUser();
+    const { user, isUserLoading } = useUser();
 
+    // If user is already permanent, redirect to dashboard
     useEffect(() => {
-        if (user) {
+        if (user && !user.isAnonymous) {
             router.push('/dashboard');
         }
     }, [user, router]);
     
+    // This effect handles the "magic link" click
     useEffect(() => {
+        // Run only when auth is available and user isn't fully loaded yet
+        if (!auth || isUserLoading) return;
+
         const href = window.location.href;
         if (isSignInWithEmailLink(auth, href)) {
             let emailFromStorage = window.localStorage.getItem('emailForSignIn');
             if (!emailFromStorage) {
                 // If the user opens the link on a different device, they must provide their email.
-                emailFromStorage = window.prompt('Please provide your email for confirmation');
+                emailFromStorage = window.prompt('Veuillez fournir votre email pour la confirmation');
             }
+
             if(emailFromStorage) {
-                signInWithEmailLink(auth, emailFromStorage, href)
-                    .then(() => {
-                        window.localStorage.removeItem('emailForSignIn');
-                        toast({
-                            title: 'Connexion réussie!',
-                            description: 'Vous êtes maintenant connecté.',
+                // If there's an anonymous user, link the new credential. Otherwise, just sign in.
+                if (auth.currentUser && auth.currentUser.isAnonymous) {
+                    const credential = EmailAuthProvider.credentialWithLink(emailFromStorage, href);
+                    linkWithCredential(auth.currentUser, credential)
+                        .then(() => {
+                            window.localStorage.removeItem('emailForSignIn');
+                            toast({
+                                title: 'Compte mis à jour !',
+                                description: 'Votre compte est maintenant permanent. Vos WODs sont sauvegardés !',
+                            });
+                            router.push('/dashboard');
+                        })
+                        .catch((error) => {
+                             toast({
+                                variant: 'destructive',
+                                title: 'Erreur de liaison',
+                                description: "Cet email est peut-être déjà utilisé par un autre compte.",
+                            });
+                            setIsCheckingLink(false);
                         });
-                        router.push('/dashboard');
-                    })
-                    .catch((error) => {
-                        toast({
-                            variant: 'destructive',
-                            title: 'Erreur de connexion',
-                            description: 'Le lien est peut-être invalide ou a expiré.',
+                } else {
+                    // Standard sign-in
+                    signInWithEmailLink(auth, emailFromStorage, href)
+                        .then(() => {
+                            window.localStorage.removeItem('emailForSignIn');
+                            toast({
+                                title: 'Connexion réussie!',
+                                description: 'Vous êtes maintenant connecté.',
+                            });
+                            router.push('/dashboard');
+                        })
+                        .catch(() => {
+                            toast({
+                                variant: 'destructive',
+                                title: 'Erreur de connexion',
+                                description: 'Le lien est peut-être invalide ou a expiré.',
+                            });
+                            setIsCheckingLink(false);
                         });
-                        setIsCheckingLink(false);
-                    });
+                }
             } else {
                  setIsCheckingLink(false);
             }
         } else {
             setIsCheckingLink(false);
         }
-    }, [auth, router, toast, searchParams]);
+    }, [auth, isUserLoading, router, toast]);
 
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -92,7 +121,7 @@ export default function LoginPage() {
         }
     };
 
-    if (isCheckingLink || user) {
+    if (isCheckingLink || (user && !user.isAnonymous)) {
         return (
             <div className="flex h-screen w-full flex-col items-center justify-center gap-4">
                 <LoaderCircle className="h-12 w-12 animate-spin text-primary" />
@@ -111,7 +140,7 @@ export default function LoginPage() {
                     <div className="space-y-4 mt-8 text-left">
                         <div className="flex items-start gap-4">
                             <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 text-primary">
-                                <Barbell className="h-5 w-5"/>
+                                <Dumbbell className="h-5 w-5"/>
                             </div>
                             <div>
                                 <h3 className="font-semibold">Création Manuelle</h3>
@@ -162,7 +191,7 @@ export default function LoginPage() {
                                 />
                                 <Button type="submit" className="w-full" disabled={isLoading}>
                                     {isLoading ? <LoaderCircle className="animate-spin" /> : 'Envoyer le lien magique'}
-                                </Button>
+                                 </Button>
                             </form>
                         )}
                     </CardContent>
