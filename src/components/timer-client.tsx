@@ -11,7 +11,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from "@/components/ui/dialog";
 import type { WOD } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { Logo } from "./icons";
@@ -34,6 +34,9 @@ function ShareModal({ wod, finalTime }: { wod: WOD; finalTime: string }) {
             <DialogContent className="sm:max-w-md">
                 <DialogHeader>
                     <DialogTitle className="font-headline">Share your achievement!</DialogTitle>
+                     <DialogDescription>
+                        Take a screenshot of your result to share it on social media.
+                    </DialogDescription>
                 </DialogHeader>
                 <div className="p-4 bg-background rounded-lg border my-4">
                     <h3 className="font-headline text-primary text-2xl">{wod.name}</h3>
@@ -108,7 +111,7 @@ export function TimerClient({ wod }: { wod: WOD }) {
   const handleFinish = () => {
     setIsActive(false);
     setIsFinished(true);
-    setFinalTime(time);
+    setFinalTime(wod.type === "For Time" ? time : totalDuration - time);
   };
 
   const renderTime = () => {

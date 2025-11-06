@@ -116,7 +116,7 @@ export default function NewWodPage() {
                             <br/><br/>
                             <div className="p-4 border rounded-md bg-muted/50">
                                 <p className="font-bold">{duplicateWod?.name}</p>
-                                <p className="text-sm text-muted-foreground">{duplicateWod?.date ? `Enregistré le ${format(new Date(duplicateWod.date), 'PPP', { locale: require('date-fns/locale/fr') })}` : ''}</p>
+                                <p className="text-sm text-muted-foreground">{duplicateWod?.date ? `Enregistré le ${format(new Date(duplicateWod.date), 'PPP')}` : ''}</p>
                             </div>
                             <br/>
                             Voulez-vous quand même enregistrer ce nouveau?
