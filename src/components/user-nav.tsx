@@ -1,6 +1,6 @@
+
 'use client';
 
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   SidebarMenu,
   SidebarMenuItem,
@@ -8,18 +8,17 @@ import {
 } from "@/components/ui/sidebar";
 import { LogIn, LogOut, Settings, User as UserIcon, LoaderCircle } from "lucide-react";
 import { useUser } from "@/firebase";
-import { Skeleton } from "./ui/skeleton";
-import { initiateAnonymousSignIn } from "@/firebase/non-blocking-login";
 import { useAuth } from "@/firebase/provider";
+import { useRouter } from "next/navigation";
+import { Avatar, AvatarImage, AvatarFallback } from "./ui/avatar";
 
 export function UserNav() {
   const { user, isUserLoading } = useUser();
   const auth = useAuth();
+  const router = useRouter();
 
   const handleLogin = () => {
-    if (auth) {
-      initiateAnonymousSignIn(auth);
-    }
+    router.push('/login');
   };
   
   if(isUserLoading) {
@@ -85,7 +84,7 @@ export function UserNav() {
             </Avatar>
             <div className="flex flex-col truncate">
                 <span className="font-semibold text-sm text-sidebar-foreground">
-                    {user.isAnonymous ? 'Anonymous User' : (user.displayName || 'User')}
+                    {user.isAnonymous ? 'Anonymous User' : (user.email || 'User')}
                 </span>
                 <span className="text-xs text-sidebar-foreground/70">
                     {user.isAnonymous ? 'Temporary Profile' : user.email}
