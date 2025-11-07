@@ -1,3 +1,4 @@
+
 'use client';
 
 import Link from 'next/link';
@@ -70,6 +71,11 @@ export default function TimerPage() {
     notFound();
   }
 
+  // Handle both old (string) and new (array) description formats
+  const descriptionSections = Array.isArray(wod?.description)
+    ? wod.description
+    : [{ title: "Workout", content: wod?.description || "" }];
+
   return wod ? (
     <div className="relative flex flex-col items-center justify-center h-screen bg-background p-4 overflow-hidden">
         {/* Background Image */}
@@ -105,13 +111,13 @@ export default function TimerPage() {
                         </SheetDescription>
                     </SheetHeader>
                     <div className="py-4 space-y-6">
-                        {wod.description.map((section, index) => (
+                        {descriptionSections.map((section, index) => (
                             <div key={index}>
                                 <h4 className="font-headline text-lg text-foreground mb-2">{section.title}</h4>
                                 <p className="whitespace-pre-wrap text-muted-foreground text-base">
                                     {section.content}
                                 </p>
-                                {index < wod.description.length - 1 && <Separator className="mt-6" />}
+                                {index < descriptionSections.length - 1 && <Separator className="mt-6" />}
                             </div>
                         ))}
                     </div>
