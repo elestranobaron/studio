@@ -33,8 +33,10 @@ export function WodCard({ wod }: { wod: WOD }) {
     
     const formattedDate = wod.date ? format(new Date(wod.date), "PPP") : "No date";
 
-    // Create a flat string from the structured description for the preview
-    const flatDescription = wod.description.map(section => section.content).join("\n");
+    // Create a flat string from the description, supporting both old and new formats.
+    const flatDescription = Array.isArray(wod.description)
+      ? wod.description.map(section => section.content).join("\n")
+      : wod.description;
 
   return (
     <Card className="flex flex-col overflow-hidden transition-all duration-300 ease-in-out hover:shadow-2xl hover:shadow-primary/20 hover:-translate-y-1">

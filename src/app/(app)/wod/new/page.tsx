@@ -45,7 +45,7 @@ export default function NewWodPage() {
             const wodsCollection = collection(firestore, 'users', user.uid, 'wods');
             
             // For a manually created WOD, the description is a single block.
-            // We still need to match the new structured format.
+            // We need to match the new structured format.
             const structuredDescription = [{ title: "Workout", content: description }];
 
             if (!force) {
