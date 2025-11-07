@@ -21,7 +21,7 @@ export function UserNav() {
     router.push('/login');
   };
   
-  if(isUserLoading) {
+  if(isUserLoading || !auth) {
     return (
         <div className="flex items-center gap-3 p-2">
              <div className="p-2 flex items-center justify-center">
