@@ -20,13 +20,9 @@ service cloud.firestore {
     }
 
     // Rules for the public community WODs collection
-    match /communityWods {
-        // Anyone can list the documents in the communityWods collection.
-        allow list: if true;
-    }
     match /communityWods/{wodId} {
-      // Anyone can read a single community WOD.
-      allow get: if true;
+      // Anyone can read the collection or a single document.
+      allow read: if true;
       // Only signed-in (non-anonymous) users can create community WODs.
       allow create: if isSignedIn() && request.auth.token.firebase.sign_in_provider != 'anonymous';
       // No one can update or delete community WODs directly for data integrity.
