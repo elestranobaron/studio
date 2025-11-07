@@ -1,3 +1,4 @@
+
 "use client";
 
 import Link from "next/link";
@@ -6,6 +7,7 @@ import {
   LayoutGrid,
   ScanLine,
   Timer,
+  Settings,
 } from "lucide-react";
 import {
   SidebarMenu,

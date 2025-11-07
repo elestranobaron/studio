@@ -11,6 +11,7 @@ import { useUser } from "@/firebase";
 import { useAuth } from "@/firebase/provider";
 import { useRouter } from "next/navigation";
 import { Avatar, AvatarImage, AvatarFallback } from "./ui/avatar";
+import Link from "next/link";
 
 export function UserNav() {
   const { user, isUserLoading } = useUser();
@@ -58,10 +59,10 @@ export function UserNav() {
         <SidebarMenu>
             <SidebarMenuItem>
                 <SidebarMenuButton asChild tooltip={{children: "Paramètres"}}>
-                    <a href="#">
+                    <Link href="/settings">
                         <Settings />
                         <span>Paramètres</span>
-                    </a>
+                    </Link>
                 </SidebarMenuButton>
             </SidebarMenuItem>
             <SidebarMenuItem>
