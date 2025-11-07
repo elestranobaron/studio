@@ -21,6 +21,14 @@ export function UserNav() {
   const handleLogin = () => {
     router.push('/login');
   };
+
+  const handleLogout = async () => {
+    if (auth) {
+      await auth.signOut();
+    }
+    // Redirect to a neutral page to ensure all data listeners are detached
+    router.push('/login'); 
+  };
   
   if(isUserLoading || !auth) {
     return (
@@ -66,7 +74,7 @@ export function UserNav() {
                 </SidebarMenuButton>
             </SidebarMenuItem>
             <SidebarMenuItem>
-                <SidebarMenuButton asChild tooltip={{children: "Déconnexion"}} onClick={() => auth?.signOut()}>
+                <SidebarMenuButton asChild tooltip={{children: "Déconnexion"}} onClick={handleLogout}>
                     <a href="#">
                         <LogOut />
                         <span>Déconnexion</span>
