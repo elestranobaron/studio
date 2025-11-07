@@ -1,5 +1,3 @@
-
-
 "use client";
 
 import { useState, useCallback, useEffect } from "react";
@@ -16,7 +14,7 @@ import { Textarea } from "./ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
 import { WodType, type WOD } from "@/lib/types";
 import { useFirebase } from "@/firebase";
-import { doc, collection, query, where, getDocs, setDoc } from "firebase/firestore";
+import { doc, collection, query, where, getDocs, setDoc, addDoc } from "firebase/firestore";
 import { useUser, useAuth } from "@/firebase/provider";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
@@ -25,6 +23,8 @@ import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
 import { initiateAnonymousSignIn } from "@/firebase/non-blocking-login";
 import { Logo } from "./icons";
+import { Checkbox } from "./ui/checkbox";
+import { Label } from "./ui/label";
 
 
 const toBase64 = (file: File): Promise<string> =>
@@ -64,6 +64,7 @@ export function FileUploader() {
     null
   );
   const [duplicateWod, setDuplicateWod] = useState<WOD | null>(null);
+  const [shareToCommunity, setShareToCommunity] = useState(false);
 
   const { toast } = useToast();
   const router = useRouter();
@@ -113,23 +114,15 @@ export function FileUploader() {
     try {
         const wodsCollection = collection(firestore, 'users', userId, 'wods');
 
-        // To perform a duplicate check on the structured description, we'll stringify it.
-        const flatDescriptionForCheck = analysisResult.description.map(s => `${s.title}: ${s.content}`).join('\n');
-
         // Duplicate check logic
         if (!force) {
             const q = query(
                 wodsCollection,
                 where("name", "==", analysisResult.name),
                 where("type", "==", analysisResult.type)
-                // Note: Firestore can't query deep into arrays of objects easily.
-                // A simple text-based check after fetching is more viable, or we adapt.
-                // For now, we'll check name and type, which is a reasonable heuristic.
-                // A more robust check might involve creating a single string field for querying.
             );
             const querySnapshot = await getDocs(q);
             if (!querySnapshot.empty) {
-                // We found potential duplicates, let's show the first one.
                 const existingWod = querySnapshot.docs[0].data() as WOD;
                 setDuplicateWod(existingWod);
                 setIsSaving(false); 
@@ -152,35 +145,42 @@ export function FileUploader() {
             duration: analysisResult.duration,
         };
 
-        setDoc(newWodRef, wodData)
-            .then(() => {
-                toast({
-                    title: "WOD Saved!",
-                    description: "Your new WOD has been added to your dashboard.",
-                });
-                router.push("/dashboard");
-            })
-            .catch(async (serverError) => {
-                const permissionError = new FirestorePermissionError({
-                    path: newWodRef.path,
-                    operation: 'create',
-                    requestResourceData: wodData,
-                });
-                errorEmitter.emit('permission-error', permissionError);
-            })
-            .finally(() => {
-                setIsSaving(false);
-                if (force) setDuplicateWod(null);
-            });
+        await setDoc(newWodRef, wodData);
 
-    } catch (error) {
-        console.error("An unexpected error occurred during the save process:", error);
+        if (shareToCommunity) {
+            const communityWodsCollection = collection(firestore, 'communityWods');
+            // We don't want to expose user IDs in the community feed
+            const { userId, ...communityWodData } = wodData;
+            await addDoc(communityWodsCollection, communityWodData);
+        }
+
+        toast({
+            title: "WOD Saved!",
+            description: "Your new WOD has been added to your dashboard.",
+        });
+        router.push("/dashboard");
+
+    } catch (serverError) {
+        let errorToEmit = serverError;
+        if (serverError instanceof Error && serverError.message.includes('permission-denied')) {
+             errorToEmit = new FirestorePermissionError({
+                path: 'users/' + userId + '/wods',
+                operation: 'create',
+                requestResourceData: analysisResult,
+            });
+             errorEmitter.emit('permission-error', errorToEmit as FirestorePermissionError);
+        }
+        
+        console.error("An unexpected error occurred during the save process:", errorToEmit);
         toast({
             variant: "destructive",
             title: "Save Failed",
-            description: "An unexpected error occurred while saving the WOD.",
+            description: "An error occurred while saving the WOD.",
         });
+
+    } finally {
         setIsSaving(false);
+        if (force) setDuplicateWod(null);
     }
   };
 
@@ -192,9 +192,6 @@ export function FileUploader() {
     } else if (auth) {
         setIsSaving(true); 
         initiateAnonymousSignIn(auth);
-        // An onAuthStateChanged listener in FirebaseProvider will pick up the new user,
-        // which will re-render this component. We'll add a useEffect to handle the save
-        // once the user is available.
     } else {
         toast({
             variant: "destructive",
@@ -204,9 +201,7 @@ export function FileUploader() {
     }
   };
   
-  // This effect triggers the save operation after a non-blocking anonymous sign-in
   useEffect(() => {
-    // Only proceed if we were in the process of saving and now we have a user
     if (isSaving && user) {
       performSave(user.uid);
     }
@@ -219,8 +214,6 @@ export function FileUploader() {
     } else if (auth) {
         setIsSaving(true);
         initiateAnonymousSignIn(auth);
-        // The useEffect will handle saving after login. We can rely on it
-        // and just close the dialog.
         setDuplicateWod(null);
     }
   };
@@ -234,20 +227,14 @@ export function FileUploader() {
   
   const isActionDisabled = isLoading || isSaving || isUserLoading;
 
-  // Since description is now an array, we need a flat version for the Textarea
   const flatDescription = analysisResult?.description.map(s => s.content).join('\n\n') || '';
 
   const handleDescriptionChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     if (analysisResult) {
-      // For simplicity, we'll update the content of the first section
-      // or create a default section if none exists.
       const newDescription = [...analysisResult.description];
       if (newDescription.length > 0) {
-        // A more complex implementation could try to re-parse the text,
-        // but for a simple text edit, we merge it back into one "General" section.
         newDescription[0].title = 'Workout';
         newDescription[0].content = e.target.value;
-        // and remove other sections
         newDescription.splice(1);
       } else {
         newDescription.push({ title: 'Workout', content: e.target.value });
@@ -399,6 +386,21 @@ export function FileUploader() {
                 placeholder="WOD Description"
                 disabled={isActionDisabled}
               />
+              <div className="flex items-center space-x-2">
+                <Checkbox 
+                  id="share" 
+                  checked={shareToCommunity} 
+                  onCheckedChange={(checked) => setShareToCommunity(checked as boolean)}
+                  disabled={isActionDisabled || (user && user.isAnonymous)}
+                />
+                <Label htmlFor="share" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                    Share with the Community
+                </Label>
+              </div>
+               {user && user.isAnonymous && (
+                 <p className="text-xs text-muted-foreground">Sign up for an account to share your WODs with the community.</p>
+               )}
+
               <Button onClick={handleSave} className="w-full" disabled={isActionDisabled}>
                 {isSaving ? (
                      <>

@@ -18,5 +18,15 @@ service cloud.firestore {
       // Only the owner can read or write their own WODs.
       allow read, write: if isSignedIn() && isOwner(userId);
     }
+
+    // Rules for the public community WODs collection
+    match /communityWods/{wodId} {
+      // Anyone can read community WODs.
+      allow read: if true;
+      // Only signed-in (non-anonymous) users can create community WODs.
+      allow create: if isSignedIn() && request.auth.token.firebase.sign_in_provider != 'anonymous';
+      // No one can update or delete community WODs directly for data integrity.
+      allow update, delete: if false;
+    }
   }
 }
