@@ -8,10 +8,10 @@ import {
   SidebarContent,
   SidebarHeader,
   SidebarInset,
-  SidebarProvider,
   SidebarFooter,
   SidebarSeparator,
   useSidebar,
+  SidebarProvider,
 } from "@/components/ui/sidebar";
 import { UserNav } from "@/components/user-nav";
 import { Button } from "@/components/ui/button";
@@ -44,7 +44,18 @@ function AppLayoutContent({ children }: { children: React.ReactNode }) {
                 <SidebarContent>
                     <MainNav />
                 </SidebarContent>
-                <SidebarFooter className="mt-auto">
+                <div className="mt-auto p-4 group-data-[collapsible=icon]:hidden">
+                    <video
+                        src="/lateral_logo.mp4"
+                        autoPlay
+                        loop
+                        muted
+                        playsInline
+                        className="w-full h-auto rounded-lg"
+                        aria-label="Animation du logo WODBurner"
+                    />
+                </div>
+                <SidebarFooter>
                     <SidebarSeparator />
                     <UserNav />
                 </SidebarFooter>
