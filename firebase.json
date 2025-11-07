@@ -20,7 +20,7 @@
       "redirects": [
         {
           "source": "/:path*",
-          "destination": "https://app.wodburner.com/:path",
+          "destination": "https://wodburner.app/:path",
           "type": 301
         }
       ]
