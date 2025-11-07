@@ -1,3 +1,4 @@
+
 'use client';
 
 import Link from 'next/link';
@@ -28,9 +29,15 @@ function WodSkeleton() {
 function WodList({
   wods,
   isLoading,
+  emptyStateTitle,
+  emptyStateDescription,
+  showAddButton = false,
 }: {
   wods: WOD[] | null;
   isLoading: boolean;
+  emptyStateTitle: string;
+  emptyStateDescription: string;
+  showAddButton?: boolean;
 }) {
   if (isLoading) {
     return (
@@ -55,18 +62,40 @@ function WodList({
 
   return (
     <div className="flex flex-col items-center justify-center h-full text-center py-16">
-      <p className="text-lg text-muted-foreground">No WODs found here.</p>
+      <p className="text-lg text-muted-foreground">{emptyStateTitle}</p>
       <p className="text-sm text-muted-foreground">
-        Scan your first WOD to get started!
+        {emptyStateDescription}
       </p>
-      <Button asChild className="mt-4">
-        <Link href="/scan">
-          <PlusCircle className="mr-2 h-4 w-4" />
-          Scan New WOD
-        </Link>
-      </Button>
+      {showAddButton && (
+        <Button asChild className="mt-4">
+            <Link href="/scan">
+            <PlusCircle className="mr-2 h-4 w-4" />
+            Scan New WOD
+            </Link>
+        </Button>
+      )}
     </div>
   );
+}
+
+function CommunityWodList() {
+    const { firestore } = useFirebase();
+
+    const communityWodsCollection = useMemo(() => {
+        if (!firestore) return null;
+        return query(collection(firestore, 'communityWods'), orderBy('date', 'desc'), limit(20));
+    }, [firestore]);
+
+    const { data: communityWods, isLoading: isCommunityWodsLoading } = useCollection<WOD>(communityWodsCollection);
+
+    return (
+        <WodList
+            wods={communityWods}
+            isLoading={isCommunityWodsLoading}
+            emptyStateTitle="No community WODs yet."
+            emptyStateDescription="Be the first to share one!"
+        />
+    );
 }
 
 export default function DashboardPage() {
@@ -78,13 +107,8 @@ export default function DashboardPage() {
     return collection(firestore, 'users', user.uid, 'wods');
   }, [firestore, user]);
 
-  const communityWodsCollection = useMemo(() => {
-    if (!firestore) return null;
-    return query(collection(firestore, 'communityWods'), orderBy('date', 'desc'), limit(20));
-  }, [firestore]);
 
   const { data: userWods, isLoading: isUserWodsLoading } = useCollection<WOD>(userWodsCollection);
-  const { data: communityWods, isLoading: isCommunityWodsLoading } = useCollection<WOD>(communityWodsCollection);
 
   const showPersonalLoadingState = isUserLoading || (user && isUserWodsLoading);
 
@@ -113,10 +137,16 @@ export default function DashboardPage() {
             </TabsList>
           </div>
           <TabsContent value="personal" className="p-4 md:p-6">
-            <WodList wods={userWods} isLoading={showPersonalLoadingState} />
+            <WodList 
+                wods={userWods} 
+                isLoading={showPersonalLoadingState}
+                emptyStateTitle="No WODs found here."
+                emptyStateDescription="Scan your first WOD to get started!"
+                showAddButton={true}
+            />
           </TabsContent>
           <TabsContent value="community" className="p-4 md:p-6">
-            <WodList wods={communityWods} isLoading={isCommunityWodsLoading} />
+            <CommunityWodList />
           </TabsContent>
         </Tabs>
       </main>
