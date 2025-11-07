@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { Logo } from "@/components/icons";
@@ -26,39 +27,42 @@ function AppLayoutContent({ children }: { children: React.ReactNode }) {
 
     return (
         <>
-            <Sidebar>
-                <SidebarHeader>
-                    {isMobile && openMobile ? (
-                        <Button
-                            variant="ghost"
-                            onClick={handleClose}
-                            className="flex items-center gap-2 text-xl font-bold font-headline text-foreground h-auto p-0 hover:bg-transparent"
-                        >
-                            <ArrowLeft className="h-5 w-5" />
-                            <span>Retour</span>
-                        </Button>
-                    ) : (
-                        <Logo />
-                    )}
-                </SidebarHeader>
-                <SidebarContent>
-                    <MainNav />
-                </SidebarContent>
-                <div className="mt-auto p-4 group-data-[collapsible=icon]:hidden">
-                    <video
-                        src="/lateral_logo.mp4"
-                        autoPlay
-                        loop
-                        muted
-                        playsInline
-                        className="w-full h-auto rounded-lg"
-                        aria-label="Animation du logo WODBurner"
-                    />
+            <Sidebar className="relative overflow-hidden">
+                 <video
+                    src="/lateral_logo.mp4"
+                    autoPlay
+                    loop
+                    muted
+                    playsInline
+                    className="absolute inset-0 w-full h-full object-cover z-0 opacity-20 group-data-[collapsible=icon]:hidden"
+                    aria-label="Animation du logo WODBurner en fond"
+                />
+                 <div className="relative z-10 flex flex-col h-full bg-transparent">
+                    <SidebarHeader>
+                        {isMobile && openMobile ? (
+                            <Button
+                                variant="ghost"
+                                onClick={handleClose}
+                                className="flex items-center gap-2 text-xl font-bold font-headline text-foreground h-auto p-0 hover:bg-transparent"
+                            >
+                                <ArrowLeft className="h-5 w-5" />
+                                <span>Retour</span>
+                            </Button>
+                        ) : (
+                            <Logo />
+                        )}
+                    </SidebarHeader>
+                    <SidebarContent>
+                        <MainNav />
+                    </SidebarContent>
+                    
+                    <div className="mt-auto">
+                        <SidebarFooter>
+                            <SidebarSeparator />
+                            <UserNav />
+                        </SidebarFooter>
+                    </div>
                 </div>
-                <SidebarFooter>
-                    <SidebarSeparator />
-                    <UserNav />
-                </SidebarFooter>
             </Sidebar>
             <SidebarInset>{children}</SidebarInset>
         </>
