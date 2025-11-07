@@ -110,6 +110,8 @@ function LoginClientContent() {
         }
 
         try {
+            // Set language code from browser
+            auth.languageCode = navigator.language.split('-')[0] || 'en';
             await sendSignInLinkToEmail(auth, email, actionCodeSettings);
             window.localStorage.setItem('emailForSignIn', email);
             setEmailSent(true);
