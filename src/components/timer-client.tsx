@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
@@ -14,6 +15,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 import type { WOD } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { Logo } from "./icons";
+import { ScrollArea } from "./ui/scroll-area";
+import { Separator } from "./ui/separator";
 
 const formatTime = (time: number) => {
   const minutes = Math.floor(time / 60);
@@ -26,6 +29,15 @@ const formatTime = (time: number) => {
 
 function ShareModal({ wod, finalTime }: { wod: WOD; finalTime: string }) {
     const descriptionId = `share-description-${wod.id}`;
+    
+    // Find the 'Metcon' section, or fall back to the first section if not found.
+    const metconSection = Array.isArray(wod.description)
+        ? wod.description.find(s => s.title.toLowerCase() === 'metcon') || wod.description[0]
+        : { title: 'Workout', content: wod.description };
+    
+    // Handle cases where description might be a string (legacy) or not exist
+    const descriptionContent = metconSection ? metconSection.content : 'No description available.';
+
     return (
         <Dialog>
             <DialogTrigger asChild>
@@ -40,11 +52,18 @@ function ShareModal({ wod, finalTime }: { wod: WOD; finalTime: string }) {
                 </DialogHeader>
                 <div className="p-4 bg-background rounded-lg border my-4">
                     <h3 className="font-headline text-primary text-2xl">{wod.name}</h3>
-                    <p className="text-sm text-muted-foreground">{wod.type}</p>
+                    <p className="text-sm text-muted-foreground mb-2">{wod.type}</p>
+                     <Separator />
                     <div className="my-4 text-center">
                         <p className="text-5xl font-bold font-mono text-foreground">{finalTime}</p>
                         <p className="text-lg text-muted-foreground">Final Time</p>
                     </div>
+                     <Separator />
+                     <ScrollArea className="h-24 my-4">
+                        <p className="text-sm whitespace-pre-wrap font-mono text-muted-foreground p-2">
+                           {descriptionContent}
+                        </p>
+                    </ScrollArea>
                     <div className="flex justify-center opacity-70">
                       <Logo />
                     </div>
