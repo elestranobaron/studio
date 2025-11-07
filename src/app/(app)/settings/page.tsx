@@ -23,6 +23,7 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
+  AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 import { useToast } from '@/hooks/use-toast';
 import { LoaderCircle, Trash2 } from 'lucide-react';
@@ -82,6 +83,7 @@ export default function SettingsPage() {
         description = "This operation is sensitive and requires recent authentication. Please sign in again before retrying.";
         // Optional: sign out the user to force them to re-authenticate
         auth.signOut();
+        router.push('/login');
       }
       
       toast({
