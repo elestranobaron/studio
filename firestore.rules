@@ -21,7 +21,7 @@ service cloud.firestore {
 
     // Rules for the public community WODs collection
     match /communityWods/{document=**} {
-      // Anyone can read the collection or a single document.
+      // Anyone can read the collection or any single document within it.
       allow read: if true;
     }
 
