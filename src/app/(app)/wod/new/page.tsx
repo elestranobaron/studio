@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState } from "react";
@@ -44,13 +43,17 @@ export default function NewWodPage() {
         
         try {
             const wodsCollection = collection(firestore, 'users', user.uid, 'wods');
-    
+            
+            // For a manually created WOD, the description is a single block.
+            // We still need to match the new structured format.
+            const structuredDescription = [{ title: "Workout", content: description }];
+
             if (!force) {
                 const q = query(
                     wodsCollection,
                     where("name", "==", name),
-                    where("type", "==", type),
-                    where("description", "==", description)
+                    where("type", "==", type)
+                    // We can't efficiently query the description, but this is a good heuristic.
                 );
                 const querySnapshot = await getDocs(q);
                 if (!querySnapshot.empty) {
@@ -69,7 +72,7 @@ export default function NewWodPage() {
                 userId: user.uid,
                 name,
                 type,
-                description,
+                description: structuredDescription,
                 date: format(new Date(), "yyyy-MM-dd"),
                 imageUrl: placeholderImageUrl,
                 imageHint: imageHint,

@@ -18,10 +18,16 @@ export const AnalyzeWodInputSchema = z.object({
 });
 export type AnalyzeWodInput = z.infer<typeof AnalyzeWodInputSchema>;
 
+
+const WodDescriptionSectionSchema = z.object({
+    title: z.string().describe("The title of the workout section, e.g., 'Warm-up', 'Strength', 'Metcon'."),
+    content: z.string().describe("The content of the section. Preserve original formatting like newlines."),
+});
+
 export const AnalyzeWodOutputSchema = z.object({
     name: z.string().describe("The name of the workout, e.g., 'Fran', 'Murph'."),
     type: z.enum(["For Time", "AMRAP", "EMOM", "Tabata", "Other"]).describe("The type of workout."),
-    description: z.string().describe("The full description of the workout, including exercises, reps, rounds, and weights. Preserve formatting like newlines."),
+    description: z.array(WodDescriptionSectionSchema).describe("An array of workout sections, each with a title and content. Examples: Warm-up, Strength, Metcon."),
     duration: z.number().optional().describe("The total duration of the workout in minutes. For EMOMs, calculate total time (e.g., 'Every 2:30 for 6 rounds' is 15 minutes). For AMRAPs, use the specified time."),
     imageHint: z.string().describe("A one or two-word hint for a relevant stock photo, e.g., 'running', 'barbell', 'kettlebell', 'pull-up'."),
 });

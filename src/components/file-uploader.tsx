@@ -113,16 +113,23 @@ export function FileUploader() {
     try {
         const wodsCollection = collection(firestore, 'users', userId, 'wods');
 
+        // To perform a duplicate check on the structured description, we'll stringify it.
+        const flatDescriptionForCheck = analysisResult.description.map(s => `${s.title}: ${s.content}`).join('\n');
+
         // Duplicate check logic
         if (!force) {
             const q = query(
                 wodsCollection,
                 where("name", "==", analysisResult.name),
-                where("type", "==", analysisResult.type),
-                where("description", "==", analysisResult.description)
+                where("type", "==", analysisResult.type)
+                // Note: Firestore can't query deep into arrays of objects easily.
+                // A simple text-based check after fetching is more viable, or we adapt.
+                // For now, we'll check name and type, which is a reasonable heuristic.
+                // A more robust check might involve creating a single string field for querying.
             );
             const querySnapshot = await getDocs(q);
             if (!querySnapshot.empty) {
+                // We found potential duplicates, let's show the first one.
                 const existingWod = querySnapshot.docs[0].data() as WOD;
                 setDuplicateWod(existingWod);
                 setIsSaving(false); 
@@ -227,6 +234,29 @@ export function FileUploader() {
   
   const isActionDisabled = isLoading || isSaving || isUserLoading;
 
+  // Since description is now an array, we need a flat version for the Textarea
+  const flatDescription = analysisResult?.description.map(s => s.content).join('\n\n') || '';
+
+  const handleDescriptionChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    if (analysisResult) {
+      // For simplicity, we'll update the content of the first section
+      // or create a default section if none exists.
+      const newDescription = [...analysisResult.description];
+      if (newDescription.length > 0) {
+        // A more complex implementation could try to re-parse the text,
+        // but for a simple text edit, we merge it back into one "General" section.
+        newDescription[0].title = 'Workout';
+        newDescription[0].content = e.target.value;
+        // and remove other sections
+        newDescription.splice(1);
+      } else {
+        newDescription.push({ title: 'Workout', content: e.target.value });
+      }
+      setAnalysisResult({ ...analysisResult, description: newDescription });
+    }
+  };
+
+
   if (isLoading) {
     return (
       <div className="w-full flex-1 flex flex-col items-center justify-center gap-4 text-center">
@@ -327,14 +357,14 @@ export function FileUploader() {
                  <Input
                   value={analysisResult.name}
                   onChange={(e) =>
-                    setAnalysisResult({ ...analysisResult, name: e.target.value })
+                    analysisResult && setAnalysisResult({ ...analysisResult, name: e.target.value })
                   }
                   placeholder="WOD Name"
                   disabled={isActionDisabled}
                 />
                  <Select
                   value={analysisResult.type}
-                  onValueChange={(value: WodType) => setAnalysisResult({...analysisResult, type: value})}
+                  onValueChange={(value: WodType) => analysisResult && setAnalysisResult({...analysisResult, type: value})}
                   disabled={isActionDisabled}
                 >
                   <SelectTrigger>
@@ -354,7 +384,7 @@ export function FileUploader() {
                     type="number"
                     value={analysisResult.duration || ''}
                     onChange={(e) =>
-                        setAnalysisResult({ ...analysisResult, duration: e.target.value ? parseInt(e.target.value) : undefined })
+                        analysisResult && setAnalysisResult({ ...analysisResult, duration: e.target.value ? parseInt(e.target.value) : undefined })
                     }
                     placeholder="Duration (minutes)"
                     disabled={isActionDisabled}
@@ -362,13 +392,8 @@ export function FileUploader() {
                </div>
 
               <Textarea
-                value={analysisResult.description}
-                onChange={(e) =>
-                  setAnalysisResult({
-                    ...analysisResult,
-                    description: e.target.value,
-                  })
-                }
+                value={flatDescription}
+                onChange={handleDescriptionChange}
                 rows={10}
                 className="whitespace-pre-wrap font-mono text-sm"
                 placeholder="WOD Description"

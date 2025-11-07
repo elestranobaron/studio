@@ -14,6 +14,7 @@ import { useUser } from '@/firebase/provider';
 import { useMemo } from 'react';
 import Image from 'next/image';
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
+import { Separator } from '@/components/ui/separator';
 
 function TimerPageSkeleton() {
     return (
@@ -96,15 +97,23 @@ export default function TimerPage() {
                         <BookOpen className="mr-2 h-4 w-4" /> View WOD
                     </Button>
                 </SheetTrigger>
-                <SheetContent>
+                <SheetContent className="overflow-y-auto">
                     <SheetHeader>
                         <SheetTitle className="font-headline text-primary text-2xl">{wod.name}</SheetTitle>
                         <SheetDescription>
                             {wod.type} - {wod.date}
                         </SheetDescription>
                     </SheetHeader>
-                    <div className="py-4 whitespace-pre-wrap text-muted-foreground text-base">
-                        {wod.description}
+                    <div className="py-4 space-y-6">
+                        {wod.description.map((section, index) => (
+                            <div key={index}>
+                                <h4 className="font-headline text-lg text-foreground mb-2">{section.title}</h4>
+                                <p className="whitespace-pre-wrap text-muted-foreground text-base">
+                                    {section.content}
+                                </p>
+                                {index < wod.description.length - 1 && <Separator className="mt-6" />}
+                            </div>
+                        ))}
                     </div>
                 </SheetContent>
             </Sheet>
