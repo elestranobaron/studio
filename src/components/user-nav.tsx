@@ -5,6 +5,7 @@ import {
   SidebarMenu,
   SidebarMenuItem,
   SidebarMenuButton,
+  useSidebar,
 } from "@/components/ui/sidebar";
 import { LogIn, LogOut, Settings, User as UserIcon, LoaderCircle } from "lucide-react";
 import { useUser } from "@/firebase";
@@ -17,19 +18,19 @@ export function UserNav() {
   const { user, isUserLoading } = useUser();
   const auth = useAuth();
   const router = useRouter();
+  const { setOpenMobile } = useSidebar();
+
 
   const handleLogin = () => {
+    setOpenMobile(false);
     router.push('/login');
   };
 
   const handleLogout = async () => {
-    // This is the clean way to sign out.
-    // 1. Sign out from Firebase.
+    setOpenMobile(false);
     if (auth) {
       await auth.signOut();
     }
-    // 2. Force a hard reload to the login page.
-    // This ensures all states and listeners are cleared.
     window.location.href = '/login';
   };
   
@@ -69,7 +70,7 @@ export function UserNav() {
     <div>
         <SidebarMenu>
             <SidebarMenuItem>
-                <SidebarMenuButton asChild tooltip={{children: "Paramètres"}}>
+                <SidebarMenuButton asChild tooltip={{children: "Paramètres"}} onClick={() => setOpenMobile(false)}>
                     <Link href="/settings">
                         <Settings />
                         <span>Paramètres</span>
