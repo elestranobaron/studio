@@ -8,12 +8,12 @@ import { SidebarTrigger } from '@/components/ui/sidebar';
 import {
   useCollection,
   useFirebase,
-  useMemoFirebase,
 } from '@/firebase';
 import { collection } from 'firebase/firestore';
 import { Skeleton } from '@/components/ui/skeleton';
 import type { WOD } from '@/lib/types';
 import { useUser } from '@/firebase/provider';
+import { useMemo } from 'react';
 
 function WodSkeleton() {
   return (
@@ -32,12 +32,14 @@ export default function DashboardPage() {
   const { firestore } = useFirebase();
   const { user, isUserLoading } = useUser();
 
-  const wodsCollection = useMemoFirebase(() => {
+  const wodsCollection = useMemo(() => {
     if (!firestore || !user) return null;
     return collection(firestore, 'users', user.uid, 'wods');
   }, [firestore, user]);
 
   const { data: wods, isLoading } = useCollection<WOD>(wodsCollection);
+  
+  const showLoadingState = isLoading || isUserLoading;
 
   return (
     <div className="flex flex-col h-full">
@@ -56,7 +58,7 @@ export default function DashboardPage() {
         </Button>
       </header>
       <main className="flex-1 overflow-y-auto p-4 md:p-6">
-        {(isLoading || isUserLoading) && (
+        {showLoadingState && (
            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             <WodSkeleton />
             <WodSkeleton />
@@ -64,14 +66,14 @@ export default function DashboardPage() {
             <WodSkeleton />
            </div>
         )}
-        {!isLoading && !isUserLoading && wods && wods.length > 0 && (
+        {!showLoadingState && wods && wods.length > 0 && (
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {wods.map((wod) => (
               <WodCard key={wod.id} wod={wod} />
             ))}
           </div>
         )}
-         {!isLoading && !isUserLoading && (!wods || wods.length === 0) && (
+         {!showLoadingState && (!wods || wods.length === 0) && (
             <div className="flex flex-col items-center justify-center h-full text-center">
                 <p className="text-lg text-muted-foreground">No WODs found.</p>
                 <p className="text-sm text-muted-foreground">Scan your first WOD to get started!</p>

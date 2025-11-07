@@ -6,11 +6,12 @@ import { TimerClient } from '@/components/timer-client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useDoc, useFirebase, useMemoFirebase } from '@/firebase';
+import { useDoc, useFirebase } from '@/firebase';
 import { doc } from 'firebase/firestore';
 import type { WOD } from '@/lib/types';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useUser } from '@/firebase/provider';
+import { useMemo } from 'react';
 
 export default function TimerPage() {
   const params = useParams();
@@ -18,7 +19,7 @@ export default function TimerPage() {
   const { firestore } = useFirebase();
   const { user, isUserLoading } = useUser();
 
-  const wodRef = useMemoFirebase(() => {
+  const wodRef = useMemo(() => {
     // CRITICAL FIX: Do not generate a ref until both firestore AND the user are available.
     // This prevents a race condition where the hook tries to fetch data before the user
     // is authenticated, leading to a permission denied error that looks like a 404.

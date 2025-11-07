@@ -28,28 +28,25 @@ export default function LoginPage() {
     const searchParams = useSearchParams();
     const { user, isUserLoading } = useUser();
 
-    // If user is already permanent, redirect to dashboard
+    
     useEffect(() => {
-        if (user && !user.isAnonymous) {
+        if (!isUserLoading && user && !user.isAnonymous) {
             router.push('/dashboard');
         }
-    }, [user, router]);
+    }, [user, isUserLoading, router]);
     
-    // This effect handles the "magic link" click
+    
     useEffect(() => {
-        // Run only when auth is available and user isn't fully loaded yet
         if (!auth || isUserLoading) return;
 
         const href = window.location.href;
         if (isSignInWithEmailLink(auth, href)) {
             let emailFromStorage = window.localStorage.getItem('emailForSignIn');
             if (!emailFromStorage) {
-                // If the user opens the link on a different device, they must provide their email.
                 emailFromStorage = window.prompt('Veuillez fournir votre email pour la confirmation');
             }
 
             if(emailFromStorage) {
-                // If there's an anonymous user, link the new credential. Otherwise, just sign in.
                 if (auth.currentUser && auth.currentUser.isAnonymous) {
                     const credential = EmailAuthProvider.credentialWithLink(emailFromStorage, href);
                     linkWithCredential(auth.currentUser, credential)
@@ -100,6 +97,16 @@ export default function LoginPage() {
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsLoading(true);
+        
+        if(!auth) {
+            toast({
+                variant: 'destructive',
+                title: 'Erreur',
+                description: "Le service d'authentification n'est pas prêt.",
+            });
+            setIsLoading(false);
+            return;
+        }
 
         try {
             await sendSignInLinkToEmail(auth, email, actionCodeSettings);
@@ -121,7 +128,7 @@ export default function LoginPage() {
         }
     };
 
-    if (isCheckingLink || (user && !user.isAnonymous)) {
+    if (isCheckingLink || isUserLoading || (user && !user.isAnonymous)) {
         return (
             <div className="flex h-screen w-full flex-col items-center justify-center gap-4">
                 <LoaderCircle className="h-12 w-12 animate-spin text-primary" />
