@@ -23,11 +23,14 @@ export function UserNav() {
   };
 
   const handleLogout = async () => {
+    // This is the clean way to sign out.
+    // 1. Sign out from Firebase.
     if (auth) {
       await auth.signOut();
     }
-    // Redirect to a neutral page to ensure all data listeners are detached
-    router.push('/login'); 
+    // 2. Force a hard reload to the login page.
+    // This ensures all states and listeners are cleared.
+    window.location.href = '/login';
   };
   
   if(isUserLoading || !auth) {
@@ -74,11 +77,9 @@ export function UserNav() {
                 </SidebarMenuButton>
             </SidebarMenuItem>
             <SidebarMenuItem>
-                <SidebarMenuButton asChild tooltip={{children: "Déconnexion"}} onClick={handleLogout}>
-                    <a href="#">
-                        <LogOut />
-                        <span>Déconnexion</span>
-                    </a>
+                <SidebarMenuButton onClick={handleLogout}>
+                    <LogOut />
+                    <span>Déconnexion</span>
                 </SidebarMenuButton>
             </SidebarMenuItem>
         </SidebarMenu>

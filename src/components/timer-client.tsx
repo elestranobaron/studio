@@ -26,15 +26,16 @@ const formatTime = (time: number) => {
 };
 
 function ShareModal({ wod, finalTime }: { wod: WOD; finalTime: string }) {
+    const descriptionId = `share-description-${wod.id}`;
     return (
         <Dialog>
             <DialogTrigger asChild>
                 <Button variant="outline"><Share2 className="mr-2 h-4 w-4"/>Share Result</Button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-md">
+            <DialogContent className="sm:max-w-md" aria-describedby={descriptionId}>
                 <DialogHeader>
                     <DialogTitle className="font-headline">Share your achievement!</DialogTitle>
-                     <DialogDescription>
+                     <DialogDescription id={descriptionId}>
                         Take a screenshot of your result to share it on social media.
                     </DialogDescription>
                 </DialogHeader>

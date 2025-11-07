@@ -33,13 +33,17 @@ export default function DashboardPage() {
   const { user, isUserLoading } = useUser();
 
   const wodsCollection = useMemo(() => {
+    // CRITICAL FIX: Do not generate a ref until both firestore AND the user are available.
+    // This prevents a race condition where the hook tries to fetch data before the user
+    // is authenticated, leading to a permission denied error.
     if (!firestore || !user) return null;
     return collection(firestore, 'users', user.uid, 'wods');
   }, [firestore, user]);
 
   const { data: wods, isLoading } = useCollection<WOD>(wodsCollection);
   
-  const showLoadingState = isLoading || isUserLoading;
+  // The loading state is true if the user is loading OR if the wods are loading.
+  const showLoadingState = isUserLoading || (user && isLoading);
 
   return (
     <div className="flex flex-col h-full">
