@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth, useUser } from '@/firebase/provider';
 import { sendSignInLinkToEmail, isSignInWithEmailLink, signInWithEmailLink, linkWithCredential, EmailAuthProvider } from 'firebase/auth';
@@ -17,7 +17,8 @@ const actionCodeSettings = {
     handleCodeInApp: true,
 };
 
-export default function LoginPage() {
+
+function LoginClientContent() {
     const [email, setEmail] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [isCheckingLink, setIsCheckingLink] = useState(true);
@@ -206,4 +207,17 @@ export default function LoginPage() {
             </div>
         </div>
     );
+}
+
+export default function LoginPage() {
+    return (
+        <Suspense fallback={
+            <div className="flex h-screen w-full flex-col items-center justify-center gap-4">
+                <LoaderCircle className="h-12 w-12 animate-spin text-primary" />
+                <p className="text-muted-foreground">Chargement...</p>
+            </div>
+        }>
+            <LoginClientContent />
+        </Suspense>
+    )
 }
