@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { notFound, useParams } from 'next/navigation';
 import { TimerClient } from '@/components/timer-client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, BookOpen } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useDoc, useFirebase } from '@/firebase';
 import { doc } from 'firebase/firestore';
@@ -12,6 +12,41 @@ import type { WOD } from '@/lib/types';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useUser } from '@/firebase/provider';
 import { useMemo } from 'react';
+import Image from 'next/image';
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
+
+function TimerPageSkeleton() {
+    return (
+        <div className="relative flex flex-col items-center justify-center h-screen bg-background p-4">
+            {/* Background Skeleton */}
+            <div className="absolute inset-0 bg-muted/50 z-0"></div>
+            
+            {/* Header Skeleton */}
+             <div className="absolute top-4 left-4 z-20">
+                <Skeleton className="h-10 w-48" />
+             </div>
+             <div className="absolute top-4 right-4 z-20">
+                <Skeleton className="h-10 w-32" />
+            </div>
+
+            {/* Main Content Skeleton */}
+            <div className="relative z-10 flex flex-col items-center justify-center gap-8 w-full max-w-6xl">
+                <div className="text-center">
+                    <Skeleton className="h-12 w-80 mb-4" />
+                    <Skeleton className="h-8 w-32 mx-auto" />
+                </div>
+                <div className="relative flex items-center justify-center">
+                    <Skeleton className="h-80 w-80 rounded-full" />
+                </div>
+                <div className="flex justify-center gap-4">
+                    <Skeleton className="h-12 w-32" />
+                    <Skeleton className="h-12 w-32" />
+                </div>
+            </div>
+        </div>
+    )
+}
+
 
 export default function TimerPage() {
   const params = useParams();
@@ -20,9 +55,6 @@ export default function TimerPage() {
   const { user, isUserLoading } = useUser();
 
   const wodRef = useMemo(() => {
-    // CRITICAL FIX: Do not generate a ref until both firestore AND the user are available.
-    // This prevents a race condition where the hook tries to fetch data before the user
-    // is authenticated, leading to a permission denied error that looks like a 404.
     if (!firestore || !user || typeof id !== 'string') return null;
     return doc(firestore, 'users', user.uid, 'wods', id);
   }, [firestore, user, id]);
@@ -30,63 +62,62 @@ export default function TimerPage() {
   const { data: wod, isLoading } = useDoc<WOD>(wodRef);
 
   if (isLoading || isUserLoading) {
-    return (
-       <div className="relative flex flex-col items-center justify-center h-screen bg-background p-4">
-         <div className="grid lg:grid-cols-2 gap-16 items-center w-full max-w-6xl">
-            <div className="space-y-4">
-              <Skeleton className="h-12 w-3/4" />
-              <Skeleton className="h-6 w-1/4" />
-              <Card>
-                <CardHeader>
-                  <CardTitle>The Workout</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-2">
-                    <Skeleton className="h-4 w-full" />
-                    <Skeleton className="h-4 w-full" />
-                    <Skeleton className="h-4 w-3/4" />
-                </CardContent>
-              </Card>
-            </div>
-            <div className="flex items-center justify-center">
-               <Skeleton className="h-64 w-64 rounded-full" />
-            </div>
-         </div>
-       </div>
-    )
+    return <TimerPageSkeleton />;
   }
 
-  // After loading, if there's still no WOD, then it's a true 404.
   if (!wod && !isLoading) {
     notFound();
   }
 
   return wod ? (
-    <div className="relative flex flex-col items-center justify-center h-screen bg-gradient-to-br from-background to-card p-4">
-      <div className="absolute top-4 left-4">
-        <Button asChild variant="ghost">
-          <Link href="/dashboard">
-            <ArrowLeft className="mr-2 h-4 w-4" /> Back to Dashboard
-          </Link>
-        </Button>
-      </div>
-      <div className="grid lg:grid-cols-2 gap-16 items-center w-full max-w-6xl">
-        <div className="space-y-4">
-          <h1 className="text-4xl md:text-5xl font-extrabold font-headline text-primary">
-            {wod.name}
-          </h1>
-          <p className="text-xl text-muted-foreground">{wod.type}</p>
-          <Card>
-            <CardHeader>
-              <CardTitle>The Workout</CardTitle>
-            </CardHeader>
-            <CardContent className="whitespace-pre-wrap text-muted-foreground text-lg">
-              {wod.description}
-            </CardContent>
-          </Card>
+    <div className="relative flex flex-col items-center justify-center h-screen bg-background p-4 overflow-hidden">
+        {/* Background Image */}
+        <Image
+            src={wod.imageUrl}
+            alt={`${wod.name} background`}
+            fill
+            className="object-cover z-0 opacity-20 blur-lg"
+            data-ai-hint={wod.imageHint}
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-background via-background/80 to-background/50 z-0" />
+      
+        <div className="absolute top-4 left-4 z-20">
+            <Button asChild variant="outline" className="bg-background/50 backdrop-blur-sm">
+            <Link href="/dashboard">
+                <ArrowLeft className="mr-2 h-4 w-4" /> Back to Dashboard
+            </Link>
+            </Button>
         </div>
-        <div className="flex items-center justify-center">
-          <TimerClient wod={wod} />
+
+         <div className="absolute top-4 right-4 z-20">
+             <Sheet>
+                <SheetTrigger asChild>
+                    <Button variant="outline" className="bg-background/50 backdrop-blur-sm">
+                        <BookOpen className="mr-2 h-4 w-4" /> View WOD
+                    </Button>
+                </SheetTrigger>
+                <SheetContent>
+                    <SheetHeader>
+                        <SheetTitle className="font-headline text-primary text-2xl">{wod.name}</SheetTitle>
+                        <SheetDescription>
+                            {wod.type} - {wod.date}
+                        </SheetDescription>
+                    </SheetHeader>
+                    <div className="py-4 whitespace-pre-wrap text-muted-foreground text-base">
+                        {wod.description}
+                    </div>
+                </SheetContent>
+            </Sheet>
         </div>
+
+      <div className="relative z-10 flex flex-col items-center justify-center gap-8 w-full max-w-6xl">
+        <div className="text-center">
+            <h1 className="text-4xl md:text-6xl font-extrabold font-headline text-foreground">
+                {wod.name}
+            </h1>
+            <p className="text-xl text-muted-foreground mt-2">{wod.type}</p>
+        </div>
+        <TimerClient wod={wod} />
       </div>
     </div>
   ) : null;

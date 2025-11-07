@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
@@ -11,7 +10,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import type { WOD } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { Logo } from "./icons";
@@ -35,7 +34,7 @@ function ShareModal({ wod, finalTime }: { wod: WOD; finalTime: string }) {
             <DialogContent className="sm:max-w-md" aria-describedby={descriptionId}>
                 <DialogHeader>
                     <DialogTitle className="font-headline">Share your achievement!</DialogTitle>
-                     <DialogDescription id={descriptionId}>
+                    <DialogDescription id={descriptionId}>
                         Take a screenshot of your result to share it on social media.
                     </DialogDescription>
                 </DialogHeader>
@@ -65,13 +64,27 @@ export function TimerClient({ wod }: { wod: WOD }) {
   const [finalTime, setFinalTime] = useState(0);
 
   const totalDuration = wod.duration ? wod.duration * 60 : 0;
+  const isCountDown = wod.type === "AMRAP" || wod.type === "EMOM";
+  
+  const resetTimer = useCallback(() => {
+    setIsActive(false);
+    setIsFinished(false);
+    setFinalTime(0);
+    setTime(isCountDown ? totalDuration : 0);
+  }, [isCountDown, totalDuration]);
+
+  // Set initial time on component mount
+  useEffect(() => {
+    resetTimer();
+  }, [resetTimer]);
+
 
   useEffect(() => {
     let interval: NodeJS.Timeout | null = null;
     if (isActive && !isFinished) {
       interval = setInterval(() => {
         setTime((prevTime) => {
-          if (wod.type === "AMRAP" || wod.type === "EMOM") {
+          if (isCountDown) {
             if (prevTime <= 1) {
               handleFinish();
               return 0;
@@ -85,23 +98,7 @@ export function TimerClient({ wod }: { wod: WOD }) {
     return () => {
       if (interval) clearInterval(interval);
     };
-  }, [isActive, isFinished, wod.type]);
-
-  const resetTimer = useCallback(() => {
-    setIsActive(false);
-    setIsFinished(false);
-    setFinalTime(0);
-    if (wod.type === "AMRAP" || wod.type === "EMOM") {
-      setTime(totalDuration);
-    } else {
-      setTime(0);
-    }
-  }, [wod.type, totalDuration]);
-
-  // Set initial time on component mount
-  useEffect(() => {
-    resetTimer();
-  }, [resetTimer]);
+  }, [isActive, isFinished, isCountDown]);
 
 
   const handleStartPause = () => {
@@ -112,47 +109,69 @@ export function TimerClient({ wod }: { wod: WOD }) {
   const handleFinish = () => {
     setIsActive(false);
     setIsFinished(true);
-    setFinalTime(wod.type === "For Time" ? time : totalDuration - time);
+    setFinalTime(isCountDown ? totalDuration : time);
   };
+  
+  const progress = isCountDown
+    ? (time / totalDuration) * 100
+    : 100;
+  const strokeDasharray = 2 * Math.PI * 140; // Circumference of the circle
+  const strokeDashoffset = strokeDasharray * (1 - progress / 100);
 
-  const renderTime = () => {
-    const displayTime = wod.type === "AMRAP" || wod.type === "EMOM" ? time : time;
-    const formattedTime = formatTime(displayTime);
-    const timeParts = formattedTime.split("");
-
+  const renderTimerCircle = () => {
     return (
-      <div className="font-mono text-7xl md:text-9xl font-bold tracking-tighter text-foreground flex">
-        {timeParts.map((char, index) => (
-          <span
-            key={index}
-            className={cn("transition-transform duration-200", {
-              "animate-pulse": isActive,
-            })}
-            style={{ animationDelay: `${index * 50}ms` }}
-          >
-            {char}
-          </span>
-        ))}
+        <div className="relative h-80 w-80 md:h-96 md:w-96">
+            <svg className="absolute inset-0" viewBox="0 0 300 300">
+                <circle
+                cx="150"
+                cy="150"
+                r="140"
+                strokeWidth="12"
+                className="stroke-muted/20"
+                fill="transparent"
+                />
+                <circle
+                cx="150"
+                cy="150"
+                r="140"
+                strokeWidth="12"
+                strokeDasharray={strokeDasharray}
+                strokeDashoffset={strokeDashoffset}
+                strokeLinecap="round"
+                transform="rotate(-90 150 150)"
+                className={cn(
+                    "stroke-primary transition-all duration-1000 ease-linear",
+                    {"animate-pulse": isActive && isCountDown}
+                )}
+                fill="transparent"
+                />
+            </svg>
+            <div className="absolute inset-0 flex items-center justify-center">
+                 <p className="font-mono text-7xl md:text-8xl font-bold tracking-tighter text-foreground">
+                    {formatTime(time)}
+                </p>
+            </div>
       </div>
     );
   };
 
+
   if (isFinished) {
     return (
       <div className="text-center space-y-6 flex flex-col items-center">
-        <h2 className="text-4xl font-headline">Workout Complete!</h2>
-        <Card className="max-w-sm w-full">
+        <h2 className="text-4xl font-headline text-foreground">Workout Complete!</h2>
+        <Card className="max-w-sm w-full bg-card/50 backdrop-blur-sm">
             <CardHeader>
                 <CardTitle className="font-headline text-primary">{wod.name}</CardTitle>
             </CardHeader>
             <CardContent>
-                <p className="text-6xl font-bold font-mono">{formatTime(finalTime)}</p>
+                <p className="text-6xl font-bold font-mono">{formatTime(isCountDown ? totalDuration : finalTime)}</p>
                 <p className="text-muted-foreground">{wod.type === "For Time" ? "Total Time" : "Time Completed"}</p>
             </CardContent>
         </Card>
         <div className="flex gap-4">
             <Button onClick={resetTimer} size="lg"><RotateCcw className="mr-2 h-4 w-4" /> Go Again</Button>
-            <ShareModal wod={wod} finalTime={formatTime(finalTime)} />
+            <ShareModal wod={wod} finalTime={formatTime(isCountDown ? totalDuration : finalTime)} />
         </div>
          <div className="pt-8 opacity-50">
             <Logo />
@@ -162,13 +181,13 @@ export function TimerClient({ wod }: { wod: WOD }) {
   }
 
   return (
-    <div className="text-center space-y-8">
-      {renderTime()}
+    <div className="flex flex-col items-center justify-center gap-8">
+      {renderTimerCircle()}
       <div className="flex justify-center gap-4">
         <Button
           onClick={handleStartPause}
           size="lg"
-          className="w-32"
+          className="w-36"
           variant={isActive ? "secondary" : "default"}
         >
           {isActive ? (
@@ -177,7 +196,7 @@ export function TimerClient({ wod }: { wod: WOD }) {
             <><Play className="mr-2 h-5 w-5" /> Start</>
           )}
         </Button>
-        <Button onClick={resetTimer} variant="outline" size="lg">
+        <Button onClick={resetTimer} variant="outline" size="lg" className="w-36">
           <RotateCcw className="mr-2 h-5 w-5" /> Reset
         </Button>
       </div>
