@@ -28,7 +28,7 @@ function AppLayoutContent({ children }: { children: React.ReactNode }) {
     return (
         <>
             <Sidebar className="relative overflow-hidden">
-                 <div className="absolute inset-0 w-full h-full object-cover z-0 brightness-50 blur-sm">
+                 <div className="absolute inset-0 w-full h-full object-cover z-0 brightness-50">
                     <video
                         src="/lateral_logo.mp4"
                         autoPlay
