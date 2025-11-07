@@ -44,7 +44,7 @@ function LoginClientContent() {
         if (isSignInWithEmailLink(auth, href)) {
             let emailFromStorage = window.localStorage.getItem('emailForSignIn');
             if (!emailFromStorage) {
-                emailFromStorage = window.prompt('Veuillez fournir votre email pour la confirmation');
+                emailFromStorage = window.prompt('Please provide your email for confirmation');
             }
 
             if(emailFromStorage) {
@@ -54,16 +54,16 @@ function LoginClientContent() {
                         .then(() => {
                             window.localStorage.removeItem('emailForSignIn');
                             toast({
-                                title: 'Compte mis à jour !',
-                                description: 'Votre compte est maintenant permanent. Vos WODs sont sauvegardés !',
+                                title: 'Account Updated!',
+                                description: 'Your account is now permanent. Your WODs are saved!',
                             });
                             router.push('/dashboard');
                         })
                         .catch((error) => {
                              toast({
                                 variant: 'destructive',
-                                title: 'Erreur de liaison',
-                                description: "Cet email est peut-être déjà utilisé par un autre compte.",
+                                title: 'Linking Error',
+                                description: "This email may already be in use by another account.",
                             });
                             setIsCheckingLink(false);
                         });
@@ -73,16 +73,16 @@ function LoginClientContent() {
                         .then(() => {
                             window.localStorage.removeItem('emailForSignIn');
                             toast({
-                                title: 'Connexion réussie!',
-                                description: 'Vous êtes maintenant connecté.',
+                                title: 'Login Successful!',
+                                description: 'You are now signed in.',
                             });
                             router.push('/dashboard');
                         })
                         .catch(() => {
                             toast({
                                 variant: 'destructive',
-                                title: 'Erreur de connexion',
-                                description: 'Le lien est peut-être invalide ou a expiré.',
+                                title: 'Login Error',
+                                description: 'The link may be invalid or has expired.',
                             });
                             setIsCheckingLink(false);
                         });
@@ -102,8 +102,8 @@ function LoginClientContent() {
         if(!auth) {
             toast({
                 variant: 'destructive',
-                title: 'Erreur',
-                description: "Le service d'authentification n'est pas prêt.",
+                title: 'Error',
+                description: "Authentication service is not ready.",
             });
             setIsLoading(false);
             return;
@@ -116,15 +116,15 @@ function LoginClientContent() {
             window.localStorage.setItem('emailForSignIn', email);
             setEmailSent(true);
             toast({
-                title: 'Lien envoyé!',
-                description: 'Vérifiez votre boîte de réception pour vous connecter.',
+                title: 'Link Sent!',
+                description: 'Check your inbox to sign in.',
             });
         } catch (error) {
             console.error(error);
             toast({
                 variant: 'destructive',
-                title: 'Erreur',
-                description: "Nous n'avons pas pu envoyer le lien. Veuillez réessayer.",
+                title: 'Error',
+                description: "We couldn't send the link. Please try again.",
             });
         } finally {
             setIsLoading(false);
@@ -135,7 +135,7 @@ function LoginClientContent() {
         return (
             <div className="flex h-screen w-full flex-col items-center justify-center gap-4">
                 <LoaderCircle className="h-12 w-12 animate-spin text-primary" />
-                <p className="text-muted-foreground">Vérification en cours...</p>
+                <p className="text-muted-foreground">Verifying...</p>
             </div>
         );
     }
@@ -145,16 +145,16 @@ function LoginClientContent() {
             <div className="grid lg:grid-cols-2 max-w-4xl w-full gap-16 items-center">
                  <div className="flex flex-col items-center lg:items-start text-center lg:text-left">
                     <Logo />
-                    <h1 className="text-3xl font-bold tracking-tight font-headline md:text-4xl mt-4">Passez au niveau supérieur.</h1>
-                    <p className="text-muted-foreground mt-2">Créez un compte gratuit pour débloquer toutes les fonctionnalités et ne plus jamais perdre un WOD.</p>
+                    <h1 className="text-3xl font-bold tracking-tight font-headline md:text-4xl mt-4">Take it to the next level.</h1>
+                    <p className="text-muted-foreground mt-2">Create a free account to unlock all features and never lose a WOD again.</p>
                     <div className="space-y-4 mt-8 text-left">
                         <div className="flex items-start gap-4">
                             <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 text-primary">
                                 <Dumbbell className="h-5 w-5"/>
                             </div>
                             <div>
-                                <h3 className="font-semibold">Création Manuelle</h3>
-                                <p className="text-sm text-muted-foreground">Ajoutez vos propres WODs sans avoir besoin d'une photo.</p>
+                                <h3 className="font-semibold">Manual Creation</h3>
+                                <p className="text-sm text-muted-foreground">Add your own WODs without needing a photo.</p>
                             </div>
                         </div>
                          <div className="flex items-start gap-4">
@@ -162,8 +162,8 @@ function LoginClientContent() {
                                 <Archive className="h-5 w-5"/>
                             </div>
                             <div>
-                                <h3 className="font-semibold">Historique Complet</h3>
-                                <p className="text-sm text-muted-foreground">Sauvegardez et retrouvez tous vos entraînements à tout moment.</p>
+                                <h3 className="font-semibold">Full History</h3>
+                                <p className="text-sm text-muted-foreground">Save and find all your workouts at any time.</p>
                             </div>
                         </div>
                         <div className="flex items-start gap-4">
@@ -171,36 +171,36 @@ function LoginClientContent() {
                                 <LineChart className="h-5 w-5"/>
                             </div>
                             <div>
-                                <h3 className="font-semibold">Suivi des Performances (Bientôt !)</h3>
-                                <p className="text-sm text-muted-foreground">Analysez vos progrès et visualisez vos performances.</p>
+                                <h3 className="font-semibold">Performance Tracking (Soon!)</h3>
+                                <p className="text-sm text-muted-foreground">Analyze your progress and visualize your performance.</p>
                             </div>
                         </div>
                     </div>
                 </div>
                 <Card className="w-full">
                     <CardHeader>
-                        <CardTitle>Connexion / Inscription</CardTitle>
-                        <CardDescription>Entrez votre email pour recevoir un lien de connexion sécurisé. Pas de mot de passe requis.</CardDescription>
+                        <CardTitle>Login / Sign Up</CardTitle>
+                        <CardDescription>Enter your email to receive a secure sign-in link. No password required.</CardDescription>
                     </CardHeader>
                     <CardContent>
                         {emailSent ? (
                             <div className="text-center text-green-500 flex flex-col items-center gap-4">
                                 <CheckCircle className="h-16 w-16" />
-                                <p className="font-semibold">Vérifiez votre boîte mail !</p>
-                                <p className="text-sm text-muted-foreground">Un lien pour vous connecter a été envoyé à <span className="font-bold">{email}</span>.</p>
+                                <p className="font-semibold">Check your email!</p>
+                                <p className="text-sm text-muted-foreground">A link to sign in has been sent to <span className="font-bold">{email}</span>.</p>
                             </div>
                         ) : (
                             <form onSubmit={handleLogin} className="space-y-4">
                                 <Input
                                     type="email"
-                                    placeholder="nom@exemple.com"
+                                    placeholder="name@example.com"
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
                                     required
                                     disabled={isLoading}
                                 />
                                 <Button type="submit" className="w-full" disabled={isLoading}>
-                                    {isLoading ? <LoaderCircle className="animate-spin" /> : 'Envoyer le lien magique'}
+                                    {isLoading ? <LoaderCircle className="animate-spin" /> : 'Send Magic Link'}
                                  </Button>
                             </form>
                         )}
@@ -216,7 +216,7 @@ export default function LoginPage() {
         <Suspense fallback={
             <div className="flex h-screen w-full flex-col items-center justify-center gap-4">
                 <LoaderCircle className="h-12 w-12 animate-spin text-primary" />
-                <p className="text-muted-foreground">Chargement...</p>
+                <p className="text-muted-foreground">Loading...</p>
             </div>
         }>
             <LoginClientContent />

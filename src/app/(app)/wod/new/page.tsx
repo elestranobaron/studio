@@ -78,17 +78,17 @@ export default function NewWodPage() {
     
             await setDoc(newWodRef, wodData);
             toast({
-                title: "WOD Enregistré!",
-                description: "Votre nouveau WOD a été ajouté à votre tableau de bord.",
+                title: "WOD Saved!",
+                description: "Your new WOD has been added to your dashboard.",
             });
             router.push("/dashboard");
     
         } catch (error) {
-            console.error("Erreur lors de la sauvegarde du WOD:", error);
+            console.error("Error saving WOD:", error);
             toast({
                 variant: "destructive",
-                title: "Échec de la sauvegarde",
-                description: "Une erreur est survenue lors de la sauvegarde du WOD.",
+                title: "Save Failed",
+                description: "An error occurred while saving the WOD.",
             });
         } finally {
             setIsSaving(false);
@@ -110,21 +110,21 @@ export default function NewWodPage() {
             <AlertDialog open={!!duplicateWod} onOpenChange={(open) => !open && setDuplicateWod(null)}>
                 <AlertDialogContent>
                     <AlertDialogHeader>
-                        <AlertDialogTitle>WOD Dupliqué Détecté</AlertDialogTitle>
+                        <AlertDialogTitle>Duplicate WOD Detected</AlertDialogTitle>
                         <AlertDialogDescription>
-                            Cet entraînement semble identique à un WOD que vous avez déjà enregistré.
+                            This workout seems identical to a WOD you've already saved.
                             <br/><br/>
                             <div className="p-4 border rounded-md bg-muted/50">
                                 <p className="font-bold">{duplicateWod?.name}</p>
-                                <p className="text-sm text-muted-foreground">{duplicateWod?.date ? `Enregistré le ${format(new Date(duplicateWod.date), 'PPP')}` : ''}</p>
+                                <p className="text-sm text-muted-foreground">{duplicateWod?.date ? `Saved on ${format(new Date(duplicateWod.date), 'PPP')}` : ''}</p>
                             </div>
                             <br/>
-                            Voulez-vous quand même enregistrer ce nouveau?
+                            Do you want to save this new one anyway?
                         </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
-                        <AlertDialogCancel onClick={() => setDuplicateWod(null)}>Annuler</AlertDialogCancel>
-                        <AlertDialogAction onClick={handleForceSave}>Enregistrer quand même</AlertDialogAction>
+                        <AlertDialogCancel onClick={() => setDuplicateWod(null)}>Cancel</AlertDialogCancel>
+                        <AlertDialogAction onClick={handleForceSave}>Save Anyway</AlertDialogAction>
                     </AlertDialogFooter>
                 </AlertDialogContent>
             </AlertDialog>
@@ -135,7 +135,7 @@ export default function NewWodPage() {
                         <Link href="/scan"><ArrowLeft/></Link>
                     </Button>
                     <h1 className="text-2xl font-bold tracking-tight font-headline md:text-3xl">
-                        Créer un WOD manuellement
+                        Create WOD Manually
                     </h1>
                 </div>
             </header>
@@ -144,7 +144,7 @@ export default function NewWodPage() {
                     <form onSubmit={handleSave}>
                         <Card>
                             <CardHeader>
-                                <CardTitle>Détails de l'entraînement</CardTitle>
+                                <CardTitle>Workout Details</CardTitle>
                             </CardHeader>
                             <CardContent className="space-y-6">
                                 <div className="space-y-4">
@@ -152,7 +152,7 @@ export default function NewWodPage() {
                                         <Input
                                             value={name}
                                             onChange={(e) => setName(e.target.value)}
-                                            placeholder="Nom du WOD (ex: Fran)"
+                                            placeholder="WOD Name (e.g., Fran)"
                                             disabled={isSaving}
                                             required
                                         />
@@ -162,7 +162,7 @@ export default function NewWodPage() {
                                             disabled={isSaving}
                                         >
                                             <SelectTrigger>
-                                                <SelectValue placeholder="Type de WOD" />
+                                                <SelectValue placeholder="WOD Type" />
                                             </SelectTrigger>
                                             <SelectContent>
                                                 <SelectItem value="For Time">For Time</SelectItem>
@@ -178,13 +178,13 @@ export default function NewWodPage() {
                                             type="number"
                                             value={duration || ''}
                                             onChange={(e) => setDuration(e.target.value ? parseInt(e.target.value) : undefined)}
-                                            placeholder="Durée (minutes)"
+                                            placeholder="Duration (minutes)"
                                             disabled={isSaving}
                                         />
                                         <Input
                                             value={imageHint}
                                             onChange={(e) => setImageHint(e.target.value)}
-                                            placeholder="Indice pour l'image (ex: barbell)"
+                                            placeholder="Image hint (e.g., barbell)"
                                             disabled={isSaving}
                                         />
                                     </div>
@@ -194,7 +194,7 @@ export default function NewWodPage() {
                                         onChange={(e) => setDescription(e.target.value)}
                                         rows={10}
                                         className="whitespace-pre-wrap font-mono text-sm"
-                                        placeholder="Description du WOD..."
+                                        placeholder="WOD description..."
                                         disabled={isSaving}
                                         required
                                     />
@@ -203,16 +203,16 @@ export default function NewWodPage() {
                                     {isSaving ? (
                                         <>
                                             <LoaderCircle className="animate-spin mr-2" />
-                                            Enregistrement...
+                                            Saving...
                                         </>
-                                    ) : "Enregistrer le WOD"}
+                                    ) : "Save WOD"}
                                 </Button>
                             </CardContent>
                         </Card>
                     </form>
                      <Button asChild variant="link" className="mt-4">
                         <Link href="/scan">
-                            <ArrowLeft className="mr-2 h-4 w-4" /> Retourner au scan
+                            <ArrowLeft className="mr-2 h-4 w-4" /> Back to Scan
                         </Link>
                     </Button>
                 </div>

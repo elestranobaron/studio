@@ -31,7 +31,7 @@ export function UserNav() {
     if (auth) {
       await auth.signOut();
     }
-    window.location.href = '/login';
+    router.push('/login');
   };
   
   if(isUserLoading || !auth) {
@@ -42,7 +42,7 @@ export function UserNav() {
                     <SidebarMenuItem>
                         <SidebarMenuButton disabled>
                             <LoaderCircle className="animate-spin" />
-                            <span>Chargement...</span>
+                            <span>Loading...</span>
                         </SidebarMenuButton>
                     </SidebarMenuItem>
                 </SidebarMenu>
@@ -58,7 +58,7 @@ export function UserNav() {
                 <SidebarMenuItem>
                     <SidebarMenuButton onClick={handleLogin}>
                         <LogIn />
-                        <span>Se connecter</span>
+                        <span>Sign In</span>
                     </SidebarMenuButton>
                 </SidebarMenuItem>
             </SidebarMenu>
@@ -70,17 +70,17 @@ export function UserNav() {
     <div>
         <SidebarMenu>
             <SidebarMenuItem>
-                <SidebarMenuButton asChild tooltip={{children: "Paramètres"}} onClick={() => setOpenMobile(false)}>
+                <SidebarMenuButton asChild tooltip={{children: "Settings"}} onClick={() => setOpenMobile(false)}>
                     <Link href="/settings">
                         <Settings />
-                        <span>Paramètres</span>
+                        <span>Settings</span>
                     </Link>
                 </SidebarMenuButton>
             </SidebarMenuItem>
             <SidebarMenuItem>
                 <SidebarMenuButton onClick={handleLogout}>
                     <LogOut />
-                    <span>Déconnexion</span>
+                    <span>Sign Out</span>
                 </SidebarMenuButton>
             </SidebarMenuItem>
         </SidebarMenu>
@@ -95,10 +95,10 @@ export function UserNav() {
             </Avatar>
             <div className="flex flex-col truncate">
                 <span className="font-semibold text-sm text-sidebar-foreground">
-                    {user.isAnonymous ? 'Utilisateur Anonyme' : (user.email || 'Utilisateur')}
+                    {user.isAnonymous ? 'Anonymous User' : (user.email || 'User')}
                 </span>
                 <span className="text-xs text-sidebar-foreground/70">
-                    {user.isAnonymous ? 'Profil temporaire' : user.email}
+                    {user.isAnonymous ? 'Temporary Profile' : user.email}
                 </span>
             </div>
         </div>

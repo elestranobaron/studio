@@ -28,12 +28,12 @@ export default function ScanPage() {
                 <div className="flex items-center gap-4">
                     <SidebarTrigger className="md:hidden" />
                     <h1 className="text-2xl font-bold tracking-tight font-headline md:text-3xl">
-                        Scanner un WOD
+                        Scan WOD
                     </h1>
                 </div>
                 <Button onClick={handleManualAddClick} variant="outline">
                     <PlusCircle className="mr-2 h-4 w-4" />
-                    Ajouter manuellement
+                    Add Manually
                 </Button>
             </header>
             <main className="flex-1 flex flex-col items-center justify-center p-4 md:p-6">

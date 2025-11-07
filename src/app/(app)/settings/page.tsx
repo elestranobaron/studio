@@ -23,7 +23,6 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 import { useToast } from '@/hooks/use-toast';
 import { LoaderCircle, Trash2 } from 'lucide-react';
@@ -41,9 +40,9 @@ export default function SettingsPage() {
     if (!user || !auth || !firestore) {
       toast({
         variant: 'destructive',
-        title: 'Erreur',
+        title: 'Error',
         description:
-          "Impossible de supprimer le compte. L'utilisateur ou les services Firebase ne sont pas disponibles.",
+          "Could not delete account. User or Firebase services are not available.",
       });
       return;
     }
@@ -51,7 +50,7 @@ export default function SettingsPage() {
     setIsDeleting(true);
 
     try {
-      // 1. Supprimer toutes les données utilisateur de Firestore
+      // 1. Delete all user data from Firestore
       const wodsCollectionRef = collection(firestore, 'users', user.uid, 'wods');
       const q = query(wodsCollectionRef);
       const querySnapshot = await getDocs(q);
@@ -64,30 +63,30 @@ export default function SettingsPage() {
         await batch.commit();
       }
 
-      // 2. Supprimer l'utilisateur de Firebase Authentication
+      // 2. Delete the user from Firebase Authentication
       await deleteUser(user);
 
       toast({
-        title: 'Compte supprimé',
+        title: 'Account Deleted',
         description:
-          'Votre compte et toutes vos données ont été supprimés avec succès.',
+          'Your account and all your data have been successfully deleted.',
       });
 
-      // Rediriger l'utilisateur après la suppression
+      // Redirect the user after deletion
       router.push('/login');
     } catch (error: any) {
-      console.error('Erreur lors de la suppression du compte:', error);
+      console.error('Error deleting account:', error);
       
-      let description = "Une erreur est survenue. Veuillez réessayer.";
+      let description = "An error occurred. Please try again.";
       if (error.code === 'auth/requires-recent-login') {
-        description = "Cette opération est sensible et nécessite une connexion récente. Veuillez vous reconnecter avant de réessayer.";
-        // Optionnel : déconnecter l'utilisateur pour le forcer à se reconnecter
+        description = "This operation is sensitive and requires recent authentication. Please sign in again before retrying.";
+        // Optional: sign out the user to force them to re-authenticate
         auth.signOut();
       }
       
       toast({
         variant: 'destructive',
-        title: 'Échec de la suppression',
+        title: 'Deletion Failed',
         description: description,
       });
     } finally {
@@ -100,38 +99,38 @@ export default function SettingsPage() {
       <header className="flex items-center gap-4 p-4 border-b md:p-6">
         <SidebarTrigger className="md:hidden" />
         <h1 className="text-2xl font-bold tracking-tight font-headline md:text-3xl">
-          Paramètres
+          Settings
         </h1>
       </header>
       <main className="flex-1 overflow-y-auto p-4 md:p-6">
         <div className="max-w-2xl mx-auto space-y-8">
             <Card>
                 <CardHeader>
-                    <CardTitle>Profil</CardTitle>
-                    <CardDescription>Informations sur votre compte.</CardDescription>
+                    <CardTitle>Profile</CardTitle>
+                    <CardDescription>Information about your account.</CardDescription>
                 </CardHeader>
                 <CardContent>
                     {isUserLoading ? (
                         <div className="flex items-center space-x-4">
                             <LoaderCircle className="animate-spin text-muted-foreground" />
-                            <p>Chargement du profil...</p>
+                            <p>Loading profile...</p>
                         </div>
                     ) : user ? (
                         <div className="space-y-2">
-                           <p><strong>Email:</strong> {user.email || "Non spécifié"}</p>
-                           <p><strong>Type de compte:</strong> {user.isAnonymous ? "Anonyme (temporaire)" : "Permanent"}</p>
+                           <p><strong>Email:</strong> {user.email || "Not specified"}</p>
+                           <p><strong>Account Type:</strong> {user.isAnonymous ? "Anonymous (Temporary)" : "Permanent"}</p>
                         </div>
                     ) : (
-                         <p>Utilisateur non trouvé.</p>
+                         <p>User not found.</p>
                     )}
                 </CardContent>
             </Card>
 
             <Card className="border-destructive">
             <CardHeader>
-              <CardTitle className="text-destructive">Zone de Danger</CardTitle>
+              <CardTitle className="text-destructive">Danger Zone</CardTitle>
               <CardDescription>
-                Ces actions sont permanentes et ne peuvent pas être annulées.
+                These actions are permanent and cannot be undone.
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -143,31 +142,29 @@ export default function SettingsPage() {
                      ) : (
                         <Trash2 className="mr-2" />
                      )}
-                    Supprimer mon compte
+                    Delete My Account
                   </Button>
                 </AlertDialogTrigger>
                 <AlertDialogContent>
                   <AlertDialogHeader>
-                    <AlertDialogTitle>Êtes-vous absolument sûr ?</AlertDialogTitle>
+                    <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
                     <AlertDialogDescription>
-                      Cette action est irréversible. Elle supprimera
-                      définitivement votre compte et effacera toutes vos données,
-                      y compris tous vos WODs enregistrés, de nos serveurs.
+                      This action is irreversible. It will permanently delete your account and erase all of your data, including all your saved WODs, from our servers.
                     </AlertDialogDescription>
                   </AlertDialogHeader>
                   <AlertDialogFooter>
-                    <AlertDialogCancel>Annuler</AlertDialogCancel>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
                     <AlertDialogAction
                       onClick={handleDeleteAccount}
                       className="bg-destructive hover:bg-destructive/90"
                     >
-                      Oui, supprimer mon compte
+                      Yes, delete my account
                     </AlertDialogAction>
                   </AlertDialogFooter>
                 </AlertDialogContent>
               </AlertDialog>
               <p className="text-sm text-muted-foreground mt-4">
-                Si vous supprimez votre compte, toutes vos données seront perdues à jamais.
+                If you delete your account, all your data will be lost forever.
               </p>
             </CardContent>
           </Card>

@@ -28,15 +28,17 @@ function AppLayoutContent({ children }: { children: React.ReactNode }) {
     return (
         <>
             <Sidebar className="relative overflow-hidden">
-                 <video
-                    src="/lateral_logo.mp4"
-                    autoPlay
-                    loop
-                    muted
-                    playsInline
-                    className="absolute inset-0 w-full h-full object-cover z-0 opacity-20 group-data-[collapsible=icon]:hidden"
-                    aria-label="Animation du logo WODBurner en fond"
-                />
+                 <div className="absolute inset-0 w-full h-full object-cover z-0 brightness-50 blur-sm">
+                    <video
+                        src="/lateral_logo.mp4"
+                        autoPlay
+                        loop
+                        muted
+                        playsInline
+                        className="w-full h-full object-cover"
+                        aria-label="WODBurner logo animation in background"
+                    />
+                 </div>
                  <div className="relative z-10 flex flex-col h-full bg-transparent">
                     <SidebarHeader>
                         {isMobile && openMobile ? (
@@ -46,7 +48,7 @@ function AppLayoutContent({ children }: { children: React.ReactNode }) {
                                 className="flex items-center gap-2 text-xl font-bold font-headline text-foreground h-auto p-0 hover:bg-transparent"
                             >
                                 <ArrowLeft className="h-5 w-5" />
-                                <span>Retour</span>
+                                <span>Back</span>
                             </Button>
                         ) : (
                             <Logo />
