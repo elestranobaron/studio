@@ -1,9 +1,5 @@
 import type {NextConfig} from 'next';
 
-// Charger les variables d'environnement depuis le fichier .env
-require('dotenv').config({ path: './.env' });
-
-
 const nextConfig: NextConfig = {
   /* config options here */
   typescript: {
