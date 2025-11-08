@@ -16,7 +16,8 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
 // This is defined outside the component to ensure it's stable.
 const getActionCodeSettings = () => ({
-    url: typeof window !== 'undefined' ? window.location.href : '',
+    // Use the origin and pathname to build a clean URL without any existing query params.
+    url: typeof window !== 'undefined' ? `${window.location.origin}/login` : '',
     handleCodeInApp: true,
 });
 
@@ -97,7 +98,7 @@ function LoginClientContent() {
                 // If found, proceed with the sign-in.
                 handleSignInWithLink(auth, emailFromStorage, href);
             } else {
-                // NO PROMPT. If email is not in storage, the link is considered incomplete on this device.
+                // If email is not in storage, the link is considered incomplete on this device.
                 setSignInError("Your sign-in link is missing session information. Please request the link again from this browser.");
                 setIsCheckingLink(false);
             }

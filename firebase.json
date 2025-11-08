@@ -10,7 +10,7 @@
       ]
     },
     {
-      "target": "landing", 
+      "target": "landing",
       "public": "public",
       "ignore": [
         "firebase.json",
@@ -25,5 +25,11 @@
         }
       ]
     }
-  ]
+  ],
+  "auth": {
+    "authorizedDomains": [
+      "localhost",
+      "wodburner.app"
+    ]
+  }
 }
