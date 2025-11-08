@@ -43,52 +43,76 @@ function LoginClientContent() {
         const href = window.location.href;
         if (isSignInWithEmailLink(auth, href)) {
             let emailFromStorage = window.localStorage.getItem('emailForSignIn');
+            
             if (!emailFromStorage) {
-                emailFromStorage = window.prompt('Please provide your email for confirmation');
+                // If the email is not in storage, we can't proceed.
+                // The user will have to try again.
+                toast({
+                    variant: 'destructive',
+                    title: 'Login Error',
+                    description: 'Your login link is missing session information. Please try sending a new link.',
+                });
+                setIsCheckingLink(false);
+                return;
             }
 
-            if(emailFromStorage) {
-                if (auth.currentUser && auth.currentUser.isAnonymous) {
-                    const credential = EmailAuthProvider.credentialWithLink(emailFromStorage, href);
-                    linkWithCredential(auth.currentUser, credential)
-                        .then(() => {
-                            window.localStorage.removeItem('emailForSignIn');
-                            toast({
-                                title: 'Account Updated!',
-                                description: 'Your account is now permanent. Your WODs are saved!',
-                            });
-                            router.push('/dashboard');
-                        })
-                        .catch((error) => {
-                             toast({
-                                variant: 'destructive',
-                                title: 'Linking Error',
-                                description: "This email may already be in use by another account.",
-                            });
-                            setIsCheckingLink(false);
+            if (auth.currentUser && auth.currentUser.isAnonymous) {
+                const credential = EmailAuthProvider.credentialWithLink(emailFromStorage, href);
+                linkWithCredential(auth.currentUser, credential)
+                    .then(() => {
+                        window.localStorage.removeItem('emailForSignIn');
+                        toast({
+                            title: 'Account Updated!',
+                            description: 'Your account is now permanent. Your WODs are saved!',
                         });
-                } else {
-                    // Standard sign-in
-                    signInWithEmailLink(auth, emailFromStorage, href)
-                        .then(() => {
-                            window.localStorage.removeItem('emailForSignIn');
-                            toast({
-                                title: 'Login Successful!',
-                                description: 'You are now signed in.',
+                        router.push('/dashboard');
+                    })
+                    .catch((error) => {
+                        // This specific error code means the email is already linked to another (non-anonymous) account.
+                        // The correct flow is to sign out the anonymous user and sign in the permanent one.
+                        if (error.code === 'auth/credential-already-in-use') {
+                            auth.signOut().then(() => {
+                                signInWithEmailLink(auth, emailFromStorage!, href).then(() => {
+                                     window.localStorage.removeItem('emailForSignIn');
+                                     router.push('/dashboard');
+                                }).catch(() => {
+                                     toast({
+                                        variant: 'destructive',
+                                        title: 'Login Error',
+                                        description: 'The link may be invalid or has expired.',
+                                    });
+                                    setIsCheckingLink(false);
+                                });
                             });
-                            router.push('/dashboard');
-                        })
-                        .catch(() => {
+                        } else {
+                            // Handle other linking errors
                             toast({
                                 variant: 'destructive',
                                 title: 'Login Error',
-                                description: 'The link may be invalid or has expired.',
+                                description: error.message || 'Could not link account.',
                             });
                             setIsCheckingLink(false);
-                        });
-                }
+                        }
+                    });
             } else {
-                 setIsCheckingLink(false);
+                // Standard sign-in for a new session
+                signInWithEmailLink(auth, emailFromStorage, href)
+                    .then(() => {
+                        window.localStorage.removeItem('emailForSignIn');
+                        toast({
+                            title: 'Login Successful!',
+                            description: 'You are now signed in.',
+                        });
+                        router.push('/dashboard');
+                    })
+                    .catch(() => {
+                        toast({
+                            variant: 'destructive',
+                            title: 'Login Error',
+                            description: 'The link may be invalid or has expired.',
+                        });
+                        setIsCheckingLink(false);
+                    });
             }
         } else {
             setIsCheckingLink(false);
