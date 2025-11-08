@@ -44,18 +44,26 @@ function LoginClientContent() {
         if (isSignInWithEmailLink(auth, href)) {
             let emailFromStorage = window.localStorage.getItem('emailForSignIn');
             
+            // If email is not in storage, try to get it from URL params
             if (!emailFromStorage) {
-                toast({
-                    variant: 'destructive',
-                    title: 'Session Invalide',
-                    description: "Pour des raisons de sécurité, veuillez cliquer sur le lien de connexion dans le même navigateur où vous avez fait la demande.",
-                });
-                setIsCheckingLink(false);
-                return;
+                const emailFromUrl = searchParams.get('email');
+                if (emailFromUrl) {
+                    emailFromStorage = emailFromUrl;
+                } else {
+                    toast({
+                        variant: 'destructive',
+                        title: 'Connexion impossible',
+                        description: "Le lien de connexion est incomplet. Veuillez réessayer.",
+                    });
+                    setIsCheckingLink(false);
+                    return;
+                }
             }
+            
+            const finalEmail = emailFromStorage;
 
             if (auth.currentUser && auth.currentUser.isAnonymous) {
-                const credential = EmailAuthProvider.credentialWithLink(emailFromStorage, href);
+                const credential = EmailAuthProvider.credentialWithLink(finalEmail, href);
                 linkWithCredential(auth.currentUser, credential)
                     .then(() => {
                         window.localStorage.removeItem('emailForSignIn');
@@ -68,7 +76,7 @@ function LoginClientContent() {
                     .catch((error) => {
                         if (error.code === 'auth/credential-already-in-use') {
                             auth.signOut().then(() => {
-                                signInWithEmailLink(auth, emailFromStorage!, href).then(() => {
+                                signInWithEmailLink(auth, finalEmail, href).then(() => {
                                      window.localStorage.removeItem('emailForSignIn');
                                      router.push('/dashboard');
                                 }).catch(() => {
@@ -90,7 +98,7 @@ function LoginClientContent() {
                         }
                     });
             } else {
-                signInWithEmailLink(auth, emailFromStorage, href)
+                signInWithEmailLink(auth, finalEmail, href)
                     .then(() => {
                         window.localStorage.removeItem('emailForSignIn');
                         toast({
@@ -111,7 +119,7 @@ function LoginClientContent() {
         } else {
             setIsCheckingLink(false);
         }
-    }, [auth, isUserLoading, router, toast]);
+    }, [auth, isUserLoading, router, toast, searchParams]);
 
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -129,7 +137,12 @@ function LoginClientContent() {
 
         try {
             auth.languageCode = navigator.language.split('-')[0] || 'en';
-            await sendSignInLinkToEmail(auth, email, actionCodeSettings);
+            // We pass the email in the URL for the stateless flow.
+            const settings = {
+                ...actionCodeSettings,
+                url: `${actionCodeSettings.url}?email=${encodeURIComponent(email)}`,
+            };
+            await sendSignInLinkToEmail(auth, email, settings);
             window.localStorage.setItem('emailForSignIn', email);
             setEmailSent(true);
             toast({
