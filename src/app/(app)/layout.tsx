@@ -1,7 +1,6 @@
 
 'use client';
 
-import { Logo } from "@/components/icons";
 import { MainNav } from "@/components/main-nav";
 import {
   Sidebar,
