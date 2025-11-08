@@ -20,15 +20,9 @@ service cloud.firestore {
     }
 
     // Rules for the public community WODs collection
-    match /communityWods/{document=**} {
-      // Anyone can read the collection or any single document within it.
-      allow read: if true;
-    }
-
-    // New rule for creating community WODs, separated for clarity
     match /communityWods/{wodId} {
-        // Only signed-in (non-anonymous) users can create community WODs.
-        allow create: if isSignedIn() && request.auth.token.firebase.sign_in_provider != 'anonymous';
+        // Authenticated (non-anonymous) users can read and create community WODs.
+        allow read, create: if isSignedIn() && request.auth.token.firebase.sign_in_provider != 'anonymous';
         // No one can update or delete community WODs directly for data integrity.
         allow update, delete: if false;
     }
