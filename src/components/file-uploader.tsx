@@ -7,7 +7,6 @@ import { UploadCloud, X, LoaderCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
-import { analyzeWod } from "@/ai/flows/analyze-wod-flow";
 import type { AnalyzeWodOutput } from "@/ai/schema/wod-schema";
 import { Input } from "./ui/input";
 import { Textarea } from "./ui/textarea";
@@ -92,7 +91,19 @@ export function FileUploader() {
     setIsLoading(true);
     try {
       const photoDataUri = await toBase64(file);
-      const result = await analyzeWod({ photoDataUri });
+      
+      const response = await fetch('/api/analyze', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ photoDataUri }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.details || `Request failed with status ${response.status}`);
+      }
+
+      const result = await response.json();
       setAnalysisResult(result);
     } catch (error) {
       console.error("Analysis Error:", error);
