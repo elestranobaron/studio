@@ -73,7 +73,7 @@ export default function NewWodPage() {
                 name,
                 type,
                 description: structuredDescription,
-                date: format(new Date(), "yyyy-MM-dd"),
+                date: new Date().toISOString(),
                 imageUrl: placeholderImageUrl,
                 imageHint: imageHint,
                 duration: duration,

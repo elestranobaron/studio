@@ -139,7 +139,7 @@ export function FileUploader() {
             name: analysisResult.name,
             type: analysisResult.type,
             description: analysisResult.description,
-            date: format(new Date(), "yyyy-MM-dd"),
+            date: new Date().toISOString(),
             imageUrl: photoDataUri,
             imageHint: analysisResult.imageHint,
             duration: analysisResult.duration,
