@@ -75,15 +75,17 @@ function LoginClientContent() {
                     })
                     .catch((error) => {
                         if (error.code === 'auth/credential-already-in-use') {
+                            // User is anonymous and the email is already in use.
+                            // Sign out the anonymous user and sign in with the permanent account.
                             auth.signOut().then(() => {
                                 signInWithEmailLink(auth, finalEmail, href).then(() => {
                                      window.localStorage.removeItem('emailForSignIn');
                                      router.push('/dashboard');
-                                }).catch(() => {
+                                }).catch((signInError) => {
                                      toast({
                                         variant: 'destructive',
                                         title: 'Login Error',
-                                        description: 'The link may be invalid or has expired.',
+                                        description: signInError.message || 'The link may be invalid or has expired.',
                                     });
                                     setIsCheckingLink(false);
                                 });
@@ -107,11 +109,11 @@ function LoginClientContent() {
                         });
                         router.push('/dashboard');
                     })
-                    .catch(() => {
+                    .catch((error) => {
                         toast({
                             variant: 'destructive',
                             title: 'Login Error',
-                            description: 'The link may be invalid or has expired.',
+                            description: error.message || 'The link may be invalid or has expired.',
                         });
                         setIsCheckingLink(false);
                     });
