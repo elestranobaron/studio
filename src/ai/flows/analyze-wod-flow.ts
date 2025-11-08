@@ -23,6 +23,27 @@ const analyzeWodPrompt = ai.definePrompt({
   name: 'analyzeWodPrompt',
   input: {schema: AnalyzeWodInputSchema},
   output: {schema: AnalyzeWodOutputSchema},
+  config: {
+    // Add safety settings to moderate community-shared content
+    safetySettings: [
+        {
+            category: 'HARM_CATEGORY_DANGEROUS_CONTENT',
+            threshold: 'BLOCK_MEDIUM_AND_ABOVE',
+        },
+        {
+            category: 'HARM_CATEGORY_HATE_SPEECH',
+            threshold: 'BLOCK_MEDIUM_AND_ABOVE',
+        },
+        {
+            category: 'HARM_CATEGORY_HARASSMENT',
+            threshold: 'BLOCK_MEDIUM_AND_ABOVE',
+        },
+        {
+            category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT',
+            threshold: 'BLOCK_MEDIUM_AND_ABOVE',
+        },
+    ]
+  },
   prompt: `You are an expert CrossFit coach. Your task is to analyze the provided image of a Workout of the Day (WOD) and extract its key details.
 
 The image contains a description of a workout. It might be split into multiple columns or sections (like 'Strength', 'Metcon', 'Warm-up'). Please carefully read the ENTIRE image and extract the following information.
