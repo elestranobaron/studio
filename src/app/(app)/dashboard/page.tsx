@@ -4,7 +4,7 @@
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { WodCard } from '@/components/wod-card';
-import { PlusCircle } from 'lucide-react';
+import { LogIn, PlusCircle } from 'lucide-react';
 import { SidebarTrigger } from '@/components/ui/sidebar';
 import { useCollection, useFirebase } from '@/firebase';
 import { collection, query, orderBy, limit } from 'firebase/firestore';
@@ -13,6 +13,7 @@ import type { WOD } from '@/lib/types';
 import { useUser } from '@/firebase/provider';
 import { useMemo } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
 function WodSkeleton() {
   return (
@@ -80,14 +81,61 @@ function WodList({
 
 function CommunityWodList() {
     const { firestore } = useFirebase();
+    const { user, isUserLoading } = useUser();
+
+    // Only fetch community WODs if the user is NOT anonymous
+    const shouldFetchData = !isUserLoading && user && !user.isAnonymous;
 
     const communityWodsCollection = useMemo(() => {
-        if (!firestore) return null;
+        if (!firestore || !shouldFetchData) return null;
         return query(collection(firestore, 'communityWods'), orderBy('date', 'desc'), limit(20));
-    }, [firestore]);
+    }, [firestore, shouldFetchData]);
 
-    const { data: communityWods, isLoading: isCommunityWodsLoading } = useCollection<WOD>(communityWodsCollection);
+    const { data: communityWods, isLoading: isCommunityWodsLoading, error } = useCollection<WOD>(communityWodsCollection);
 
+    if (isUserLoading) {
+      return (
+         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            <WodSkeleton />
+            <WodSkeleton />
+         </div>
+      );
+    }
+    
+    if (user?.isAnonymous) {
+      return (
+        <div className="flex items-center justify-center h-full py-16">
+            <Card className="max-w-md text-center">
+                <CardHeader>
+                    <CardTitle>Join the Community!</CardTitle>
+                    <CardDescription>
+                        Create a free account to view, share, and get inspired by WODs from the entire community.
+                    </CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <Button asChild>
+                        <Link href="/login">
+                            <LogIn className="mr-2 h-4 w-4" />
+                            Sign Up / Log In
+                        </Link>
+                    </Button>
+                </CardContent>
+            </Card>
+        </div>
+      )
+    }
+
+    if (error) {
+        return (
+             <div className="flex flex-col items-center justify-center h-full text-center py-16">
+                <p className="text-lg text-destructive">An error occurred</p>
+                <p className="text-sm text-muted-foreground">
+                    Could not load community WODs. Please try again later.
+                </p>
+            </div>
+        )
+    }
+    
     return (
         <WodList
             wods={communityWods}
@@ -104,6 +152,8 @@ export default function DashboardPage() {
 
   const userWodsCollection = useMemo(() => {
     if (!firestore || !user) return null;
+    // Don't fetch WODs for anonymous users if they don't have any yet
+    if (user.isAnonymous && userWodsCollection === null) return null;
     return collection(firestore, 'users', user.uid, 'wods');
   }, [firestore, user]);
 
