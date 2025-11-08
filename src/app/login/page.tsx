@@ -2,20 +2,20 @@
 'use client';
 
 import { useState, useEffect, Suspense, useCallback } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth, useUser } from '@/firebase/provider';
 import { sendSignInLinkToEmail, isSignInWithEmailLink, signInWithEmailLink, linkWithCredential, EmailAuthProvider, Auth, signOut } from 'firebase/auth';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
-import { LoaderCircle, CheckCircle, Dumbbell, Archive, LineChart } from 'lucide-react';
+import { LoaderCircle, CheckCircle, Dumbbell, Archive, LineChart, AlertTriangle } from 'lucide-react';
 import { Logo } from '@/components/icons';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+
 
 // This is defined outside the component to ensure it's stable.
 const getActionCodeSettings = () => ({
-    // IMPORTANT: This URL must be the same page that handles the sign-in.
-    // It tells Firebase where to redirect the user after they click the link.
     url: typeof window !== 'undefined' ? window.location.href : '',
     handleCodeInApp: true,
 });
@@ -25,10 +25,12 @@ function LoginClientContent() {
     const [isLoading, setIsLoading] = useState(false);
     const [isCheckingLink, setIsCheckingLink] = useState(true);
     const [emailSent, setEmailSent] = useState(false);
+    const [signInError, setSignInError] = useState<string | null>(null);
     const auth = useAuth();
     const router = useRouter();
     const { toast } = useToast();
     const { user, isUserLoading } = useUser();
+    const searchParams = useSearchParams();
 
     useEffect(() => {
         if (!isUserLoading && user && !user.isAnonymous) {
@@ -38,20 +40,20 @@ function LoginClientContent() {
 
     const handleSignInWithLink = useCallback(async (authInstance: Auth, emailForSignIn: string, link: string) => {
         setIsCheckingLink(true);
+        setSignInError(null);
         try {
-            if (authInstance.currentUser && authInstance.currentUser.isAnonymous) {
-                // User is anonymous, try to link the account first.
+            const currentUser = authInstance.currentUser;
+            if (currentUser && currentUser.isAnonymous) {
                 const credential = EmailAuthProvider.credentialWithLink(emailForSignIn, link);
                 try {
-                    await linkWithCredential(authInstance.currentUser, credential);
+                    await linkWithCredential(currentUser, credential);
                     toast({
                         title: 'Account Updated!',
                         description: 'Your account is now permanent. Your WODs are saved!',
                     });
                 } catch (error: any) {
-                    // This specific error means the email is already in use by another account.
-                    // So, we sign out the anonymous user and sign in the permanent one.
                     if (error.code === 'auth/credential-already-in-use') {
+                        // This email is already in use. Sign out the anonymous user and sign in the permanent one.
                         await signOut(authInstance);
                         await signInWithEmailLink(authInstance, emailForSignIn, link);
                         toast({
@@ -59,12 +61,11 @@ function LoginClientContent() {
                             description: 'Welcome back!',
                         });
                     } else {
-                        // Re-throw other linking errors
-                        throw error;
+                        throw error; // Re-throw other linking errors
                     }
                 }
             } else {
-                // No user or a non-anonymous user is already signed in. Just sign in with the link.
+                // No user or a non-anonymous user is signed in. Just sign in.
                 await signInWithEmailLink(authInstance, emailForSignIn, link);
                 toast({
                     title: 'Login Successful!',
@@ -75,51 +76,41 @@ function LoginClientContent() {
             router.push('/dashboard');
         } catch (error: any) {
             console.error('Sign-in error:', error);
-            toast({
-                variant: 'destructive',
-                title: 'Login Error',
-                description: 'The link may be invalid or has expired. Please try again.',
-            });
+            setSignInError('The sign-in link is invalid or has expired. Please request a new one.');
         } finally {
             setIsCheckingLink(false);
         }
     }, [router, toast]);
 
+
     useEffect(() => {
         if (!auth || isUserLoading) return;
-
+    
         const href = window.location.href;
+    
+        // Only process the link if the 'apiKey' param is present, which is a marker for a Firebase link
         if (isSignInWithEmailLink(auth, href)) {
             // First, try to get the email from localStorage.
             let emailFromStorage = window.localStorage.getItem('emailForSignIn');
-            
+    
             if (emailFromStorage) {
                 // If found, proceed with the sign-in.
                 handleSignInWithLink(auth, emailFromStorage, href);
             } else {
-                // If not found in localStorage (e.g., link opened in a different browser),
-                // we prompt the user for their email. This is a security fallback from Firebase.
-                // This is the only way to make it work across different browsers/devices.
-                const userProvidedEmail = window.prompt('Please provide your email for confirmation.');
-                if (userProvidedEmail) {
-                    handleSignInWithLink(auth, userProvidedEmail, href);
-                } else {
-                     toast({
-                        variant: 'destructive',
-                        title: 'Login Canceled',
-                        description: 'Email confirmation is required to complete the sign-in process.',
-                    });
-                    setIsCheckingLink(false);
-                }
+                // NO PROMPT. If email is not in storage, the link is considered incomplete on this device.
+                setSignInError("Your sign-in link is missing session information. Please request the link again from this browser.");
+                setIsCheckingLink(false);
             }
         } else {
             setIsCheckingLink(false);
         }
     }, [auth, isUserLoading, handleSignInWithLink]);
 
+
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsLoading(true);
+        setSignInError(null);
         
         if (!auth) {
             toast({
@@ -212,6 +203,13 @@ function LoginClientContent() {
                             </div>
                         ) : (
                             <form onSubmit={handleLogin} className="space-y-4">
+                                {signInError && (
+                                    <Alert variant="destructive">
+                                        <AlertTriangle className="h-4 w-4" />
+                                        <AlertTitle>Login Failed</AlertTitle>
+                                        <AlertDescription>{signInError}</AlertDescription>
+                                    </Alert>
+                                )}
                                 <Input
                                     type="email"
                                     placeholder="name@example.com"
