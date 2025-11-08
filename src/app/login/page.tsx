@@ -37,55 +37,60 @@ function LoginClientContent() {
     }, [user, isUserLoading, router]);
     
     
-    const handleSignInWithLink = useCallback(async (auth: Auth, email: string, link: string) => {
+    const handleSignInWithLink = useCallback(async (authInstance: Auth, storedEmail: string, link: string) => {
+        setIsCheckingLink(true);
         try {
-            // Case 1: An anonymous user is trying to upgrade their account.
-            if (auth.currentUser && auth.currentUser.isAnonymous) {
-                const credential = EmailAuthProvider.credentialWithLink(email, link);
+            // Case 1: Anonymous user is upgrading to a permanent account.
+            if (authInstance.currentUser && authInstance.currentUser.isAnonymous) {
+                const credential = EmailAuthProvider.credentialWithLink(storedEmail, link);
                 try {
-                    await linkWithCredential(auth.currentUser, credential);
-                    window.localStorage.removeItem('emailForSignIn');
+                    // Try to link the anonymous account with the email credential.
+                    await linkWithCredential(authInstance.currentUser, credential);
                     toast({
                         title: 'Account Updated!',
                         description: 'Your account is now permanent. Your WODs are saved!',
                     });
-                    router.push('/dashboard');
                 } catch (error: any) {
                     // This is the critical case: the email is already in use by another account.
                     if (error.code === 'auth/credential-already-in-use') {
-                        await auth.signOut(); // Sign out the anonymous user first.
-                        await signInWithEmailLink(auth, email, link); // Then sign in the permanent user.
-                        window.localStorage.removeItem('emailForSignIn');
+                        // Sign out the anonymous user first to avoid conflicts.
+                        await authInstance.signOut();
+                        // Then, sign in the permanent user with the same link.
+                        await signInWithEmailLink(authInstance, storedEmail, link);
                         toast({
                             title: 'Login Successful!',
                             description: 'Welcome back!',
                         });
-                        router.push('/dashboard');
                     } else {
-                        throw error; // Re-throw other linking errors
+                        // For other linking errors, show a generic message.
+                        throw error;
                     }
                 }
             } else {
-                // Case 2: Standard sign-in for a new or returning user.
-                await signInWithEmailLink(auth, email, link);
-                window.localStorage.removeItem('emailForSignIn');
+                // Case 2: Standard sign-in for a new or returning user (not anonymous).
+                await signInWithEmailLink(authInstance, storedEmail, link);
                 toast({
                     title: 'Login Successful!',
                     description: 'You are now signed in.',
                 });
-                router.push('/dashboard');
             }
+            
+            // On success, clean up and redirect.
+            window.localStorage.removeItem('emailForSignIn');
+            router.push('/dashboard');
+
         } catch (error: any) {
             console.error('Sign-in error:', error);
             toast({
                 variant: 'destructive',
                 title: 'Login Error',
-                description: error.message || 'The link may be invalid, has expired, or the session was lost.',
+                description: error.message || 'The link may be invalid or has expired. Please try again.',
             });
         } finally {
             setIsCheckingLink(false);
         }
     }, [router, toast]);
+
 
     useEffect(() => {
         if (!auth || isUserLoading) return;
@@ -95,18 +100,14 @@ function LoginClientContent() {
             let emailFromStorage = window.localStorage.getItem('emailForSignIn');
             
             if (!emailFromStorage) {
-                const emailFromUrl = searchParams.get('email');
-                if (emailFromUrl) {
-                    emailFromStorage = emailFromUrl;
-                } else {
-                    toast({
-                        variant: 'destructive',
-                        title: 'Connexion impossible',
-                        description: "Le lien de connexion est incomplet. Veuillez réessayer.",
-                    });
-                    setIsCheckingLink(false);
-                    return;
-                }
+                // This is a recovery mechanism for cross-device or new session flows.
+                 toast({
+                    variant: 'destructive',
+                    title: 'Login Incomplete',
+                    description: "For security, please click the login link in the same browser where you made the request.",
+                });
+                setIsCheckingLink(false);
+                return;
             }
 
             handleSignInWithLink(auth, emailFromStorage, href);
@@ -114,7 +115,7 @@ function LoginClientContent() {
         } else {
             setIsCheckingLink(false);
         }
-    }, [auth, isUserLoading, searchParams, toast, handleSignInWithLink]);
+    }, [auth, isUserLoading, handleSignInWithLink]);
 
 
     const handleLogin = async (e: React.FormEvent) => {
@@ -132,13 +133,7 @@ function LoginClientContent() {
         }
 
         try {
-            auth.languageCode = navigator.language.split('-')[0] || 'en';
-            // We pass the email in the URL for the stateless flow.
-            const settings = {
-                ...actionCodeSettings,
-                url: `${actionCodeSettings.url}?email=${encodeURIComponent(email)}`,
-            };
-            await sendSignInLinkToEmail(auth, email, settings);
+            await sendSignInLinkToEmail(auth, email, actionCodeSettings);
             window.localStorage.setItem('emailForSignIn', email);
             setEmailSent(true);
             toast({
