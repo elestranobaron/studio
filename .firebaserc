@@ -1,5 +1,18 @@
 {
   "projects": {
     "default": "studio-9534743514-17d90"
-  }
+  },
+  "targets": {
+    "studio-9534743514-17d90": {
+      "hosting": {
+        "app": [
+          "studio-9534743514-17d90"
+        ],
+        "landing": [
+          "studio-9534743514-17d90-landing"
+        ]
+      }
+    }
+  },
+  "etags": {}
 }

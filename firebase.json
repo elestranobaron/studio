@@ -11,7 +11,7 @@
     },
     {
       "target": "landing",
-      "public": "public",
+      "public": "public-landing",
       "ignore": [
         "firebase.json",
         "**/.*",

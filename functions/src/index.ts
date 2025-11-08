@@ -13,7 +13,7 @@ const BREVO_API_KEY = process.env.BREVO_API_KEY;
 if (!BREVO_API_KEY) {
   throw new Error("BREVO_API_KEY missing in .env");
 }
-
+/*
 export const sendMagicLink = functions.https.onCall(async (data) => {
   const { email } = data.data;
   if (!email) {
@@ -50,16 +50,33 @@ export const sendMagicLink = functions.https.onCall(async (data) => {
     }
   }
 });
-/*
+
 export const verifyMagicLinkAccess = functions.https.onCall(async (data, context) => {
   const { email } = data;
-  const ip = context.rawRequest.ip;
-  const userAgent = context.rawRequest.headers['user-agent'];
+  if (!email) {
+    throw new functions.https.HttpsError("invalid-argument", "email required");
+  }
+
+  const ip = context.rawRequest?.ip || context.rawRequest?.headers['x-forwarded-for']?.[0] || 'unknown';
+  const userAgent = context.rawRequest?.headers['user-agent'] || 'unknown';
 
   const doc = await admin.firestore().collection('magicLinks').doc(email).get();
-  if (!doc.exists || doc.data()?.ip !== ip) {
-    return { allowed: false };
+
+  if (!doc.exists) {
+    return { allowed: false, reason: "no_attempt" };
   }
+
+  const attempt = doc.data()!;
+  const timeDiff = Date.now() - attempt.createdAt.toMillis();
+  if (timeDiff > 15 * 60 * 1000) { // 15 min
+    await doc.ref.delete();
+    return { allowed: false, reason: "expired" };
+  }
+
+  if (attempt.ip !== ip || attempt.userAgent !== userAgent) {
+    return { allowed: false, reason: "mismatch" };
+  }
+
   await doc.ref.delete();
   return { allowed: true };
 });*/
