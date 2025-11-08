@@ -33,7 +33,7 @@ function AppLayoutContent({ children }: { children: React.ReactNode }) {
                         loop
                         muted
                         playsInline
-                        className="w-full h-full object-cover"
+                        className="w-full h-full object-contain"
                         aria-label="WODBurner logo animation in background"
                     />
                  </div>
