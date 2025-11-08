@@ -31,7 +31,7 @@ function WodIcon({ type }: { type: WOD["type"] }) {
 
 export function WodCard({ wod }: { wod: WOD }) {
     
-    const formattedDate = wod.date ? format(new Date(wod.date), "PPP") : "No date";
+    const formattedDate = wod.date ? format(new Date(wod.date), "PPP p") : "No date";
 
     // Create a flat string from the description, supporting both old and new formats.
     const flatDescription = Array.isArray(wod.description)
