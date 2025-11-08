@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import { Logo } from "@/components/icons";
@@ -27,7 +26,7 @@ function AppLayoutContent({ children }: { children: React.ReactNode }) {
 
     return (
         <>
-            <Sidebar className="relative overflow-hidden">
+            <Sidebar className="flex flex-col">
                  <div className="absolute inset-0 w-full h-full object-cover z-0 brightness-50">
                     <video
                         src="/lateral_logo.mp4"
@@ -39,7 +38,7 @@ function AppLayoutContent({ children }: { children: React.ReactNode }) {
                         aria-label="WODBurner logo animation in background"
                     />
                  </div>
-                 <div className="relative z-10 flex flex-col h-full bg-transparent">
+                 <div className="relative z-10 flex flex-col h-full">
                     <SidebarHeader>
                         {isMobile && openMobile ? (
                             <Button
@@ -54,16 +53,13 @@ function AppLayoutContent({ children }: { children: React.ReactNode }) {
                             <Logo />
                         )}
                     </SidebarHeader>
-                    <SidebarContent>
+                    <SidebarContent className="flex-1">
                         <MainNav />
                     </SidebarContent>
-                    
-                    <div className="mt-auto">
-                        <SidebarFooter>
-                            <SidebarSeparator />
-                            <UserNav />
-                        </SidebarFooter>
-                    </div>
+                    <SidebarFooter>
+                        <SidebarSeparator />
+                        <UserNav />
+                    </SidebarFooter>
                 </div>
             </Sidebar>
             <SidebarInset>{children}</SidebarInset>
