@@ -27,6 +27,8 @@ function LoginClientContent() {
     const [isCheckingLink, setIsCheckingLink] = useState(true);
     const [emailSent, setEmailSent] = useState(false);
     const [signInError, setSignInError] = useState<string | null>(null);
+    const [promptForEmail, setPromptForEmail] = useState(false);
+    
     const auth = useAuth();
     const router = useRouter();
     const { toast } = useToast();
@@ -42,6 +44,7 @@ function LoginClientContent() {
     const handleSignInWithLink = useCallback(async (authInstance: Auth, emailForSignIn: string, link: string) => {
         setIsCheckingLink(true);
         setSignInError(null);
+        setPromptForEmail(false);
         try {
             const currentUser = authInstance.currentUser;
             if (currentUser && currentUser.isAnonymous) {
@@ -54,7 +57,6 @@ function LoginClientContent() {
                     });
                 } catch (error: any) {
                     if (error.code === 'auth/credential-already-in-use') {
-                        // This email is already in use. Sign out the anonymous user and sign in the permanent one.
                         await signOut(authInstance);
                         await signInWithEmailLink(authInstance, emailForSignIn, link);
                         toast({
@@ -62,11 +64,10 @@ function LoginClientContent() {
                             description: 'Welcome back!',
                         });
                     } else {
-                        throw error; // Re-throw other linking errors
+                        throw error;
                     }
                 }
             } else {
-                // No user or a non-anonymous user is signed in. Just sign in.
                 await signInWithEmailLink(authInstance, emailForSignIn, link);
                 toast({
                     title: 'Login Successful!',
@@ -89,17 +90,14 @@ function LoginClientContent() {
     
         const href = window.location.href;
     
-        // Only process the link if the 'apiKey' param is present, which is a marker for a Firebase link
         if (isSignInWithEmailLink(auth, href)) {
-            // First, try to get the email from localStorage.
             let emailFromStorage = window.localStorage.getItem('emailForSignIn');
     
             if (emailFromStorage) {
-                // If found, proceed with the sign-in.
                 handleSignInWithLink(auth, emailFromStorage, href);
             } else {
-                // If email is not in storage, the link is considered incomplete on this device.
-                setSignInError("Your sign-in link is missing session information. Please request the link again from this browser.");
+                // If email is not in storage, prompt the user to enter it.
+                setPromptForEmail(true);
                 setIsCheckingLink(false);
             }
         } else {
@@ -144,6 +142,13 @@ function LoginClientContent() {
         }
     };
 
+    const handleConfirmEmailAndSignIn = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (auth && email) {
+            handleSignInWithLink(auth, email, window.location.href);
+        }
+    };
+
     if (isCheckingLink || isUserLoading || (user && !user.isAnonymous)) {
         return (
             <div className="flex h-screen w-full flex-col items-center justify-center gap-4">
@@ -151,6 +156,41 @@ function LoginClientContent() {
                 <p className="text-muted-foreground">Verifying...</p>
             </div>
         );
+    }
+    
+    if (promptForEmail) {
+        return (
+             <div className="flex h-screen w-full items-center justify-center bg-background p-4">
+                 <Card className="w-full max-w-sm">
+                    <CardHeader>
+                        <CardTitle>Confirm Email</CardTitle>
+                        <CardDescription>To complete sign-in, please provide the email address where you received the link.</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                         <form onSubmit={handleConfirmEmailAndSignIn} className="space-y-4">
+                            {signInError && (
+                                <Alert variant="destructive">
+                                    <AlertTriangle className="h-4 w-4" />
+                                    <AlertTitle>Login Failed</AlertTitle>
+                                    <AlertDescription>{signInError}</AlertDescription>
+                                </Alert>
+                            )}
+                            <Input
+                                type="email"
+                                placeholder="name@example.com"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                required
+                                disabled={isLoading}
+                            />
+                            <Button type="submit" className="w-full" disabled={isLoading}>
+                                {isLoading ? <LoaderCircle className="animate-spin" /> : 'Sign In'}
+                            </Button>
+                        </form>
+                    </CardContent>
+                </Card>
+             </div>
+        )
     }
 
     return (
@@ -243,3 +283,5 @@ export default function LoginPage() {
         </Suspense>
     )
 }
+
+    
