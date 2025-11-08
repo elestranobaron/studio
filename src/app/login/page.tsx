@@ -4,12 +4,13 @@
 import { useState, useEffect, Suspense, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth, useUser } from '@/firebase/provider';
-import { 
-    sendSignInLinkToEmail, 
-    isSignInWithEmailLink, 
-    signInWithEmailLink, 
-    Auth, 
+import {
+    isSignInWithEmailLink,
+    signInWithEmailLink,
+    Auth,
 } from 'firebase/auth';
+// === NOUVEAU CODE BREVO ===
+import { getFunctions, httpsCallable } from 'firebase/functions';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -18,13 +19,6 @@ import { LoaderCircle, CheckCircle, Dumbbell, Archive, LineChart, AlertTriangle 
 import { Logo } from '@/components/icons';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
-
-// This is defined outside the component to ensure it's stable.
-const getActionCodeSettings = () => ({
-    // Use the origin and pathname to build a clean URL without any existing query params.
-    url: typeof window !== 'undefined' ? `${window.location.origin}/login` : '',
-    handleCodeInApp: true,
-});
 
 function LoginClientContent() {
     const [email, setEmail] = useState('');
@@ -111,8 +105,17 @@ function LoginClientContent() {
         }
 
         try {
-            const actionCodeSettings = getActionCodeSettings();
-            await sendSignInLinkToEmail(auth, email, actionCodeSettings);
+            // Récupère les Cloud Functions
+            const functions = getFunctions();
+            const sendMagicLink = httpsCallable(functions, 'sendMagicLink');
+
+            // Envoie le lien via Brevo
+            await sendMagicLink({
+            email,
+            link: `${window.location.origin}/login` // Firebase remplira le token
+            });
+
+            // === FIN NOUVEAU CODE ===
             window.localStorage.setItem('emailForSignIn', email);
             setEmailSent(true);
             toast({
