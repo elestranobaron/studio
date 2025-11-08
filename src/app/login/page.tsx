@@ -2,7 +2,7 @@
 'use client';
 
 import { useState, useEffect, Suspense, useCallback } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { useAuth, useUser } from '@/firebase/provider';
 import { sendSignInLinkToEmail, isSignInWithEmailLink, signInWithEmailLink, linkWithCredential, EmailAuthProvider, Auth, signOut } from 'firebase/auth';
 import { Button } from '@/components/ui/button';
@@ -38,6 +38,7 @@ function LoginClientContent() {
         setIsCheckingLink(true);
         try {
             if (authInstance.currentUser && authInstance.currentUser.isAnonymous) {
+                // User is anonymous, try to link the account first.
                 const credential = EmailAuthProvider.credentialWithLink(emailForSignIn, link);
                 try {
                     await linkWithCredential(authInstance.currentUser, credential);
@@ -46,6 +47,8 @@ function LoginClientContent() {
                         description: 'Your account is now permanent. Your WODs are saved!',
                     });
                 } catch (error: any) {
+                    // This specific error means the email is already in use by another account.
+                    // So, we sign out the anonymous user and sign in the permanent one.
                     if (error.code === 'auth/credential-already-in-use') {
                         await signOut(authInstance);
                         await signInWithEmailLink(authInstance, emailForSignIn, link);
@@ -54,10 +57,12 @@ function LoginClientContent() {
                             description: 'Welcome back!',
                         });
                     } else {
+                        // Re-throw other linking errors
                         throw error;
                     }
                 }
             } else {
+                // No user or a non-anonymous user is already signed in. Just sign in with the link.
                 await signInWithEmailLink(authInstance, emailForSignIn, link);
                 toast({
                     title: 'Login Successful!',
@@ -83,20 +88,17 @@ function LoginClientContent() {
 
         const href = window.location.href;
         if (isSignInWithEmailLink(auth, href)) {
-            let emailFromStorage = window.localStorage.getItem('emailForSignIn');
-            if (!emailFromStorage) {
-                // If email is not in storage, prompt the user for it.
-                // This can happen if they open the link on a different device.
-                emailFromStorage = window.prompt('Please provide your email for confirmation');
-            }
+            const emailFromStorage = window.localStorage.getItem('emailForSignIn');
             
             if (emailFromStorage) {
                 handleSignInWithLink(auth, emailFromStorage, href);
             } else {
+                // NO prompt. The user must use the link in the same browser.
+                // This is a security measure of Firebase Email Link Auth.
                 toast({
                     variant: 'destructive',
                     title: 'Login Failed',
-                    description: "Could not confirm your email. Please try sending the link again.",
+                    description: "Your sign-in link is missing session information. Please request a new link in this browser.",
                 });
                 setIsCheckingLink(false);
             }
