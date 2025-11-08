@@ -12,8 +12,10 @@ import { useToast } from '@/hooks/use-toast';
 import { LoaderCircle, CheckCircle, Dumbbell, Archive, LineChart } from 'lucide-react';
 import { Logo } from '@/components/icons';
 
-// This is defined outside the component to ensure it's stable and doesn't rely on window object during SSR.
+// This is defined outside the component to ensure it's stable.
 const getActionCodeSettings = () => ({
+    // IMPORTANT: This URL must be the same page that handles the sign-in.
+    // It tells Firebase where to redirect the user after they click the link.
     url: typeof window !== 'undefined' ? window.location.href : '',
     handleCodeInApp: true,
 });
@@ -88,19 +90,27 @@ function LoginClientContent() {
 
         const href = window.location.href;
         if (isSignInWithEmailLink(auth, href)) {
-            const emailFromStorage = window.localStorage.getItem('emailForSignIn');
+            // First, try to get the email from localStorage.
+            let emailFromStorage = window.localStorage.getItem('emailForSignIn');
             
             if (emailFromStorage) {
+                // If found, proceed with the sign-in.
                 handleSignInWithLink(auth, emailFromStorage, href);
             } else {
-                // NO prompt. The user must use the link in the same browser.
-                // This is a security measure of Firebase Email Link Auth.
-                toast({
-                    variant: 'destructive',
-                    title: 'Login Failed',
-                    description: "Your sign-in link is missing session information. Please request a new link in this browser.",
-                });
-                setIsCheckingLink(false);
+                // If not found in localStorage (e.g., link opened in a different browser),
+                // we prompt the user for their email. This is a security fallback from Firebase.
+                // This is the only way to make it work across different browsers/devices.
+                const userProvidedEmail = window.prompt('Please provide your email for confirmation.');
+                if (userProvidedEmail) {
+                    handleSignInWithLink(auth, userProvidedEmail, href);
+                } else {
+                     toast({
+                        variant: 'destructive',
+                        title: 'Login Canceled',
+                        description: 'Email confirmation is required to complete the sign-in process.',
+                    });
+                    setIsCheckingLink(false);
+                }
             }
         } else {
             setIsCheckingLink(false);
