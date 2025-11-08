@@ -8,10 +8,7 @@ import {
     sendSignInLinkToEmail, 
     isSignInWithEmailLink, 
     signInWithEmailLink, 
-    linkWithCredential, 
-    EmailAuthProvider, 
     Auth, 
-    signOut 
 } from 'firebase/auth';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -55,46 +52,19 @@ function LoginClientContent() {
         const link = window.location.href;
 
         try {
-            const currentUser = authInstance.currentUser;
-            // Case 1: An anonymous user is trying to upgrade their account.
-            if (currentUser && currentUser.isAnonymous) {
-                const credential = EmailAuthProvider.credentialWithLink(emailForSignIn, link);
-                try {
-                    // Attempt to link the anonymous account with the email credential.
-                    await linkWithCredential(currentUser, credential);
-                    toast({
-                        title: 'Account Updated!',
-                        description: 'Your account is now permanent. Your WODs are saved!',
-                    });
-                } catch (error: any) {
-                    // This is the critical error handling. If the email is already in use,
-                    // it means the user is trying to log into an existing account.
-                    if (error.code === 'auth/credential-already-in-use') {
-                        // So, we sign out the anonymous user...
-                        await signOut(authInstance);
-                        // ...and then sign them in with their existing permanent account.
-                        await signInWithEmailLink(authInstance, emailForSignIn, link);
-                        toast({
-                            title: 'Login Successful!',
-                            description: 'Welcome back!',
-                        });
-                    } else {
-                        // Re-throw other linking errors.
-                        throw error;
-                    }
-                }
-            } else {
-                // Case 2: No user or a non-anonymous user is signing in.
-                await signInWithEmailLink(authInstance, emailForSignIn, link);
-                toast({
-                    title: 'Login Successful!',
-                    description: 'You are now signed in.',
-                });
-            }
+            // The simplest, most robust flow: sign in directly.
+            // This will create a new user or sign in an existing one.
+            // If an anonymous user was active, their session is replaced by this new permanent one.
+            await signInWithEmailLink(authInstance, emailForSignIn, link);
+            toast({
+                title: 'Login Successful!',
+                description: 'You are now signed in.',
+            });
             window.localStorage.removeItem('emailForSignIn');
             router.push('/dashboard');
         } catch (error: any) {
             console.error('Sign-in error:', error);
+            // This is the generic error message if the link is bad or expired.
             setSignInError('The sign-in link is invalid, has expired, or the email is incorrect. Please request a new one.');
             setPromptForEmail(true); // Fallback to asking for email if any step fails.
         } finally {
@@ -215,7 +185,7 @@ function LoginClientContent() {
     return (
         <div className="flex h-screen w-full items-center justify-center bg-background p-4">
             <div className="grid lg:grid-cols-2 max-w-4xl w-full gap-16 items-center">
-                 <div className="flex flex-col items-center lg:items-start text-center lg:text-left">
+                 <div className="flex-col items-center lg:items-start text-center lg:text-left hidden lg:flex">
                     <Logo />
                     <h1 className="text-3xl font-bold tracking-tight font-headline md:text-4xl mt-4">Take it to the next level.</h1>
                     <p className="text-muted-foreground mt-2">Create a free account to unlock all features and never lose a WOD again.</p>
@@ -302,3 +272,5 @@ export default function LoginPage() {
         </Suspense>
     )
 }
+
+    
