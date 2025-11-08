@@ -2,9 +2,17 @@
 'use client';
 
 import { useState, useEffect, Suspense, useCallback } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { useAuth, useUser } from '@/firebase/provider';
-import { sendSignInLinkToEmail, isSignInWithEmailLink, signInWithEmailLink, linkWithCredential, EmailAuthProvider, Auth, signOut } from 'firebase/auth';
+import { 
+    sendSignInLinkToEmail, 
+    isSignInWithEmailLink, 
+    signInWithEmailLink, 
+    linkWithCredential, 
+    EmailAuthProvider, 
+    Auth, 
+    signOut 
+} from 'firebase/auth';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -33,7 +41,6 @@ function LoginClientContent() {
     const router = useRouter();
     const { toast } = useToast();
     const { user, isUserLoading } = useUser();
-    const searchParams = useSearchParams();
 
     useEffect(() => {
         if (!isUserLoading && user && !user.isAnonymous) {
@@ -41,33 +48,43 @@ function LoginClientContent() {
         }
     }, [user, isUserLoading, router]);
 
-    const handleSignInWithLink = useCallback(async (authInstance: Auth, emailForSignIn: string, link: string) => {
+    const handleSignInWithLink = useCallback(async (authInstance: Auth, emailForSignIn: string) => {
         setIsCheckingLink(true);
         setSignInError(null);
         setPromptForEmail(false);
+        const link = window.location.href;
+
         try {
             const currentUser = authInstance.currentUser;
+            // Case 1: An anonymous user is trying to upgrade their account.
             if (currentUser && currentUser.isAnonymous) {
                 const credential = EmailAuthProvider.credentialWithLink(emailForSignIn, link);
                 try {
+                    // Attempt to link the anonymous account with the email credential.
                     await linkWithCredential(currentUser, credential);
                     toast({
                         title: 'Account Updated!',
                         description: 'Your account is now permanent. Your WODs are saved!',
                     });
                 } catch (error: any) {
+                    // This is the critical error handling. If the email is already in use,
+                    // it means the user is trying to log into an existing account.
                     if (error.code === 'auth/credential-already-in-use') {
+                        // So, we sign out the anonymous user...
                         await signOut(authInstance);
+                        // ...and then sign them in with their existing permanent account.
                         await signInWithEmailLink(authInstance, emailForSignIn, link);
                         toast({
                             title: 'Login Successful!',
                             description: 'Welcome back!',
                         });
                     } else {
+                        // Re-throw other linking errors.
                         throw error;
                     }
                 }
             } else {
+                // Case 2: No user or a non-anonymous user is signing in.
                 await signInWithEmailLink(authInstance, emailForSignIn, link);
                 toast({
                     title: 'Login Successful!',
@@ -78,7 +95,8 @@ function LoginClientContent() {
             router.push('/dashboard');
         } catch (error: any) {
             console.error('Sign-in error:', error);
-            setSignInError('The sign-in link is invalid or has expired. Please request a new one.');
+            setSignInError('The sign-in link is invalid, has expired, or the email is incorrect. Please request a new one.');
+            setPromptForEmail(true); // Fallback to asking for email if any step fails.
         } finally {
             setIsCheckingLink(false);
         }
@@ -94,9 +112,10 @@ function LoginClientContent() {
             let emailFromStorage = window.localStorage.getItem('emailForSignIn');
     
             if (emailFromStorage) {
-                handleSignInWithLink(auth, emailFromStorage, href);
+                handleSignInWithLink(auth, emailFromStorage);
             } else {
                 // If email is not in storage, prompt the user to enter it.
+                // This is the robust fallback for cross-device sign-in.
                 setPromptForEmail(true);
                 setIsCheckingLink(false);
             }
@@ -145,7 +164,7 @@ function LoginClientContent() {
     const handleConfirmEmailAndSignIn = async (e: React.FormEvent) => {
         e.preventDefault();
         if (auth && email) {
-            handleSignInWithLink(auth, email, window.location.href);
+            handleSignInWithLink(auth, email);
         }
     };
 
@@ -164,7 +183,7 @@ function LoginClientContent() {
                  <Card className="w-full max-w-sm">
                     <CardHeader>
                         <CardTitle>Confirm Email</CardTitle>
-                        <CardDescription>To complete sign-in, please provide the email address where you received the link.</CardDescription>
+                        <CardDescription>To complete sign-in on this device, please provide the email address where you received the link.</CardDescription>
                     </CardHeader>
                     <CardContent>
                          <form onSubmit={handleConfirmEmailAndSignIn} className="space-y-4">
@@ -283,5 +302,3 @@ export default function LoginPage() {
         </Suspense>
     )
 }
-
-    
