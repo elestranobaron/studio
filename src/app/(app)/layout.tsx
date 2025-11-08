@@ -26,7 +26,7 @@ function AppLayoutContent({ children }: { children: React.ReactNode }) {
     return (
         <>
             <Sidebar className="flex flex-col">
-                 <div className="absolute inset-x-0 top-0 h-48 md:h-full w-full object-cover z-0 brightness-50">
+                 <div className="absolute inset-0 w-full object-cover z-0 brightness-50">
                     <video
                         src="/lateral_logo.mp4"
                         autoPlay
