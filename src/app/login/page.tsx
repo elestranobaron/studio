@@ -4,7 +4,7 @@
 import { useState, useEffect, Suspense, useCallback } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth, useUser } from '@/firebase/provider';
-import { sendSignInLinkToEmail, isSignInWithEmailLink, signInWithEmailLink, linkWithCredential, EmailAuthProvider, Auth } from 'firebase/auth';
+import { sendSignInLinkToEmail, isSignInWithEmailLink, signInWithEmailLink, linkWithCredential, EmailAuthProvider, Auth, signOut } from 'firebase/auth';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -26,7 +26,6 @@ function LoginClientContent() {
     const auth = useAuth();
     const router = useRouter();
     const { toast } = useToast();
-    const searchParams = useSearchParams();
     const { user, isUserLoading } = useUser();
 
     
@@ -37,12 +36,12 @@ function LoginClientContent() {
     }, [user, isUserLoading, router]);
     
     
-    const handleSignInWithLink = useCallback(async (authInstance: Auth, storedEmail: string, link: string) => {
+    const handleSignInWithLink = useCallback(async (authInstance: Auth, emailForSignIn: string, link: string) => {
         setIsCheckingLink(true);
         try {
-            // Case 1: Anonymous user is upgrading to a permanent account.
+            // Case 1: An anonymous user is trying to upgrade/sign in.
             if (authInstance.currentUser && authInstance.currentUser.isAnonymous) {
-                const credential = EmailAuthProvider.credentialWithLink(storedEmail, link);
+                const credential = EmailAuthProvider.credentialWithLink(emailForSignIn, link);
                 try {
                     // Try to link the anonymous account with the email credential.
                     await linkWithCredential(authInstance.currentUser, credential);
@@ -53,10 +52,10 @@ function LoginClientContent() {
                 } catch (error: any) {
                     // This is the critical case: the email is already in use by another account.
                     if (error.code === 'auth/credential-already-in-use') {
-                        // Sign out the anonymous user first to avoid conflicts.
-                        await authInstance.signOut();
+                        // Sign out the anonymous user first.
+                        await signOut(authInstance);
                         // Then, sign in the permanent user with the same link.
-                        await signInWithEmailLink(authInstance, storedEmail, link);
+                        await signInWithEmailLink(authInstance, emailForSignIn, link);
                         toast({
                             title: 'Login Successful!',
                             description: 'Welcome back!',
@@ -68,7 +67,7 @@ function LoginClientContent() {
                 }
             } else {
                 // Case 2: Standard sign-in for a new or returning user (not anonymous).
-                await signInWithEmailLink(authInstance, storedEmail, link);
+                await signInWithEmailLink(authInstance, emailForSignIn, link);
                 toast({
                     title: 'Login Successful!',
                     description: 'You are now signed in.',
@@ -84,7 +83,7 @@ function LoginClientContent() {
             toast({
                 variant: 'destructive',
                 title: 'Login Error',
-                description: error.message || 'The link may be invalid or has expired. Please try again.',
+                description: 'The link may be invalid or has expired. Please try again.',
             });
         } finally {
             setIsCheckingLink(false);
@@ -100,17 +99,29 @@ function LoginClientContent() {
             let emailFromStorage = window.localStorage.getItem('emailForSignIn');
             
             if (!emailFromStorage) {
-                // This is a recovery mechanism for cross-device or new session flows.
+                // Do not show an error. Silently allow the flow to proceed.
+                // The user might be on a different device.
+                // Firebase can handle this if the link is valid.
+                // We let handleSignInWithLink do its job.
+                // If it fails, it will show a generic "invalid link" error, which is correct.
+            }
+            
+            // We need an email to proceed. If it's not in storage, we can't do anything.
+            // A more advanced flow could ask the user for their email again.
+            // For now, we rely on the link having enough info or local storage.
+            const emailToUse = emailFromStorage || new URL(href).searchParams.get('email');
+
+            if (emailToUse) {
+                handleSignInWithLink(auth, emailToUse, href);
+            } else {
+                // This state means we have a sign-in link but no email, which is an invalid state.
                  toast({
                     variant: 'destructive',
                     title: 'Login Incomplete',
-                    description: "For security, please click the login link in the same browser where you made the request.",
+                    description: "Your sign-in link is missing information. Please request a new one.",
                 });
                 setIsCheckingLink(false);
-                return;
             }
-
-            handleSignInWithLink(auth, emailFromStorage, href);
 
         } else {
             setIsCheckingLink(false);
@@ -138,7 +149,7 @@ function LoginClientContent() {
             setEmailSent(true);
             toast({
                 title: 'Link Sent!',
-                description: 'Check your inbox to sign in.',
+                description: 'Check your inbox for a sign-in link. If you do not see it, please check your spam folder.',
             });
         } catch (error) {
             console.error(error);
