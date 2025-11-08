@@ -4,13 +4,12 @@
 import { useState, useEffect, Suspense, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth, useUser } from '@/firebase/provider';
+import { getFunctions, httpsCallable } from 'firebase/functions';
 import {
     isSignInWithEmailLink,
     signInWithEmailLink,
     Auth,
 } from 'firebase/auth';
-// === NOUVEAU CODE BREVO ===
-import { getFunctions, httpsCallable } from 'firebase/functions';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -105,29 +104,23 @@ function LoginClientContent() {
         }
 
         try {
-            // Récupère les Cloud Functions
+            // === ENVOI VIA BREVO (CLOUD FUNCTION) ===
             const functions = getFunctions();
             const sendMagicLink = httpsCallable(functions, 'sendMagicLink');
 
-            // Envoie le lien via Brevo
-            await sendMagicLink({
-            email,
-            link: `${window.location.origin}/login` // Firebase remplira le token
-            });
-
-            // === FIN NOUVEAU CODE ===
+            await sendMagicLink({ email });
             window.localStorage.setItem('emailForSignIn', email);
             setEmailSent(true);
             toast({
                 title: 'Link Sent!',
                 description: 'Check your inbox for a sign-in link. If you do not see it, please check your spam folder.',
             });
-        } catch (error) {
+        } catch (error: any) {
             console.error(error);
             toast({
                 variant: 'destructive',
                 title: 'Error',
-                description: "We couldn't send the link. Please try again.",
+                description: error.message || "We couldn't send the link. Please try again.",
             });
         } finally {
             setIsLoading(false);
