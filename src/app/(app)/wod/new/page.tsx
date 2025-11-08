@@ -118,8 +118,8 @@ export default function NewWodPage() {
                             This workout seems identical to a WOD you've already saved.
                             <br/><br/>
                             <div className="p-4 border rounded-md bg-muted/50">
-                                <p className="font-bold">{duplicateWod?.name}</p>
-                                <p className="text-sm text-muted-foreground">{duplicateWod?.date ? `Saved on ${format(new Date(duplicateWod.date), 'PPP')}` : ''}</p>
+                                <div className="font-bold">{duplicateWod?.name}</div>
+                                <div className="text-sm text-muted-foreground">{duplicateWod?.date ? `Saved on ${format(new Date(duplicateWod.date), 'PPP')}` : ''}</div>
                             </div>
                             <br/>
                             Do you want to save this new one anyway?
