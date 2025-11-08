@@ -1,10 +1,10 @@
 
 'use client';
 
-import { useState, useEffect, Suspense } from 'react';
+import { useState, useEffect, Suspense, useCallback } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth, useUser } from '@/firebase/provider';
-import { sendSignInLinkToEmail, isSignInWithEmailLink, signInWithEmailLink, linkWithCredential, EmailAuthProvider } from 'firebase/auth';
+import { sendSignInLinkToEmail, isSignInWithEmailLink, signInWithEmailLink, linkWithCredential, EmailAuthProvider, Auth } from 'firebase/auth';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -37,6 +37,56 @@ function LoginClientContent() {
     }, [user, isUserLoading, router]);
     
     
+    const handleSignInWithLink = useCallback(async (auth: Auth, email: string, link: string) => {
+        try {
+            // Case 1: An anonymous user is trying to upgrade their account.
+            if (auth.currentUser && auth.currentUser.isAnonymous) {
+                const credential = EmailAuthProvider.credentialWithLink(email, link);
+                try {
+                    await linkWithCredential(auth.currentUser, credential);
+                    window.localStorage.removeItem('emailForSignIn');
+                    toast({
+                        title: 'Account Updated!',
+                        description: 'Your account is now permanent. Your WODs are saved!',
+                    });
+                    router.push('/dashboard');
+                } catch (error: any) {
+                    // This is the critical case: the email is already in use by another account.
+                    if (error.code === 'auth/credential-already-in-use') {
+                        await auth.signOut(); // Sign out the anonymous user first.
+                        await signInWithEmailLink(auth, email, link); // Then sign in the permanent user.
+                        window.localStorage.removeItem('emailForSignIn');
+                        toast({
+                            title: 'Login Successful!',
+                            description: 'Welcome back!',
+                        });
+                        router.push('/dashboard');
+                    } else {
+                        throw error; // Re-throw other linking errors
+                    }
+                }
+            } else {
+                // Case 2: Standard sign-in for a new or returning user.
+                await signInWithEmailLink(auth, email, link);
+                window.localStorage.removeItem('emailForSignIn');
+                toast({
+                    title: 'Login Successful!',
+                    description: 'You are now signed in.',
+                });
+                router.push('/dashboard');
+            }
+        } catch (error: any) {
+            console.error('Sign-in error:', error);
+            toast({
+                variant: 'destructive',
+                title: 'Login Error',
+                description: error.message || 'The link may be invalid, has expired, or the session was lost.',
+            });
+        } finally {
+            setIsCheckingLink(false);
+        }
+    }, [router, toast]);
+
     useEffect(() => {
         if (!auth || isUserLoading) return;
 
@@ -44,7 +94,6 @@ function LoginClientContent() {
         if (isSignInWithEmailLink(auth, href)) {
             let emailFromStorage = window.localStorage.getItem('emailForSignIn');
             
-            // If email is not in storage, try to get it from URL params
             if (!emailFromStorage) {
                 const emailFromUrl = searchParams.get('email');
                 if (emailFromUrl) {
@@ -59,69 +108,14 @@ function LoginClientContent() {
                     return;
                 }
             }
-            
-            const finalEmail = emailFromStorage;
 
-            if (auth.currentUser && auth.currentUser.isAnonymous) {
-                const credential = EmailAuthProvider.credentialWithLink(finalEmail, href);
-                linkWithCredential(auth.currentUser, credential)
-                    .then(() => {
-                        window.localStorage.removeItem('emailForSignIn');
-                        toast({
-                            title: 'Account Updated!',
-                            description: 'Your account is now permanent. Your WODs are saved!',
-                        });
-                        router.push('/dashboard');
-                    })
-                    .catch((error) => {
-                        if (error.code === 'auth/credential-already-in-use') {
-                            // User is anonymous and the email is already in use.
-                            // Sign out the anonymous user and sign in with the permanent account.
-                            auth.signOut().then(() => {
-                                signInWithEmailLink(auth, finalEmail, href).then(() => {
-                                     window.localStorage.removeItem('emailForSignIn');
-                                     router.push('/dashboard');
-                                }).catch((signInError) => {
-                                     toast({
-                                        variant: 'destructive',
-                                        title: 'Login Error',
-                                        description: signInError.message || 'The link may be invalid or has expired.',
-                                    });
-                                    setIsCheckingLink(false);
-                                });
-                            });
-                        } else {
-                            toast({
-                                variant: 'destructive',
-                                title: 'Login Error',
-                                description: error.message || 'Could not link account.',
-                            });
-                            setIsCheckingLink(false);
-                        }
-                    });
-            } else {
-                signInWithEmailLink(auth, finalEmail, href)
-                    .then(() => {
-                        window.localStorage.removeItem('emailForSignIn');
-                        toast({
-                            title: 'Login Successful!',
-                            description: 'You are now signed in.',
-                        });
-                        router.push('/dashboard');
-                    })
-                    .catch((error) => {
-                        toast({
-                            variant: 'destructive',
-                            title: 'Login Error',
-                            description: error.message || 'The link may be invalid or has expired.',
-                        });
-                        setIsCheckingLink(false);
-                    });
-            }
+            handleSignInWithLink(auth, emailFromStorage, href);
+
         } else {
             setIsCheckingLink(false);
         }
-    }, [auth, isUserLoading, router, toast, searchParams]);
+    }, [auth, isUserLoading, searchParams, toast, handleSignInWithLink]);
+
 
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
