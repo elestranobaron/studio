@@ -50,7 +50,9 @@ function AppLayoutContent({ children }: { children: React.ReactNode }) {
                                 <span>Back</span>
                             </Button>
                         ) : (
-                            <Logo />
+                            <div className="h-10 flex items-center px-2">
+                                 <span className="text-xl font-bold font-headline text-foreground">WODBurner</span>
+                            </div>
                         )}
                     </SidebarHeader>
                     <SidebarContent className="flex-1">
