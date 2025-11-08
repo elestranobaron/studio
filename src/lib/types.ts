@@ -17,4 +17,5 @@ export type WOD = {
   imageUrl: string; // Now stores the Data URI of the uploaded image
   imageHint?: string;
   userId: string;
+  communityWodId?: string; // ID of the corresponding doc in communityWods
 };

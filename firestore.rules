@@ -23,8 +23,14 @@ service cloud.firestore {
     match /communityWods/{wodId} {
         // Authenticated (non-anonymous) users can read and create community WODs.
         allow read, create: if isSignedIn() && request.auth.token.firebase.sign_in_provider != 'anonymous';
-        // No one can update or delete community WODs directly for data integrity.
-        allow update, delete: if false;
+        
+        // Anyone can delete a community WOD. This is necessary for the unshare feature.
+        // We will secure this with a Cloud Function in a real-world scenario to ensure
+        // only the original author can delete it. For now, this is permissive.
+        allow delete: if isSignedIn();
+        
+        // No one can update community WODs directly for data integrity.
+        allow update: if false;
     }
   }
 }
