@@ -83,7 +83,6 @@ function CommunityWodList() {
     const { firestore } = useFirebase();
     const { user, isUserLoading } = useUser();
 
-    // Only fetch community WODs if the user is NOT anonymous
     const shouldFetchData = !isUserLoading && user && !user.isAnonymous;
 
     const communityWodsCollection = useMemo(() => {
@@ -152,8 +151,6 @@ export default function DashboardPage() {
 
   const userWodsCollection = useMemo(() => {
     if (!firestore || !user) return null;
-    // Don't fetch WODs for anonymous users if they don't have any yet
-    if (user.isAnonymous && userWodsCollection === null) return null;
     return collection(firestore, 'users', user.uid, 'wods');
   }, [firestore, user]);
 
