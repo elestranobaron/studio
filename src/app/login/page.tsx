@@ -45,12 +45,10 @@ function LoginClientContent() {
             let emailFromStorage = window.localStorage.getItem('emailForSignIn');
             
             if (!emailFromStorage) {
-                // If the email is not in storage, we can't proceed.
-                // The user will have to try again.
                 toast({
                     variant: 'destructive',
-                    title: 'Login Error',
-                    description: 'Your login link is missing session information. Please try sending a new link.',
+                    title: 'Session Invalide',
+                    description: "Pour des raisons de sécurité, veuillez cliquer sur le lien de connexion dans le même navigateur où vous avez fait la demande.",
                 });
                 setIsCheckingLink(false);
                 return;
@@ -68,8 +66,6 @@ function LoginClientContent() {
                         router.push('/dashboard');
                     })
                     .catch((error) => {
-                        // This specific error code means the email is already linked to another (non-anonymous) account.
-                        // The correct flow is to sign out the anonymous user and sign in the permanent one.
                         if (error.code === 'auth/credential-already-in-use') {
                             auth.signOut().then(() => {
                                 signInWithEmailLink(auth, emailFromStorage!, href).then(() => {
@@ -85,7 +81,6 @@ function LoginClientContent() {
                                 });
                             });
                         } else {
-                            // Handle other linking errors
                             toast({
                                 variant: 'destructive',
                                 title: 'Login Error',
@@ -95,7 +90,6 @@ function LoginClientContent() {
                         }
                     });
             } else {
-                // Standard sign-in for a new session
                 signInWithEmailLink(auth, emailFromStorage, href)
                     .then(() => {
                         window.localStorage.removeItem('emailForSignIn');
@@ -134,7 +128,6 @@ function LoginClientContent() {
         }
 
         try {
-            // Set language code from browser
             auth.languageCode = navigator.language.split('-')[0] || 'en';
             await sendSignInLinkToEmail(auth, email, actionCodeSettings);
             window.localStorage.setItem('emailForSignIn', email);
