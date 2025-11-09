@@ -14,7 +14,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from "@/components/ui/dialog";
 import type { WOD } from "@/lib/types";
 import { cn } from "@/lib/utils";
-import { Logo } from "./icons";
+import { Logo }from "./icons";
 import { ScrollArea } from "./ui/scroll-area";
 import { Separator } from "./ui/separator";
 
@@ -193,7 +193,7 @@ export function TimerClient({ wod }: { wod: WOD }) {
             <ShareModal wod={wod} finalTime={formatTime(isCountDown ? totalDuration : finalTime)} />
         </div>
          <div className="pt-8 opacity-50">
-            <Logo className="w-auto h-8" showText={false}/>
+            <Logo className="w-auto h-12" showText={false}/>
         </div>
       </div>
     );
