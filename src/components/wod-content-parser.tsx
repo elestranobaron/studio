@@ -15,12 +15,12 @@ type ParsedBlock = {
 };
 
 // --- Helper Functions for Text Analysis & Formatting ---
-const SECTION_KEYWORDS = ["WARM-UP", "WARMUP", "STRENGTH", "METCON", "CONDITIONING", "ACCESSORY", "COOL-DOWN", "GYMNASTICS", "SKILL", "TECHNIQUE", "PREP", "PLYOMÉTRIE", "HYBRID METCON", "PLYOMÉTRIE"];
-const ROUNDS_KEYWORDS = /\d+\s+(rounds?|series|round of)/i;
+const SECTION_KEYWORDS = ["WARM-UP", "WARMUP", "STRENGTH", "METCON", "CONDITIONING", "ACCESSORY", "COOL-DOWN", "GYMNASTICS", "SKILL", "TECHNIQUE", "PREP", "PLYOMÉTRIE", "HYBRID METCON"];
+const ROUNDS_KEYWORDS = /^\s*(\d+|for)\s+(rounds?|series|round of)/i;
 const EXERCISE_MARKER = /^\s*(-|\*|\d+(\s?x|\s)|\d+-\d+)/;
-const EXERCISE_MARKER_COMPLEX = /\d+\/\d+|[a-zA-Z]+\s\+/;
-const NOTE_KEYWORDS = /^(int|sc|intermédiaire|scale|beginner|débutant)\s?:/i;
-const INSTRUCTION_KEYWORDS = /every|alternate|then|part \d/i;
+const COMPLEX_EXERCISE_MARKER = /\+|[a-zA-Z]+\s\+/;
+const NOTE_KEYWORDS = /^(int|sc|intermédiaire|scale|beginner|débutant|rx|elite|part \d)\b.*:/i;
+const INSTRUCTION_KEYWORDS = /every|alternate|then|for time/i;
 const toTitleCase = (str: string) => str.replace(/\w\S*/g, (txt) => txt.charAt(0).toUpperCase() + txt.substring(1).toLowerCase());
 
 const classifyLine = (line: string): ParsedLine => {
@@ -28,22 +28,22 @@ const classifyLine = (line: string): ParsedLine => {
     if (!trimmed) return { type: 'instruction', content: '', original: line };
     const upper = trimmed.toUpperCase();
 
+    if (NOTE_KEYWORDS.test(trimmed)) {
+        return { type: 'note', content: trimmed, original: line };
+    }
     if (SECTION_KEYWORDS.some(keyword => upper.startsWith(keyword)) && trimmed.split(' ').length < 5) {
       return { type: 'title', content: toTitleCase(trimmed.replace(':', '')), original: line };
     }
     if (ROUNDS_KEYWORDS.test(trimmed)) {
       return { type: 'rounds_header', content: trimmed, original: line };
     }
-    if (NOTE_KEYWORDS.test(trimmed)) {
-        return { type: 'note', content: trimmed, original: line };
-    }
-    if (EXERCISE_MARKER.test(trimmed) || EXERCISE_MARKER_COMPLEX.test(trimmed)) {
-        return { type: 'exercise', content: trimmed, original: line };
+    if (EXERCISE_MARKER.test(trimmed) || COMPLEX_EXERCISE_MARKER.test(trimmed)) {
+        return { type: 'exercise', content: toTitleCase(trimmed), original: line };
     }
     if (INSTRUCTION_KEYWORDS.test(trimmed)) {
-        return { type: 'instruction', content: toTitleCase(trimmed), original: line };
+        return { type: 'instruction', content: trimmed, original: line };
     }
-    // Default to exercise if it's not an empty line, to avoid grey text
+    // Default to exercise if it's not an empty line to make it white
     return { type: 'exercise', content: toTitleCase(trimmed), original: line };
 };
 
@@ -80,7 +80,7 @@ function parseContentToBlocks(content: string): ParsedBlock[] {
             otherBlock.push(parsedLines[i]);
             i++;
         }
-        const blockType = otherBlock.some(l => l.type === 'exercise') ? 'exercise_block' : 'instruction_block';
+        const blockType = otherBlock.some(l => l.type === 'exercise' || l.type === 'instruction') ? 'exercise_block' : 'instruction_block';
         blocks.push({ type: blockType, lines: otherBlock });
     }
   }
@@ -174,3 +174,4 @@ export function WodContentParser({ content }: { content: string }) {
     </div>
   );
 }
+
