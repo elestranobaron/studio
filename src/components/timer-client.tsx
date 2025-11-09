@@ -39,7 +39,7 @@ function ShareModal({ wod, finalTime }: { wod: WOD; finalTime: string }) {
             return wod.description;
         }
 
-        const metconKeywords = ["METCON", "CONDITIONING", wod.type.toUpperCase()];
+        const metconKeywords = ["METCON", "CONDITIONING", "HYBRID METCON"];
         const metconSection = wod.description.find(section => 
             metconKeywords.some(keyword => section.title.toUpperCase().includes(keyword))
         );
@@ -61,6 +61,10 @@ function ShareModal({ wod, finalTime }: { wod: WOD; finalTime: string }) {
                 <Button variant="outline"><Share2 className="mr-2 h-4 w-4"/>Share Result</Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-md p-0 bg-background border-2 border-primary/50 shadow-2xl shadow-primary/20">
+                <DialogHeader className="sr-only">
+                    <DialogTitle>WOD Result: {wod.name}</DialogTitle>
+                    <DialogDescription>Your final time was {finalTime}. This card is ready for sharing.</DialogDescription>
+                </DialogHeader>
                 <div className="p-6 flex flex-col gap-4 text-center">
                     <div>
                         <p className="text-muted-foreground text-sm font-semibold tracking-widest">FINAL TIME</p>
