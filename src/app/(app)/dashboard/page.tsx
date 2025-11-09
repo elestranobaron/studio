@@ -4,16 +4,17 @@
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { WodCard } from '@/components/wod-card';
-import { LogIn, PlusCircle } from 'lucide-react';
+import { LogIn, PlusCircle, Search } from 'lucide-react';
 import { SidebarTrigger } from '@/components/ui/sidebar';
 import { useCollection, useFirebase } from '@/firebase';
 import { collection, query, orderBy, limit } from 'firebase/firestore';
 import { Skeleton } from '@/components/ui/skeleton';
 import type { WOD } from '@/lib/types';
 import { useUser } from '@/firebase/provider';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
 
 function WodSkeleton() {
   return (
@@ -84,15 +85,35 @@ function WodList({
 function CommunityWodList() {
     const { firestore } = useFirebase();
     const { user, isUserLoading } = useUser();
+    const [searchTerm, setSearchTerm] = useState('');
 
     const shouldFetchData = !isUserLoading && user && !user.isAnonymous;
 
     const communityWodsCollection = useMemo(() => {
         if (!firestore || !shouldFetchData) return null;
-        return query(collection(firestore, 'communityWods'), orderBy('date', 'desc'), limit(20));
+        // Increase limit to get a larger pool for client-side search
+        return query(collection(firestore, 'communityWods'), orderBy('date', 'desc'), limit(50));
     }, [firestore, shouldFetchData]);
 
     const { data: communityWods, isLoading: isCommunityWodsLoading, error } = useCollection<WOD>(communityWodsCollection);
+
+    const filteredWods = useMemo(() => {
+        if (!communityWods) return null;
+        if (!searchTerm) return communityWods;
+
+        const lowercasedTerm = searchTerm.toLowerCase();
+        return communityWods.filter(wod => {
+            const descriptionString = Array.isArray(wod.description)
+                ? wod.description.map(d => d.content).join(' ').toLowerCase()
+                : wod.description.toLowerCase();
+            
+            return (
+                wod.name.toLowerCase().includes(lowercasedTerm) ||
+                wod.type.toLowerCase().includes(lowercasedTerm) ||
+                descriptionString.includes(lowercasedTerm)
+            );
+        });
+    }, [communityWods, searchTerm]);
 
     if (isUserLoading) {
       return (
@@ -138,13 +159,25 @@ function CommunityWodList() {
     }
     
     return (
-        <WodList
-            wods={communityWods}
-            isLoading={isCommunityWodsLoading}
-            emptyStateTitle="No community WODs yet."
-            emptyStateDescription="Be the first to share one!"
-            source="community"
-        />
+        <div className="space-y-6">
+            <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                <Input
+                    type="search"
+                    placeholder="Search community WODs by name, type, or exercise..."
+                    className="pl-10 w-full"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                />
+            </div>
+            <WodList
+                wods={filteredWods}
+                isLoading={isCommunityWodsLoading}
+                emptyStateTitle={searchTerm ? "No WODs match your search." : "No community WODs yet."}
+                emptyStateDescription={searchTerm ? "Try a different search term." : "Be the first to share one!"}
+                source="community"
+            />
+        </div>
     );
 }
 

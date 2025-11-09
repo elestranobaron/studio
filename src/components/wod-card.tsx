@@ -1,7 +1,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import type { WOD } from "@/lib/types";
+import type { Reaction, WOD } from "@/lib/types";
 import {
   Card,
   CardContent,
@@ -12,11 +12,11 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Clock, Calendar, Repeat, Hourglass, Timer, Share2, LoaderCircle, User } from "lucide-react";
+import { Clock, Calendar, Repeat, Hourglass, Timer, Share2, LoaderCircle, User, MessageCircle } from "lucide-react";
 import { format } from 'date-fns';
 import { useFirebase, useUser } from "@/firebase";
 import { useState } from "react";
-import { doc, collection, addDoc, deleteDoc, updateDoc, writeBatch } from "firebase/firestore";
+import { doc, collection, addDoc, deleteDoc, updateDoc, writeBatch, runTransaction } from "firebase/firestore";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 
@@ -71,6 +71,8 @@ function ShareButton({ wod }: { wod: WOD }) {
                     date: new Date(wod.date).toISOString(),
                     userId: user.uid, // Keep owner ID for security rules
                     userDisplayName,
+                    reactions: { fire: 0, poop: 0 },
+                    commentCount: 0
                  };
                 
                 const communityWodsCollection = collection(firestore, 'communityWods');
@@ -106,6 +108,94 @@ function ShareButton({ wod }: { wod: WOD }) {
     )
 }
 
+function ReactionButton({ wod }: { wod: WOD }) {
+    const { firestore } = useFirebase();
+    const { user } = useUser();
+    const { toast } = useToast();
+    const [isLoading, setIsLoading] = useState(false);
+
+    if (!firestore || !user || user.isAnonymous) {
+        return null;
+    }
+
+    const handleReaction = async (e: React.MouseEvent, reactionType: Reaction) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setIsLoading(true);
+
+        const communityWodRef = doc(firestore, "communityWods", wod.id);
+        const reactionDocRef = doc(firestore, `communityWods/${wod.id}/reactors/${user.uid}`);
+
+        try {
+            await runTransaction(firestore, async (transaction) => {
+                const reactionDoc = await transaction.get(reactionDocRef);
+                const wodDoc = await transaction.get(communityWodRef);
+
+                if (!wodDoc.exists()) {
+                    throw "WOD does not exist!";
+                }
+
+                const currentReactions = wodDoc.data().reactions || { fire: 0, poop: 0 };
+                const newReactions = { ...currentReactions };
+
+                if (reactionDoc.exists()) {
+                    const previousReaction = reactionDoc.data().type as Reaction;
+                    if (previousReaction === reactionType) {
+                        // User is undoing their reaction
+                        newReactions[reactionType]--;
+                        transaction.delete(reactionDocRef);
+                    } else {
+                        // User is changing their reaction
+                        newReactions[previousReaction]--;
+                        newReactions[reactionType]++;
+                        transaction.set(reactionDocRef, { type: reactionType });
+                    }
+                } else {
+                    // New reaction
+                    newReactions[reactionType]++;
+                    transaction.set(reactionDocRef, { type: reactionType });
+                }
+
+                transaction.update(communityWodRef, { reactions: newReactions });
+            });
+        } catch (error) {
+            console.error("Transaction failed: ", error);
+            toast({ variant: "destructive", title: "Oops!", description: "Could not save your reaction." });
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    return (
+        <div className="flex items-center gap-1">
+            <Button
+                variant="ghost"
+                size="sm"
+                className="flex items-center gap-1.5 text-muted-foreground px-2"
+                onClick={(e) => handleReaction(e, 'fire')}
+                disabled={isLoading}
+            >
+                <span className="text-base">🔥</span>
+                <span className="text-sm font-medium tabular-nums">{wod.reactions?.fire ?? 0}</span>
+            </Button>
+            <Button
+                variant="ghost"
+                size="sm"
+                className="flex items-center gap-1.5 text-muted-foreground px-2"
+                onClick={(e) => handleReaction(e, 'poop')}
+                disabled={isLoading}
+            >
+                <span className="text-base">💩</span>
+                <span className="text-sm font-medium tabular-nums">{wod.reactions?.poop ?? 0}</span>
+            </Button>
+            <div className="flex items-center gap-1.5 text-muted-foreground pl-2">
+                <MessageCircle className="h-4 w-4" />
+                <span className="text-sm font-medium tabular-nums">{wod.commentCount ?? 0}</span>
+            </div>
+        </div>
+    );
+}
+
 export function WodCard({ wod, source = 'personal' }: { wod: WOD, source?: 'personal' | 'community' }) {
     
     const formattedDate = wod.date ? format(new Date(wod.date), "PPP") : "No date";
@@ -130,7 +220,7 @@ export function WodCard({ wod, source = 'personal' }: { wod: WOD, source?: 'pers
            {source === 'personal' && <ShareButton wod={wod} />}
         </div>
       )}
-      <CardHeader className="pt-4">
+      <CardHeader className="pt-4 pb-2">
         <div className="flex items-start justify-between gap-2">
           <CardTitle className="font-headline text-2xl">{wod.name}</CardTitle>
           <Badge variant="secondary" className="whitespace-nowrap shrink-0">
@@ -151,12 +241,13 @@ export function WodCard({ wod, source = 'personal' }: { wod: WOD, source?: 'pers
             )}
         </div>
       </CardHeader>
-      <CardContent className="flex-grow">
+      <CardContent className="flex-grow py-2">
         <p className="line-clamp-3 text-sm text-muted-foreground whitespace-pre-wrap">
           {flatDescription}
         </p>
       </CardContent>
-      <CardFooter>
+      <CardFooter className="flex flex-col items-stretch gap-2 pt-2">
+         {source === 'community' && <ReactionButton wod={wod} />}
         <Button asChild className="w-full">
           <Link href={href}>Start WOD</Link>
         </Button>
