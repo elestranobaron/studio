@@ -9,6 +9,7 @@ import {
   Flag,
   Share2,
   Camera,
+  Expand,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -30,19 +31,19 @@ const formatTime = (time: number) => {
 };
 
 function ShareModal({ wod, finalTime }: { wod: WOD; finalTime: string }) {
-    const descriptionId = `share-description-${wod.id}`;
+    const [isExpanded, setIsExpanded] = useState(false);
     
     const flatDescription = Array.isArray(wod.description)
         ? wod.description.map(section => `${section.title}\n${section.content}`).join("\n\n")
         : wod.description || "";
 
     return (
-        <Dialog>
+        <Dialog onOpenChange={(open) => !open && setIsExpanded(false)}>
             <DialogTrigger asChild>
                 <Button variant="outline"><Share2 className="mr-2 h-4 w-4"/>Share Result</Button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-md p-0" aria-describedby={descriptionId}>
-                <div className="p-6 bg-card rounded-lg flex flex-col gap-4">
+            <DialogContent className="sm:max-w-md p-0">
+                <div className="p-6 bg-card rounded-t-lg flex flex-col gap-4">
                     <div className="text-center">
                         <p className="text-muted-foreground text-sm">FINAL TIME</p>
                         <p className="text-7xl font-bold font-mono text-primary -my-2">{finalTime}</p>
@@ -50,18 +51,22 @@ function ShareModal({ wod, finalTime }: { wod: WOD; finalTime: string }) {
                         <p className="text-xs text-muted-foreground">{wod.type}</p>
                     </div>
                      <Separator />
-                     <div className="max-h-[40vh] overflow-y-auto pr-2 -mr-2">
+                     <div className={cn("transition-all duration-300", isExpanded ? "max-h-none" : "max-h-[25vh] overflow-y-auto pr-2 -mr-2")}>
                         <WodContentParser content={flatDescription} />
                     </div>
-                    <div className="flex justify-center items-center gap-2 pt-2 border-t mt-auto">
-                        <span className="text-xl font-bold font-headline text-primary tracking-wider">
-                           WODBurner
-                        </span>
-                    </div>
                 </div>
-                 <div className="p-4 bg-background flex items-center justify-center gap-3 text-center text-sm text-muted-foreground border-t">
-                    <Camera className="h-4 w-4"/>
-                    Take a screenshot to share!
+                 <div className="p-4 bg-background flex items-center justify-center gap-3 text-center text-sm text-muted-foreground border-t rounded-b-lg">
+                    {isExpanded ? (
+                        <>
+                            <Camera className="h-4 w-4"/>
+                            Ready for screenshot!
+                        </>
+                    ) : (
+                        <Button variant="ghost" className="w-full" onClick={() => setIsExpanded(true)}>
+                           <Expand className="mr-2 h-4 w-4" />
+                            Prepare for Screenshot
+                        </Button>
+                    )}
                 </div>
             </DialogContent>
         </Dialog>
@@ -224,7 +229,9 @@ export function TimerClient({ wod }: { wod: WOD }) {
             <ShareModal wod={wod} finalTime={formatTime(isCountDownTimer ? totalDuration : finalTime)} />
         </div>
          <div className="pt-8 opacity-50">
-            {/* Intentionally empty for now */}
+            <span className="text-xl font-bold font-headline text-primary tracking-wider">
+               WODBurner
+            </span>
          </div>
       </div>
     );
