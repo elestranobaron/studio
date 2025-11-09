@@ -16,7 +16,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from "@/components/ui/dialog";
 import type { WOD } from "@/lib/types";
 import { cn } from "@/lib/utils";
-import { ScrollArea } from "./ui/scroll-area";
 import { Separator } from "./ui/separator";
 import { playStartSound, playFinishSound, playCountdownTick, playCountdownEnd } from "@/lib/sounds";
 import { WodContentParser } from "./wod-content-parser";
@@ -34,6 +33,11 @@ function ShareModal({ wod, finalTime }: { wod: WOD; finalTime: string }) {
     
     const getMainWorkoutContent = () => {
         if (!wod.description) return "";
+
+        // Handle both string and array descriptions
+        if (!Array.isArray(wod.description)) {
+            return wod.description;
+        }
 
         const metconKeywords = ["METCON", "CONDITIONING", wod.type.toUpperCase()];
         const metconSection = wod.description.find(section => 
