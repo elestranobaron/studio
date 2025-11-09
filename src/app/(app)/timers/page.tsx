@@ -11,28 +11,28 @@ import { SidebarTrigger } from "@/components/ui/sidebar";
 
 const timerTypes = [
   {
+    name: "For Time",
+    description: "A simple stopwatch to time your workout.",
+    icon: Clock,
+    href: "/timers/for-time",
+  },
+  {
     name: "AMRAP",
     description: "As Many Rounds/Reps As Possible in a set time.",
     icon: Repeat,
-    href: "#",
-  },
-  {
-    name: "For Time",
-    description: "Complete a set amount of work as fast as possible.",
-    icon: Clock,
-    href: "#",
+    href: "/timers/amrap",
   },
   {
     name: "EMOM",
     description: "Every Minute On the Minute, for a set number of minutes.",
     icon: Hourglass,
-    href: "#",
+    href: "/timers/emom",
   },
   {
     name: "Tabata",
     description: "High-intensity intervals of 20s work, 10s rest.",
     icon: TimerIcon,
-    href: "#",
+    href: "/timers/tabata",
   },
 ];
 
@@ -64,7 +64,7 @@ export default function TimersPage() {
           ))}
         </div>
         <p className="mt-8 text-center text-muted-foreground">
-          Select a WOD from the dashboard to launch a pre-configured timer.
+          Or, select a WOD from the dashboard to launch a pre-configured timer.
         </p>
       </main>
     </div>
