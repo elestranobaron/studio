@@ -86,6 +86,22 @@ export const sendMagicLink = onCall(async (request) => {
   }
 });
 
+export const onUserSignIn = onCall(async (request) => {
+  if (!request.auth?.uid) return;
+
+  const userRef = db.collection("users").doc(request.auth.uid);
+  const doc = await userRef.get();
+
+  if (!doc.exists) {
+    await userRef.set({
+      premium: false,
+      createdAt: admin.firestore.FieldValue.serverTimestamp(),
+      email: request.auth.token.email,
+    });
+  }
+  return { success: true };
+});
+
 // ————— VÉRIFICATION MAGIC LINK —————
 export const verifyMagicLinkAccess = onCall(async (request) => {
   const email = request.data.email;
@@ -146,15 +162,14 @@ export const createCheckout = onCall(
       throw new HttpsError("unauthenticated", "Connecte-toi pour t'abonner.");
     }
 
-    // stripeSecretKey.value() n'existe QUE dans la fonction
     const stripe = new Stripe(stripeSecretKey.value(), {
       apiVersion: "2024-06-20",
     });
 
     const yearly = request.data.yearly === true;
     const priceId = yearly
-      ? "price_1SRThNBuRfqlcCPRez0Kp0yg" // ← ton price annuel
-      : "price_1SRTeGBuRfqlcCPRtcWQEsj5"; // ← ton price mensuel
+      ? "price_1SRThNBuRfqlcCPRez0Kp0yg"
+      : "price_1SRTeGBuRfqlcCPRtcWQEsj5";
 
     try {
       const session = await stripe.checkout.sessions.create({
@@ -166,6 +181,14 @@ export const createCheckout = onCall(
         customer_email: request.auth.token.email || undefined,
         metadata: { uid: request.auth.uid },
       });
+
+      // MISE À JOUR PREMIUM DANS FIRESTORE
+      await db.collection('users').doc(request.auth.uid).set({
+        premium: true,
+        premiumUntil: null,
+        priceId: priceId,
+        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+      }, { merge: true });
 
       return { id: session.id };
     } catch (error: any) {
