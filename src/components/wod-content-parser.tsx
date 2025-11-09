@@ -15,23 +15,19 @@ type ParsedBlock = {
 };
 
 // --- Helper Functions for Text Analysis & Formatting ---
-const SECTION_KEYWORDS = ["WARM-UP", "WARMUP", "STRENGTH", "METCON", "CONDITIONING", "ACCESSORY", "COOL-DOWN", "GYMNASTICS", "SKILL", "TECHNIQUE", "PREP", "PLYOMÉTRIE"];
-const ROUNDS_KEYWORDS = /\d+\s+(rounds?|series)/i;
+const SECTION_KEYWORDS = ["WARM-UP", "WARMUP", "STRENGTH", "METCON", "CONDITIONING", "ACCESSORY", "COOL-DOWN", "GYMNASTICS", "SKILL", "TECHNIQUE", "PREP", "PLYOMÉTRIE", "HYBRID METCON", "PLYOMÉTRIE"];
+const ROUNDS_KEYWORDS = /\d+\s+(rounds?|series|round of)/i;
 const EXERCISE_MARKER = /^\s*(-|\*|\d+(\s?x|\s)|\d+-\d+)/;
+const EXERCISE_MARKER_COMPLEX = /\d+\/\d+|[a-zA-Z]+\s\+/;
 const NOTE_KEYWORDS = /^(int|sc|intermédiaire|scale|beginner|débutant)\s?:/i;
-const SEQUENCE_KEYWORD = /directly|then|alterner|alternate/i;
+const INSTRUCTION_KEYWORDS = /every|alternate|then|part \d/i;
 const toTitleCase = (str: string) => str.replace(/\w\S*/g, (txt) => txt.charAt(0).toUpperCase() + txt.substring(1).toLowerCase());
-const toSentenceCase = (str: string) => !str ? '' : str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
 
-// --- Main Parsing Logic ---
-function parseContentToBlocks(content: string): ParsedBlock[] {
-  const lines = content.split('\n').filter(line => line.trim() !== '');
-  if (!lines.length) return [];
-
-  const parsedLines: ParsedLine[] = lines.map(line => {
+const classifyLine = (line: string): ParsedLine => {
     const trimmed = line.trim();
+    if (!trimmed) return { type: 'instruction', content: '', original: line };
     const upper = trimmed.toUpperCase();
-    
+
     if (SECTION_KEYWORDS.some(keyword => upper.startsWith(keyword)) && trimmed.split(' ').length < 5) {
       return { type: 'title', content: toTitleCase(trimmed.replace(':', '')), original: line };
     }
@@ -41,37 +37,53 @@ function parseContentToBlocks(content: string): ParsedBlock[] {
     if (NOTE_KEYWORDS.test(trimmed)) {
         return { type: 'note', content: trimmed, original: line };
     }
-    if (EXERCISE_MARKER.test(trimmed)) {
-      return { type: 'exercise', content: trimmed, original: line };
+    if (EXERCISE_MARKER.test(trimmed) || EXERCISE_MARKER_COMPLEX.test(trimmed)) {
+        return { type: 'exercise', content: trimmed, original: line };
     }
-    return { type: 'instruction', content: trimmed, original: line };
-  });
+    if (INSTRUCTION_KEYWORDS.test(trimmed)) {
+        return { type: 'instruction', content: toTitleCase(trimmed), original: line };
+    }
+    // Default to exercise if it's not an empty line, to avoid grey text
+    return { type: 'exercise', content: toTitleCase(trimmed), original: line };
+};
+
+function parseContentToBlocks(content: string): ParsedBlock[] {
+  const lines = content.split('\n');
+  if (!lines.length) return [];
+
+  const parsedLines: ParsedLine[] = lines.map(classifyLine);
 
   const blocks: ParsedBlock[] = [];
   let i = 0;
   while (i < parsedLines.length) {
     const currentLine = parsedLines[i];
+    if (currentLine.content === '') {
+        i++;
+        continue;
+    }
     
     if (currentLine.type === 'title') {
       blocks.push({ type: 'title', lines: [currentLine] });
       i++;
-    } else if (currentLine.type === 'rounds_header' || currentLine.type === 'exercise') {
-      const exerciseBlock: ParsedLine[] = [];
-      while (i < parsedLines.length && (parsedLines[i].type === 'rounds_header' || parsedLines[i].type === 'exercise' || parsedLines[i].type === 'note')) {
-        exerciseBlock.push(parsedLines[i]);
+    } else if (currentLine.type === 'rounds_header') {
+        const exerciseBlock: ParsedLine[] = [currentLine];
         i++;
-      }
-      blocks.push({ type: 'exercise_block', lines: exerciseBlock });
-    } else { // instruction
-        const instructionBlock: ParsedLine[] = [];
-        while(i < parsedLines.length && parsedLines[i].type === 'instruction') {
-            instructionBlock.push(parsedLines[i]);
+        while (i < parsedLines.length && (parsedLines[i].type === 'exercise' || parsedLines[i].type === 'note' || parsedLines[i].content === '')) {
+            if (parsedLines[i].content !== '') exerciseBlock.push(parsedLines[i]);
             i++;
         }
-        blocks.push({type: 'instruction_block', lines: instructionBlock});
+        blocks.push({ type: 'exercise_block', lines: exerciseBlock });
+    } else { 
+        const otherBlock: ParsedLine[] = [currentLine];
+        i++;
+         while (i < parsedLines.length && parsedLines[i].type !== 'title' && parsedLines[i].type !== 'rounds_header' && parsedLines[i].content !== '') {
+            otherBlock.push(parsedLines[i]);
+            i++;
+        }
+        const blockType = otherBlock.some(l => l.type === 'exercise') ? 'exercise_block' : 'instruction_block';
+        blocks.push({ type: blockType, lines: otherBlock });
     }
   }
-
   return blocks;
 }
 
@@ -82,7 +94,7 @@ const DetailBadge: React.FC<{ children: React.ReactNode }> = ({ children }) => (
 );
 
 const InstructionText: React.FC<{ lines: ParsedLine[] }> = ({ lines }) => (
-    <p className="text-sm text-muted-foreground italic pl-4 border-l-2 border-muted ml-2 py-1">
+    <p className="text-sm text-foreground pl-4 border-l-2 border-muted ml-2 py-1">
         {lines.map(l => l.content).join(' ')}
     </p>
 );
@@ -92,16 +104,18 @@ const RenderExerciseLine: React.FC<{ line: ParsedLine }> = ({ line }) => {
   const details = text.match(/\(([^)]+)\)|\[([^\]]+)\]/g) || [];
   text = text.replace(/\(([^)]+)\)|\[([^\]]+)\]/g, '').trim();
 
-  const hasSequenceKeyword = SEQUENCE_KEYWORD.test(text);
-  if (hasSequenceKeyword) {
-    text = text.replace(SEQUENCE_KEYWORD, '').trim();
-  }
+  const parts = text.split('+').map(p => p.trim());
   
   return (
-    <div className={cn("flex items-start gap-3 pl-2", hasSequenceKeyword && "mt-1")}>
-      <span className={cn("h-1.5 w-1.5 rounded-full bg-primary mt-[0.5rem] flex-shrink-0", hasSequenceKeyword && "opacity-50")} />
+    <div className={cn("flex items-start gap-3 pl-2")}>
+      <span className={cn("h-1.5 w-1.5 rounded-full bg-primary mt-[0.5rem] flex-shrink-0")} />
       <p className="flex-1 text-foreground leading-snug">
-        {toSentenceCase(text)}
+        {parts.map((part, index) => (
+            <React.Fragment key={index}>
+                {part}
+                {index < parts.length - 1 && <span className="text-primary font-bold mx-2">+</span>}
+            </React.Fragment>
+        ))}
         {details.map((detail, i) => <DetailBadge key={i}>{detail.replace(/[()\[\]]/g, '')}</DetailBadge>)}
       </p>
     </div>
@@ -120,7 +134,7 @@ const RenderNoteLine: React.FC<{ line: ParsedLine }> = ({ line }) => {
 const RenderRoundsHeader: React.FC<{ line: ParsedLine }> = ({ line }) => (
     <p className="font-semibold text-foreground flex items-center gap-2">
         <ArrowRight className="h-4 w-4 text-primary" />
-        {toSentenceCase(line.content)}
+        {line.content}
     </p>
 );
 
@@ -129,6 +143,7 @@ const ExerciseBlock: React.FC<{ lines: ParsedLine[] }> = ({ lines }) => (
         {lines.map((line, index) => {
             if (line.type === 'rounds_header') return <RenderRoundsHeader key={index} line={line} />;
             if (line.type === 'exercise') return <RenderExerciseLine key={index} line={line} />;
+            if (line.type === 'instruction') return <InstructionText key={index} lines={[line]}/>;
             if (line.type === 'note') return <RenderNoteLine key={index} line={line} />;
             return null;
         })}
