@@ -65,7 +65,7 @@ function ShareModal({ wod, finalTime }: { wod: WOD; finalTime: string }) {
                         </p>
                     </ScrollArea>
                     <div className="flex justify-center opacity-70">
-                      <Logo className="w-auto h-8" showText={false} />
+                      <Logo className="w-auto h-12" showText={false} />
                     </div>
                 </div>
                  <p className="text-center text-sm text-muted-foreground">
