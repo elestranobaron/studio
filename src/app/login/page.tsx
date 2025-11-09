@@ -15,7 +15,6 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import { LoaderCircle, CheckCircle, Dumbbell, Archive, LineChart, AlertTriangle } from 'lucide-react';
-import { Logo } from '@/components/icons';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
 
@@ -182,7 +181,9 @@ function LoginClientContent() {
         <div className="flex h-screen w-full items-center justify-center bg-background p-4">
             <div className="grid lg:grid-cols-2 max-w-4xl w-full gap-16 items-center">
                  <div className="flex-col items-center lg:items-start text-center lg:text-left hidden lg:flex">
-                    <Logo />
+                    <div className="text-3xl font-bold font-headline text-primary tracking-wider">
+                        WODBurner
+                    </div>
                     <h1 className="text-3xl font-bold tracking-tight font-headline md:text-4xl mt-4">Take it to the next level.</h1>
                     <p className="text-muted-foreground mt-2">Create a free account to unlock all features and never lose a WOD again.</p>
                     <div className="space-y-4 mt-8 text-left">
@@ -268,5 +269,3 @@ export default function LoginPage() {
         </Suspense>
     )
 }
-
-    
