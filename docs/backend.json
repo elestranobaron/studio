@@ -50,7 +50,55 @@
         "imageUrl",
         "date"
       ]
-    }
+    },
+    "User": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "title": "User",
+        "type": "object",
+        "description": "Represents a user in the application, including their subscription status and usage quotas.",
+        "properties": {
+          "uid": {
+            "type": "string",
+            "description": "The unique user ID from Firebase Authentication."
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "description": "The user's email address."
+          },
+          "premium": {
+            "type": "boolean",
+            "description": "True if the user has an active premium subscription.",
+            "default": false
+          },
+          "ocrCount": {
+            "type": "number",
+            "description": "The number of OCR scans performed this month.",
+            "default": 0
+          },
+          "ocrReset": {
+            "type": "string",
+            "format": "date-time",
+            "description": "The timestamp when the ocrCount will reset."
+          },
+          "dailyReactions": {
+            "type": "number",
+            "description": "The number of reactions made today.",
+            "default": 0
+          },
+          "dailyReset": {
+            "type": "string",
+            "format": "date-time",
+            "description": "The timestamp when the dailyReactions count will reset."
+          },
+          "favoriteWods": {
+            "type": "array",
+            "description": "An array of WOD IDs that the user has favorited.",
+            "items": { "type": "string" }
+          }
+        },
+        "required": ["uid", "email"]
+      }
   },
   "auth": {
     "providers": [
@@ -60,6 +108,16 @@
   },
   "firestore": {
     "structure": [
+      {
+        "path": "/users/{userId}",
+        "definition": {
+            "entityName": "User",
+            "schema": {
+                "$ref": "#/backend/entities/User"
+            },
+            "description": "Stores user-specific data like subscription status and quotas."
+        }
+      },
       {
         "path": "/users/{userId}/wods/{wodId}",
         "definition": {

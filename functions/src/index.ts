@@ -3,14 +3,21 @@
  */
 import "dotenv/config";
 import { onCall, HttpsError } from "firebase-functions/v2/https";
+import { onSchedule } from "firebase-functions/v2/scheduler";
 import { getFirestore } from "firebase-admin/firestore";
 import * as admin from "firebase-admin";
 import fetch from "node-fetch";
+import Stripe from "stripe";
 
 admin.initializeApp();
+const db = getFirestore();
 
 const BREVO_API_KEY = process.env.BREVO_API_KEY;
 if (!BREVO_API_KEY) throw new Error("BREVO_API_KEY missing in .env");
+
+const STRIPE_SECRET_KEY = process.env.STRIPE_SECRET_KEY;
+if (!STRIPE_SECRET_KEY) throw new Error("STRIPE_SECRET_KEY missing in .env");
+const stripe = new Stripe(STRIPE_SECRET_KEY, { apiVersion: "2024-06-20" });
 
 export const sendMagicLink = onCall(
   async (request) => {
@@ -42,7 +49,7 @@ export const sendMagicLink = onCall(
       console.log("Firebase link generated:", link.substring(0, 100) + "...");
 
       // Stockage Kraken
-      await getFirestore().collection("magicLinks").doc(email).set({
+      await db.collection("magicLinks").doc(email).set({
         ip,
         userAgent,
         createdAt: new Date(),
@@ -97,7 +104,7 @@ export const verifyMagicLinkAccess = onCall(
       : request.rawRequest?.ip || "unknown";
     const userAgent = headers["user-agent"] || "unknown";
 
-    const doc = await getFirestore().collection("magicLinks").doc(email).get();
+    const doc = await db.collection("magicLinks").doc(email).get();
     if (!doc.exists) return { allowed: false, reason: "no_attempt" };
 
     const data = doc.data()!;
@@ -117,3 +124,55 @@ export const verifyMagicLinkAccess = onCall(
     return { allowed: true };
   }
 );
+
+// Reset OCR count to 0 for all users on the 1st of every month.
+export const resetOCR = onSchedule("0 0 1 * *", async () => {
+    const users = await db.collection("users").get();
+    const batch = db.batch();
+    users.forEach(doc => {
+        batch.update(doc.ref, { ocrCount: 0, ocrReset: new Date() });
+    });
+    await batch.commit();
+    console.log(`Reset OCR count for ${users.size} users.`);
+});
+
+// Reset daily reaction count to 0 for all users every day at midnight.
+export const resetReactions = onSchedule("0 0 * * *", async () => {
+    const users = await db.collection("users").get();
+    const batch = db.batch();
+    users.forEach(doc => {
+        batch.update(doc.ref, { dailyReactions: 0, dailyReset: new Date() });
+    });
+    await batch.commit();
+    console.log(`Reset daily reactions for ${users.size} users.`);
+});
+
+// Create a Stripe checkout session for a user.
+export const createCheckout = onCall({
+    secrets: ["STRIPE_SECRET_KEY"],
+}, async (request) => {
+    if (!request.auth) {
+        throw new HttpsError("unauthenticated", "You must be logged in to subscribe.");
+    }
+    const { priceId, userId } = request.data;
+    if (!priceId || !userId) {
+        throw new HttpsError("invalid-argument", "priceId and userId are required.");
+    }
+
+    try {
+        const session = await stripe.checkout.sessions.create({
+            payment_method_types: ["card"],
+            line_items: [{ price: priceId, quantity: 1 }],
+            mode: "subscription",
+            success_url: "https://wodburner.app/dashboard?upgraded=true",
+            cancel_url: "https://wodburner.app/premium",
+            metadata: {
+                userId: userId,
+            },
+        });
+        return { id: session.id };
+    } catch (error: any) {
+        console.error("Stripe session creation failed:", error);
+        throw new HttpsError("internal", "Could not create Stripe checkout session.");
+    }
+});
