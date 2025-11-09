@@ -31,42 +31,59 @@ const formatTime = (time: number) => {
 };
 
 function ShareModal({ wod, finalTime }: { wod: WOD; finalTime: string }) {
-    const [isExpanded, setIsExpanded] = useState(false);
     
-    const flatDescription = Array.isArray(wod.description)
-        ? wod.description.map(section => `${section.title}\n${section.content}`).join("\n\n")
-        : wod.description || "";
+    const getMainWorkoutContent = () => {
+        if (!wod.description) return "";
+
+        const metconKeywords = ["METCON", "CONDITIONING", wod.type.toUpperCase()];
+        const metconSection = wod.description.find(section => 
+            metconKeywords.some(keyword => section.title.toUpperCase().includes(keyword))
+        );
+
+        if (metconSection) {
+            return metconSection.content;
+        }
+
+        // Fallback: join all sections if no specific metcon is found
+        return wod.description.map(section => section.content).join("\n\n");
+    };
+
+    const mainWorkoutContent = getMainWorkoutContent();
 
     return (
-        <Dialog onOpenChange={(open) => !open && setIsExpanded(false)}>
+        <Dialog>
             <DialogTrigger asChild>
                 <Button variant="outline"><Share2 className="mr-2 h-4 w-4"/>Share Result</Button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-md p-0">
-                <div className="p-6 bg-card rounded-t-lg flex flex-col gap-4">
-                    <div className="text-center">
-                        <p className="text-muted-foreground text-sm">FINAL TIME</p>
-                        <p className="text-7xl font-bold font-mono text-primary -my-2">{finalTime}</p>
-                        <h3 className="font-headline text-foreground text-2xl">{wod.name}</h3>
-                        <p className="text-xs text-muted-foreground">{wod.type}</p>
+            <DialogContent className="sm:max-w-md p-0 bg-background border-2 border-primary/50 shadow-2xl shadow-primary/20">
+                <div className="p-6 flex flex-col gap-4 text-center">
+                    <div>
+                        <p className="text-muted-foreground text-sm font-semibold tracking-widest">FINAL TIME</p>
+                        <p className="text-8xl font-bold font-mono text-primary -my-2">{finalTime}</p>
                     </div>
-                     <Separator />
-                     <div className={cn("transition-all duration-300", isExpanded ? "max-h-none" : "max-h-[25vh] overflow-y-auto pr-2 -mr-2")}>
-                        <WodContentParser content={flatDescription} />
+                    
+                    <div className="space-y-1">
+                        <h3 className="font-headline text-foreground text-3xl">{wod.name}</h3>
+                        <p className="text-sm text-muted-foreground">{wod.type}</p>
                     </div>
-                </div>
-                 <div className="p-4 bg-background flex items-center justify-center gap-3 text-center text-sm text-muted-foreground border-t rounded-b-lg">
-                    {isExpanded ? (
-                        <>
-                            <Camera className="h-4 w-4"/>
-                            Ready for screenshot!
-                        </>
-                    ) : (
-                        <Button variant="ghost" className="w-full" onClick={() => setIsExpanded(true)}>
-                           <Expand className="mr-2 h-4 w-4" />
-                            Prepare for Screenshot
-                        </Button>
-                    )}
+                     
+                     <Separator className="my-2 bg-border/50" />
+
+                     <div className="text-left w-full">
+                        <WodContentParser content={mainWorkoutContent} />
+                    </div>
+
+                    <div className="pt-4 mt-auto text-center">
+                        <span className="text-xl font-bold font-headline text-primary tracking-wider opacity-60">
+                            WODBurner
+                        </span>
+                    </div>
+
+                    <div className="absolute -bottom-10 left-1/2 -translate-x-1/2 w-full text-center">
+                         <p className="text-xs text-muted-foreground/50 flex items-center justify-center gap-2">
+                            <Camera className="h-3 w-3"/> Ready for screenshot!
+                        </p>
+                    </div>
                 </div>
             </DialogContent>
         </Dialog>
