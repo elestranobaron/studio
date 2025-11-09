@@ -14,7 +14,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from "@/components/ui/dialog";
 import type { WOD } from "@/lib/types";
 import { cn } from "@/lib/utils";
-import { Logo }from "./icons";
 import { ScrollArea } from "./ui/scroll-area";
 import { Separator } from "./ui/separator";
 import { playStartSound, playFinishSound, playCountdownTick, playCountdownEnd } from "@/lib/sounds";
@@ -64,7 +63,7 @@ function ShareModal({ wod, finalTime }: { wod: WOD; finalTime: string }) {
                         </p>
                     </ScrollArea>
                     <div className="flex justify-center opacity-70">
-                      <Logo className="w-24 h-24" showText={false} />
+                       {/* Intentionally empty for now */}
                     </div>
                 </div>
                  <p className="text-center text-sm text-muted-foreground">
@@ -231,8 +230,8 @@ export function TimerClient({ wod }: { wod: WOD }) {
             <ShareModal wod={wod} finalTime={formatTime(isCountDownTimer ? totalDuration : finalTime)} />
         </div>
          <div className="pt-8 opacity-50">
-            <Logo className="w-24 h-24" showText={false}/>
-        </div>
+            {/* Intentionally empty for now */}
+         </div>
       </div>
     );
   }
