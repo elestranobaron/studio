@@ -27,15 +27,17 @@ function AppLayoutContent({ children }: { children: React.ReactNode }) {
         <>
             <Sidebar className="flex flex-col">
                  <div className="absolute inset-0 w-full z-0 brightness-50 flex items-center justify-center overflow-hidden">
-                    <video
-                        src="/lateral_logo.mp4"
-                        autoPlay
-                        loop
-                        muted
-                        playsInline
-                        className="w-full h-full object-contain transition-transform duration-300 scale-150 md:scale-125"
-                        aria-label="WODBurner logo animation in background"
-                    />
+                    <div className="w-full h-full flex items-center justify-center">
+                        <video
+                            src="/lateral_logo.mp4"
+                            autoPlay
+                            loop
+                            muted
+                            playsInline
+                            className="w-full h-full object-contain transition-transform duration-300 scale-125 md:scale-125"
+                            aria-label="WODBurner logo animation in background"
+                        />
+                    </div>
                  </div>
                  <div className="relative z-10 flex flex-col h-full">
                     <SidebarHeader>
