@@ -17,6 +17,17 @@ service cloud.firestore {
     function isOwner(userId) {
       return request.auth.uid == userId;
     }
+    
+    // Helper function to get the requesting user's data document.
+    function getUserData() {
+        return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+    }
+
+    // Rules for the users collection
+    match /users/{userId} {
+        // A user can read and write to their own document.
+        allow read, write: if isOwner(userId);
+    }
 
     // Rules for WODs subcollection
     match /users/{userId}/wods/{wodId} {
@@ -40,10 +51,16 @@ service cloud.firestore {
         allow update: if isRegisteredUser();
 
         // --- RULES FOR REACTIONS ---
-        // A registered user can read and write their own reaction document.
-        // This allows them to create, change, or remove their reaction.
+        // A registered user can read their own reaction document.
         match /reactors/{reactorId} {
-          allow read, write: if isRegisteredUser() && isOwner(reactorId);
+          allow read: if isRegisteredUser() && isOwner(reactorId);
+          
+          // A user can create a reaction if they are premium OR have not exceeded their daily quota.
+          allow create: if isRegisteredUser() && isOwner(reactorId) 
+                         && (getUserData().premium == true || getUserData().dailyReactions < 5);
+                         
+          // A user can delete their own reaction. This does not count against a quota.
+          allow delete: if isRegisteredUser() && isOwner(reactorId);
         }
     }
   }
