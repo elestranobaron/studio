@@ -4,22 +4,21 @@
 import React from 'react';
 import { Badge } from './ui/badge';
 import { cn } from '@/lib/utils';
-import { ArrowRight, ChevronRight } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 
 // --- Type Definitions ---
 type LineType = 'title' | 'exercise' | 'instruction' | 'rounds_header' | 'note' | 'empty';
 type ParsedLine = { type: LineType; content: string; original: string };
 
 // --- Helper Functions for Text Analysis & Formatting ---
-const SECTION_KEYWORDS = ["WARM-UP", "WARMUP", "STRENGTH", "METCON", "CONDITIONING", "ACCESSORY", "COOL-DOWN", "GYMNASTICS", "SKILL", "TECHNIQUE", "PREP", "PLYOMÉTRIE", "HYBRID METCON"];
-const ROUNDS_KEYWORDS = /^\s*(\d+\s*rounds?|for\s+\d+\s*rounds?|alternate|emom|every|for time)/i;
-const EXERCISE_MARKER = /^\s*(-|\*|\d{1,2}[a-zA-Z]?\s?x|\d{1,3}[.-]\d{1,3}|\d+\/\d+)/;
+const SECTION_KEYWORDS = ["WARM-UP", "WARMUP", "STRENGTH", "METCON", "CONDITIONING", "ACCESSORY", "COOL-DOWN", "GYMNASTICS", "SKILL", "TECHNIQUE", "PREP", "PLYOMÉTRIE", "HYBRID METCON", "PUISSANCE BAS DU CORPS", "ROWING TECHNIQUE"];
+const ROUNDS_KEYWORDS = /^\s*(\d+\s*rounds?|for\s+\d+\s*rounds?|every\s+\d{1,2}:\d{2}.*)/i;
 const NOTE_KEYWORDS = /^(int|sc|intermédiaire|scale|beginner|débutant|rx|elite|part \d+)\b.*:?/i;
+
 const toTitleCase = (str: string) => {
     if (!str) return '';
-    // Don't modify mixed-case strings, only full uppercase ones
-    if (str.toUpperCase() !== str) return str;
-    return str.replace(/\w\S*/g, (txt) => txt.charAt(0).toUpperCase() + txt.substring(1).toLowerCase());
+    // This regex handles French accents and converts to title case.
+    return str.toLowerCase().replace(/(^|\s|-|')(\p{L})/gu, (match, separator, char) => `${separator}${char.toUpperCase()}`);
 };
 
 const classifyLine = (line: string): ParsedLine => {
@@ -27,19 +26,20 @@ const classifyLine = (line: string): ParsedLine => {
     if (!trimmed) return { type: 'empty', content: '', original: line };
     const upper = trimmed.toUpperCase();
 
-    if (NOTE_KEYWORDS.test(trimmed)) {
-        return { type: 'note', content: trimmed.replace(/:\s*$/, ''), original: line };
-    }
-    if (SECTION_KEYWORDS.some(keyword => upper.startsWith(keyword)) && trimmed.split(' ').length < 5) {
+    if (SECTION_KEYWORDS.some(keyword => upper.includes(keyword)) && trimmed.split(' ').length < 6) {
       return { type: 'title', content: toTitleCase(trimmed.replace(':', '')), original: line };
     }
-    if (ROUNDS_KEYWORDS.test(trimmed)) {
+    if (NOTE_KEYWORDS.test(trimmed)) {
+        return { type: 'note', content: trimmed, original: line };
+    }
+    if (ROUNDS_KEYWORDS.test(trimmed) || /alternate part/i.test(trimmed) || /part \d+ >/i.test(trimmed)) {
       return { type: 'rounds_header', content: toTitleCase(trimmed), original: line };
     }
-    if (EXERCISE_MARKER.test(trimmed) || upper.includes('+')) {
+     // If it contains numbers and letters, it's likely an exercise
+    if (/\d/.test(trimmed) && /[a-zA-Z]/.test(trimmed)) {
         return { type: 'exercise', content: toTitleCase(trimmed), original: line };
     }
-    // Default to instruction for anything else that's not empty
+    // Default to instruction for anything else
     return { type: 'instruction', content: toTitleCase(trimmed), original: line };
 };
 
@@ -57,11 +57,11 @@ const InstructionText: React.FC<{ line: ParsedLine }> = ({ line }) => (
 
 const RenderExerciseLine: React.FC<{ line: ParsedLine }> = ({ line }) => {
     let text = line.content.replace(/^-|\*/, '').trim();
-
-    // Extract details in parentheses or brackets
+    
+    // Extract details in parentheses or brackets and replace them
     const details = text.match(/\(([^)]+)\)|\[([^\]]+)\]/g) || [];
     text = text.replace(/\(([^)]+)\)|\[([^\]]+)\]/g, '').trim();
-    
+
     // Replace "Directly" with an arrow
     text = text.replace(/^Directly/i, '→');
 
@@ -84,12 +84,12 @@ const RenderExerciseLine: React.FC<{ line: ParsedLine }> = ({ line }) => {
 };
 
 const RenderNoteLine: React.FC<{ line: ParsedLine }> = ({ line }) => {
-    const parts = line.content.split(/\s*\/\/\s*|\s*\/\s*/).map(p => p.trim());
+    const parts = line.content.split(/\s*\/\/\s*|\s*\/\s*/).map(p => toTitleCase(p.trim()));
     return (
         <div className="pl-7 text-xs text-muted-foreground italic mt-1 flex items-center gap-2">
             {parts.map((part, index) => (
                 <React.Fragment key={index}>
-                    {toTitleCase(part)}
+                    {part}
                     {index < parts.length - 1 && <span className="font-sans not-italic text-muted-foreground/50">/</span>}
                 </React.Fragment>
             ))}
@@ -104,10 +104,11 @@ const RenderRoundsHeader: React.FC<{ line: ParsedLine }> = ({ line }) => (
     </p>
 );
 
-
 // --- Main Component ---
 
 export function WodContentParser({ content }: { content: string }) {
+  if (!content) return null;
+
   const lines = content.split('\n').map(classifyLine);
   
   const renderLine = (line: ParsedLine, index: number) => {
@@ -123,7 +124,6 @@ export function WodContentParser({ content }: { content: string }) {
       case 'note':
         return <RenderNoteLine key={index} line={line} />;
       case 'empty':
-        // Render a small gap for intentional empty lines to separate logical blocks
         return (index > 0 && lines[index - 1].type !== 'empty') ? <div key={index} className="h-2"></div> : null;
       default:
         return null;
@@ -135,21 +135,22 @@ export function WodContentParser({ content }: { content: string }) {
 
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i];
-    const prevLine = i > 0 ? lines[i-1] : null;
+    const renderedLine = renderLine(line, i);
+    if (!renderedLine) continue;
 
-    if (line.type === 'rounds_header') {
+    const isHeader = line.type === 'rounds_header' || line.type === 'title';
+    const isExerciseOrNote = line.type === 'exercise' || line.type === 'note';
+
+    if (isHeader) {
       if (currentBlock.length > 0) blocks.push(currentBlock);
-      currentBlock = [renderLine(line, i)!];
-    } else if (line.type === 'exercise' || line.type === 'note') {
-       if(prevLine && prevLine.type !== 'rounds_header' && prevLine.type !== 'exercise' && prevLine.type !== 'note') {
-          if (currentBlock.length > 0) blocks.push(currentBlock);
-          currentBlock = [];
-       }
-       currentBlock.push(renderLine(line, i)!);
-    } else {
-        if (currentBlock.length > 0) blocks.push(currentBlock);
-        blocks.push([renderLine(line,i)!]);
-        currentBlock = [];
+      blocks.push([renderedLine]);
+      currentBlock = [];
+    } else if (isExerciseOrNote) {
+      currentBlock.push(renderedLine);
+    } else { // instruction or empty
+      if (currentBlock.length > 0) blocks.push(currentBlock);
+      currentBlock = [];
+      blocks.push([renderedLine]);
     }
   }
   if (currentBlock.length > 0) blocks.push(currentBlock);
@@ -160,9 +161,13 @@ export function WodContentParser({ content }: { content: string }) {
       {blocks.map((block, index) => {
         if (block.length === 0 || block.every(item => item === null)) return null;
         
-        const isExerciseBlock = block.some(item => item?.props?.line?.type === 'exercise' || item?.props?.line?.type === 'rounds_header');
-        
-        if (isExerciseBlock) {
+        const isExerciseBlock = block.some(item => 
+            item?.props?.line?.type === 'exercise' || 
+            item?.props?.line?.type === 'note'
+        );
+        const hasHeader = block.some(item => item?.props?.line?.type === 'rounds_header');
+
+        if (isExerciseBlock && !hasHeader) {
              return (
                 <div key={index} className="p-4 rounded-lg bg-card border border-border/50 space-y-2">
                     {block}
