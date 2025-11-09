@@ -65,7 +65,7 @@ function ShareModal({ wod, finalTime }: { wod: WOD; finalTime: string }) {
                         </p>
                     </ScrollArea>
                     <div className="flex justify-center opacity-70">
-                      <Logo className="w-auto h-24" showText={false} />
+                      <Logo className="w-24 h-24" showText={false} />
                     </div>
                 </div>
                  <p className="text-center text-sm text-muted-foreground">
@@ -193,7 +193,7 @@ export function TimerClient({ wod }: { wod: WOD }) {
             <ShareModal wod={wod} finalTime={formatTime(isCountDown ? totalDuration : finalTime)} />
         </div>
          <div className="pt-8 opacity-50">
-            <Logo className="w-auto h-24" showText={false}/>
+            <Logo className="w-24 h-24" showText={false}/>
         </div>
       </div>
     );
