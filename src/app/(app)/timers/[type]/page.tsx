@@ -6,13 +6,12 @@ import { useState } from 'react';
 import { TimerClient } from '@/components/timer-client';
 import { type WOD, type WodType } from '@/lib/types';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Play } from 'lucide-read-only';
+import { ArrowLeft, Play, Dumbbell } from 'lucide-react';
 import Link from 'next/link';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { SidebarTrigger } from '@/components/ui/sidebar';
-import { Dumbbell } from 'lucide-react';
 
 const timerConfigs: Record<string, { name: WodType, requiresDuration: boolean, defaultDuration?: number, title: string, description: string }> = {
     'for-time': { name: 'For Time', requiresDuration: false, title: 'For Time', description: 'A simple stopwatch to time your workout.' },
