@@ -15,6 +15,7 @@ import { useMemo } from 'react';
 import Image from 'next/image';
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { Separator } from '@/components/ui/separator';
+import { WodContentParser } from '@/components/wod-content-parser';
 
 function TimerPageSkeleton() {
     return (
@@ -114,9 +115,7 @@ export default function CommunityTimerPage() {
                         {descriptionSections.map((section, index) => (
                             <div key={index}>
                                 <h4 className="font-headline text-lg text-foreground mb-2">{section.title}</h4>
-                                <p className="whitespace-pre-wrap text-muted-foreground text-base">
-                                    {section.content}
-                                </p>
+                                <WodContentParser content={section.content} />
                                 {index < descriptionSections.length - 1 && <Separator className="mt-6" />}
                             </div>
                         ))}
