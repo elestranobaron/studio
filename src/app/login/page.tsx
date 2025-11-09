@@ -108,7 +108,7 @@ function LoginClientContent() {
             const functions = getFunctions();
             const sendMagicLink = httpsCallable(functions, 'sendMagicLink');
 
-            await sendMagicLink({ email });
+            await sendMagicLink({ email: email });
             window.localStorage.setItem('emailForSignIn', email);
             setEmailSent(true);
             toast({
