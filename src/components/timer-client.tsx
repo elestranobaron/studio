@@ -9,7 +9,6 @@ import {
   Flag,
   Share2,
   Camera,
-  Expand,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -39,17 +38,22 @@ function ShareModal({ wod, finalTime }: { wod: WOD; finalTime: string }) {
             return wod.description;
         }
 
-        const metconKeywords = ["METCON", "CONDITIONING", "HYBRID METCON"];
+        const metconKeywords = ["METCON", "CONDITIONING"];
         const metconSection = wod.description.find(section => 
             metconKeywords.some(keyword => section.title.toUpperCase().includes(keyword))
         );
         
-        // If a metcon section is found, return its content. Otherwise, return an empty string.
-        // This prevents the full WOD from being displayed if no metcon is found.
+        // If a metcon section is found, return its content.
         if (metconSection) {
             return metconSection.content;
         }
 
+        // FALLBACK: If no specific metcon section, return the last section's content.
+        if (wod.description.length > 0) {
+            return wod.description[wod.description.length - 1].content;
+        }
+
+        // If all else fails, return an empty string.
         return "";
     };
 
