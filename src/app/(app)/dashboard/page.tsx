@@ -15,6 +15,7 @@ import { useMemo, useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
+import { WelcomeEmptyState } from '@/components/welcome-empty-state';
 
 function WodSkeleton() {
   return (
@@ -62,6 +63,11 @@ function WodList({
         ))}
       </div>
     );
+  }
+
+  // Use the new WelcomeEmptyState for personal wods if empty
+  if (source === 'personal') {
+    return <WelcomeEmptyState />;
   }
 
   return (
