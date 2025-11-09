@@ -43,13 +43,14 @@ function ShareModal({ wod, finalTime }: { wod: WOD; finalTime: string }) {
         const metconSection = wod.description.find(section => 
             metconKeywords.some(keyword => section.title.toUpperCase().includes(keyword))
         );
-
+        
+        // If a metcon section is found, return its content. Otherwise, return an empty string.
+        // This prevents the full WOD from being displayed if no metcon is found.
         if (metconSection) {
             return metconSection.content;
         }
 
-        // Fallback: join all sections if no specific metcon is found
-        return wod.description.map(section => section.content).join("\n\n");
+        return "";
     };
 
     const mainWorkoutContent = getMainWorkoutContent();
