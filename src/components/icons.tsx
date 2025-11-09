@@ -2,7 +2,7 @@
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 
-export function Logo({ className }: { className?: string }) {
+export function Logo({ className, showText = true }: { className?: string; showText?: boolean }) {
   return (
     <div className={cn("flex items-center gap-2", className)}>
       <Image 
@@ -12,9 +12,11 @@ export function Logo({ className }: { className?: string }) {
         height={32} 
         className="h-full w-full object-contain"
       />
-      <span className="text-xl font-bold font-headline text-foreground group-data-[collapsible=icon]:hidden">
-        WODBurner
-      </span>
+      {showText && (
+        <span className="text-xl font-bold font-headline text-foreground group-data-[collapsible=icon]:hidden">
+          WODBurner
+        </span>
+      )}
     </div>
   );
 }
