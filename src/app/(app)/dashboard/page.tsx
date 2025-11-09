@@ -11,11 +11,12 @@ import { collection, query, orderBy, limit } from 'firebase/firestore';
 import { Skeleton } from '@/components/ui/skeleton';
 import type { WOD } from '@/lib/types';
 import { useUser } from '@/firebase/provider';
-import { useMemo, useState } from 'react';
+import { useMemo, useState, Suspense } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { WelcomeEmptyState } from '@/components/welcome-empty-state';
+import { useSearchParams } from 'next/navigation';
 
 function WodSkeleton() {
   return (
@@ -187,9 +188,11 @@ function CommunityWodList() {
     );
 }
 
-export default function DashboardPage() {
+function DashboardContent() {
   const { firestore } = useFirebase();
   const { user, isUserLoading } = useUser();
+  const searchParams = useSearchParams();
+  const defaultTab = searchParams.get('tab') === 'community' ? 'community' : 'personal';
 
   const userWodsCollection = useMemo(() => {
     if (!firestore || !user) return null;
@@ -218,7 +221,7 @@ export default function DashboardPage() {
         </Button>
       </header>
       <main className="flex-1 overflow-y-auto">
-        <Tabs defaultValue="personal" className="w-full">
+        <Tabs defaultValue={defaultTab} className="w-full">
           <div className="p-4 md:p-6 border-b">
             <TabsList className="grid w-full grid-cols-2 md:w-auto">
               <TabsTrigger value="personal">My WODs</TabsTrigger>
@@ -242,4 +245,12 @@ export default function DashboardPage() {
       </main>
     </div>
   );
+}
+
+export default function DashboardPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <DashboardContent />
+    </Suspense>
+  )
 }

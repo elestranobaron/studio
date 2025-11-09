@@ -18,10 +18,10 @@ export function WelcomeEmptyState() {
     <div className="text-center py-16 px-4">
       <Flame className="w-24 h-24 mx-auto text-primary/80 animate-logo-pulse" strokeWidth={1.5} />
       <h2 className="mt-6 text-3xl font-bold font-headline text-primary">
-        Bienvenue sur WODBurner !
+        Welcome to WODBurner!
       </h2>
       <p className="mt-2 text-lg text-muted-foreground">
-        Votre premier WOD en 3 secondes :
+        Log your first WOD in 3 seconds:
       </p>
 
       <div className="flex flex-col gap-4 max-w-sm mx-auto mt-8">
@@ -31,7 +31,7 @@ export function WelcomeEmptyState() {
           onClick={handleGoToScan}
         >
           <Camera className="mr-3 h-6 w-6" />
-          Scanner un WOD depuis une photo
+          Scan a WOD from a photo
         </Button>
 
         <TooltipProvider>
@@ -45,12 +45,12 @@ export function WelcomeEmptyState() {
                             disabled
                             >
                             <Dice5 className="mr-3 h-6 w-6" />
-                            Générer un WOD aléatoire
+                            Generate a random WOD
                         </Button>
                     </div>
                 </TooltipTrigger>
                 <TooltipContent>
-                    <p>Prochainement !</p>
+                    <p>Coming soon!</p>
                 </TooltipContent>
             </Tooltip>
         </TooltipProvider>
@@ -66,12 +66,12 @@ export function WelcomeEmptyState() {
                             disabled
                         >
                             <Medal className="mr-3 h-6 w-6" />
-                            Essayer un Hero WOD
+                            Try a Hero WOD
                         </Button>
                     </div>
                 </TooltipTrigger>
                 <TooltipContent>
-                    <p>Prochainement !</p>
+                    <p>Coming soon!</p>
                 </TooltipContent>
             </Tooltip>
         </TooltipProvider>
@@ -79,11 +79,11 @@ export function WelcomeEmptyState() {
       </div>
 
       <p className="mt-10 text-sm text-muted-foreground/80">
-        Ou explore la{' '}
-        <Link href="#" className="underline text-primary/90 hover:text-primary">
-          communauté
+        Or, explore the{' '}
+        <Link href="/dashboard?tab=community" className="underline text-primary/90 hover:text-primary">
+          community
         </Link>{' '}
-        pour voir ce que les autres brûlent aujourd’hui.
+        to see what others are burning today.
       </p>
     </div>
   );
