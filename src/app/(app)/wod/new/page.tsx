@@ -67,7 +67,7 @@ export default function NewWodPage() {
             const newWodRef = doc(wodsCollection);
             const placeholderImageUrl = `https://picsum.photos/seed/${newWodRef.id}/600/400`;
     
-            const wodData: WOD = {
+            const wodData: Partial<WOD> = {
                 id: newWodRef.id,
                 userId: user.uid,
                 name,
@@ -76,8 +76,11 @@ export default function NewWodPage() {
                 date: new Date().toISOString(),
                 imageUrl: placeholderImageUrl,
                 imageHint: imageHint,
-                duration: duration,
             };
+
+            if (duration) {
+                wodData.duration = duration;
+            }
     
             await setDoc(newWodRef, wodData);
             toast({

@@ -14,7 +14,7 @@ import { Textarea } from "./ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
 import { WodType, type WOD } from "@/lib/types";
 import { useFirebase } from "@/firebase";
-import { doc, collection, query, where, getDocs, setDoc, addDoc } from "firebase/firestore";
+import { doc, collection, query, where, getDocs, setDoc, addDoc, updateDoc } from "firebase/firestore";
 import { useUser, useAuth } from "@/firebase/provider";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
@@ -144,7 +144,7 @@ export function FileUploader() {
         const photoDataUri = await toBase64(file);
         const newWodRef = doc(wodsCollection);
 
-        const wodData: WOD = {
+        const wodData: Partial<WOD> = {
             id: newWodRef.id,
             userId: userId,
             name: analysisResult.name,
@@ -153,8 +153,11 @@ export function FileUploader() {
             date: new Date().toISOString(),
             imageUrl: photoDataUri,
             imageHint: analysisResult.imageHint,
-            duration: analysisResult.duration,
         };
+
+        if (analysisResult.duration) {
+            wodData.duration = analysisResult.duration;
+        }
 
         await setDoc(newWodRef, wodData);
 
