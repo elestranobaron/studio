@@ -17,6 +17,7 @@ import { cn } from "@/lib/utils";
 import { ScrollArea } from "./ui/scroll-area";
 import { Separator } from "./ui/separator";
 import { playStartSound, playFinishSound, playCountdownTick, playCountdownEnd } from "@/lib/sounds";
+import { WodContentParser } from "./wod-content-parser";
 
 const formatTime = (time: number) => {
   const minutes = Math.floor(time / 60);
@@ -30,11 +31,9 @@ const formatTime = (time: number) => {
 function ShareModal({ wod, finalTime }: { wod: WOD; finalTime: string }) {
     const descriptionId = `share-description-${wod.id}`;
     
-    const metconSection = Array.isArray(wod.description)
-        ? wod.description.find(s => s.title.toLowerCase() === 'metcon') || wod.description[0]
-        : { title: 'Workout', content: wod.description };
-    
-    const descriptionContent = metconSection ? metconSection.content : 'No description available.';
+    const flatDescription = Array.isArray(wod.description)
+        ? wod.description.map(section => section.content).join("\n\n")
+        : wod.description || "";
 
     return (
         <Dialog>
@@ -57,10 +56,8 @@ function ShareModal({ wod, finalTime }: { wod: WOD; finalTime: string }) {
                         <p className="text-lg text-muted-foreground">Final Time</p>
                     </div>
                      <Separator />
-                     <ScrollArea className="h-24 my-4">
-                        <p className="text-sm whitespace-pre-wrap font-mono text-muted-foreground p-2">
-                           {descriptionContent}
-                        </p>
+                     <ScrollArea className="h-32 my-4">
+                        <WodContentParser content={flatDescription} />
                     </ScrollArea>
                     <div className="flex justify-center opacity-70">
                        {/* Intentionally empty for now */}
