@@ -16,6 +16,7 @@ import { UserNav } from "@/components/user-nav";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { Logo } from "@/components/icons";
 
 function AppLayoutContent({ children }: { children: React.ReactNode }) {
     const { openMobile, setOpenMobile } = useSidebar();
@@ -50,7 +51,7 @@ function AppLayoutContent({ children }: { children: React.ReactNode }) {
                             </Button>
                         ) : (
                             <div className="h-10 flex items-center px-2">
-                                 <span className="text-xl font-bold font-headline text-foreground">WODBurner</span>
+                                 <Logo className="h-8 w-auto" />
                             </div>
                         )}
                     </SidebarHeader>

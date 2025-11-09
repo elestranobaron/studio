@@ -5,12 +5,13 @@ import Image from "next/image";
 export function Logo({ className, showText = true }: { className?: string; showText?: boolean }) {
   return (
     <div className={cn("relative flex items-center gap-2", className)}>
-        <Image 
-          src="/wodburner1.jpg" 
-          alt="WODBurner Logo" 
-          fill
-          className="object-contain"
-        />
+      <Image
+        src="/wodburner1.jpg"
+        alt="WODBurner Logo"
+        fill
+        className="object-contain"
+        unoptimized // Use this to prevent Next.js from optimizing an image that is already optimized or when experiencing issues.
+      />
       {showText && (
         <span className="text-xl font-bold font-headline text-foreground group-data-[collapsible=icon]:hidden">
           WODBurner
