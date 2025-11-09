@@ -34,7 +34,7 @@ function AppLayoutContent({ children }: { children: React.ReactNode }) {
                             loop
                             muted
                             playsInline
-                            className="w-full h-full object-contain transition-transform duration-300 transform scale-[1.3] md:scale-110"
+                            className="w-full h-full object-contain transition-transform duration-300 transform scale-[1.3] md:scale-120"
                             aria-label="WODBurner logo animation in background"
                         />
                     </div>
