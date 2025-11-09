@@ -11,10 +11,11 @@ const toTitleCase = (str: string) => {
     return str.replace(/\w\S*/g, (txt) => txt.charAt(0).toUpperCase() + txt.substring(1).toLowerCase());
 };
 
-// Helper to convert a string to Sentence case
+// Helper to convert a string to Sentence case, handling multiple sentences.
 const toSentenceCase = (str: string) => {
+    if (!str) return '';
     const lower = str.toLowerCase();
-    return lower.charAt(0).toUpperCase() + lower.slice(1);
+    return lower.replace(/(^\s*\w|[.!?]\s*\w)/g, (c) => c.toUpperCase());
 };
 
 
@@ -31,11 +32,11 @@ export function WodContentParser({ content }: WodContentParserProps) {
         const trimmedLine = line.trim();
 
         // 1. Check for Section Titles (e.g., "METCON", "STRENGTH")
-        const isSectionTitle = SECTION_KEYWORDS.some(keyword => trimmedLine.toUpperCase().includes(keyword)) && trimmedLine.split(' ').length < 4;
+        const isSectionTitle = SECTION_KEYWORDS.some(keyword => trimmedLine.toUpperCase().startsWith(keyword)) && trimmedLine.split(' ').length < 5;
         if (isSectionTitle) {
             return (
                 <h4 key={index} className="font-headline text-lg text-foreground pt-2">
-                    {toTitleCase(trimmedLine)}
+                    {toTitleCase(trimmedLine.replace(':', ''))}
                 </h4>
             );
         }
@@ -45,22 +46,22 @@ export function WodContentParser({ content }: WodContentParserProps) {
           return (
             <p key={index} className="text-foreground">
               <span className="font-bold text-primary text-lg">{trimmedLine.match(/^(\d+(-\d+)*)/)?.[0]}</span>
-              {toSentenceCase(trimmedLine.replace(/^(\d+(-\d+)*)/, ''))}
+              {` ${toSentenceCase(trimmedLine.replace(/^(\d+(-\d+)*)/, ''))}`}
             </p>
           );
         }
 
-        // 3. Match lines that start with a dash (likely an exercise)
-        if (trimmedLine.startsWith('-')) {
+        // 3. Match lines that start with a dash or are likely an exercise
+        if (trimmedLine.startsWith('-') || /^\d/.test(trimmedLine)) {
           const exerciseText = trimmedLine.replace('-', '').trim();
           // Extract weight/note in parentheses
           const weightMatch = exerciseText.match(/\(([^)]+)\)/);
           const exerciseName = weightMatch ? exerciseText.replace(weightMatch[0], '').trim() : exerciseText;
           
           return (
-            <div key={index} className="flex items-center gap-2 pl-4">
-              <span className="h-1.5 w-1.5 rounded-full bg-primary" />
-              <p className="flex-1 font-medium text-foreground">
+            <div key={index} className="flex items-start gap-3 pl-2">
+              <span className="h-1.5 w-1.5 rounded-full bg-primary mt-2 flex-shrink-0" />
+              <p className="flex-1 text-foreground">
                 {toSentenceCase(exerciseName)}
                 {weightMatch && (
                   <span className="ml-2 text-sm font-normal text-muted-foreground">
@@ -74,7 +75,7 @@ export function WodContentParser({ content }: WodContentParserProps) {
         
         // 4. Default line rendering (for instructions, etc.)
         return (
-          <p key={index} className="text-muted-foreground">
+          <p key={index} className="text-muted-foreground pl-2">
             {toSentenceCase(trimmedLine)}
           </p>
         );
