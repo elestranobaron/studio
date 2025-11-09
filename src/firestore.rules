@@ -36,8 +36,15 @@ service cloud.firestore {
         // A user can only delete a community WOD if they are its original author.
         allow delete: if isRegisteredUser() && resource.data.userId == request.auth.uid;
         
-        // No one can update community WODs directly for data integrity.
-        allow update: if false;
+        // Users can update the reactions on a WOD.
+        allow update: if isRegisteredUser();
+
+        // --- NEW RULES FOR REACTIONS ---
+        // A registered user can read and write their own reaction document.
+        // This allows them to create, change, or remove their reaction.
+        match /reactors/{reactorId} {
+          allow read, write: if isRegisteredUser() && isOwner(reactorId);
+        }
     }
   }
 }
