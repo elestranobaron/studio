@@ -150,10 +150,10 @@ export default function PremiumPage() {
               </CardHeader>
               <CardContent className="space-y-4">
                  <div className="relative h-16">
-                    <div className={cn("text-4xl font-bold transition-opacity duration-300 absolute w-full", !isYearly ? "opacity-100" : "opacity-0")}>
-                        €1.99<span className="text-lg font-normal text-muted-foreground">/month</span>
+                    <div className={cn("absolute inset-0 flex flex-col items-center justify-center transition-opacity duration-300", isYearly ? "opacity-0" : "opacity-100")}>
+                        <p className="text-4xl font-bold">€1.99<span className="text-lg font-normal text-muted-foreground">/month</span></p>
                     </div>
-                    <div className={cn("transition-opacity duration-300 absolute w-full", isYearly ? "opacity-100" : "opacity-0")}>
+                    <div className={cn("absolute inset-0 flex flex-col items-center justify-center transition-opacity duration-300", isYearly ? "opacity-100" : "opacity-0")}>
                         <p className="text-4xl font-bold">€19.99<span className="text-lg font-normal text-muted-foreground">/year</span></p>
                         <p className="text-sm text-muted-foreground -mt-1">Billed annually</p>
                     </div>
