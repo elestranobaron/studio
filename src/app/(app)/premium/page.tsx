@@ -149,11 +149,11 @@ export default function PremiumPage() {
                 <CardDescription>For dedicated athletes</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                 <div className="relative">
-                    <p className={cn("text-4xl font-bold transition-opacity duration-300", !isYearly ? "opacity-100" : "opacity-0 h-0")}>
+                 <div className="relative h-16">
+                    <div className={cn("text-4xl font-bold transition-opacity duration-300 absolute w-full", !isYearly ? "opacity-100" : "opacity-0")}>
                         €1.99<span className="text-lg font-normal text-muted-foreground">/month</span>
-                    </p>
-                    <div className={cn("transition-opacity duration-300 absolute top-0 w-full", isYearly ? "opacity-100" : "opacity-0")}>
+                    </div>
+                    <div className={cn("transition-opacity duration-300 absolute w-full", isYearly ? "opacity-100" : "opacity-0")}>
                         <p className="text-4xl font-bold">€19.99<span className="text-lg font-normal text-muted-foreground">/year</span></p>
                         <p className="text-sm text-muted-foreground -mt-1">Billed annually</p>
                     </div>
