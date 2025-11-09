@@ -12,19 +12,17 @@ export const metadata: Metadata = {
     icon: "/icon-192.png",
     apple: "/icon-512.png",
   },
-  themeColor: "#ff0000",
-  appleWebApp: {
-    capable: true,
-    statusBarStyle: "black-translucent",
-    title: "WODBurner",
-  },
 };
 
-/*export const metadata: Metadata = {
+export const viewport = {
+  themeColor: "#ff0000",
+};
+
+export const appleWebApp = {
+  capable: true,
+  statusBarStyle: "black-translucent",
   title: "WODBurner",
-  description:
-    "Instantly scan, organize, and time your CrossFit WODs. Share your results with ease.",
-};*/
+};
 
 export default function RootLayout({
   children,
