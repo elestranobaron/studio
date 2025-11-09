@@ -8,6 +8,11 @@ service cloud.firestore {
       return request.auth != null;
     }
 
+    // Helper function to check if the user is a real, registered user (not anonymous).
+    function isRegisteredUser() {
+      return isSignedIn() && request.auth.token.firebase.sign_in_provider != 'anonymous';
+    }
+
     // Helper function to check if the requesting user is the owner of the document.
     function isOwner(userId) {
       return request.auth.uid == userId;
@@ -21,16 +26,25 @@ service cloud.firestore {
 
     // Rules for the public community WODs collection
     match /communityWods/{wodId} {
-        // Authenticated (non-anonymous) users can read and create community WODs.
-        allow read, create: if isSignedIn() && request.auth.token.firebase.sign_in_provider != 'anonymous';
+        // Any registered (non-anonymous) user can read the community WODs.
+        allow read: if isRegisteredUser();
+
+        // A registered user can share (create) a WOD if the data being sent
+        // includes their own userId. This prevents spoofing.
+        allow create: if isRegisteredUser() && request.resource.data.userId == request.auth.uid;
         
-        // Anyone can delete a community WOD. This is necessary for the unshare feature.
-        // We will secure this with a Cloud Function in a real-world scenario to ensure
-        // only the original author can delete it. For now, this is permissive.
-        allow delete: if isSignedIn();
+        // A user can only delete a community WOD if they are its original author.
+        allow delete: if isRegisteredUser() && resource.data.userId == request.auth.uid;
         
-        // No one can update community WODs directly for data integrity.
-        allow update: if false;
+        // Users can update the reactions on a WOD.
+        allow update: if isRegisteredUser();
+
+        // --- RULES FOR REACTIONS ---
+        // A registered user can read and write their own reaction document.
+        // This allows them to create, change, or remove their reaction.
+        match /reactors/{reactorId} {
+          allow read, write: if isRegisteredUser() && isOwner(reactorId);
+        }
     }
   }
 }
