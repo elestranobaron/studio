@@ -17,6 +17,7 @@ import { cn } from "@/lib/utils";
 import { Logo }from "./icons";
 import { ScrollArea } from "./ui/scroll-area";
 import { Separator } from "./ui/separator";
+import { playStartSound, playFinishSound, playCountdownTick, playCountdownEnd } from "@/lib/sounds";
 
 const formatTime = (time: number) => {
   const minutes = Math.floor(time / 60);
@@ -30,12 +31,10 @@ const formatTime = (time: number) => {
 function ShareModal({ wod, finalTime }: { wod: WOD; finalTime: string }) {
     const descriptionId = `share-description-${wod.id}`;
     
-    // Find the 'Metcon' section, or fall back to the first section if not found.
     const metconSection = Array.isArray(wod.description)
         ? wod.description.find(s => s.title.toLowerCase() === 'metcon') || wod.description[0]
         : { title: 'Workout', content: wod.description };
     
-    // Handle cases where description might be a string (legacy) or not exist
     const descriptionContent = metconSection ? metconSection.content : 'No description available.';
 
     return (
@@ -81,29 +80,48 @@ export function TimerClient({ wod }: { wod: WOD }) {
   const [isActive, setIsActive] = useState(false);
   const [isFinished, setIsFinished] = useState(false);
   const [finalTime, setFinalTime] = useState(0);
+  const [countdown, setCountdown] = useState(3);
+  const [isCountingDown, setIsCountingDown] = useState(false);
 
   const totalDuration = wod.duration ? wod.duration * 60 : 0;
-  const isCountDown = wod.type === "AMRAP" || wod.type === "EMOM";
+  const isCountDownTimer = wod.type === "AMRAP" || wod.type === "EMOM";
   
   const resetTimer = useCallback(() => {
     setIsActive(false);
     setIsFinished(false);
     setFinalTime(0);
-    setTime(isCountDown ? totalDuration : 0);
-  }, [isCountDown, totalDuration]);
+    setTime(isCountDownTimer ? totalDuration : 0);
+    setCountdown(3);
+    setIsCountingDown(false);
+  }, [isCountDownTimer, totalDuration]);
 
   // Set initial time on component mount
   useEffect(() => {
     resetTimer();
   }, [resetTimer]);
 
-
   useEffect(() => {
     let interval: NodeJS.Timeout | null = null;
-    if (isActive && !isFinished) {
+    if (isCountingDown) {
+        if (countdown > 0) {
+            playCountdownTick();
+        } else {
+            playCountdownEnd();
+        }
+        interval = setInterval(() => {
+            setCountdown(prev => {
+                if (prev <= 1) {
+                    setIsCountingDown(false);
+                    setIsActive(true);
+                    return 0;
+                }
+                return prev - 1;
+            });
+        }, 1000);
+    } else if (isActive && !isFinished) {
       interval = setInterval(() => {
         setTime((prevTime) => {
-          if (isCountDown) {
+          if (isCountDownTimer) {
             if (prevTime <= 1) {
               handleFinish();
               return 0;
@@ -117,27 +135,47 @@ export function TimerClient({ wod }: { wod: WOD }) {
     return () => {
       if (interval) clearInterval(interval);
     };
-  }, [isActive, isFinished, isCountDown]);
+  }, [isActive, isFinished, isCountDownTimer, isCountingDown, countdown]);
 
 
   const handleStartPause = () => {
     if (isFinished) return;
-    setIsActive(!isActive);
+    
+    if (isActive) {
+        setIsActive(false);
+    } else {
+        if ((isCountDownTimer || wod.type === 'Tabata') && time === (isCountDownTimer ? totalDuration : 0)) {
+            setIsCountingDown(true);
+        } else {
+            playStartSound();
+            setIsActive(true);
+        }
+    }
   };
 
   const handleFinish = () => {
+    playFinishSound();
     setIsActive(false);
     setIsFinished(true);
-    setFinalTime(isCountDown ? totalDuration : time);
+    setFinalTime(isCountDownTimer ? totalDuration : time);
   };
   
-  const progress = isCountDown
+  const progress = isCountDownTimer
     ? (time / totalDuration) * 100
     : 100;
   const strokeDasharray = 2 * Math.PI * 140; // Circumference of the circle
   const strokeDashoffset = strokeDasharray * (1 - progress / 100);
 
   const renderTimerCircle = () => {
+    if (isCountingDown) {
+        return (
+            <div className="relative h-80 w-80 md:h-96 md:w-96 flex items-center justify-center">
+                 <p className="font-mono text-9xl font-bold tracking-tighter text-primary animate-ping">
+                    {countdown}
+                </p>
+            </div>
+        )
+    }
     return (
         <div className="relative h-80 w-80 md:h-96 md:w-96">
             <svg className="absolute inset-0" viewBox="0 0 300 300">
@@ -160,7 +198,7 @@ export function TimerClient({ wod }: { wod: WOD }) {
                 transform="rotate(-90 150 150)"
                 className={cn(
                     "stroke-primary transition-all duration-1000 ease-linear",
-                    {"animate-pulse": isActive && isCountDown}
+                    {"animate-pulse": isActive && isCountDownTimer}
                 )}
                 fill="transparent"
                 />
@@ -184,13 +222,13 @@ export function TimerClient({ wod }: { wod: WOD }) {
                 <CardTitle className="font-headline text-primary">{wod.name}</CardTitle>
             </CardHeader>
             <CardContent>
-                <p className="text-6xl font-bold font-mono">{formatTime(isCountDown ? totalDuration : finalTime)}</p>
+                <p className="text-6xl font-bold font-mono">{formatTime(isCountDownTimer ? totalDuration : finalTime)}</p>
                 <p className="text-muted-foreground">{wod.type === "For Time" ? "Total Time" : "Time Completed"}</p>
             </CardContent>
         </Card>
         <div className="flex gap-4">
             <Button onClick={resetTimer} size="lg"><RotateCcw className="mr-2 h-4 w-4" /> Go Again</Button>
-            <ShareModal wod={wod} finalTime={formatTime(isCountDown ? totalDuration : finalTime)} />
+            <ShareModal wod={wod} finalTime={formatTime(isCountDownTimer ? totalDuration : finalTime)} />
         </div>
          <div className="pt-8 opacity-50">
             <Logo className="w-24 h-24" showText={false}/>
@@ -208,6 +246,7 @@ export function TimerClient({ wod }: { wod: WOD }) {
           size="lg"
           className="w-36"
           variant={isActive ? "secondary" : "default"}
+          disabled={isCountingDown}
         >
           {isActive ? (
             <><Pause className="mr-2 h-5 w-5" /> Pause</>
@@ -215,11 +254,11 @@ export function TimerClient({ wod }: { wod: WOD }) {
             <><Play className="mr-2 h-5 w-5" /> Start</>
           )}
         </Button>
-        <Button onClick={resetTimer} variant="outline" size="lg" className="w-36">
+        <Button onClick={resetTimer} variant="outline" size="lg" className="w-36" disabled={isCountingDown}>
           <RotateCcw className="mr-2 h-5 w-5" /> Reset
         </Button>
       </div>
-      <Button onClick={handleFinish} variant="destructive" size="lg" disabled={!isActive && time === 0}>
+      <Button onClick={handleFinish} variant="destructive" size="lg" disabled={(!isActive && time === 0) || isCountingDown}>
         <Flag className="mr-2 h-5 w-5" /> Finish
       </Button>
     </div>
