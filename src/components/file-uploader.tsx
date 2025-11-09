@@ -64,6 +64,7 @@ export function FileUploader() {
   );
   const [duplicateWod, setDuplicateWod] = useState<WOD | null>(null);
   const [shareToCommunity, setShareToCommunity] = useState(false);
+  const [saveIntent, setSaveIntent] = useState(false);
 
   const { toast } = useToast();
   const router = useRouter();
@@ -211,9 +212,7 @@ export function FileUploader() {
       await performSave(user.uid);
     } else if (auth) {
       initiateAnonymousSignIn(auth);
-      // After anonymous sign-in, the user object will update.
-      // We set a state that will be caught by the useEffect to trigger the save.
-      setIsSaving(true);
+      setSaveIntent(true);
     } else {
       toast({
         variant: "destructive",
@@ -228,19 +227,18 @@ export function FileUploader() {
         await performSave(user.uid, true);
     } else if (auth) {
         initiateAnonymousSignIn(auth);
-        setIsSaving(true); 
+        setSaveIntent(true);
     }
   };
 
   useEffect(() => {
-    // This effect now correctly handles saving AFTER an anonymous user has been created.
-    // The `isSaving` flag acts as an "intent to save".
-    if (isSaving && user) {
+    // This effect triggers the save ONLY if an intent was registered
+    // and a user (anonymous or otherwise) has become available.
+    if (saveIntent && user) {
       performSave(user.uid);
-      // Reset the intent after the save is attempted.
-      setIsSaving(false); 
+      setSaveIntent(false); // Reset intent after save attempt
     }
-  }, [user, isSaving]);
+  }, [user, saveIntent]);
 
 
   const handleRemove = () => {

@@ -18,6 +18,7 @@ import { cn } from "@/lib/utils";
 import { Separator } from "./ui/separator";
 import { playStartSound, playFinishSound, playCountdownTick, playCountdownEnd } from "@/lib/sounds";
 import { WodContentParser } from "./wod-content-parser";
+import { ScrollArea } from "./ui/scroll-area";
 
 const formatTime = (time: number) => {
   const minutes = Math.floor(time / 60);
@@ -38,7 +39,7 @@ function ShareModal({ wod, finalTime }: { wod: WOD; finalTime: string }) {
             return wod.description;
         }
 
-        const metconKeywords = ["METCON", "CONDITIONING"];
+        const metconKeywords = ["METCON", "CONDITIONING", wod.type.toUpperCase()];
         const metconSection = wod.description.find(section => 
             metconKeywords.some(keyword => section.title.toUpperCase().includes(keyword))
         );
@@ -69,33 +70,32 @@ function ShareModal({ wod, finalTime }: { wod: WOD; finalTime: string }) {
                     <DialogTitle>WOD Result: {wod.name}</DialogTitle>
                     <DialogDescription>Your final time was {finalTime}. This card is ready for sharing.</DialogDescription>
                 </DialogHeader>
-                <div className="p-6 flex flex-col gap-4 text-center">
-                    <div>
+                <div className="p-6 flex flex-col gap-4 text-center h-[90vh] max-h-[800px]">
+                    <div className="flex-shrink-0">
                         <p className="text-muted-foreground text-sm font-semibold tracking-widest">FINAL TIME</p>
                         <p className="text-8xl font-bold font-mono text-primary -my-2">{finalTime}</p>
                     </div>
                     
-                    <div className="space-y-1">
+                    <div className="space-y-1 flex-shrink-0">
                         <h3 className="font-headline text-foreground text-3xl">{wod.name}</h3>
                         <p className="text-sm text-muted-foreground">{wod.type}</p>
                     </div>
                      
-                     <Separator className="my-2 bg-border/50" />
+                    <Separator className="my-2 bg-border/50 flex-shrink-0" />
 
-                     <div className="text-left w-full">
-                        <WodContentParser content={mainWorkoutContent} />
-                    </div>
+                    <ScrollArea className="flex-grow text-left w-full">
+                        <div className="pr-4">
+                           <WodContentParser content={mainWorkoutContent} />
+                        </div>
+                    </ScrollArea>
 
-                    <div className="pt-4 mt-auto text-center">
+                    <div className="pt-4 mt-auto flex-shrink-0">
+                        <p className="text-xs text-muted-foreground/50 flex items-center justify-center gap-2 mb-2">
+                            <Camera className="h-3 w-3"/> Ready for screenshot!
+                        </p>
                         <span className="text-xl font-bold font-headline text-primary tracking-wider opacity-60">
                             WODBurner
                         </span>
-                    </div>
-
-                    <div className="absolute -bottom-10 left-1/2 -translate-x-1/2 w-full text-center">
-                         <p className="text-xs text-muted-foreground/50 flex items-center justify-center gap-2">
-                            <Camera className="h-3 w-3"/> Ready for screenshot!
-                        </p>
                     </div>
                 </div>
             </DialogContent>
