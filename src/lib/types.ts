@@ -1,3 +1,4 @@
+
 export type WodType = "For Time" | "AMRAP" | "EMOM" | "Tabata" | "Other";
 
 export type WodDescriptionSection = {
@@ -18,4 +19,5 @@ export type WOD = {
   imageHint?: string;
   userId: string;
   communityWodId?: string; // ID of the corresponding doc in communityWods
+  userDisplayName?: string; // Author's name for community WODs
 };

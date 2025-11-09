@@ -1,3 +1,4 @@
+
 import Link from "next/link";
 import Image from "next/image";
 import type { WOD } from "@/lib/types";
@@ -11,7 +12,7 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Clock, Calendar, Repeat, Hourglass, Timer, Share2, LoaderCircle } from "lucide-react";
+import { Clock, Calendar, Repeat, Hourglass, Timer, Share2, LoaderCircle, User } from "lucide-react";
 import { format } from 'date-fns';
 import { useFirebase, useUser } from "@/firebase";
 import { useState } from "react";
@@ -40,13 +41,13 @@ function ShareButton({ wod }: { wod: WOD }) {
     const { toast } = useToast();
     const [isSharing, setIsSharing] = useState(false);
     
-    // The button should not be rendered if there is no user or the WOD does not belong to the current user
     if (!user || user.isAnonymous || wod.userId !== user.uid) {
         return null;
     }
 
     const handleShareToggle = async (e: React.MouseEvent) => {
-        e.preventDefault(); // Prevent link navigation
+        e.preventDefault(); 
+        e.stopPropagation();
         if (!firestore || !user) return;
         setIsSharing(true);
 
@@ -58,13 +59,19 @@ function ShareButton({ wod }: { wod: WOD }) {
                 const communityWodRef = doc(firestore, 'communityWods', wod.communityWodId);
                 const batch = writeBatch(firestore);
                 batch.delete(communityWodRef);
-                batch.update(userWodRef, { communityWodId: "" }); // Use empty string to remove field
+                batch.update(userWodRef, { communityWodId: "" });
                 await batch.commit();
                 
                 toast({ title: "WOD Unshared", description: "Your WOD has been removed from the community." });
             } else {
                 // --- Share ---
-                const { userId, ...communityWodData } = { ...wod, date: new Date(wod.date).toISOString() };
+                const userDisplayName = user.email?.split('@')[0] || 'Anonymous';
+                const communityWodData = { 
+                    ...wod, 
+                    date: new Date(wod.date).toISOString(),
+                    userId: user.uid, // Keep owner ID for security rules
+                    userDisplayName,
+                 };
                 
                 const communityWodsCollection = collection(firestore, 'communityWods');
                 const newCommunityDocRef = await addDoc(communityWodsCollection, communityWodData);
@@ -99,11 +106,11 @@ function ShareButton({ wod }: { wod: WOD }) {
     )
 }
 
-export function WodCard({ wod }: { wod: WOD }) {
+export function WodCard({ wod, source = 'personal' }: { wod: WOD, source?: 'personal' | 'community' }) {
     
-    const formattedDate = wod.date ? format(new Date(wod.date), "PPP p") : "No date";
-
-    // Create a flat string from the description, supporting both old and new formats.
+    const formattedDate = wod.date ? format(new Date(wod.date), "PPP") : "No date";
+    const href = source === 'community' ? `/community-timer/${wod.id}` : `/timer/${wod.id}`;
+    
     const flatDescription = Array.isArray(wod.description)
       ? wod.description.map(section => section.content).join("\n")
       : wod.description;
@@ -120,7 +127,7 @@ export function WodCard({ wod }: { wod: WOD }) {
             data-ai-hint={wod.imageHint}
           />
            <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-           <ShareButton wod={wod} />
+           {source === 'personal' && <ShareButton wod={wod} />}
         </div>
       )}
       <CardHeader className="pt-4">
@@ -131,10 +138,18 @@ export function WodCard({ wod }: { wod: WOD }) {
             <span className="ml-2">{wod.type}</span>
           </Badge>
         </div>
-        <CardDescription className="flex items-center gap-2 pt-1 text-sm">
-          <Calendar className="h-4 w-4" />
-          <span>{formattedDate}</span>
-        </CardDescription>
+         <div className="flex items-center justify-between text-sm text-muted-foreground pt-1">
+            <div className="flex items-center gap-2">
+                <Calendar className="h-4 w-4" />
+                <span>{formattedDate}</span>
+            </div>
+            {source === 'community' && wod.userDisplayName && (
+                <div className="flex items-center gap-2">
+                     <User className="h-4 w-4" />
+                     <span>{wod.userDisplayName}</span>
+                </div>
+            )}
+        </div>
       </CardHeader>
       <CardContent className="flex-grow">
         <p className="line-clamp-3 text-sm text-muted-foreground whitespace-pre-wrap">
@@ -143,7 +158,7 @@ export function WodCard({ wod }: { wod: WOD }) {
       </CardContent>
       <CardFooter>
         <Button asChild className="w-full">
-          <Link href={`/timer/${wod.id}`}>Start WOD</Link>
+          <Link href={href}>Start WOD</Link>
         </Button>
       </CardFooter>
     </Card>

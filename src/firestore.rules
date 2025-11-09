@@ -1,0 +1,43 @@
+
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Helper function to check if the user is authenticated.
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    // Helper function to check if the user is a real, registered user (not anonymous).
+    function isRegisteredUser() {
+      return isSignedIn() && request.auth.token.firebase.sign_in_provider != 'anonymous';
+    }
+
+    // Helper function to check if the requesting user is the owner of the document.
+    function isOwner(userId) {
+      return request.auth.uid == userId;
+    }
+
+    // Rules for WODs subcollection
+    match /users/{userId}/wods/{wodId} {
+      // Only the owner can read or write their own WODs.
+      allow read, write: if isSignedIn() && isOwner(userId);
+    }
+
+    // Rules for the public community WODs collection
+    match /communityWods/{wodId} {
+        // Any registered (non-anonymous) user can read the community WODs.
+        allow read: if isRegisteredUser();
+
+        // A registered user can share (create) a WOD if the data being sent
+        // includes their own userId. This prevents spoofing.
+        allow create: if isRegisteredUser() && request.resource.data.userId == request.auth.uid;
+        
+        // A user can only delete a community WOD if they are its original author.
+        allow delete: if isRegisteredUser() && resource.data.userId == request.auth.uid;
+        
+        // No one can update community WODs directly for data integrity.
+        allow update: if false;
+    }
+  }
+}

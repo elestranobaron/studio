@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useCallback, useEffect } from "react";
@@ -21,7 +22,6 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
 import { initiateAnonymousSignIn } from "@/firebase/non-blocking-login";
-import { Logo } from "./icons";
 import { Checkbox } from "./ui/checkbox";
 import { Label } from "./ui/label";
 
@@ -118,7 +118,7 @@ export function FileUploader() {
   };
 
   const performSave = async (userId: string, force: boolean = false) => {
-    if (!analysisResult || !firestore || !file) return;
+    if (!analysisResult || !firestore || !file || !user) return;
 
     setIsSaving(true);
     
@@ -159,10 +159,17 @@ export function FileUploader() {
         await setDoc(newWodRef, wodData);
 
         if (shareToCommunity) {
+            const userDisplayName = user.email?.split('@')[0] || 'Anonymous';
             const communityWodsCollection = collection(firestore, 'communityWods');
-            // We don't want to expose user IDs in the community feed
-            const { userId, ...communityWodData } = wodData;
-            await addDoc(communityWodsCollection, communityWodData);
+            const communityWodData = {
+                ...wodData,
+                userId: user.uid, // Keep owner ID for security rules
+                userDisplayName
+            };
+
+            const newCommunityDocRef = await addDoc(communityWodsCollection, communityWodData);
+            // Link the personal WOD to the community one
+            await updateDoc(newWodRef, { communityWodId: newCommunityDocRef.id });
         }
 
         toast({

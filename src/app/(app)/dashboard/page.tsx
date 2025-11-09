@@ -33,12 +33,14 @@ function WodList({
   emptyStateTitle,
   emptyStateDescription,
   showAddButton = false,
+  source = 'personal'
 }: {
   wods: WOD[] | null;
   isLoading: boolean;
   emptyStateTitle: string;
   emptyStateDescription: string;
   showAddButton?: boolean;
+  source?: 'personal' | 'community';
 }) {
   if (isLoading) {
     return (
@@ -55,7 +57,7 @@ function WodList({
     return (
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {wods.map((wod) => (
-          <WodCard key={wod.id} wod={wod} />
+          <WodCard key={wod.id} wod={wod} source={source} />
         ))}
       </div>
     );
@@ -141,6 +143,7 @@ function CommunityWodList() {
             isLoading={isCommunityWodsLoading}
             emptyStateTitle="No community WODs yet."
             emptyStateDescription="Be the first to share one!"
+            source="community"
         />
     );
 }
@@ -151,7 +154,7 @@ export default function DashboardPage() {
 
   const userWodsCollection = useMemo(() => {
     if (!firestore || !user) return null;
-    return collection(firestore, 'users', user.uid, 'wods');
+    return query(collection(firestore, 'users', user.uid, 'wods'), orderBy('date', 'desc'));
   }, [firestore, user]);
 
 
@@ -190,6 +193,7 @@ export default function DashboardPage() {
                 emptyStateTitle="No WODs found here."
                 emptyStateDescription="Scan your first WOD to get started!"
                 showAddButton={true}
+                source="personal"
             />
           </TabsContent>
           <TabsContent value="community" className="p-4 md:p-6">
