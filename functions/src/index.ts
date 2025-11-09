@@ -1,5 +1,5 @@
 /**
- * WODBurner – Email Functions (Firebase Functions v2)
+ * WODBurner – Email Functions (KRAKEN + ZERO INTERNAL ERROR)
  */
 import "dotenv/config";
 import { onCall, HttpsError } from "firebase-functions/v2/https";
@@ -10,101 +10,110 @@ import fetch from "node-fetch";
 admin.initializeApp();
 
 const BREVO_API_KEY = process.env.BREVO_API_KEY;
-if (!BREVO_API_KEY) {
-  throw new Error("BREVO_API_KEY missing in .env");
-}
+if (!BREVO_API_KEY) throw new Error("BREVO_API_KEY missing in .env");
 
-// === 1. ENVOI DU LIEN + STOCKAGE IP/USER-AGENT ===
 export const sendMagicLink = onCall(
-  { region: "europe-west1", maxInstances: 10 },
   async (request) => {
-    const email = request.data.email as string;
-    if (!email) {
+    console.log("sendMagicLink called with data:", request.data);
+
+    const email = request.data.email;
+    if (!email || typeof email !== "string") {
+      console.error("Missing or invalid email:", email);
       throw new HttpsError("invalid-argument", "email required");
     }
 
-    // Récupération IP + User-Agent (v2)
-    const ipHeader = request.rawRequest?.headers["x-forwarded-for"] ||
-                     request.rawRequest?.headers["x-appengine-user-ip"];
-    const ip = Array.isArray(ipHeader) ? ipHeader[0] : ipHeader || request.rawRequest?.ip || "unknown";
-    const userAgent = request.rawRequest?.headers["user-agent"]?.[0] || "unknown";
+    // IP + User-Agent (version ultra-robuste)
+    const headers = request.rawRequest?.headers || {};
+    const forwarded = headers["x-forwarded-for"];
+    const ip = forwarded
+      ? (Array.isArray(forwarded) ? forwarded[0] : forwarded.split(",")[0]).trim()
+      : request.rawRequest?.ip || "unknown";
+
+    const userAgent = headers["user-agent"] || "unknown";
+
+    console.log("Detected IP:", ip, "User-Agent:", userAgent);
 
     try {
-      const actionCodeSettings = {
+      const link = await admin.auth().generateSignInWithEmailLink(email, {
         url: "https://wodburner.app/verify",
         handleCodeInApp: true,
-      };
-      const link = await admin.auth().generateSignInWithEmailLink(email, actionCodeSettings);
+      });
 
-      // Stockage dans Firestore
-      await getFirestore()
-        .collection("magicLinks")
-        .doc(email)
-        .set({
-          ip,
-          userAgent,
-          createdAt: new Date(),
-        });
+      console.log("Firebase link generated:", link.substring(0, 100) + "...");
+
+      // Stockage Kraken
+      await getFirestore().collection("magicLinks").doc(email).set({
+        ip,
+        userAgent,
+        createdAt: new Date(),
+      });
+
+      console.log("Kraken data saved for:", email);
+
+      // Envoi Brevo
+      const payload = {
+        sender: { name: "WODBurner Team", email: "noreply@wodburner.app" },
+        to: [{ email }],
+        templateId: 2,
+        params: { LINK: link },
+      };
+
+      console.log("Sending to Brevo:", JSON.stringify(payload).substring(0, 200));
 
       const res = await fetch("https://api.sendinblue.com/v3/smtp/email", {
         method: "POST",
-        headers: { "api-key": BREVO_API_KEY, "Content-Type": "application/json" },
-        body: JSON.stringify({
-          sender: { name: "WODBurner Team", email: "noreply@wodburner.app" },
-          to: [{ email }],
-          templateId: 2,
-          params: { LINK: link },
-        }),
+        headers: {
+          "api-key": BREVO_API_KEY,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
       });
 
+      const responseText = await res.text();
+      console.log("Brevo response status:", res.status, "body:", responseText.substring(0, 500));
+
       if (!res.ok) {
-        const text = await res.text();
-        throw new Error(`Brevo error: ${text}`);
+        throw new Error(`Brevo failed: ${res.status} ${responseText}`);
       }
 
+      console.log("Magic link sent successfully to:", email);
       return { success: true };
     } catch (error: any) {
-      console.error("sendMagicLink error:", error);
-      throw new HttpsError("internal", error.message || "unknown error");
+      console.error("sendMagicLink FAILED:", error);
+      throw new HttpsError("internal", "Failed to send link");
     }
   }
 );
 
-// === 2. VÉRIFICATION KRAKEN (IP + USER-AGENT + 15 MIN) ===
 export const verifyMagicLinkAccess = onCall(
-  { region: "europe-west1" },
   async (request) => {
-    const email = request.data.email as string;
-    if (!email) {
-      throw new HttpsError("invalid-argument", "email required");
-    }
+    const email = request.data.email;
+    if (!email) throw new HttpsError("invalid-argument", "email required");
 
-    const ipHeader = request.rawRequest?.headers["x-forwarded-for"] ||
-                     request.rawRequest?.headers["x-appengine-user-ip"];
-    const ip = Array.isArray(ipHeader) ? ipHeader[0] : ipHeader || request.rawRequest?.ip || "unknown";
-    const userAgent = request.rawRequest?.headers["user-agent"]?.[0] || "unknown";
+    const headers = request.rawRequest?.headers || {};
+    const forwarded = headers["x-forwarded-for"];
+    const ip = forwarded
+      ? (Array.isArray(forwarded) ? forwarded[0] : forwarded.split(",")[0]).trim()
+      : request.rawRequest?.ip || "unknown";
+    const userAgent = headers["user-agent"] || "unknown";
 
-    const docRef = getFirestore().collection("magicLinks").doc(email);
-    const doc = await docRef.get();
-
-    if (!doc.exists) {
-      return { allowed: false, reason: "no_attempt" };
-    }
+    const doc = await getFirestore().collection("magicLinks").doc(email).get();
+    if (!doc.exists) return { allowed: false, reason: "no_attempt" };
 
     const data = doc.data()!;
     const age = Date.now() - data.createdAt.toDate().getTime();
 
     if (age > 15 * 60 * 1000) {
-      await docRef.delete();
+      await doc.ref.delete();
       return { allowed: false, reason: "expired" };
     }
 
     if (data.ip !== ip || data.userAgent !== userAgent) {
-      await docRef.delete();
+      await doc.ref.delete();
       return { allowed: false, reason: "mismatch" };
     }
 
-    await docRef.delete();
+    await doc.ref.delete();
     return { allowed: true };
   }
 );
