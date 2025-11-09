@@ -8,6 +8,7 @@ import {
   RotateCcw,
   Flag,
   Share2,
+  Camera,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -32,7 +33,7 @@ function ShareModal({ wod, finalTime }: { wod: WOD; finalTime: string }) {
     const descriptionId = `share-description-${wod.id}`;
     
     const flatDescription = Array.isArray(wod.description)
-        ? wod.description.map(section => section.content).join("\n\n")
+        ? wod.description.map(section => `${section.title}\n${section.content}`).join("\n\n")
         : wod.description || "";
 
     return (
@@ -40,32 +41,28 @@ function ShareModal({ wod, finalTime }: { wod: WOD; finalTime: string }) {
             <DialogTrigger asChild>
                 <Button variant="outline"><Share2 className="mr-2 h-4 w-4"/>Share Result</Button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-md" aria-describedby={descriptionId}>
-                <DialogHeader>
-                    <DialogTitle className="font-headline">Share your achievement!</DialogTitle>
-                    <DialogDescription id={descriptionId}>
-                        Take a screenshot of your result to share it on social media.
-                    </DialogDescription>
-                </DialogHeader>
-                <div className="p-4 bg-background rounded-lg border my-4">
-                    <h3 className="font-headline text-primary text-2xl">{wod.name}</h3>
-                    <p className="text-sm text-muted-foreground mb-2">{wod.type}</p>
-                     <Separator />
-                    <div className="my-4 text-center">
-                        <p className="text-5xl font-bold font-mono text-foreground">{finalTime}</p>
-                        <p className="text-lg text-muted-foreground">Final Time</p>
+            <DialogContent className="sm:max-w-md p-0" aria-describedby={descriptionId}>
+                <div className="p-6 bg-card rounded-lg flex flex-col gap-4">
+                    <div className="text-center">
+                        <p className="text-muted-foreground text-sm">FINAL TIME</p>
+                        <p className="text-7xl font-bold font-mono text-primary -my-2">{finalTime}</p>
+                        <h3 className="font-headline text-foreground text-2xl">{wod.name}</h3>
+                        <p className="text-xs text-muted-foreground">{wod.type}</p>
                     </div>
                      <Separator />
-                     <ScrollArea className="h-32 my-4">
+                     <div className="max-h-[40vh] overflow-y-auto pr-2 -mr-2">
                         <WodContentParser content={flatDescription} />
-                    </ScrollArea>
-                    <div className="flex justify-center opacity-70">
-                       {/* Intentionally empty for now */}
+                    </div>
+                    <div className="flex justify-center items-center gap-2 pt-2 border-t mt-auto">
+                        <span className="text-xl font-bold font-headline text-primary tracking-wider">
+                           WODBurner
+                        </span>
                     </div>
                 </div>
-                 <p className="text-center text-sm text-muted-foreground">
-                    Take a screenshot to share on Instagram!
-                </p>
+                 <div className="p-4 bg-background flex items-center justify-center gap-3 text-center text-sm text-muted-foreground border-t">
+                    <Camera className="h-4 w-4"/>
+                    Take a screenshot to share!
+                </div>
             </DialogContent>
         </Dialog>
     )
