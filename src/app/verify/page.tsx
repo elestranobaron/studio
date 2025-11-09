@@ -42,7 +42,7 @@ export default function VerifyPage() {
           console.log("User déjà existant ou erreur :", err);
         }
 
-        router.push('/(app)/community-timer'); // ou /dashboard
+        router.push('/dashboard');
       })
       .catch(() => {
         router.push('/login?error=firebase');

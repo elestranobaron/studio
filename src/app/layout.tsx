@@ -6,9 +6,25 @@ import { FirebaseClientProvider } from "@/firebase";
 
 export const metadata: Metadata = {
   title: "WODBurner",
+  description: "Scan any WOD in seconds, time it perfectly, share instantly, and join the strongest French-speaking CrossFit community.",
+  manifest: "/manifest.json",
+  icons: {
+    icon: "/icon-192.png",
+    apple: "/icon-512.png",
+  },
+  themeColor: "#ff0000",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "WODBurner",
+  },
+};
+
+/*export const metadata: Metadata = {
+  title: "WODBurner",
   description:
     "Instantly scan, organize, and time your CrossFit WODs. Share your results with ease.",
-};
+};*/
 
 export default function RootLayout({
   children,
@@ -18,13 +34,33 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark">
       <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700;800&display=swap"
-          rel="stylesheet"
-        />
-      </head>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700;800&display=swap"
+    rel="stylesheet"
+  />
+  
+  {/* ──────── PWA : TOUT ICI ──────── */}
+  <link rel="manifest" href="/manifest.json" />
+  <link rel="icon" href="/icon-192.png" sizes="192x192" />
+  <link rel="apple-touch-icon" href="/icon-512.png" />
+  <meta name="theme-color" content="#ff0000" />
+  
+  <script
+    dangerouslySetInnerHTML={{
+      __html: `
+        if ('serviceWorker' in navigator) {
+          window.addEventListener('load', () => {
+            navigator.serviceWorker.register('/service-worker.js')
+              .then(reg => console.log('SW registered:', reg))
+              .catch(err => console.log('SW error:', err));
+          });
+        }
+      `,
+    }}
+  />
+</head>
       <body className={cn("font-body antialiased", "min-h-screen bg-background font-sans")}>
         <FirebaseClientProvider>
           {children}

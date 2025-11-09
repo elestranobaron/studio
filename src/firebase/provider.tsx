@@ -2,12 +2,12 @@
 
 import React, { createContext, useContext, ReactNode, useMemo, useEffect, useState } from 'react';
 import { FirebaseApp } from 'firebase/app';
-import { Auth, User, onAuthStateChanged, signInAnonymously } from 'firebase/auth';
+import { Auth, onAuthStateChanged, signInAnonymously, User } from 'firebase/auth';
 import { Firestore } from 'firebase/firestore';
 import { initializeFirebase } from '@/firebase/index';
 import { FirebaseErrorListener } from '@/components/FirebaseErrorListener';
 
-// Combined state for the Firebase context
+// CONTEXT
 export interface FirebaseContextState {
   firebaseApp: FirebaseApp | null;
   firestore: Firestore | null;
@@ -17,10 +17,8 @@ export interface FirebaseContextState {
   userError: Error | null;
 }
 
-// React Context
 export const FirebaseContext = createContext<FirebaseContextState | undefined>(undefined);
 
-// Props for the provider
 interface FirebaseProviderProps {
   children: ReactNode;
 }
@@ -34,7 +32,7 @@ export const FirebaseProvider: React.FC<FirebaseProviderProps> = ({ children }) 
     try {
       return initializeFirebase();
     } catch (e) {
-      console.warn("Firebase initialization failed. This may be expected in a development environment if the config is not set. Please update src/firebase/config.ts.", e);
+      console.warn("Firebase init failed", e);
       return { firebaseApp: null, auth: null, firestore: null };
     }
   }, []);
@@ -50,22 +48,11 @@ export const FirebaseProvider: React.FC<FirebaseProviderProps> = ({ children }) 
     const unsubscribe = onAuthStateChanged(
       auth,
       (firebaseUser) => {
-        if (firebaseUser) {
-          setUser(firebaseUser);
-          setIsUserLoading(false);
-        } else {
-          // If no user, sign in anonymously. This ensures a user object is always available.
-          signInAnonymously(auth).catch((error) => {
-            // Handle anonymous sign-in error
-            console.error("Anonymous sign-in failed:", error);
-            setUser(null);
-            setIsUserLoading(false);
-            setUserError(error);
-          });
-        }
+        setUser(firebaseUser);
+        setIsUserLoading(false);
       },
       (error) => {
-        console.error("Firebase Auth state change error:", error);
+        console.error("Auth error:", error);
         setUser(null);
         setIsUserLoading(false);
         setUserError(error);
@@ -90,21 +77,16 @@ export const FirebaseProvider: React.FC<FirebaseProviderProps> = ({ children }) 
   );
 };
 
-
 export const useFirebase = (): FirebaseContextState => {
   const context = useContext(FirebaseContext);
-  if (context === undefined) {
-    throw new Error('useFirebase must be used within a FirebaseProvider.');
-  }
+  if (!context) throw new Error('useFirebase must be used within FirebaseProvider');
   return context;
 };
-
 
 export const useAuth = (): Auth | null => {
   const { auth } = useFirebase();
   return auth;
 };
-
 
 export const useUser = (): { user: User | null; isUserLoading: boolean; userError: Error | null } => {
   const { user, isUserLoading, userError } = useFirebase();

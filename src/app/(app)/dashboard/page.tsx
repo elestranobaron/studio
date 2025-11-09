@@ -4,7 +4,7 @@
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { WodCard } from '@/components/wod-card';
-import { LogIn, PlusCircle, Search } from 'lucide-react';
+import { LogIn, PlusCircle, Search, ScanLine } from 'lucide-react';
 import { SidebarTrigger } from '@/components/ui/sidebar';
 import { useCollection, useFirebase } from '@/firebase';
 import { collection, query, orderBy, limit } from 'firebase/firestore';
@@ -213,7 +213,7 @@ function DashboardContent() {
             Dashboard
           </h1>
         </div>
-        <Button asChild>
+        <Button asChild className="hidden md:inline-flex">
           <Link href="/scan">
             <PlusCircle className="mr-2 h-4 w-4" />
             Scan New WOD
@@ -243,6 +243,16 @@ function DashboardContent() {
           </TabsContent>
         </Tabs>
       </main>
+      
+      {/* Mobile-only Floating Action Button */}
+      <div className="md:hidden fixed bottom-6 right-6 z-50">
+        <Button asChild size="icon" className="h-16 w-16 rounded-full shadow-2xl shadow-primary/40 animate-pulse-glow">
+          <Link href="/scan">
+            <ScanLine className="h-8 w-8" />
+            <span className="sr-only">Scan New WOD</span>
+          </Link>
+        </Button>
+      </div>
     </div>
   );
 }

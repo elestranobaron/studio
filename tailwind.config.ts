@@ -96,12 +96,21 @@ export default {
                 transform: "scale(1.05)",
                 filter: "drop-shadow(0 0 20px hsl(var(--primary) / 0.8))",
             }
-        }
+        },
+        "pulse-glow": {
+          '0%, 100%': {
+            boxShadow: '0 0 0 0 hsl(var(--primary) / 0.7)',
+          },
+          '70%': {
+            boxShadow: '0 0 0 12px hsl(var(--primary) / 0)',
+          },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
-        "logo-pulse": "logo-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite"
+        "logo-pulse": "logo-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite",
+        "pulse-glow": 'pulse-glow 2.5s infinite',
       },
     },
   },
