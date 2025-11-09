@@ -118,7 +118,7 @@ export function FileUploader() {
   };
 
   const performSave = async (userId: string, force: boolean = false) => {
-    if (!analysisResult || !firestore || !file || !user) return;
+    if (!analysisResult || !firestore || !file) return;
 
     setIsSaving(true);
     
@@ -161,7 +161,7 @@ export function FileUploader() {
 
         await setDoc(newWodRef, wodData);
 
-        if (shareToCommunity) {
+        if (shareToCommunity && user) {
             const userDisplayName = user.email?.split('@')[0] || 'Anonymous';
             const communityWodsCollection = collection(firestore, 'communityWods');
             const communityWodData = {
@@ -207,37 +207,40 @@ export function FileUploader() {
 
   const handleSave = async () => {
     if (!analysisResult) return;
-  
     if (user) {
       await performSave(user.uid);
     } else if (auth) {
-        setIsSaving(true); 
-        initiateAnonymousSignIn(auth);
+      initiateAnonymousSignIn(auth);
+      // After anonymous sign-in, the user object will update.
+      // We set a state that will be caught by the useEffect to trigger the save.
+      setIsSaving(true);
     } else {
-        toast({
-            variant: "destructive",
-            title: "Save Failed",
-            description: "Authentication service is not available.",
-        });
+      toast({
+        variant: "destructive",
+        title: "Could not save",
+        description: "Authentication services are not available.",
+      });
     }
   };
-  
-  useEffect(() => {
-    if (isSaving && user) {
-      performSave(user.uid);
-    }
-  }, [user, isSaving]);
-
 
   const handleForceSave = async () => {
     if (user) {
         await performSave(user.uid, true);
     } else if (auth) {
-        setIsSaving(true);
         initiateAnonymousSignIn(auth);
-        setDuplicateWod(null);
+        setIsSaving(true); 
     }
   };
+
+  useEffect(() => {
+    // This effect now correctly handles saving AFTER an anonymous user has been created.
+    // The `isSaving` flag acts as an "intent to save".
+    if (isSaving && user) {
+      performSave(user.uid);
+      // Reset the intent after the save is attempted.
+      setIsSaving(false); 
+    }
+  }, [user, isSaving]);
 
 
   const handleRemove = () => {
