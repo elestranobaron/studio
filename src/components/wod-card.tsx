@@ -162,7 +162,10 @@ function PersonalWodActions({ wod }: { wod: WOD }) {
                         variant="ghost" 
                         size="icon" 
                         className="absolute top-2 right-2 z-10 h-8 w-8 rounded-full bg-card/60 backdrop-blur-sm hover:bg-card"
-                        onClick={(e) => e.stopPropagation()}
+                        onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                        }}
                     >
                         <MoreHorizontal className="h-4 w-4" />
                         <span className="sr-only">WOD options</span>
@@ -372,5 +375,7 @@ export function WodCard({ wod, source = 'personal' }: { wod: WOD, source?: 'pers
     </Card>
   );
 }
+
+    
 
     
