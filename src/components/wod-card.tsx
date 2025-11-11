@@ -17,8 +17,8 @@ import { Button } from "@/components/ui/button";
 import { Clock, Calendar, Repeat, Hourglass, Timer, Share2, LoaderCircle, User, MessageCircle, MoreHorizontal, Trash2, Pencil } from "lucide-react";
 import { format } from 'date-fns';
 import { useFirebase, useUser } from "@/firebase";
-import { useState } from "react";
-import { doc, collection, addDoc, deleteDoc, updateDoc, writeBatch, runTransaction } from "firebase/firestore";
+import { useState, useMemo } from "react";
+import { doc, collection, addDoc, deleteDoc, updateDoc, writeBatch, runTransaction, DocumentData } from "firebase/firestore";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "./ui/dropdown-menu";
@@ -199,32 +199,53 @@ function PersonalWodActions({ wod }: { wod: WOD }) {
     );
 }
 
-function ReactionButton({ wod }: { wod: WOD }) {
+function ReactionButton({ initialWod }: { initialWod: WOD }) {
     const { firestore } = useFirebase();
     const { user } = useUser();
     const { toast } = useToast();
     const [isLoading, setIsLoading] = useState(false);
+    const [wod, setWod] = useState(initialWod);
+    const [userReaction, setUserReaction] = useState<Reaction | null>(null);
 
-    if (!firestore || !user || user.isAnonymous) {
+    const reactorRef = useMemo(() => {
+        if (!firestore || !user) return null;
+        return doc(firestore, `communityWods/${wod.id}/reactors/${user.uid}`);
+    }, [firestore, user, wod.id]);
+
+    if (!firestore || !user || user.isAnonymous || !reactorRef) {
         return null;
     }
 
     const handleReaction = async (e: React.MouseEvent, reactionType: Reaction) => {
         e.preventDefault();
         e.stopPropagation();
-        setIsLoading(true);
+        
+        const originalWod = { ...wod };
+        const originalReaction = userReaction;
+
+        // Optimistic update
+        setWod(currentWod => {
+            const newReactions = { ...(currentWod.reactions || { fire: 0, poop: 0 }) };
+            
+            if (userReaction === reactionType) { // Undoing reaction
+                newReactions[reactionType]--;
+                setUserReaction(null);
+            } else {
+                if(userReaction) newReactions[userReaction]--; // Changing reaction
+                newReactions[reactionType]++;
+                setUserReaction(reactionType);
+            }
+            return { ...currentWod, reactions: newReactions };
+        });
 
         const communityWodRef = doc(firestore, "communityWods", wod.id);
-        const reactionDocRef = doc(firestore, `communityWods/${wod.id}/reactors/${user.uid}`);
 
         try {
             await runTransaction(firestore, async (transaction) => {
-                const reactionDoc = await transaction.get(reactionDocRef);
+                const reactionDoc = await transaction.get(reactorRef);
                 const wodDoc = await transaction.get(communityWodRef);
 
-                if (!wodDoc.exists()) {
-                    throw "WOD does not exist!";
-                }
+                if (!wodDoc.exists()) throw "WOD does not exist!";
 
                 const currentReactions = wodDoc.data().reactions || { fire: 0, poop: 0 };
                 const newReactions = { ...currentReactions };
@@ -232,19 +253,16 @@ function ReactionButton({ wod }: { wod: WOD }) {
                 if (reactionDoc.exists()) {
                     const previousReaction = reactionDoc.data().type as Reaction;
                     if (previousReaction === reactionType) {
-                        // User is undoing their reaction
-                        newReactions[reactionType]--;
-                        transaction.delete(reactionDocRef);
+                        newReactions[reactionType] = Math.max(0, newReactions[reactionType] - 1);
+                        transaction.delete(reactorRef);
                     } else {
-                        // User is changing their reaction
-                        newReactions[previousReaction]--;
+                        newReactions[previousReaction] = Math.max(0, newReactions[previousReaction] - 1);
                         newReactions[reactionType]++;
-                        transaction.set(reactionDocRef, { type: reactionType });
+                        transaction.set(reactorRef, { type: reactionType });
                     }
                 } else {
-                    // New reaction
                     newReactions[reactionType]++;
-                    transaction.set(reactionDocRef, { type: reactionType });
+                    transaction.set(reactorRef, { type: reactionType });
                 }
 
                 transaction.update(communityWodRef, { reactions: newReactions });
@@ -252,8 +270,9 @@ function ReactionButton({ wod }: { wod: WOD }) {
         } catch (error) {
             console.error("Transaction failed: ", error);
             toast({ variant: "destructive", title: "Oops!", description: "Could not save your reaction." });
-        } finally {
-            setIsLoading(false);
+            // Revert optimistic update on failure
+            setWod(originalWod);
+            setUserReaction(originalReaction);
         }
     };
 
@@ -262,7 +281,10 @@ function ReactionButton({ wod }: { wod: WOD }) {
             <Button
                 variant="ghost"
                 size="sm"
-                className="flex items-center gap-1.5 text-muted-foreground px-2"
+                className={cn(
+                    "flex items-center gap-1.5 text-muted-foreground px-2",
+                    userReaction === 'fire' && 'bg-primary/10 text-primary'
+                )}
                 onClick={(e) => handleReaction(e, 'fire')}
                 disabled={isLoading}
             >
@@ -272,7 +294,10 @@ function ReactionButton({ wod }: { wod: WOD }) {
             <Button
                 variant="ghost"
                 size="sm"
-                className="flex items-center gap-1.5 text-muted-foreground px-2"
+                className={cn(
+                    "flex items-center gap-1.5 text-muted-foreground px-2",
+                    userReaction === 'poop' && 'bg-amber-800/20 text-amber-600'
+                )}
                 onClick={(e) => handleReaction(e, 'poop')}
                 disabled={isLoading}
             >
@@ -286,6 +311,7 @@ function ReactionButton({ wod }: { wod: WOD }) {
         </div>
     );
 }
+
 
 export function WodCard({ wod, source = 'personal' }: { wod: WOD, source?: 'personal' | 'community' }) {
     
@@ -338,7 +364,7 @@ export function WodCard({ wod, source = 'personal' }: { wod: WOD, source?: 'pers
         </p>
       </CardContent>
       <CardFooter className="flex flex-col items-stretch gap-2 pt-2">
-         {source === 'community' && <ReactionButton wod={wod} />}
+         {source === 'community' && <ReactionButton initialWod={wod} />}
         <Button asChild className="w-full">
           <Link href={href}>Start WOD</Link>
         </Button>
@@ -346,3 +372,5 @@ export function WodCard({ wod, source = 'personal' }: { wod: WOD, source?: 'pers
     </Card>
   );
 }
+
+    
