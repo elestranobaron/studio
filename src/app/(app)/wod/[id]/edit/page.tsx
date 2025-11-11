@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useRouter, useParams, notFound } from 'next/navigation';
 import { useUser, useFirebase, useDoc } from '@/firebase';
 import { doc, updateDoc, writeBatch } from 'firebase/firestore';
@@ -59,7 +59,11 @@ export default function EditWodPage() {
     const { firestore } = useFirebase();
     const { toast } = useToast();
 
-    const wodRef = user && firestore && typeof wodId === 'string' ? doc(firestore, 'users', user.uid, 'wods', wodId) : null;
+    const wodRef = useMemo(() => {
+        if (!user || !firestore || typeof wodId !== 'string') return null;
+        return doc(firestore, 'users', user.uid, 'wods', wodId);
+    }, [firestore, user, wodId]);
+
     const { data: wod, isLoading: isWodLoading, error } = useDoc<WOD>(wodRef);
 
     const [isSaving, setIsSaving] = useState(false);
