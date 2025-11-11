@@ -4,7 +4,7 @@
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { WodCard } from '@/components/wod-card';
-import { LogIn, PlusCircle, Search, ScanLine } from 'lucide-react';
+import { LogIn, PlusCircle, Search, ScanLine, ArrowDownUp } from 'lucide-react';
 import { SidebarTrigger } from '@/components/ui/sidebar';
 import { useCollection, useFirebase } from '@/firebase';
 import { collection, query, orderBy, limit } from 'firebase/firestore';
@@ -17,6 +17,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input';
 import { WelcomeEmptyState } from '@/components/welcome-empty-state';
 import { useSearchParams } from 'next/navigation';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Label } from '@/components/ui/label';
 
 function WodSkeleton() {
   return (
@@ -93,14 +95,34 @@ function CommunityWodList() {
     const { firestore } = useFirebase();
     const { user, isUserLoading } = useUser();
     const [searchTerm, setSearchTerm] = useState('');
+    const [sortBy, setSortBy] = useState<'date' | 'popularity' | 'name'>('date');
 
     const shouldFetchData = !isUserLoading && user && !user.isAnonymous;
-
+    
+    // NOTE: Sorting by 'reactions.fire' requires a composite index in Firestore.
+    // Firebase will provide a link in the browser console to create it automatically
+    // the first time the query is attempted.
     const communityWodsCollection = useMemo(() => {
         if (!firestore || !shouldFetchData) return null;
-        // Increase limit to get a larger pool for client-side search
-        return query(collection(firestore, 'communityWods'), orderBy('date', 'desc'), limit(50));
-    }, [firestore, shouldFetchData]);
+        
+        let q = query(collection(firestore, 'communityWods'));
+
+        switch (sortBy) {
+            case 'popularity':
+                q = query(q, orderBy('reactions.fire', 'desc'));
+                break;
+            case 'name':
+                q = query(q, orderBy('name', 'asc'));
+                break;
+            case 'date':
+            default:
+                q = query(q, orderBy('date', 'desc'));
+                break;
+        }
+
+        return query(q, limit(50));
+    }, [firestore, shouldFetchData, sortBy]);
+
 
     const { data: communityWods, isLoading: isCommunityWodsLoading, error } = useCollection<WOD>(communityWodsCollection);
 
@@ -167,15 +189,33 @@ function CommunityWodList() {
     
     return (
         <div className="space-y-6">
-            <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-                <Input
-                    type="search"
-                    placeholder="Search community WODs by name, type, or exercise..."
-                    className="pl-10 w-full"
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                />
+            <div className="flex flex-col md:flex-row gap-4">
+                <div className="relative flex-grow">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                    <Input
+                        type="search"
+                        placeholder="Search community WODs..."
+                        className="pl-10 w-full"
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                    />
+                </div>
+                <div className="flex items-center gap-2">
+                    <Label htmlFor="sort-by" className="text-sm font-medium hidden md:block">
+                        <ArrowDownUp className="h-4 w-4 inline-block mr-1 text-muted-foreground"/>
+                        Sort by
+                    </Label>
+                    <Select value={sortBy} onValueChange={(value) => setSortBy(value as any)}>
+                        <SelectTrigger className="w-full md:w-[180px]" id="sort-by">
+                            <SelectValue placeholder="Sort by..." />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="date">Most Recent</SelectItem>
+                            <SelectItem value="popularity">Most Popular</SelectItem>
+                            <SelectItem value="name">Alphabetical (A-Z)</SelectItem>
+                        </SelectContent>
+                    </Select>
+                </div>
             </div>
             <WodList
                 wods={filteredWods}
