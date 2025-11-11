@@ -32,7 +32,7 @@ service cloud.firestore {
       allow read: if isSignedIn();
       allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
       allow delete: if isSignedIn() && resource.data.userId == request.auth.uid;
-      allow update: if isSignedIn();
+      allow update: if isSignedIn() && resource.data.userId == request.auth.uid;
 
       match /reactors/{reactorId} {
         allow read: if isSignedIn();
@@ -43,5 +43,3 @@ service cloud.firestore {
     }
   }
 }
-
-    

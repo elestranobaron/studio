@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Clock, Calendar, Repeat, Hourglass, Timer, Share2, LoaderCircle, User, MessageCircle, MoreHorizontal, Trash2 } from "lucide-react";
+import { Clock, Calendar, Repeat, Hourglass, Timer, Share2, LoaderCircle, User, MessageCircle, MoreHorizontal, Trash2, Pencil } from "lucide-react";
 import { format } from 'date-fns';
 import { useFirebase, useUser } from "@/firebase";
 import { useState } from "react";
@@ -23,6 +23,7 @@ import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "./ui/dropdown-menu";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "./ui/alert-dialog";
+import { useRouter } from "next/navigation";
 
 function WodIcon({ type }: { type: WOD["type"] }) {
   switch (type) {
@@ -43,6 +44,7 @@ function PersonalWodActions({ wod }: { wod: WOD }) {
     const { firestore } = useFirebase();
     const { user } = useUser();
     const { toast } = useToast();
+    const router = useRouter();
     const [isSharing, setIsSharing] = useState(false);
     const [isDeleting, setIsDeleting] = useState(false);
     const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
@@ -124,6 +126,12 @@ function PersonalWodActions({ wod }: { wod: WOD }) {
             setIsDeleteDialogOpen(false);
         }
     };
+    
+    const handleEdit = (e: React.MouseEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+        router.push(`/wod/${wod.id}/edit`);
+    };
 
     return (
         <>
@@ -161,6 +169,10 @@ function PersonalWodActions({ wod }: { wod: WOD }) {
                     </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()}>
+                     <DropdownMenuItem onClick={handleEdit}>
+                        <Pencil className="mr-2 h-4 w-4" />
+                        <span>Edit</span>
+                    </DropdownMenuItem>
                      <DropdownMenuItem
                         onClick={handleShareToggle}
                         disabled={isSharing}
@@ -334,5 +346,3 @@ export function WodCard({ wod, source = 'personal' }: { wod: WOD, source?: 'pers
     </Card>
   );
 }
-
-    
