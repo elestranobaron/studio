@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Clock, Calendar, Repeat, Hourglass, Timer, Share2, LoaderCircle, User, MessageCircle, MoreHorizontal, Trash2, Pencil } from "lucide-react";
+import { Clock, Calendar, Repeat, Hourglass, Timer, Share2, LoaderCircle, User, MessageCircle, MoreHorizontal, Trash2, Pencil, Expand } from "lucide-react";
 import { format } from 'date-fns';
 import { useFirebase, useUser } from "@/firebase";
 import { useState, useMemo } from "react";
@@ -24,6 +24,7 @@ import { cn } from "@/lib/utils";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "./ui/dropdown-menu";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "./ui/alert-dialog";
 import { useRouter } from "next/navigation";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "./ui/dialog";
 
 function WodIcon({ type }: { type: WOD["type"] }) {
   switch (type) {
@@ -171,7 +172,7 @@ function PersonalWodActions({ wod }: { wod: WOD }) {
                         <span className="sr-only">WOD options</span>
                     </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()}>
+                <DropdownMenuContent align="end" onClick={(e) => { e.stopPropagation(); e.preventDefault(); }}>
                      <DropdownMenuItem onClick={handleEdit}>
                         <Pencil className="mr-2 h-4 w-4" />
                         <span>Edit</span>
@@ -327,19 +328,45 @@ export function WodCard({ wod, source = 'personal' }: { wod: WOD, source?: 'pers
 
   return (
     <Card className="flex flex-col overflow-hidden transition-all duration-300 ease-in-out hover:shadow-2xl hover:shadow-primary/20 hover:-translate-y-1 group relative">
-      {wod.imageUrl && (
-        <div className="relative h-48 w-full overflow-hidden">
-          <Image
-            src={wod.imageUrl}
-            alt={wod.name}
-            fill
-            className="object-cover transition-transform duration-300 group-hover:scale-105"
-            data-ai-hint={wod.imageHint}
-          />
-           <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-           {source === 'personal' && <PersonalWodActions wod={wod} />}
-        </div>
-      )}
+        <Dialog>
+            {wod.imageUrl && (
+                <div className="relative h-48 w-full overflow-hidden">
+                    <DialogTrigger asChild>
+                        <div className="absolute inset-0 cursor-pointer group/image">
+                            <Image
+                                src={wod.imageUrl}
+                                alt={wod.name}
+                                fill
+                                className="object-cover transition-transform duration-300 group-hover/image:scale-105"
+                                data-ai-hint={wod.imageHint}
+                            />
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                             <div className="absolute inset-0 bg-black/20 opacity-0 group-hover/image:opacity-100 transition-opacity flex items-center justify-center">
+                                <div className="p-2 rounded-full bg-black/50 text-white">
+                                    <Expand className="h-6 w-6" />
+                                </div>
+                            </div>
+                        </div>
+                    </DialogTrigger>
+                {source === 'personal' && <PersonalWodActions wod={wod} />}
+                </div>
+            )}
+             <DialogContent className="max-w-4xl p-2">
+                <DialogHeader className="sr-only">
+                    <DialogTitle>{wod.name} - Original Image</DialogTitle>
+                </DialogHeader>
+                <div className="relative w-full h-auto">
+                    <Image
+                        src={wod.imageUrl}
+                        alt={wod.name}
+                        width={1200}
+                        height={800}
+                        className="object-contain w-full h-auto max-h-[80vh] rounded-md"
+                    />
+                </div>
+            </DialogContent>
+        </Dialog>
+
       <CardHeader className="pt-4 pb-2">
         <div className="flex items-start justify-between gap-2">
           <CardTitle className="font-headline text-2xl">{wod.name}</CardTitle>
@@ -375,7 +402,3 @@ export function WodCard({ wod, source = 'personal' }: { wod: WOD, source?: 'pers
     </Card>
   );
 }
-
-    
-
-    
