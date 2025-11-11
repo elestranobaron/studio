@@ -1,21 +1,37 @@
-Copyright (c) 2024 WODBurner
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+=======================================================================
+AUTHOR'S RESERVED RIGHTS
+=======================================================================
+The author of this project (Thomas Lloancy) retains FULL RIGHTS,
+including the exclusive right to commercial use, monetization,
+sale, distribution, or integration into paid products/services.
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+This project is powered by Firebase Studio, Gemini Developer, and
+Grok as lead architect — with Thomas Lloancy as the final boss.
 
-The Software is provided "as is", without warranty of any kind, express or
-implied, including but not limited to the warranties of merchantability,
-fitness for a particular purpose and noninfringement. In no event shall the
-authors or copyright holders be liable for any claim, damages or other
-liability, whether in an action of contract, tort or otherwise, arising from,
-out of or in connection with the software or the use or other dealings in the
-Software.
+=======================================================================
+LICENSE FOR THIRD PARTIES: CC BY-NC-SA 4.0
+=======================================================================
+Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International
+(CC BY-NC-SA 4.0)
 
-The software may not be used for commercial purposes.
+You are free to:
+  • Share — copy and redistribute the material in any medium or format
+  • Adapt — remix, transform, and build upon the material
+
+Under the following terms:
+  • Attribution (BY) — You must give appropriate credit to Thomas Lloancy,
+    provide a link to this license, and indicate if changes were made.
+  • NonCommercial (NC) — You may not use the material for commercial purposes.
+  • ShareAlike (SA) — If you remix, transform, or build upon the material,
+    you must distribute your contributions under the same license.
+
+Full legal text: https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
+
+=======================================================================
+PROJECT: WODBurner
+AUTHOR: Thomas Lloancy
+=======================================================================
+
+![License: CC BY-NC-SA 4.0](https://img.shields.io/badge/License-CC%20BY--NC--SA%204.0-lightgrey.svg?style=flat-square)
+[![Author: Thomas Lloancy](https://img.shields.io/badge/Author-Thomas%20Lloancy-blue?style=flat-square)](https://github.com/tonuser)
