@@ -1,4 +1,6 @@
 
+'use client';
+
 import Link from "next/link";
 import Image from "next/image";
 import type { Reaction, WOD } from "@/lib/types";
@@ -12,13 +14,15 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Clock, Calendar, Repeat, Hourglass, Timer, Share2, LoaderCircle, User, MessageCircle } from "lucide-react";
+import { Clock, Calendar, Repeat, Hourglass, Timer, Share2, LoaderCircle, User, MessageCircle, MoreHorizontal, Trash2 } from "lucide-react";
 import { format } from 'date-fns';
 import { useFirebase, useUser } from "@/firebase";
 import { useState } from "react";
 import { doc, collection, addDoc, deleteDoc, updateDoc, writeBatch, runTransaction } from "firebase/firestore";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "./ui/dropdown-menu";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "./ui/alert-dialog";
 
 function WodIcon({ type }: { type: WOD["type"] }) {
   switch (type) {
@@ -35,12 +39,14 @@ function WodIcon({ type }: { type: WOD["type"] }) {
   }
 }
 
-function ShareButton({ wod }: { wod: WOD }) {
+function PersonalWodActions({ wod }: { wod: WOD }) {
     const { firestore } = useFirebase();
     const { user } = useUser();
     const { toast } = useToast();
     const [isSharing, setIsSharing] = useState(false);
-    
+    const [isDeleting, setIsDeleting] = useState(false);
+    const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+
     if (!user || user.isAnonymous || wod.userId !== user.uid) {
         return null;
     }
@@ -69,7 +75,7 @@ function ShareButton({ wod }: { wod: WOD }) {
                 const communityWodData = { 
                     ...wod, 
                     date: new Date(wod.date).toISOString(),
-                    userId: user.uid, // Keep owner ID for security rules
+                    userId: user.uid,
                     userDisplayName,
                     reactions: { fire: 0, poop: 0 },
                     commentCount: 0
@@ -90,22 +96,95 @@ function ShareButton({ wod }: { wod: WOD }) {
             setIsSharing(false);
         }
     };
+    
+    const handleDelete = async () => {
+        if (!firestore || !user) return;
+        setIsDeleting(true);
+
+        const userWodRef = doc(firestore, 'users', user.uid, 'wods', wod.id);
+        const batch = writeBatch(firestore);
+
+        try {
+            // Delete personal WOD
+            batch.delete(userWodRef);
+
+            // If shared, delete community WOD too
+            if (wod.communityWodId) {
+                const communityWodRef = doc(firestore, 'communityWods', wod.communityWodId);
+                batch.delete(communityWodRef);
+            }
+
+            await batch.commit();
+            toast({ title: "WOD Deleted", description: "Your WOD has been successfully removed." });
+        } catch (error) {
+            console.error("Error deleting WOD:", error);
+            toast({ variant: "destructive", title: "Deletion Failed", description: "Could not delete the WOD." });
+        } finally {
+            setIsDeleting(false);
+            setIsDeleteDialogOpen(false);
+        }
+    };
 
     return (
-        <Button 
-            variant="ghost" 
-            size="icon" 
-            className={cn(
-                "absolute top-2 right-2 z-10 h-8 w-8 rounded-full bg-card/60 backdrop-blur-sm hover:bg-card",
-                wod.communityWodId && "text-primary hover:text-primary"
-            )}
-            onClick={handleShareToggle}
-            disabled={isSharing}
-            aria-label={wod.communityWodId ? "Unshare WOD" : "Share WOD"}
-        >
-            {isSharing ? <LoaderCircle className="h-4 w-4 animate-spin" /> : <Share2 className="h-4 w-4" />}
-        </Button>
-    )
+        <>
+            <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            This action cannot be undone. This will permanently delete your WOD
+                            {wod.communityWodId && " and remove it from the community"}.
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction
+                            onClick={handleDelete}
+                            className="bg-destructive hover:bg-destructive/90"
+                            disabled={isDeleting}
+                        >
+                             {isDeleting ? <LoaderCircle className="h-4 w-4 animate-spin" /> : "Delete"}
+                        </AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
+            <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                    <Button 
+                        variant="ghost" 
+                        size="icon" 
+                        className="absolute top-2 right-2 z-10 h-8 w-8 rounded-full bg-card/60 backdrop-blur-sm hover:bg-card"
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        <MoreHorizontal className="h-4 w-4" />
+                        <span className="sr-only">WOD options</span>
+                    </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()}>
+                     <DropdownMenuItem
+                        onClick={handleShareToggle}
+                        disabled={isSharing}
+                        className={cn(wod.communityWodId && "text-primary")}
+                     >
+                        {isSharing ? (
+                            <LoaderCircle className="mr-2 h-4 w-4 animate-spin" />
+                        ) : (
+                            <Share2 className="mr-2 h-4 w-4" />
+                        )}
+                        <span>{wod.communityWodId ? "Unshare" : "Share"}</span>
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem 
+                        className="text-destructive"
+                        onSelect={() => setIsDeleteDialogOpen(true)}
+                    >
+                        <Trash2 className="mr-2 h-4 w-4" />
+                        <span>Delete</span>
+                    </DropdownMenuItem>
+                </DropdownMenuContent>
+            </DropdownMenu>
+        </>
+    );
 }
 
 function ReactionButton({ wod }: { wod: WOD }) {
@@ -217,7 +296,7 @@ export function WodCard({ wod, source = 'personal' }: { wod: WOD, source?: 'pers
             data-ai-hint={wod.imageHint}
           />
            <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-           {source === 'personal' && <ShareButton wod={wod} />}
+           {source === 'personal' && <PersonalWodActions wod={wod} />}
         </div>
       )}
       <CardHeader className="pt-4 pb-2">
@@ -255,3 +334,5 @@ export function WodCard({ wod, source = 'personal' }: { wod: WOD, source?: 'pers
     </Card>
   );
 }
+
+    
