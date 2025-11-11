@@ -1,31 +1,26 @@
 {
-  "hosting": [
-    {
-      "target": "app",
-      "public": "public",
-      "ignore": [
-        "firebase.json",
-        "**/.*",
-        "**/node_modules/**"
-      ]
-    },
-    {
-      "target": "landing",
-      "public": "public-landing",
-      "ignore": [
-        "firebase.json",
-        "**/.*",
-        "**/node_modules/**"
-      ],
-      "redirects": [
-        {
-          "source": "/:path*",
-          "destination": "https://wodburner.app/:path",
-          "type": 301
-        }
-      ]
-    }
-  ],
+  "hosting": {
+    "target": "app",
+    "public": "public",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "cleanUrls": true,
+    "trailingSlash": false,
+    "headers": [
+      {
+        "source": "**",
+        "headers": [
+          {
+            "key": "Link",
+            "value": "<https://wodburner.app{uri}>; rel=\"canonical\""
+          }
+        ]
+      }
+    ]
+  },
   "firestore": {
     "rules": "firestore.rules"
   },
@@ -45,9 +40,9 @@
         "npm --prefix \"$RESOURCE_DIR\" run build"
       ],
       "env": [
-      {
-        "file": "functions/.env"
-      }
+        {
+          "file": "functions/.env"
+        }
       ]
     }
   ]
