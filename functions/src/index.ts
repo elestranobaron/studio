@@ -10,6 +10,7 @@ import * as admin from "firebase-admin";
 import fetch from "node-fetch";
 import Stripe from "stripe";
 import { defineSecret } from "firebase-functions/params";
+import { onRequest } from "firebase-functions/v2/https";
 
 admin.initializeApp();
 const db = getFirestore();
@@ -23,6 +24,8 @@ if (!BREVO_API_KEY) {
 
 // ————— STRIPE (Secret Manager ONLY) —————
 const stripeSecretKey = defineSecret("STRIPE_SECRET_KEY");
+const stripeWebhookSecret = defineSecret("STRIPE_WEBHOOK_SECRET");
+
 
 // ————— MAGIC LINK —————
 export const sendMagicLink = onCall(async (request) => {
@@ -44,10 +47,13 @@ export const sendMagicLink = onCall(async (request) => {
   const userAgent = headers["user-agent"] || "unknown";
 
   try {
-    const link = await admin.auth().generateSignInWithEmailLink(email, {
+    const firebaseLink = await admin.auth().generateSignInWithEmailLink(email, {
       url: "https://wodburner.app/verify",
       handleCodeInApp: true,
     });
+    
+    // Create the intermediate redirect link
+    const redirectLink = `https://wodburner.app/auth/redirect?continueUrl=${encodeURIComponent(firebaseLink)}`;
 
     // Stockage Kraken
     await db.collection("magicLinks").doc(email).set({
@@ -61,7 +67,7 @@ export const sendMagicLink = onCall(async (request) => {
       sender: { name: "WODBurner Team", email: "noreply@wodburner.app" },
       to: [{ email }],
       templateId: 2,
-      params: { LINK: link },
+      params: { LINK: redirectLink }, // Use the new redirect link
     };
 
     const res = await fetch("https://api.sendinblue.com/v3/smtp/email", {
@@ -195,5 +201,57 @@ export const createCheckout = onCall(
       console.error("Stripe session creation failed:", error);
       throw new HttpsError("internal", "Impossible de créer la session Stripe.");
     }
+  }
+);
+
+
+// ————— STRIPE WEBHOOK —————
+export const stripeWebhook = onRequest(
+  { secrets: [stripeSecretKey, stripeWebhookSecret] },
+  async (request, response) => {
+    const stripe = new Stripe(stripeSecretKey.value(), {
+      apiVersion: '2024-06-20',
+    });
+
+    let event: Stripe.Event;
+
+    try {
+      const sig = request.headers['stripe-signature'] as string;
+      event = stripe.webhooks.constructEvent(request.rawBody, sig, stripeWebhookSecret.value());
+    } catch (err: any) {
+      console.error(`Webhook signature verification failed.`, err.message);
+      response.status(400).send(`Webhook Error: ${err.message}`);
+      return;
+    }
+
+    // Handle the event
+    if (event.type === 'checkout.session.completed') {
+      const session = event.data.object as Stripe.Checkout.Session;
+      
+      const uid = session?.metadata?.uid;
+      if (!uid) {
+        console.error("Webhook Error: No UID in session metadata.");
+        response.status(400).send("No UID in session metadata.");
+        return;
+      }
+      
+      const priceId = session.line_items?.data[0]?.price?.id;
+
+      try {
+        await db.collection('users').doc(uid).set({
+          premium: true,
+          premiumSince: admin.firestore.FieldValue.serverTimestamp(),
+          priceId: priceId,
+        }, { merge: true });
+        console.log(`Successfully granted premium access to user ${uid}`);
+      } catch (dbError) {
+        console.error(`Firestore update failed for user ${uid}:`, dbError);
+        response.status(500).send("Database update failed.");
+        return;
+      }
+    }
+    
+    // Return a 200 response to acknowledge receipt of the event
+    response.status(200).send();
   }
 );
