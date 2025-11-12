@@ -52,7 +52,7 @@ export const sendMagicLink = onCall(async (request) => {
       handleCodeInApp: true,
     });
     
-    // Create the intermediate redirect link
+    // Create the intermediate redirect link that forces opening in the main browser
     const redirectLink = `https://wodburner.app/auth/redirect?continueUrl=${encodeURIComponent(firebaseLink)}`;
 
     // Stockage Kraken
