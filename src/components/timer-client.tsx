@@ -113,7 +113,7 @@ export function TimerClient({ wod }: { wod: WOD }) {
 
   // EMOM/Tabata specific state
   const [currentRound, setCurrentRound] = useState(1);
-  const [workoutState, setWorkoutState] = useState<'work' | 'rest' | 'active'>('active');
+  const [workoutState, setWorkoutState] = useState<'work' | 'rest' | 'active'>('work');
 
   const totalDuration = wod.duration ? wod.duration * 60 : 0;
   const isCountDownTimer = wod.type === "AMRAP";
@@ -121,6 +121,7 @@ export function TimerClient({ wod }: { wod: WOD }) {
   const getInitialTime = useCallback(() => {
     if (wod.type === 'EMOM' && wod.emomInterval) return wod.emomInterval;
     if (wod.type === 'AMRAP' && wod.duration) return wod.duration * 60;
+    if (wod.type === 'Tabata') return 20; // Tabata starts with 20s of work
     return 0;
   }, [wod.type, wod.duration, wod.emomInterval]);
 
@@ -132,8 +133,8 @@ export function TimerClient({ wod }: { wod: WOD }) {
     setCountdown(3);
     setIsCountingDown(false);
     setCurrentRound(1);
-    setWorkoutState('active');
-  }, [getInitialTime]);
+    setWorkoutState(wod.type === 'Tabata' ? 'work' : 'active');
+  }, [getInitialTime, wod.type]);
 
   // Set initial time on component mount
   useEffect(() => {
@@ -166,7 +167,7 @@ export function TimerClient({ wod }: { wod: WOD }) {
         if (wod.type === 'EMOM') {
             setTime(prevTime => {
                 const newTime = prevTime - 1;
-                if (newTime <= 0) { // End of interval
+                if (newTime < 0) { // End of interval
                     const nextRound = currentRound + 1;
                     if (nextRound > (wod.rounds || 0)) { // All rounds finished
                         handleFinish(totalDuration);
@@ -174,7 +175,32 @@ export function TimerClient({ wod }: { wod: WOD }) {
                     }
                     setCurrentRound(nextRound);
                     playStartSound(); // Signal start of new interval
-                    return wod.emomInterval || 0; // Reset for next interval
+                    return (wod.emomInterval || 60) - 1; // Reset for next interval
+                }
+                return newTime;
+            });
+        }
+        else if (wod.type === 'Tabata') {
+            setTime(prevTime => {
+                const newTime = prevTime - 1;
+                if (newTime < 0) {
+                    if (workoutState === 'work') {
+                        // Switch to REST
+                        setWorkoutState('rest');
+                        playFinishSound(); // Or a softer sound for rest
+                        return 10 - 1; // 10s rest
+                    } else { // workoutState === 'rest'
+                        const nextRound = currentRound + 1;
+                        if (nextRound > (wod.rounds || 8)) {
+                            handleFinish(totalDuration);
+                            return 0;
+                        }
+                        // Switch to WORK
+                        setCurrentRound(nextRound);
+                        setWorkoutState('work');
+                        playStartSound();
+                        return 20 - 1; // 20s work
+                    }
                 }
                 return newTime;
             });
@@ -197,7 +223,7 @@ export function TimerClient({ wod }: { wod: WOD }) {
       if (interval) clearInterval(interval);
     };
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isActive, isFinished, isCountingDown, wod, currentRound]);
+  }, [isActive, isFinished, isCountingDown, wod, currentRound, workoutState]);
 
 
   const handleStartPause = () => {
@@ -230,6 +256,9 @@ export function TimerClient({ wod }: { wod: WOD }) {
         case 'EMOM':
             if (!wod.emomInterval) return 0;
             return (time / wod.emomInterval) * 100;
+        case 'Tabata':
+            const period = workoutState === 'work' ? 20 : 10;
+            return (time / period) * 100;
         default:
             return 100;
     }
@@ -274,7 +303,7 @@ export function TimerClient({ wod }: { wod: WOD }) {
                 transform="rotate(-90 150 150)"
                 className={cn(
                     "stroke-primary transition-all duration-1000 ease-linear",
-                    {"animate-pulse": isActive && (isCountDownTimer || wod.type === 'EMOM')}
+                    {"animate-pulse": isActive && (isCountDownTimer || wod.type === 'EMOM' || wod.type === 'Tabata')}
                 )}
                 fill="transparent"
                 />
@@ -283,12 +312,17 @@ export function TimerClient({ wod }: { wod: WOD }) {
                  <p className="font-mono text-7xl md:text-8xl font-bold tracking-tighter text-foreground">
                     {mainTimeDisplay}
                 </p>
-                 {wod.type === 'EMOM' && (
+                 {(wod.type === 'EMOM' || wod.type === 'Tabata') && (
                     <div className="text-center -mt-2">
+                         {wod.type === 'Tabata' && (
+                             <p className={cn("text-2xl font-bold", workoutState === 'work' ? 'text-green-500' : 'text-blue-500')}>
+                                {workoutState.toUpperCase()}
+                             </p>
+                         )}
                         <p className="text-xl font-semibold text-muted-foreground">
-                            Round {currentRound} / {wod.rounds}
+                            Round {currentRound} / {wod.rounds || 8}
                         </p>
-                         {totalDuration > 0 && (
+                         {wod.type === 'EMOM' && totalDuration > 0 && (
                             <p className="text-sm text-muted-foreground/80">
                                 Total: {formatTime((currentRound - 1) * (wod.emomInterval || 0) + ((wod.emomInterval || 0) - time))}
                             </p>
@@ -354,6 +388,8 @@ export function TimerClient({ wod }: { wod: WOD }) {
     </div>
   );
 }
+
+    
 
     
 
