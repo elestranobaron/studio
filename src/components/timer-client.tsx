@@ -145,8 +145,12 @@ export function TimerClient({ wod }: { wod: WOD }) {
     // Reset progress bar visually
     if (progressRef.current) {
         const strokeDasharray = 2 * Math.PI * 140;
-        const progress = wod.type === 'For Time' ? 100 : 0;
+        const progress = wod.type === 'For Time' || wod.type === 'Other' ? 100 : 0;
+        progressRef.current.style.transition = 'none'; // Disable transition for immediate reset
         progressRef.current.style.strokeDashoffset = `${strokeDasharray * (1 - progress / 100)}`;
+        // Force reflow to apply the change immediately
+        void progressRef.current.offsetHeight; 
+        progressRef.current.style.transition = ''; // Re-enable transitions for future animations
     }
 
   }, [getInitialTime, wod.type]);
@@ -174,7 +178,7 @@ export function TimerClient({ wod }: { wod: WOD }) {
                     return 0;
                 }
                 
-                if (nextCountdown === 3) playCountdownTick();
+                if (prev === 3 && nextCountdown === 2) playCountdownTick();
                 
                 return nextCountdown;
             });
@@ -261,7 +265,7 @@ export function TimerClient({ wod }: { wod: WOD }) {
                 if (!startTime) startTime = timestamp;
                 const elapsed = timestamp - startTime;
                 const progressFraction = Math.min(elapsed / duration, 1);
-                const currentProgress = startProgress + (endProgress - startProgress) * progressFraction;
+                const currentProgress = startProgress - (startProgress - endProgress) * progressFraction;
                 
                 circle.style.strokeDashoffset = `${strokeDasharray * (1 - currentProgress / 100)}`;
                 
@@ -272,32 +276,29 @@ export function TimerClient({ wod }: { wod: WOD }) {
             animationFrameRef.current = requestAnimationFrame(animationStep);
         };
 
-        let startProgress: number, endProgress: number;
+        let startProgress: number, endProgress: number, period: number;
         
         switch(wod.type) {
             case 'AMRAP':
                 if (totalDuration > 0) {
-                    startProgress = ((time + 1) / totalDuration) * 100;
-                    endProgress = (time / totalDuration) * 100;
+                    period = totalDuration;
+                    startProgress = (time / period) * 100;
+                    endProgress = ((time - 1) / period) * 100;
                     animateProgress(startProgress, endProgress, 1000);
                 }
                 break;
             case 'EMOM':
-                if (wod.emomInterval) {
-                    startProgress = ((time + 1) / wod.emomInterval) * 100;
-                    endProgress = (time / wod.emomInterval) * 100;
-                     // Reset to full if starting new round
-                    if (time === wod.emomInterval -1) startProgress = 100;
-                    animateProgress(startProgress, endProgress, 1000);
-                }
+                period = wod.emomInterval || 60;
+                // On round change, we need to animate from 100%
+                startProgress = (time === period) ? 100 : (time / period) * 100;
+                endProgress = ((time - 1) / period) * 100;
+                animateProgress(startProgress, endProgress, 1000);
                 break;
             case 'Tabata':
-                const period = workoutState === 'work' ? 20 : 10;
-                startProgress = ((time + 1) / period) * 100;
-                endProgress = (time / period) * 100;
-                 if ((workoutState === 'work' && time === 19) || (workoutState === 'rest' && time === 9)) {
-                    startProgress = 100;
-                 }
+                period = workoutState === 'work' ? 20 : 10;
+                // On state change, we need to animate from 100%
+                startProgress = (time === period) ? 100 : (time / period) * 100;
+                endProgress = ((time - 1) / period) * 100;
                 animateProgress(startProgress, endProgress, 1000);
                 break;
             default: // For Time
@@ -318,10 +319,14 @@ export function TimerClient({ wod }: { wod: WOD }) {
     if (isActive) {
         setIsActive(false);
     } else {
-        if (countdown === 3 && getInitialTime() === time) {
+        // Initial start from 00:00
+        const isInitialStart = getInitialTime() === time;
+        // The first tick of the countdown is special
+        if (countdown === 3 && isInitialStart) {
             setIsCountingDown(true);
             playCountdownTick();
         } else {
+            // This handles resuming
             playStartSound();
             setIsActive(true);
         }
@@ -339,7 +344,7 @@ export function TimerClient({ wod }: { wod: WOD }) {
     if (wod.type === 'For Time' || wod.type === 'Other') {
         return 100;
     }
-    return 0;
+    return 100;
   }
 
   const progress = getProgressOnload();
@@ -468,3 +473,4 @@ export function TimerClient({ wod }: { wod: WOD }) {
   );
 }
 
+    
