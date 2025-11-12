@@ -27,6 +27,7 @@ import { useRouter } from "next/navigation";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from "./ui/dialog";
 import { WodContentParser } from "./wod-content-parser";
 import { Separator } from "./ui/separator";
+import { HeroLetter } from "./hero-letter";
 
 function WodIcon({ type }: { type: WOD["type"] }) {
   switch (type) {
@@ -58,7 +59,9 @@ function PersonalWodActions({ wod }: { wod: WOD }) {
         return null;
     }
 
-    const handleShareToggle = async () => {
+    const handleShareToggle = async (e: React.MouseEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
         if (!firestore || !user) return;
         setIsSharing(true);
 
@@ -94,7 +97,7 @@ function PersonalWodActions({ wod }: { wod: WOD }) {
                 });
                 toast({ title: "WOD Shared!", description: "Your WOD is now visible to the community." });
             }
-             setIsDropdownOpen(false);
+             setIsDropdownOpen(false); // Close dropdown on success
         } catch (error) {
             console.error("Error toggling share status:", error);
             toast({ variant: "destructive", title: "Action Failed", description: "Could not update the share status." });
@@ -135,6 +138,8 @@ function PersonalWodActions({ wod }: { wod: WOD }) {
     const handleEdit = () => {
         router.push(`/wod/${wod.id}/edit`);
     };
+    
+    const onSelect = (e: Event) => e.preventDefault();
 
     return (
         <>
@@ -179,18 +184,21 @@ function PersonalWodActions({ wod }: { wod: WOD }) {
                         <Pencil className="mr-2 h-4 w-4" />
                         <span>Edit</span>
                     </DropdownMenuItem>
-                     <DropdownMenuItem
-                        onSelect={(e) => { e.preventDefault(); handleShareToggle(); }}
-                        disabled={isSharing}
-                        className={cn(wod.communityWodId && "text-primary")}
-                     >
-                        {isSharing ? (
-                            <LoaderCircle className="mr-2 h-4 w-4 animate-spin" />
-                        ) : (
-                            <Share2 className="mr-2 h-4 w-4" />
-                        )}
-                        <span>{wod.communityWodId ? "Unshare" : "Share"}</span>
-                    </DropdownMenuItem>
+                    <div onPointerDown={e => e.preventDefault()}>
+                        <DropdownMenuItem
+                            onSelect={onSelect}
+                            onClick={handleShareToggle}
+                            disabled={isSharing}
+                            className={cn(wod.communityWodId && "text-primary")}
+                        >
+                            {isSharing ? (
+                                <LoaderCircle className="mr-2 h-4 w-4 animate-spin" />
+                            ) : (
+                                <Share2 className="mr-2 h-4 w-4" />
+                            )}
+                            <span>{wod.communityWodId ? "Unshare" : "Share"}</span>
+                        </DropdownMenuItem>
+                    </div>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem 
                         className="text-destructive"
@@ -328,47 +336,55 @@ export function WodCard({ wod, source = 'personal' }: { wod: WOD, source?: 'pers
     const descriptionSections = Array.isArray(wod.description)
         ? wod.description
         : [{ title: "Workout", content: wod.description || "" }];
+    
+    const isHeroWod = wod.userId === 'system';
+
 
   return (
     <Card className="flex flex-col overflow-hidden transition-all duration-300 ease-in-out hover:shadow-2xl hover:shadow-primary/20 hover:-translate-y-1 group relative">
-        <Dialog>
-            {wod.imageUrl && (
-                <div className="relative h-48 w-full overflow-hidden">
-                    <DialogTrigger asChild>
-                        <div className="absolute inset-0 cursor-pointer group/image">
+       
+            {isHeroWod ? (
+                 <HeroLetter letter={wod.name.charAt(0)} className="h-48 w-full" />
+            ) : (
+                <Dialog>
+                    {wod.imageUrl && (
+                        <div className="relative h-48 w-full overflow-hidden">
+                            <DialogTrigger asChild>
+                                <div className="absolute inset-0 cursor-pointer group/image">
+                                    <Image
+                                        src={wod.imageUrl}
+                                        alt={wod.name}
+                                        fill
+                                        className="object-cover transition-transform duration-300 group-hover/image:scale-105"
+                                        data-ai-hint={wod.imageHint}
+                                    />
+                                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                                    <div className="absolute inset-0 bg-black/20 opacity-0 group-hover/image:opacity-100 transition-opacity flex items-center justify-center">
+                                        <div className="p-2 rounded-full bg-black/50 text-white">
+                                            <Expand className="h-6 w-6" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </DialogTrigger>
+                        {source === 'personal' && <PersonalWodActions wod={wod} />}
+                        </div>
+                    )}
+                    <DialogContent className="max-w-4xl p-2">
+                        <DialogHeader className="sr-only">
+                            <DialogTitle>{wod.name} - Original Image</DialogTitle>
+                        </DialogHeader>
+                        <div className="relative w-full h-auto">
                             <Image
                                 src={wod.imageUrl}
                                 alt={wod.name}
-                                fill
-                                className="object-cover transition-transform duration-300 group-hover/image:scale-105"
-                                data-ai-hint={wod.imageHint}
+                                width={1200}
+                                height={800}
+                                className="object-contain w-full h-auto max-h-[80vh] rounded-md"
                             />
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-                             <div className="absolute inset-0 bg-black/20 opacity-0 group-hover/image:opacity-100 transition-opacity flex items-center justify-center">
-                                <div className="p-2 rounded-full bg-black/50 text-white">
-                                    <Expand className="h-6 w-6" />
-                                </div>
-                            </div>
                         </div>
-                    </DialogTrigger>
-                {source === 'personal' && <PersonalWodActions wod={wod} />}
-                </div>
+                    </DialogContent>
+                </Dialog>
             )}
-             <DialogContent className="max-w-4xl p-2">
-                <DialogHeader className="sr-only">
-                    <DialogTitle>{wod.name} - Original Image</DialogTitle>
-                </DialogHeader>
-                <div className="relative w-full h-auto">
-                    <Image
-                        src={wod.imageUrl}
-                        alt={wod.name}
-                        width={1200}
-                        height={800}
-                        className="object-contain w-full h-auto max-h-[80vh] rounded-md"
-                    />
-                </div>
-            </DialogContent>
-        </Dialog>
 
       <CardHeader className="pt-4 pb-2">
         <div className="flex items-start justify-between gap-2">

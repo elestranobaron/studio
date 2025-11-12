@@ -105,16 +105,19 @@ export default {
             boxShadow: '0 0 0 12px hsl(var(--primary) / 0)',
           },
         },
+         "pulse-slow": {
+          "0%, 100%": { boxShadow: "0 0 20px rgba(239, 68, 68, 0.3)" },
+          "50%": { boxShadow: "0 0 40px rgba(239, 68, 68, 0.6)" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
         "logo-pulse": "logo-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite",
         "pulse-glow": 'pulse-glow 2.5s infinite',
+        "pulse-slow": "pulse-slow 3s infinite",
       },
     },
   },
   plugins: [require("tailwindcss-animate")],
 } satisfies Config;
-
-    
