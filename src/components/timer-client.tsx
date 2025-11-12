@@ -148,18 +148,20 @@ export function TimerClient({ wod }: { wod: WOD }) {
   // Effect for the main timer logic (countdown and active timer)
   useEffect(() => {
     if (isCountingDown) {
-        playCountdownTick(); // Play the first tick immediately
         timerRef.current = setInterval(() => {
             setCountdown(prev => {
+                if (prev === 3) playCountdownTick(); // Play sound on 3
                 const nextCountdown = prev - 1;
-                if (nextCountdown > 0) playCountdownTick();
-                else playCountdownEnd();
-                
+
+                if (nextCountdown === 2) playCountdownTick();
+                if (nextCountdown === 1) playCountdownTick();
+
                 if (nextCountdown <= 0) {
+                    if (timerRef.current) clearInterval(timerRef.current);
                     setIsCountingDown(false);
                     setIsActive(true);
+                    playCountdownEnd();
                     playStartSound();
-                    if (timerRef.current) clearInterval(timerRef.current);
                     return 0;
                 }
                 return nextCountdown;
@@ -183,7 +185,7 @@ export function TimerClient({ wod }: { wod: WOD }) {
             // --- Timer logic per WOD type ---
             if (wod.type === 'EMOM') {
                 newTime -= 1;
-                if (newTime < 0) {
+                if (newTime <= 0) {
                     const nextRound = currentRound + 1;
                     if (nextRound > (wod.rounds || 0)) {
                         handleFinish(totalDuration);
