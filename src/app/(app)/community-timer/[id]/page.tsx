@@ -16,6 +16,7 @@ import Image from 'next/image';
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { Separator } from '@/components/ui/separator';
 import { WodContentParser } from '@/components/wod-content-parser';
+import { isValid, format } from 'date-fns';
 
 function TimerPageSkeleton() {
     return (
@@ -76,6 +77,9 @@ export default function CommunityTimerPage() {
   const descriptionSections = Array.isArray(wod?.description)
     ? wod.description
     : [{ title: "Workout", content: wod?.description || "" }];
+  
+  const date = wod ? new Date(wod.date) : null;
+  const formattedDate = date && isValid(date) ? format(date, "PPP") : wod?.date;
 
   return wod ? (
     <div className="relative flex flex-col items-center justify-center h-screen bg-background p-4 overflow-hidden">
@@ -107,7 +111,7 @@ export default function CommunityTimerPage() {
                     <SheetHeader>
                         <SheetTitle className="font-headline text-primary text-2xl">{wod.name}</SheetTitle>
                         <SheetDescription>
-                            {wod.type} - {wod.date}
+                            {wod.type} - {formattedDate}
                             {wod.userDisplayName && <span className="block mt-1">Shared by {wod.userDisplayName}</span>}
                         </SheetDescription>
                     </SheetHeader>

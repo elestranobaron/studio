@@ -15,7 +15,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Clock, Calendar, Repeat, Hourglass, Timer, Share2, LoaderCircle, User, MessageCircle, MoreHorizontal, Trash2, Pencil, Expand } from "lucide-react";
-import { format } from 'date-fns';
+import { format, isValid } from 'date-fns';
 import { useFirebase, useUser } from "@/firebase";
 import { useState, useMemo } from "react";
 import { doc, collection, addDoc, deleteDoc, updateDoc, writeBatch, runTransaction, DocumentData } from "firebase/firestore";
@@ -94,7 +94,7 @@ function PersonalWodActions({ wod }: { wod: WOD }) {
                 });
                 toast({ title: "WOD Shared!", description: "Your WOD is now visible to the community." });
             }
-             setIsDropdownOpen(false); // Close dropdown only on success
+             setIsDropdownOpen(false);
         } catch (error) {
             console.error("Error toggling share status:", error);
             toast({ variant: "destructive", title: "Action Failed", description: "Could not update the share status." });
@@ -321,7 +321,8 @@ function ReactionButton({ initialWod }: { initialWod: WOD }) {
 
 export function WodCard({ wod, source = 'personal' }: { wod: WOD, source?: 'personal' | 'community' }) {
     
-    const formattedDate = wod.date ? format(new Date(wod.date), "PPP") : "No date";
+    const date = new Date(wod.date);
+    const formattedDate = isValid(date) ? format(date, "PPP") : wod.date;
     const href = source === 'community' ? `/community-timer/${wod.id}` : `/timer/${wod.id}`;
     
     const descriptionSections = Array.isArray(wod.description)
