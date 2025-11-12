@@ -148,11 +148,12 @@ export function TimerClient({ wod }: { wod: WOD }) {
   // Effect for the main timer logic (countdown and active timer)
   useEffect(() => {
     if (isCountingDown) {
+        // Initial tick for "3"
+        playCountdownTick();
         timerRef.current = setInterval(() => {
             setCountdown(prev => {
                 const nextCountdown = prev - 1;
-                if (prev === 3) playCountdownTick();
-
+                
                 if (nextCountdown === 2) playCountdownTick();
                 if (nextCountdown === 1) playCountdownTick();
                 if (nextCountdown <= 0) {
@@ -160,7 +161,6 @@ export function TimerClient({ wod }: { wod: WOD }) {
                     setIsCountingDown(false);
                     setIsActive(true);
                     playCountdownEnd();
-                    playStartSound(); // Can be redundant if countdownEnd is loud enough
                     return 0;
                 }
                 return nextCountdown;
