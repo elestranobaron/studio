@@ -4,14 +4,14 @@
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { WodCard } from '@/components/wod-card';
-import { LogIn, PlusCircle, Search, ScanLine, ArrowDownUp, ArrowUp } from 'lucide-react';
+import { LogIn, PlusCircle, Search, ScanLine, ArrowDownUp } from 'lucide-react';
 import { SidebarTrigger } from '@/components/ui/sidebar';
 import { useCollection, useFirebase } from '@/firebase';
 import { collection, query, orderBy, limit } from 'firebase/firestore';
 import { Skeleton } from '@/components/ui/skeleton';
 import type { WOD } from '@/lib/types';
 import { useUser } from '@/firebase/provider';
-import { useMemo, useState, Suspense, useRef, useEffect } from 'react';
+import { useMemo, useState, Suspense } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -233,34 +233,11 @@ function DashboardContent() {
   const { user, isUserLoading } = useUser();
   const searchParams = useSearchParams();
   const defaultTab = searchParams.get('tab') === 'community' ? 'community' : 'personal';
-  const mainScrollRef = useRef<HTMLElement | null>(null);
-  const [showScrollTop, setShowScrollTop] = useState(false);
 
   const userWodsCollection = useMemo(() => {
     if (!firestore || !user) return null;
     return query(collection(firestore, 'users', user.uid, 'wods'), orderBy('date', 'desc'));
   }, [firestore, user]);
-
-  useEffect(() => {
-    const mainEl = mainScrollRef.current;
-    if (!mainEl) return;
-
-    const handleScroll = () => {
-        // Show button if scrolled down more than a small threshold
-        setShowScrollTop(mainEl.scrollTop > 50);
-    };
-
-    mainEl.addEventListener('scroll', handleScroll);
-    return () => mainEl.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  const handleFabClick = () => {
-    if (showScrollTop && mainScrollRef.current) {
-        mainScrollRef.current.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-    // The link will handle the navigation if showScrollTop is false
-  };
-
 
   const { data: userWods, isLoading: isUserWodsLoading } = useCollection<WOD>(userWodsCollection);
 
@@ -282,7 +259,7 @@ function DashboardContent() {
           </Link>
         </Button>
       </header>
-      <main ref={mainScrollRef} className="flex-1 overflow-y-auto">
+      <main className="flex-1 overflow-y-auto">
         <Tabs defaultValue={defaultTab} className="w-full">
           <div className="p-4 md:p-6 border-b">
             <TabsList className="grid w-full grid-cols-2 md:w-auto">
@@ -308,18 +285,11 @@ function DashboardContent() {
       
       {/* Mobile-only Floating Action Button */}
       <div className="md:hidden fixed bottom-6 right-6 z-50">
-        <Button asChild={!showScrollTop} size="icon" className="h-16 w-16 rounded-full shadow-2xl shadow-primary/40 animate-pulse-glow" onClick={handleFabClick}>
-          {showScrollTop ? (
-            <div>
-                <ArrowUp className="h-8 w-8" />
-                <span className="sr-only">Scroll to top</span>
-            </div>
-          ) : (
+        <Button asChild size="icon" className="h-16 w-16 rounded-full shadow-2xl shadow-primary/40 animate-pulse-glow">
             <Link href="/scan">
                 <ScanLine className="h-8 w-8" />
                 <span className="sr-only">Scan New WOD</span>
             </Link>
-          )}
         </Button>
       </div>
     </div>
