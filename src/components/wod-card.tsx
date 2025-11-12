@@ -49,14 +49,14 @@ function PersonalWodActions({ wod }: { wod: WOD }) {
     const [isSharing, setIsSharing] = useState(false);
     const [isDeleting, setIsDeleting] = useState(false);
     const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
 
     if (!user || user.isAnonymous || wod.userId !== user.uid) {
         return null;
     }
 
-    const handleShareToggle = async (e: React.MouseEvent) => {
-        e.preventDefault(); 
-        e.stopPropagation();
+    const handleShareToggle = async () => {
         if (!firestore || !user) return;
         setIsSharing(true);
 
@@ -97,6 +97,7 @@ function PersonalWodActions({ wod }: { wod: WOD }) {
             toast({ variant: "destructive", title: "Action Failed", description: "Could not update the share status." });
         } finally {
             setIsSharing(false);
+            setIsDropdownOpen(false);
         }
     };
     
@@ -125,12 +126,11 @@ function PersonalWodActions({ wod }: { wod: WOD }) {
         } finally {
             setIsDeleting(false);
             setIsDeleteDialogOpen(false);
+            setIsDropdownOpen(false);
         }
     };
     
-    const handleEdit = (e: React.MouseEvent) => {
-        e.preventDefault();
-        e.stopPropagation();
+    const handleEdit = () => {
         router.push(`/wod/${wod.id}/edit`);
     };
 
@@ -157,7 +157,7 @@ function PersonalWodActions({ wod }: { wod: WOD }) {
                     </AlertDialogFooter>
                 </AlertDialogContent>
             </AlertDialog>
-            <DropdownMenu>
+            <DropdownMenu open={isDropdownOpen} onOpenChange={setIsDropdownOpen}>
                 <DropdownMenuTrigger asChild>
                     <Button 
                         variant="ghost" 
@@ -173,12 +173,12 @@ function PersonalWodActions({ wod }: { wod: WOD }) {
                     </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" onClick={(e) => { e.stopPropagation(); e.preventDefault(); }}>
-                     <DropdownMenuItem onClick={handleEdit}>
+                     <DropdownMenuItem onSelect={handleEdit}>
                         <Pencil className="mr-2 h-4 w-4" />
                         <span>Edit</span>
                     </DropdownMenuItem>
                      <DropdownMenuItem
-                        onClick={handleShareToggle}
+                        onSelect={handleShareToggle}
                         disabled={isSharing}
                         className={cn(wod.communityWodId && "text-primary")}
                      >
