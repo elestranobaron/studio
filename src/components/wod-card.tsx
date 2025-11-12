@@ -120,18 +120,17 @@ function PersonalWodActions({ wod }: { wod: WOD }) {
 
             await batch.commit();
             toast({ title: "WOD Deleted", description: "Your WOD has been successfully removed." });
+            // No need to close dropdown here, as the component will unmount
         } catch (error) {
             console.error("Error deleting WOD:", error);
             toast({ variant: "destructive", title: "Deletion Failed", description: "Could not delete the WOD." });
         } finally {
             setIsDeleting(false);
             setIsDeleteDialogOpen(false);
-            setIsDropdownOpen(false);
         }
     };
     
     const handleEdit = () => {
-        setIsDropdownOpen(false);
         router.push(`/wod/${wod.id}/edit`);
     };
 
@@ -403,3 +402,5 @@ export function WodCard({ wod, source = 'personal' }: { wod: WOD, source?: 'pers
     </Card>
   );
 }
+
+    
