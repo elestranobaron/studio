@@ -2,7 +2,7 @@
 'use client';
 
 import Link from 'next/link';
-import { notFound, useParams, useRouter } from 'next/navigation';
+import { notFound, useParams } from 'next/navigation';
 import { TimerClient } from '@/components/timer-client';
 import { ArrowLeft, BookOpen, LogIn } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -18,6 +18,7 @@ import { Separator } from '@/components/ui/separator';
 import { WodContentParser } from '@/components/wod-content-parser';
 import { isValid, format } from 'date-fns';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { heroWods } from '@/lib/hero-wods';
 
 function TimerPageSkeleton() {
     return (
@@ -48,25 +49,36 @@ function TimerPageSkeleton() {
 
 export default function CommunityTimerPage() {
   const params = useParams();
-  const router = useRouter();
   const { id } = params;
   const { firestore } = useFirebase();
   const { user, isUserLoading } = useUser();
 
-  const canFetch = useMemo(() => user && !user.isAnonymous, [user]);
+  const wodId = typeof id === 'string' ? id : '';
+  const isHeroWod = wodId.startsWith('hero-');
 
+  // Attempt to find the Hero WOD from the local list first
+  const heroWod = useMemo(() => {
+    if (!isHeroWod) return null;
+    return heroWods.find(w => w.id === wodId) || null;
+  }, [isHeroWod, wodId]);
+
+  // Only fetch from Firestore if it's NOT a Hero WOD
   const wodRef = useMemo(() => {
-    if (!firestore || !canFetch || typeof id !== 'string') return null;
-    return doc(firestore, 'communityWods', id);
-  }, [firestore, id, canFetch]);
+    if (!firestore || isHeroWod || !id) return null;
+    return doc(firestore, 'communityWods', id as string);
+  }, [firestore, id, isHeroWod]);
 
-  const { data: wod, isLoading } = useDoc<WOD>(wodRef);
+  const { data: firestoreWod, isLoading: isFirestoreWodLoading } = useDoc<WOD>(wodRef);
 
-  if (isLoading || isUserLoading) {
+  const wod = isHeroWod ? heroWod : firestoreWod;
+  const isLoading = isUserLoading || (isFirestoreWodLoading && !isHeroWod);
+  
+  if (isLoading) {
     return <TimerPageSkeleton />;
   }
 
-  if (!user || user.isAnonymous) {
+  // If it's not a Hero WOD, check for authentication
+  if (!isHeroWod && (!user || user.isAnonymous)) {
       return (
          <div className="flex flex-col items-center justify-center h-screen bg-background p-4">
             <Card className="max-w-md text-center">
@@ -103,18 +115,23 @@ export default function CommunityTimerPage() {
     ? wod.description
     : [{ title: "Workout", content: wod?.description || "" }];
   
-  const date = wod ? new Date(wod.date) : null;
+  const date = wod?.date ? new Date(wod.date) : null;
   const formattedDate = date && isValid(date) ? format(date, "PPP") : wod?.date;
 
   return wod ? (
     <div className="relative flex flex-col items-center justify-center h-screen bg-background p-4 overflow-hidden">
-        <Image
-            src={wod.imageUrl}
-            alt={`${wod.name} background`}
-            fill
-            className="object-cover z-0 opacity-20 blur-lg"
-            data-ai-hint={wod.imageHint}
-        />
+        {isHeroWod ? (
+            <div className="absolute inset-0 bg-gradient-to-br from-zinc-900 via-black to-zinc-800 z-0"/>
+        ): (
+             <Image
+                src={wod.imageUrl}
+                alt={`${wod.name} background`}
+                fill
+                className="object-cover z-0 opacity-20 blur-lg"
+                data-ai-hint={wod.imageHint}
+            />
+        )}
+       
         <div className="absolute inset-0 bg-gradient-to-t from-background via-background/80 to-background/50 z-0" />
       
         <div className="absolute top-4 left-4 z-20">
@@ -160,10 +177,8 @@ export default function CommunityTimerPage() {
             </h1>
             <p className="text-xl text-muted-foreground mt-2">{wod.type}</p>
         </div>
-        <TimerClient wod={{...wod, id: id as string}} />
+        <TimerClient wod={{...wod, id: wodId}} />
       </div>
     </div>
   ) : null;
 }
-
-    
