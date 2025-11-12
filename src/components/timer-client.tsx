@@ -116,6 +116,8 @@ export function TimerClient({ wod }: { wod: WOD }) {
   const [workoutState, setWorkoutState] = useState<'work' | 'rest' | 'active'>('active');
 
   const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const progressRef = useRef<SVGCircleElement | null>(null);
+  const animationFrameRef = useRef<number | null>(null);
 
   const totalDuration = wod.duration ? wod.duration * 60 : 0;
   const isCountDownTimer = wod.type === "AMRAP";
@@ -131,12 +133,22 @@ export function TimerClient({ wod }: { wod: WOD }) {
     setIsActive(false);
     setIsFinished(false);
     setFinalTime(0);
-    setTime(getInitialTime());
+    const initialTime = getInitialTime();
+    setTime(initialTime);
     setCountdown(3);
     setIsCountingDown(false);
     setCurrentRound(1);
     setWorkoutState(wod.type === 'Tabata' ? 'work' : 'active');
     if (timerRef.current) clearInterval(timerRef.current);
+    if (animationFrameRef.current) cancelAnimationFrame(animationFrameRef.current);
+    
+    // Reset progress bar visually
+    if (progressRef.current) {
+        const strokeDasharray = 2 * Math.PI * 140;
+        const progress = wod.type === 'For Time' ? 100 : 0;
+        progressRef.current.style.strokeDashoffset = `${strokeDasharray * (1 - progress / 100)}`;
+    }
+
   }, [getInitialTime, wod.type]);
 
   // Set initial time on component mount
@@ -148,21 +160,22 @@ export function TimerClient({ wod }: { wod: WOD }) {
   // Effect for the main timer logic (countdown and active timer)
   useEffect(() => {
     if (isCountingDown) {
-        // Initial tick for "3"
-        playCountdownTick();
         timerRef.current = setInterval(() => {
             setCountdown(prev => {
                 const nextCountdown = prev - 1;
                 
                 if (nextCountdown === 2) playCountdownTick();
-                if (nextCountdown === 1) playCountdownTick();
-                if (nextCountdown <= 0) {
+                else if (nextCountdown === 1) playCountdownTick();
+                else if (nextCountdown <= 0) {
                     if (timerRef.current) clearInterval(timerRef.current);
+                    playCountdownEnd();
                     setIsCountingDown(false);
                     setIsActive(true);
-                    playCountdownEnd();
                     return 0;
                 }
+                
+                if (nextCountdown === 3) playCountdownTick();
+                
                 return nextCountdown;
             });
         }, 1000);
@@ -231,6 +244,73 @@ export function TimerClient({ wod }: { wod: WOD }) {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isActive, isFinished, isCountingDown, wod, currentRound, workoutState]);
 
+    // Effect for smooth progress bar animation
+    useEffect(() => {
+        const circle = progressRef.current;
+        if (!circle || !isActive) {
+            if (animationFrameRef.current) cancelAnimationFrame(animationFrameRef.current);
+            return;
+        }
+
+        const strokeDasharray = 2 * Math.PI * 140;
+
+        const animateProgress = (startProgress: number, endProgress: number, duration: number) => {
+            let startTime: number | null = null;
+
+            const animationStep = (timestamp: number) => {
+                if (!startTime) startTime = timestamp;
+                const elapsed = timestamp - startTime;
+                const progressFraction = Math.min(elapsed / duration, 1);
+                const currentProgress = startProgress + (endProgress - startProgress) * progressFraction;
+                
+                circle.style.strokeDashoffset = `${strokeDasharray * (1 - currentProgress / 100)}`;
+                
+                if (progressFraction < 1) {
+                    animationFrameRef.current = requestAnimationFrame(animationStep);
+                }
+            };
+            animationFrameRef.current = requestAnimationFrame(animationStep);
+        };
+
+        let startProgress: number, endProgress: number;
+        
+        switch(wod.type) {
+            case 'AMRAP':
+                if (totalDuration > 0) {
+                    startProgress = ((time + 1) / totalDuration) * 100;
+                    endProgress = (time / totalDuration) * 100;
+                    animateProgress(startProgress, endProgress, 1000);
+                }
+                break;
+            case 'EMOM':
+                if (wod.emomInterval) {
+                    startProgress = ((time + 1) / wod.emomInterval) * 100;
+                    endProgress = (time / wod.emomInterval) * 100;
+                     // Reset to full if starting new round
+                    if (time === wod.emomInterval -1) startProgress = 100;
+                    animateProgress(startProgress, endProgress, 1000);
+                }
+                break;
+            case 'Tabata':
+                const period = workoutState === 'work' ? 20 : 10;
+                startProgress = ((time + 1) / period) * 100;
+                endProgress = (time / period) * 100;
+                 if ((workoutState === 'work' && time === 19) || (workoutState === 'rest' && time === 9)) {
+                    startProgress = 100;
+                 }
+                animateProgress(startProgress, endProgress, 1000);
+                break;
+            default: // For Time
+                 circle.style.strokeDashoffset = '0'; // Always full
+                break;
+        }
+
+        return () => {
+            if (animationFrameRef.current) cancelAnimationFrame(animationFrameRef.current);
+        };
+
+    }, [time, isActive, wod.type, wod.duration, wod.emomInterval, workoutState, totalDuration]);
+
 
   const handleStartPause = () => {
     if (isFinished) return;
@@ -238,8 +318,9 @@ export function TimerClient({ wod }: { wod: WOD }) {
     if (isActive) {
         setIsActive(false);
     } else {
-        if (time === getInitialTime() && !isCountingDown) {
+        if (countdown === 3 && getInitialTime() === time) {
             setIsCountingDown(true);
+            playCountdownTick();
         } else {
             playStartSound();
             setIsActive(true);
@@ -254,23 +335,14 @@ export function TimerClient({ wod }: { wod: WOD }) {
     setFinalTime(finalTimeValue > 0 ? finalTimeValue : time);
   };
   
-  const getProgress = () => {
-    switch(wod.type) {
-        case 'AMRAP':
-            if (totalDuration === 0) return 0;
-            return (time / totalDuration) * 100;
-        case 'EMOM':
-            if (!wod.emomInterval) return 0;
-            return (time / wod.emomInterval) * 100;
-        case 'Tabata':
-            const period = workoutState === 'work' ? 20 : 10;
-            return (time / period) * 100;
-        default:
-            return 100;
+  const getProgressOnload = () => {
+    if (wod.type === 'For Time' || wod.type === 'Other') {
+        return 100;
     }
+    return 0;
   }
 
-  const progress = getProgress();
+  const progress = getProgressOnload();
   const strokeDasharray = 2 * Math.PI * 140; // Circumference of the circle
   const strokeDashoffset = strokeDasharray * (1 - progress / 100);
 
@@ -299,6 +371,7 @@ export function TimerClient({ wod }: { wod: WOD }) {
                 fill="transparent"
                 />
                 <circle
+                ref={progressRef}
                 cx="150"
                 cy="150"
                 r="140"
@@ -308,8 +381,7 @@ export function TimerClient({ wod }: { wod: WOD }) {
                 strokeLinecap="round"
                 transform="rotate(-90 150 150)"
                 className={cn(
-                    "stroke-primary transition-all duration-1000",
-                     isCountDownTimer || wod.type === 'EMOM' || wod.type === 'Tabata' ? 'ease-linear' : '',
+                    "stroke-primary",
                     {"animate-pulse": isActive && (isCountDownTimer || wod.type === 'EMOM' || wod.type === 'Tabata')}
                 )}
                 fill="transparent"
@@ -395,3 +467,4 @@ export function TimerClient({ wod }: { wod: WOD }) {
     </div>
   );
 }
+
