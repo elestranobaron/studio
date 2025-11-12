@@ -111,17 +111,30 @@ export function TimerClient({ wod }: { wod: WOD }) {
   const [countdown, setCountdown] = useState(3);
   const [isCountingDown, setIsCountingDown] = useState(false);
 
+  // EMOM/Tabata specific state
+  const [currentRound, setCurrentRound] = useState(1);
+  const [currentIntervalTime, setCurrentIntervalTime] = useState(0);
+  const [workoutState, setWorkoutState] = useState<'work' | 'rest' | 'active'>('active');
+
   const totalDuration = wod.duration ? wod.duration * 60 : 0;
-  const isCountDownTimer = wod.type === "AMRAP" || wod.type === "EMOM";
-  
+  const isCountDownTimer = wod.type === "AMRAP";
+
+  const getInitialTime = useCallback(() => {
+    if (wod.type === 'EMOM' && wod.emomInterval) return wod.emomInterval;
+    if (wod.type === 'AMRAP' && wod.duration) return wod.duration * 60;
+    return 0;
+  }, [wod.type, wod.duration, wod.emomInterval]);
+
   const resetTimer = useCallback(() => {
     setIsActive(false);
     setIsFinished(false);
     setFinalTime(0);
-    setTime(isCountDownTimer ? totalDuration : 0);
+    setTime(getInitialTime());
     setCountdown(3);
     setIsCountingDown(false);
-  }, [isCountDownTimer, totalDuration]);
+    setCurrentRound(1);
+    setWorkoutState('active');
+  }, [getInitialTime]);
 
   // Set initial time on component mount
   useEffect(() => {
@@ -130,40 +143,63 @@ export function TimerClient({ wod }: { wod: WOD }) {
 
   useEffect(() => {
     let interval: NodeJS.Timeout | null = null;
+
+    // --- Countdown logic (runs once) ---
     if (isCountingDown) {
-        if (countdown > 0) {
-            playCountdownTick();
-        } else {
-            playCountdownEnd();
+      if (countdown > 0) playCountdownTick(); else playCountdownEnd();
+      
+      interval = setInterval(() => {
+        setCountdown(prev => {
+          if (prev <= 1) {
+            setIsCountingDown(false);
+            setIsActive(true);
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+    } 
+    // --- Main Timer Logic ---
+    else if (isActive && !isFinished) {
+      interval = setInterval(() => {
+        
+        // --- EMOM Logic ---
+        if (wod.type === 'EMOM') {
+            setTime(prevTime => {
+                if (prevTime <= 1) { // End of interval
+                    if (currentRound >= (wod.rounds || 0)) { // Last round finished
+                        handleFinish(totalDuration);
+                        return 0;
+                    }
+                    setCurrentRound(r => r + 1);
+                    playStartSound(); // Signal start of new interval
+                    return wod.emomInterval || 0; // Reset for next interval
+                }
+                return prevTime - 1;
+            });
         }
-        interval = setInterval(() => {
-            setCountdown(prev => {
-                if (prev <= 1) {
-                    setIsCountingDown(false);
-                    setIsActive(true);
+
+        // --- AMRAP Logic ---
+        else if (isCountDownTimer) {
+             setTime(prevTime => {
+                if (prevTime <= 1) {
+                    handleFinish(totalDuration);
                     return 0;
                 }
-                return prev - 1;
+                return prevTime - 1;
             });
-        }, 1000);
-    } else if (isActive && !isFinished) {
-      interval = setInterval(() => {
-        setTime((prevTime) => {
-          if (isCountDownTimer) {
-            if (prevTime <= 1) {
-              handleFinish();
-              return 0;
-            }
-            return prevTime - 1;
-          }
-          return prevTime + 1;
-        });
+        } 
+        
+        // --- For Time Logic ---
+        else {
+            setTime(prevTime => prevTime + 1);
+        }
       }, 1000);
     }
     return () => {
       if (interval) clearInterval(interval);
     };
-  }, [isActive, isFinished, isCountDownTimer, isCountingDown, countdown]);
+  }, [isActive, isFinished, isCountDownTimer, isCountingDown, countdown, wod, currentRound, totalDuration]);
 
 
   const handleStartPause = () => {
@@ -172,7 +208,8 @@ export function TimerClient({ wod }: { wod: WOD }) {
     if (isActive) {
         setIsActive(false);
     } else {
-        if ((isCountDownTimer || wod.type === 'Tabata') && time === (isCountDownTimer ? totalDuration : 0)) {
+        // If it's the very beginning of a timer that needs a countdown
+        if ((isCountDownTimer || wod.type === 'EMOM' || wod.type === 'Tabata') && time === getInitialTime()) {
             setIsCountingDown(true);
         } else {
             playStartSound();
@@ -181,16 +218,25 @@ export function TimerClient({ wod }: { wod: WOD }) {
     }
   };
 
-  const handleFinish = () => {
+  const handleFinish = (finalTimeValue: number) => {
     playFinishSound();
     setIsActive(false);
     setIsFinished(true);
-    setFinalTime(isCountDownTimer ? totalDuration : time);
+    setFinalTime(finalTimeValue > 0 ? finalTimeValue : time);
   };
   
-  const progress = isCountDownTimer
-    ? (time / totalDuration) * 100
-    : 100;
+  const getProgress = () => {
+    switch(wod.type) {
+        case 'AMRAP':
+            return (time / totalDuration) * 100;
+        case 'EMOM':
+            return (time / (wod.emomInterval || 1)) * 100;
+        default:
+            return 100;
+    }
+  }
+
+  const progress = getProgress();
   const strokeDasharray = 2 * Math.PI * 140; // Circumference of the circle
   const strokeDashoffset = strokeDasharray * (1 - progress / 100);
 
@@ -204,6 +250,11 @@ export function TimerClient({ wod }: { wod: WOD }) {
             </div>
         )
     }
+
+    const mainTimeDisplay = wod.type === 'EMOM' 
+        ? formatTime(time) 
+        : formatTime(isCountDownTimer ? time : time);
+    
     return (
         <div className="relative h-80 w-80 md:h-96 md:w-96">
             <svg className="absolute inset-0" viewBox="0 0 300 300">
@@ -226,15 +277,25 @@ export function TimerClient({ wod }: { wod: WOD }) {
                 transform="rotate(-90 150 150)"
                 className={cn(
                     "stroke-primary transition-all duration-1000 ease-linear",
-                    {"animate-pulse": isActive && isCountDownTimer}
+                    {"animate-pulse": isActive && (isCountDownTimer || wod.type === 'EMOM')}
                 )}
                 fill="transparent"
                 />
             </svg>
-            <div className="absolute inset-0 flex items-center justify-center">
+            <div className="absolute inset-0 flex flex-col items-center justify-center">
                  <p className="font-mono text-7xl md:text-8xl font-bold tracking-tighter text-foreground">
-                    {formatTime(time)}
+                    {mainTimeDisplay}
                 </p>
+                 {wod.type === 'EMOM' && (
+                    <div className="text-center -mt-2">
+                        <p className="text-xl font-semibold text-muted-foreground">
+                            Round {currentRound} / {wod.rounds}
+                        </p>
+                        <p className="text-sm text-muted-foreground/80">
+                            Total: {formatTime((currentRound - 1) * (wod.emomInterval || 0) + ((wod.emomInterval || 0) - time))}
+                        </p>
+                    </div>
+                 )}
             </div>
       </div>
     );
@@ -250,13 +311,13 @@ export function TimerClient({ wod }: { wod: WOD }) {
                 <CardTitle className="font-headline text-primary">{wod.name}</CardTitle>
             </CardHeader>
             <CardContent>
-                <p className="text-6xl font-bold font-mono">{formatTime(isCountDownTimer ? totalDuration : finalTime)}</p>
+                <p className="text-6xl font-bold font-mono">{formatTime(finalTime)}</p>
                 <p className="text-muted-foreground">{wod.type === "For Time" ? "Total Time" : "Time Completed"}</p>
             </CardContent>
         </Card>
         <div className="flex gap-4">
             <Button onClick={resetTimer} size="lg"><RotateCcw className="mr-2 h-4 w-4" /> Go Again</Button>
-            <ShareModal wod={wod} finalTime={formatTime(isCountDownTimer ? totalDuration : finalTime)} />
+            <ShareModal wod={wod} finalTime={formatTime(finalTime)} />
         </div>
          <div className="pt-8 opacity-50">
             <span className="text-xl font-bold font-headline text-primary tracking-wider">
@@ -288,7 +349,7 @@ export function TimerClient({ wod }: { wod: WOD }) {
           <RotateCcw className="mr-2 h-5 w-5" /> Reset
         </Button>
       </div>
-      <Button onClick={handleFinish} variant="destructive" size="lg" disabled={(!isActive && time === 0) || isCountingDown}>
+      <Button onClick={() => handleFinish(time)} variant="destructive" size="lg" disabled={(!isActive && time === 0) || isCountingDown}>
         <Flag className="mr-2 h-5 w-5" /> Finish
       </Button>
     </div>
