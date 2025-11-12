@@ -2,9 +2,9 @@
 'use client';
 
 import Link from 'next/link';
-import { notFound, useParams } from 'next/navigation';
+import { notFound, useParams, useRouter } from 'next/navigation';
 import { TimerClient } from '@/components/timer-client';
-import { ArrowLeft, BookOpen } from 'lucide-react';
+import { ArrowLeft, BookOpen, LogIn } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useDoc, useFirebase } from '@/firebase';
 import { doc } from 'firebase/firestore';
@@ -17,22 +17,18 @@ import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTr
 import { Separator } from '@/components/ui/separator';
 import { WodContentParser } from '@/components/wod-content-parser';
 import { isValid, format } from 'date-fns';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
 function TimerPageSkeleton() {
     return (
         <div className="relative flex flex-col items-center justify-center h-screen bg-background p-4">
-            {/* Background Skeleton */}
             <div className="absolute inset-0 bg-muted/50 z-0"></div>
-            
-            {/* Header Skeleton */}
              <div className="absolute top-4 left-4 z-20">
                 <Skeleton className="h-10 w-48" />
              </div>
              <div className="absolute top-4 right-4 z-20">
                 <Skeleton className="h-10 w-32" />
             </div>
-
-            {/* Main Content Skeleton */}
             <div className="relative z-10 flex flex-col items-center justify-center gap-8 w-full max-w-6xl">
                 <div className="text-center">
                     <Skeleton className="h-12 w-80 mb-4" />
@@ -50,24 +46,53 @@ function TimerPageSkeleton() {
     )
 }
 
-// NOTE: This is a new page specifically for handling timers for community WODs.
-// It fetches the WOD from the 'communityWods' collection instead of the user's personal collection.
 export default function CommunityTimerPage() {
   const params = useParams();
+  const router = useRouter();
   const { id } = params;
   const { firestore } = useFirebase();
-  const { isUserLoading } = useUser();
+  const { user, isUserLoading } = useUser();
 
-  // The document reference now points to the 'communityWods' collection.
+  const canFetch = useMemo(() => user && !user.isAnonymous, [user]);
+
   const wodRef = useMemo(() => {
-    if (!firestore || typeof id !== 'string') return null;
+    if (!firestore || !canFetch || typeof id !== 'string') return null;
     return doc(firestore, 'communityWods', id);
-  }, [firestore, id]);
+  }, [firestore, id, canFetch]);
 
   const { data: wod, isLoading } = useDoc<WOD>(wodRef);
 
   if (isLoading || isUserLoading) {
     return <TimerPageSkeleton />;
+  }
+
+  if (!user || user.isAnonymous) {
+      return (
+         <div className="flex flex-col items-center justify-center h-screen bg-background p-4">
+            <Card className="max-w-md text-center">
+                <CardHeader>
+                    <CardTitle>Access Restricted</CardTitle>
+                    <CardDescription>
+                        Please sign up or log in to view community WODs and use the timer.
+                    </CardDescription>
+                </CardHeader>
+                <CardContent className="flex flex-col gap-4">
+                    <Button asChild>
+                        <Link href="/login">
+                            <LogIn className="mr-2 h-4 w-4" />
+                            Sign Up / Log In
+                        </Link>
+                    </Button>
+                     <Button asChild variant="outline">
+                        <Link href="/dashboard">
+                            <ArrowLeft className="mr-2 h-4 w-4" />
+                            Back to Dashboard
+                        </Link>
+                    </Button>
+                </CardContent>
+            </Card>
+        </div>
+      )
   }
 
   if (!wod && !isLoading) {
@@ -135,9 +160,10 @@ export default function CommunityTimerPage() {
             </h1>
             <p className="text-xl text-muted-foreground mt-2">{wod.type}</p>
         </div>
-        {/* Pass the original WOD id for timer functionality, even though we fetched from community */}
         <TimerClient wod={{...wod, id: id as string}} />
       </div>
     </div>
   ) : null;
 }
+
+    

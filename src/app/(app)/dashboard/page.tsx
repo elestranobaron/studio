@@ -102,9 +102,6 @@ function CommunityWodList() {
 
     const shouldFetchData = !isUserLoading && user && !user.isAnonymous;
     
-    // NOTE: Sorting by 'reactions.fire' requires a composite index in Firestore.
-    // Firebase will provide a link in the browser console to create it automatically
-    // the first time the query is attempted.
     const communityWodsCollection = useMemo(() => {
         if (!firestore || !shouldFetchData) return null;
         
@@ -135,9 +132,10 @@ function CommunityWodList() {
 
         const lowercasedTerm = searchTerm.toLowerCase();
         return communityWods.filter(wod => {
-            const descriptionString = Array.isArray(wod.description)
+            // Check if wod.description exists and is an array before processing
+            const descriptionString = wod.description && Array.isArray(wod.description)
                 ? wod.description.map(d => d.content).join(' ').toLowerCase()
-                : wod.description.toLowerCase();
+                : typeof wod.description === 'string' ? wod.description.toLowerCase() : '';
             
             return (
                 wod.name.toLowerCase().includes(lowercasedTerm) ||
@@ -156,7 +154,7 @@ function CommunityWodList() {
       );
     }
     
-    if (user?.isAnonymous) {
+    if (!user || user.isAnonymous) {
       return (
         <div className="flex items-center justify-center h-full py-16">
             <Card className="max-w-md text-center">
@@ -308,7 +306,6 @@ function DashboardContent() {
         </Tabs>
       </main>
       
-      {/* Mobile-only Floating Action Button */}
       <div className="md:hidden fixed bottom-6 right-6 z-50">
         <AnimatePresence mode="wait">
             {showScrollTop ? (
@@ -353,3 +350,5 @@ export default function DashboardPage() {
     </Suspense>
   )
 }
+
+    

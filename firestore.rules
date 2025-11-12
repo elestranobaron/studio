@@ -18,7 +18,6 @@ service cloud.firestore {
     // USERS
     match /users/{userId} {
       allow read, write: if isOwner(userId);
-      // PERMET DE CRÉER LE DOCUMENT USER AUTOMATIQUEMENT
       allow create: if isSignedIn() && request.auth.uid == userId;
     }
 
@@ -46,3 +45,5 @@ service cloud.firestore {
     }
   }
 }
+
+    
