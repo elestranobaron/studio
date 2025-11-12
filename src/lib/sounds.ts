@@ -125,3 +125,8 @@ export const playFinishSound = () => {
 export const playStartSound = () => {
   playTone(660, 0.5, 'sine'); 
 };
+
+// A short, high-pitched beep for the final seconds of an interval.
+export const playFinalTicksSound = () => {
+    playTone(1200, 0.1, 'square', 0.2); // Higher pitch, square wave for urgency
+};

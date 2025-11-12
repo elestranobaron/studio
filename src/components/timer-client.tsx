@@ -16,7 +16,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 import type { WOD } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { Separator } from "./ui/separator";
-import { playStartSound, playFinishSound, playCountdownTick, playCountdownEnd } from "@/lib/sounds";
+import { playStartSound, playFinishSound, playCountdownTick, playCountdownEnd, playFinalTicksSound } from "@/lib/sounds";
 import { WodContentParser } from "./wod-content-parser";
 import { ScrollArea } from "./ui/scroll-area";
 
@@ -113,7 +113,7 @@ export function TimerClient({ wod }: { wod: WOD }) {
 
   // EMOM/Tabata specific state
   const [currentRound, setCurrentRound] = useState(1);
-  const [workoutState, setWorkoutState] = useState<'work' | 'rest' | 'active'>('work');
+  const [workoutState, setWorkoutState] = useState<'work' | 'rest' | 'active'>('active');
 
   const totalDuration = wod.duration ? wod.duration * 60 : 0;
   const isCountDownTimer = wod.type === "AMRAP";
@@ -164,6 +164,13 @@ export function TimerClient({ wod }: { wod: WOD }) {
     else if (isActive && !isFinished) {
       interval = setInterval(() => {
         
+        // --- Sound alerts for final seconds ---
+        if (wod.type === 'EMOM' || wod.type === 'Tabata') {
+            if (time === 3 || time === 2 || time === 1) {
+                playFinalTicksSound();
+            }
+        }
+
         if (wod.type === 'EMOM') {
             setTime(prevTime => {
                 const newTime = prevTime - 1;
@@ -223,7 +230,7 @@ export function TimerClient({ wod }: { wod: WOD }) {
       if (interval) clearInterval(interval);
     };
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isActive, isFinished, isCountingDown, wod, currentRound, workoutState]);
+  }, [isActive, isFinished, isCountingDown, wod, currentRound, workoutState, time]);
 
 
   const handleStartPause = () => {
@@ -388,9 +395,3 @@ export function TimerClient({ wod }: { wod: WOD }) {
     </div>
   );
 }
-
-    
-
-    
-
-    
