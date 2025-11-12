@@ -150,18 +150,17 @@ export function TimerClient({ wod }: { wod: WOD }) {
     if (isCountingDown) {
         timerRef.current = setInterval(() => {
             setCountdown(prev => {
-                if (prev === 3) playCountdownTick(); // Play sound on 3
                 const nextCountdown = prev - 1;
+                if (prev === 3) playCountdownTick();
 
                 if (nextCountdown === 2) playCountdownTick();
                 if (nextCountdown === 1) playCountdownTick();
-
                 if (nextCountdown <= 0) {
                     if (timerRef.current) clearInterval(timerRef.current);
                     setIsCountingDown(false);
                     setIsActive(true);
                     playCountdownEnd();
-                    playStartSound();
+                    playStartSound(); // Can be redundant if countdownEnd is loud enough
                     return 0;
                 }
                 return nextCountdown;
@@ -173,16 +172,14 @@ export function TimerClient({ wod }: { wod: WOD }) {
         setTime(prevTime => {
             let newTime = prevTime;
 
-            // --- Sound alerts for final seconds ---
             const needsAlerts = wod.type === 'EMOM' || wod.type === 'Tabata' || wod.type === 'AMRAP';
             if (needsAlerts) {
-                if (newTime === 11) playTenSecondWarning(); // 10 seconds remaining is at time=11
+                if (newTime === 11) playTenSecondWarning();
                 if (newTime === 4 || newTime === 3 || newTime === 2) {
                      playThreeSecondWarning();
                 }
             }
             
-            // --- Timer logic per WOD type ---
             if (wod.type === 'EMOM') {
                 newTime -= 1;
                 if (newTime <= 0) {
@@ -197,10 +194,10 @@ export function TimerClient({ wod }: { wod: WOD }) {
                 }
             } else if (wod.type === 'Tabata') {
                 newTime -= 1;
-                if (newTime < 0) {
+                if (newTime <= 0) {
                     if (workoutState === 'work') {
                         setWorkoutState('rest');
-                        playFinishSound();
+                        playFinishSound(); // Or a specific "rest" sound
                         return 10;
                     } else { // workoutState === 'rest'
                         const nextRound = currentRound + 1;
@@ -214,9 +211,9 @@ export function TimerClient({ wod }: { wod: WOD }) {
                         return 20;
                     }
                 }
-            } else if (isCountDownTimer) {
+            } else if (isCountDownTimer) { // AMRAP
                 newTime -= 1;
-                if (newTime < 0) {
+                if (newTime <= 0) {
                     handleFinish(totalDuration);
                     return 0;
                 }
@@ -241,11 +238,9 @@ export function TimerClient({ wod }: { wod: WOD }) {
     if (isActive) {
         setIsActive(false);
     } else {
-        // If timer has never started, begin countdown
         if (time === getInitialTime() && !isCountingDown) {
             setIsCountingDown(true);
         } else {
-            // Otherwise, just resume
             playStartSound();
             setIsActive(true);
         }
