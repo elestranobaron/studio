@@ -259,7 +259,6 @@ function DashboardContent() {
     mainContentRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-
   const userWodsCollection = useMemo(() => {
     if (!firestore || !user) return null;
     return query(collection(firestore, 'users', user.uid, 'wods'), orderBy('date', 'desc'));
