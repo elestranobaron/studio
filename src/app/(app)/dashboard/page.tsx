@@ -4,14 +4,14 @@
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { WodCard } from '@/components/wod-card';
-import { LogIn, PlusCircle, Search, ScanLine, ArrowDownUp } from 'lucide-react';
+import { LogIn, PlusCircle, Search, ScanLine, ArrowDownUp, ArrowUp } from 'lucide-react';
 import { SidebarTrigger } from '@/components/ui/sidebar';
 import { useCollection, useFirebase } from '@/firebase';
 import { collection, query, orderBy, limit } from 'firebase/firestore';
 import { Skeleton } from '@/components/ui/skeleton';
 import type { WOD } from '@/lib/types';
 import { useUser } from '@/firebase/provider';
-import { useMemo, useState, Suspense } from 'react';
+import { useMemo, useState, Suspense, useRef, useEffect } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -19,6 +19,9 @@ import { WelcomeEmptyState } from '@/components/welcome-empty-state';
 import { useSearchParams } from 'next/navigation';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
+import { cn } from '@/lib/utils';
+import { AnimatePresence, motion } from 'framer-motion';
+
 
 function WodSkeleton() {
   return (
@@ -233,6 +236,29 @@ function DashboardContent() {
   const { user, isUserLoading } = useUser();
   const searchParams = useSearchParams();
   const defaultTab = searchParams.get('tab') === 'community' ? 'community' : 'personal';
+  const mainContentRef = useRef<HTMLElement | null>(null);
+  const [showScrollTop, setShowScrollTop] = useState(false);
+
+  useEffect(() => {
+    const mainEl = mainContentRef.current;
+    if (!mainEl) return;
+
+    const handleScroll = () => {
+      if (mainEl.scrollTop > 20) {
+        setShowScrollTop(true);
+      } else {
+        setShowScrollTop(false);
+      }
+    };
+
+    mainEl.addEventListener('scroll', handleScroll);
+    return () => mainEl.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const handleScrollToTop = () => {
+    mainContentRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
 
   const userWodsCollection = useMemo(() => {
     if (!firestore || !user) return null;
@@ -259,7 +285,7 @@ function DashboardContent() {
           </Link>
         </Button>
       </header>
-      <main className="flex-1 overflow-y-auto">
+      <main ref={mainContentRef} className="flex-1 overflow-y-auto">
         <Tabs defaultValue={defaultTab} className="w-full">
           <div className="p-4 md:p-6 border-b">
             <TabsList className="grid w-full grid-cols-2 md:w-auto">
@@ -285,12 +311,37 @@ function DashboardContent() {
       
       {/* Mobile-only Floating Action Button */}
       <div className="md:hidden fixed bottom-6 right-6 z-50">
-        <Button asChild size="icon" className="h-16 w-16 rounded-full shadow-2xl shadow-primary/40 animate-pulse-glow">
-            <Link href="/scan">
-                <ScanLine className="h-8 w-8" />
-                <span className="sr-only">Scan New WOD</span>
-            </Link>
-        </Button>
+        <AnimatePresence mode="wait">
+            {showScrollTop ? (
+                 <motion.div
+                    key="scrollTop"
+                    initial={{ scale: 0, opacity: 0, y: 20 }}
+                    animate={{ scale: 1, opacity: 1, y: 0 }}
+                    exit={{ scale: 0, opacity: 0, y: 20 }}
+                    transition={{ duration: 0.2 }}
+                 >
+                    <Button onClick={handleScrollToTop} size="icon" className="h-16 w-16 rounded-full shadow-2xl bg-secondary hover:bg-secondary/80">
+                        <ArrowUp className="h-8 w-8" />
+                        <span className="sr-only">Scroll to top</span>
+                    </Button>
+                </motion.div>
+            ) : (
+                <motion.div
+                    key="scan"
+                    initial={{ scale: 0, opacity: 0, y: 20 }}
+                    animate={{ scale: 1, opacity: 1, y: 0 }}
+                    exit={{ scale: 0, opacity: 0, y: 20 }}
+                    transition={{ duration: 0.2 }}
+                >
+                    <Button asChild size="icon" className="h-16 w-16 rounded-full shadow-2xl shadow-primary/40 animate-pulse-glow">
+                        <Link href="/scan">
+                            <ScanLine className="h-8 w-8" />
+                            <span className="sr-only">Scan New WOD</span>
+                        </Link>
+                    </Button>
+                </motion.div>
+            )}
+        </AnimatePresence>
       </div>
     </div>
   );
