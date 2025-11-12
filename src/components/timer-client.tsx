@@ -165,16 +165,18 @@ export function TimerClient({ wod }: { wod: WOD }) {
         
         if (wod.type === 'EMOM') {
             setTime(prevTime => {
-                if (prevTime <= 1) { // End of interval
-                    if (currentRound >= (wod.rounds || 0)) { // Last round finished
+                const newTime = prevTime - 1;
+                if (newTime <= 0) { // End of interval
+                    const nextRound = currentRound + 1;
+                    if (nextRound > (wod.rounds || 0)) { // All rounds finished
                         handleFinish(totalDuration);
                         return 0;
                     }
-                    setCurrentRound(r => r + 1);
+                    setCurrentRound(nextRound);
                     playStartSound(); // Signal start of new interval
                     return wod.emomInterval || 0; // Reset for next interval
                 }
-                return prevTime - 1;
+                return newTime;
             });
         }
         else if (isCountDownTimer) {
@@ -194,7 +196,8 @@ export function TimerClient({ wod }: { wod: WOD }) {
     return () => {
       if (interval) clearInterval(interval);
     };
-  }, [isActive, isFinished, isCountDownTimer, isCountingDown, wod, currentRound, totalDuration]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isActive, isFinished, isCountingDown, wod, currentRound]);
 
 
   const handleStartPause = () => {
@@ -351,5 +354,7 @@ export function TimerClient({ wod }: { wod: WOD }) {
     </div>
   );
 }
+
+    
 
     
