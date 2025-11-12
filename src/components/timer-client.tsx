@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import {
   Play,
   Pause,
@@ -16,7 +16,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 import type { WOD } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { Separator } from "./ui/separator";
-import { playStartSound, playFinishSound, playCountdownTick, playCountdownEnd, playFinalTicksSound } from "@/lib/sounds";
+import { playStartSound, playFinishSound, playCountdownTick, playCountdownEnd, playTenSecondWarning, playThreeSecondWarning } from "@/lib/sounds";
 import { WodContentParser } from "./wod-content-parser";
 import { ScrollArea } from "./ui/scroll-area";
 
@@ -115,11 +115,13 @@ export function TimerClient({ wod }: { wod: WOD }) {
   const [currentRound, setCurrentRound] = useState(1);
   const [workoutState, setWorkoutState] = useState<'work' | 'rest' | 'active'>('active');
 
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
+
   const totalDuration = wod.duration ? wod.duration * 60 : 0;
   const isCountDownTimer = wod.type === "AMRAP";
 
   const getInitialTime = useCallback(() => {
-    if (wod.type === 'EMOM' && wod.emomInterval) return wod.emomInterval -1;
+    if (wod.type === 'EMOM' && wod.emomInterval) return wod.emomInterval;
     if (wod.type === 'AMRAP' && wod.duration) return wod.duration * 60;
     if (wod.type === 'Tabata') return 20; // Tabata starts with 20s of work
     return 0;
@@ -134,6 +136,7 @@ export function TimerClient({ wod }: { wod: WOD }) {
     setIsCountingDown(false);
     setCurrentRound(1);
     setWorkoutState(wod.type === 'Tabata' ? 'work' : 'active');
+    if (timerRef.current) clearInterval(timerRef.current);
   }, [getInitialTime, wod.type]);
 
   // Set initial time on component mount
@@ -141,96 +144,93 @@ export function TimerClient({ wod }: { wod: WOD }) {
     resetTimer();
   }, [resetTimer]);
 
-  useEffect(() => {
-    let interval: NodeJS.Timeout | null = null;
 
+  // Effect for the main timer logic (countdown and active timer)
+  useEffect(() => {
     if (isCountingDown) {
-      if (countdown > 0) playCountdownTick(); else playCountdownEnd();
-      
-      interval = setInterval(() => {
-        setCountdown(prev => {
-          if (prev <= 1) {
-            setIsCountingDown(false);
-            setIsActive(true);
-            playStartSound(); // Play start sound once countdown finishes
-            return 0;
-          }
-          const nextCountdown = prev - 1;
-          if (nextCountdown > 0) playCountdownTick(); else playCountdownEnd();
-          return nextCountdown;
-        });
-      }, 1000);
+        playCountdownTick(); // Play the first tick immediately
+        timerRef.current = setInterval(() => {
+            setCountdown(prev => {
+                const nextCountdown = prev - 1;
+                if (nextCountdown > 0) playCountdownTick();
+                else playCountdownEnd();
+                
+                if (nextCountdown <= 0) {
+                    setIsCountingDown(false);
+                    setIsActive(true);
+                    playStartSound();
+                    if (timerRef.current) clearInterval(timerRef.current);
+                    return 0;
+                }
+                return nextCountdown;
+            });
+        }, 1000);
     } 
     else if (isActive && !isFinished) {
-      interval = setInterval(() => {
-        
-        // --- Sound alerts for final seconds ---
-        if (wod.type === 'EMOM' || wod.type === 'Tabata' || wod.type === 'AMRAP') {
-            if (time === 3 || time === 2 || time === 1) {
-                playFinalTicksSound();
-            }
-        }
+      timerRef.current = setInterval(() => {
+        setTime(prevTime => {
+            let newTime = prevTime;
 
-        if (wod.type === 'EMOM') {
-            setTime(prevTime => {
-                const newTime = prevTime - 1;
-                if (newTime < 0) { // End of interval
+            // --- Sound alerts for final seconds ---
+            const needsAlerts = wod.type === 'EMOM' || wod.type === 'Tabata' || wod.type === 'AMRAP';
+            if (needsAlerts) {
+                if (newTime === 11) playTenSecondWarning(); // 10 seconds remaining is at time=11
+                if (newTime === 4 || newTime === 3 || newTime === 2) {
+                     playThreeSecondWarning();
+                }
+            }
+            
+            // --- Timer logic per WOD type ---
+            if (wod.type === 'EMOM') {
+                newTime -= 1;
+                if (newTime < 0) {
                     const nextRound = currentRound + 1;
-                    if (nextRound > (wod.rounds || 0)) { // All rounds finished
+                    if (nextRound > (wod.rounds || 0)) {
                         handleFinish(totalDuration);
                         return 0;
                     }
                     setCurrentRound(nextRound);
-                    playStartSound(); // Signal start of new interval
-                    return (wod.emomInterval || 60) - 1; // Reset for next interval
+                    playStartSound();
+                    return (wod.emomInterval || 60);
                 }
-                return newTime;
-            });
-        }
-        else if (wod.type === 'Tabata') {
-            setTime(prevTime => {
-                const newTime = prevTime - 1;
+            } else if (wod.type === 'Tabata') {
+                newTime -= 1;
                 if (newTime < 0) {
                     if (workoutState === 'work') {
-                        // Switch to REST
                         setWorkoutState('rest');
-                        playFinishSound(); // Or a softer sound for rest
-                        return 10 -1;
+                        playFinishSound();
+                        return 10;
                     } else { // workoutState === 'rest'
                         const nextRound = currentRound + 1;
                         if (nextRound > (wod.rounds || 8)) {
                             handleFinish(totalDuration);
                             return 0;
                         }
-                        // Switch to WORK
                         setCurrentRound(nextRound);
                         setWorkoutState('work');
                         playStartSound();
-                        return 20 - 1; // 20s work
+                        return 20;
                     }
                 }
-                return newTime;
-            });
-        }
-        else if (isCountDownTimer) {
-             setTime(prevTime => {
-                if (prevTime <= 1) {
+            } else if (isCountDownTimer) {
+                newTime -= 1;
+                if (newTime < 0) {
                     handleFinish(totalDuration);
                     return 0;
                 }
-                return prevTime - 1;
-            });
-        } 
-        else {
-            setTime(prevTime => prevTime + 1);
-        }
+            } else { // For Time
+                newTime += 1;
+            }
+            return newTime;
+        });
       }, 1000);
     }
+
     return () => {
-      if (interval) clearInterval(interval);
+      if (timerRef.current) clearInterval(timerRef.current);
     };
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isActive, isFinished, isCountingDown, wod, currentRound, workoutState, time]);
+  }, [isActive, isFinished, isCountingDown, wod, currentRound, workoutState]);
 
 
   const handleStartPause = () => {
@@ -239,9 +239,11 @@ export function TimerClient({ wod }: { wod: WOD }) {
     if (isActive) {
         setIsActive(false);
     } else {
-        if (!isCountingDown && time === getInitialTime()) {
+        // If timer has never started, begin countdown
+        if (time === getInitialTime() && !isCountingDown) {
             setIsCountingDown(true);
         } else {
+            // Otherwise, just resume
             playStartSound();
             setIsActive(true);
         }
@@ -262,10 +264,10 @@ export function TimerClient({ wod }: { wod: WOD }) {
             return (time / totalDuration) * 100;
         case 'EMOM':
             if (!wod.emomInterval) return 0;
-            return ((time +1) / wod.emomInterval) * 100;
+            return (time / wod.emomInterval) * 100;
         case 'Tabata':
             const period = workoutState === 'work' ? 20 : 10;
-            return ((time +1) / period) * 100;
+            return (time / period) * 100;
         default:
             return 100;
     }
@@ -309,7 +311,8 @@ export function TimerClient({ wod }: { wod: WOD }) {
                 strokeLinecap="round"
                 transform="rotate(-90 150 150)"
                 className={cn(
-                    "stroke-primary transition-all duration-1000 ease-linear",
+                    "stroke-primary transition-all duration-1000",
+                     isCountDownTimer || wod.type === 'EMOM' || wod.type === 'Tabata' ? 'ease-linear' : '',
                     {"animate-pulse": isActive && (isCountDownTimer || wod.type === 'EMOM' || wod.type === 'Tabata')}
                 )}
                 fill="transparent"
@@ -329,9 +332,9 @@ export function TimerClient({ wod }: { wod: WOD }) {
                         <p className="text-xl font-semibold text-muted-foreground">
                             Round {currentRound} / {wod.rounds || 8}
                         </p>
-                         {wod.type === 'EMOM' && totalDuration > 0 && (
+                         {wod.type === 'EMOM' && totalDuration > 0 && wod.emomInterval && (
                             <p className="text-sm text-muted-foreground/80">
-                                Total: {formatTime((currentRound - 1) * (wod.emomInterval || 0) + ((wod.emomInterval || 0) - (time +1 )))}
+                                Total: {formatTime((currentRound - 1) * wod.emomInterval + (wod.emomInterval - time))}
                             </p>
                         )}
                     </div>

@@ -126,7 +126,12 @@ export const playStartSound = () => {
   playTone(660, 0.5, 'sine'); 
 };
 
-// A short, high-pitched beep for the final seconds of an interval.
-export const playFinalTicksSound = () => {
-    playTone(1200, 0.1, 'square', 0.2); // Higher pitch, square wave for urgency
+// NEW: A longer, single beep for the 10-second warning.
+export const playTenSecondWarning = () => {
+    playTone(900, 0.4, 'sine', 0.4); 
+};
+
+// NEW: A short, high-pitched beep for the final 3-2-1.
+export const playThreeSecondWarning = () => {
+    playTone(1200, 0.15, 'square', 0.25);
 };
