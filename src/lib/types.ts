@@ -27,4 +27,5 @@ export type WOD = {
     poop: number;
   };
   commentCount?: number; // For community WODs
+  emomInterval?: number; // Custom: Interval length in seconds for EMOM
 };
