@@ -113,7 +113,6 @@ export function TimerClient({ wod }: { wod: WOD }) {
 
   // EMOM/Tabata specific state
   const [currentRound, setCurrentRound] = useState(1);
-  const [currentIntervalTime, setCurrentIntervalTime] = useState(0);
   const [workoutState, setWorkoutState] = useState<'work' | 'rest' | 'active'>('active');
 
   const totalDuration = wod.duration ? wod.duration * 60 : 0;
@@ -144,7 +143,6 @@ export function TimerClient({ wod }: { wod: WOD }) {
   useEffect(() => {
     let interval: NodeJS.Timeout | null = null;
 
-    // --- Countdown logic (runs once) ---
     if (isCountingDown) {
       if (countdown > 0) playCountdownTick(); else playCountdownEnd();
       
@@ -153,17 +151,18 @@ export function TimerClient({ wod }: { wod: WOD }) {
           if (prev <= 1) {
             setIsCountingDown(false);
             setIsActive(true);
+            playStartSound(); // Play start sound once countdown finishes
             return 0;
           }
-          return prev - 1;
+          const nextCountdown = prev - 1;
+          if (nextCountdown > 0) playCountdownTick(); else playCountdownEnd();
+          return nextCountdown;
         });
       }, 1000);
     } 
-    // --- Main Timer Logic ---
     else if (isActive && !isFinished) {
       interval = setInterval(() => {
         
-        // --- EMOM Logic ---
         if (wod.type === 'EMOM') {
             setTime(prevTime => {
                 if (prevTime <= 1) { // End of interval
@@ -178,8 +177,6 @@ export function TimerClient({ wod }: { wod: WOD }) {
                 return prevTime - 1;
             });
         }
-
-        // --- AMRAP Logic ---
         else if (isCountDownTimer) {
              setTime(prevTime => {
                 if (prevTime <= 1) {
@@ -189,8 +186,6 @@ export function TimerClient({ wod }: { wod: WOD }) {
                 return prevTime - 1;
             });
         } 
-        
-        // --- For Time Logic ---
         else {
             setTime(prevTime => prevTime + 1);
         }
@@ -199,7 +194,7 @@ export function TimerClient({ wod }: { wod: WOD }) {
     return () => {
       if (interval) clearInterval(interval);
     };
-  }, [isActive, isFinished, isCountDownTimer, isCountingDown, countdown, wod, currentRound, totalDuration]);
+  }, [isActive, isFinished, isCountDownTimer, isCountingDown, wod, currentRound, totalDuration]);
 
 
   const handleStartPause = () => {
@@ -208,8 +203,7 @@ export function TimerClient({ wod }: { wod: WOD }) {
     if (isActive) {
         setIsActive(false);
     } else {
-        // If it's the very beginning of a timer that needs a countdown
-        if ((isCountDownTimer || wod.type === 'EMOM' || wod.type === 'Tabata') && time === getInitialTime()) {
+        if (!isCountingDown && time === getInitialTime()) {
             setIsCountingDown(true);
         } else {
             playStartSound();
@@ -228,9 +222,11 @@ export function TimerClient({ wod }: { wod: WOD }) {
   const getProgress = () => {
     switch(wod.type) {
         case 'AMRAP':
+            if (totalDuration === 0) return 0;
             return (time / totalDuration) * 100;
         case 'EMOM':
-            return (time / (wod.emomInterval || 1)) * 100;
+            if (!wod.emomInterval) return 0;
+            return (time / wod.emomInterval) * 100;
         default:
             return 100;
     }
@@ -251,9 +247,7 @@ export function TimerClient({ wod }: { wod: WOD }) {
         )
     }
 
-    const mainTimeDisplay = wod.type === 'EMOM' 
-        ? formatTime(time) 
-        : formatTime(isCountDownTimer ? time : time);
+    const mainTimeDisplay = formatTime(time);
     
     return (
         <div className="relative h-80 w-80 md:h-96 md:w-96">
@@ -291,9 +285,11 @@ export function TimerClient({ wod }: { wod: WOD }) {
                         <p className="text-xl font-semibold text-muted-foreground">
                             Round {currentRound} / {wod.rounds}
                         </p>
-                        <p className="text-sm text-muted-foreground/80">
-                            Total: {formatTime((currentRound - 1) * (wod.emomInterval || 0) + ((wod.emomInterval || 0) - time))}
-                        </p>
+                         {totalDuration > 0 && (
+                            <p className="text-sm text-muted-foreground/80">
+                                Total: {formatTime((currentRound - 1) * (wod.emomInterval || 0) + ((wod.emomInterval || 0) - time))}
+                            </p>
+                        )}
                     </div>
                  )}
             </div>
@@ -355,3 +351,5 @@ export function TimerClient({ wod }: { wod: WOD }) {
     </div>
   );
 }
+
+    
