@@ -29,7 +29,8 @@ service cloud.firestore {
 
     // COMMUNITY WODs
     match /communityWods/{wodId} {
-      allow read: if isSignedIn();
+      // Allow read if user is signed in OR if it's a system-generated Hero WOD
+      allow read: if isSignedIn() || resource.data.userId == 'system';
       allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
       allow delete: if isSignedIn() && resource.data.userId == request.auth.uid;
       allow update: if isSignedIn() && resource.data.userId == request.auth.uid;
