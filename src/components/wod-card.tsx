@@ -24,7 +24,9 @@ import { cn } from "@/lib/utils";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "./ui/dropdown-menu";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "./ui/alert-dialog";
 import { useRouter } from "next/navigation";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "./ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from "./ui/dialog";
+import { WodContentParser } from "./wod-content-parser";
+import { Separator } from "./ui/separator";
 
 function WodIcon({ type }: { type: WOD["type"] }) {
   switch (type) {
@@ -92,7 +94,7 @@ function PersonalWodActions({ wod }: { wod: WOD }) {
                 });
                 toast({ title: "WOD Shared!", description: "Your WOD is now visible to the community." });
             }
-            setIsDropdownOpen(false); // Close dropdown only on success
+             setIsDropdownOpen(false); // Close dropdown only on success
         } catch (error) {
             console.error("Error toggling share status:", error);
             toast({ variant: "destructive", title: "Action Failed", description: "Could not update the share status." });
@@ -322,9 +324,9 @@ export function WodCard({ wod, source = 'personal' }: { wod: WOD, source?: 'pers
     const formattedDate = wod.date ? format(new Date(wod.date), "PPP") : "No date";
     const href = source === 'community' ? `/community-timer/${wod.id}` : `/timer/${wod.id}`;
     
-    const flatDescription = Array.isArray(wod.description)
-      ? wod.description.map(section => section.content).join("\n")
-      : wod.description;
+    const descriptionSections = Array.isArray(wod.description)
+        ? wod.description
+        : [{ title: "Workout", content: wod.description || "" }];
 
   return (
     <Card className="flex flex-col overflow-hidden transition-all duration-300 ease-in-out hover:shadow-2xl hover:shadow-primary/20 hover:-translate-y-1 group relative">
@@ -389,9 +391,31 @@ export function WodCard({ wod, source = 'personal' }: { wod: WOD, source?: 'pers
         </div>
       </CardHeader>
       <CardContent className="flex-grow py-2">
-        <p className="line-clamp-3 text-sm text-muted-foreground whitespace-pre-wrap">
-          {flatDescription}
-        </p>
+         <Dialog>
+             <DialogTrigger asChild>
+                <p className="line-clamp-3 text-sm text-muted-foreground whitespace-pre-wrap cursor-pointer hover:text-foreground transition-colors">
+                    {descriptionSections.map(s => s.content).join("\n")}
+                </p>
+             </DialogTrigger>
+             <DialogContent className="max-w-2xl">
+                 <DialogHeader>
+                    <DialogTitle className="font-headline text-primary text-2xl">{wod.name}</DialogTitle>
+                     <DialogDescription>
+                        {wod.type} - {formattedDate}
+                        {wod.userDisplayName && <span className="block mt-1">Shared by {wod.userDisplayName}</span>}
+                    </DialogDescription>
+                 </DialogHeader>
+                 <div className="py-4 space-y-6 max-h-[70vh] overflow-y-auto pr-4">
+                    {descriptionSections.map((section, index) => (
+                        <div key={index}>
+                            <h4 className="font-headline text-lg text-foreground mb-2">{section.title}</h4>
+                            <WodContentParser content={section.content} />
+                            {index < descriptionSections.length - 1 && <Separator className="mt-6" />}
+                        </div>
+                    ))}
+                 </div>
+             </DialogContent>
+         </Dialog>
       </CardContent>
       <CardFooter className="flex flex-col items-stretch gap-2 pt-2">
          {source === 'community' && <ReactionButton initialWod={wod} />}
