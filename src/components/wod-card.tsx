@@ -92,12 +92,12 @@ function PersonalWodActions({ wod }: { wod: WOD }) {
                 });
                 toast({ title: "WOD Shared!", description: "Your WOD is now visible to the community." });
             }
+            setIsDropdownOpen(false); // Close dropdown on success
         } catch (error) {
             console.error("Error toggling share status:", error);
             toast({ variant: "destructive", title: "Action Failed", description: "Could not update the share status." });
         } finally {
             setIsSharing(false);
-            setIsDropdownOpen(false);
         }
     };
     
@@ -131,6 +131,7 @@ function PersonalWodActions({ wod }: { wod: WOD }) {
     };
     
     const handleEdit = () => {
+        setIsDropdownOpen(false);
         router.push(`/wod/${wod.id}/edit`);
     };
 
