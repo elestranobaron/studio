@@ -72,6 +72,7 @@ function PersonalWodActions({ wod }: { wod: WOD }) {
                 await batch.commit();
                 
                 toast({ title: "WOD Unshared", description: "Your WOD has been removed from the community." });
+                setIsDropdownOpen(false);
             } else {
                 // --- Share ---
                 const userDisplayName = user.email?.split('@')[0] || 'Anonymous';
@@ -91,8 +92,8 @@ function PersonalWodActions({ wod }: { wod: WOD }) {
                     communityWodId: newCommunityDocRef.id
                 });
                 toast({ title: "WOD Shared!", description: "Your WOD is now visible to the community." });
+                setIsDropdownOpen(false);
             }
-            setIsDropdownOpen(false); // Close dropdown on success
         } catch (error) {
             console.error("Error toggling share status:", error);
             toast({ variant: "destructive", title: "Action Failed", description: "Could not update the share status." });
