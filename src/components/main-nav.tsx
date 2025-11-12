@@ -9,6 +9,7 @@ import {
   Timer,
   Settings,
   Gem,
+  Medal,
 } from "lucide-react";
 import {
   SidebarMenu,
@@ -21,6 +22,7 @@ const links = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutGrid },
   { href: "/scan", label: "Scan WOD", icon: ScanLine },
   { href: "/timers", label: "Timers", icon: Timer },
+  { href: "/hero-wods", label: "Hero WODs", icon: Medal },
 ];
 
 const secondaryLinks = [

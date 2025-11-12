@@ -55,26 +55,17 @@ export function WelcomeEmptyState() {
             </Tooltip>
         </TooltipProvider>
 
-        <TooltipProvider>
-            <Tooltip>
-                <TooltipTrigger asChild>
-                    <div className='w-full'>
-                        <Button
-                            size="lg"
-                            variant="outline"
-                            className="w-full h-14 text-base font-bold border-2 border-yellow-400 text-yellow-400 hover:bg-yellow-400 hover:text-white transition-transform hover:-translate-y-0.5"
-                            disabled
-                        >
-                            <Medal className="mr-3 h-6 w-6" />
-                            Try a Hero WOD
-                        </Button>
-                    </div>
-                </TooltipTrigger>
-                <TooltipContent>
-                    <p>Coming soon!</p>
-                </TooltipContent>
-            </Tooltip>
-        </TooltipProvider>
+        <Button
+            asChild
+            size="lg"
+            variant="outline"
+            className="w-full h-14 text-base font-bold border-2 border-yellow-400 text-yellow-400 hover:bg-yellow-400 hover:text-white transition-transform hover:-translate-y-0.5"
+        >
+            <Link href="/hero-wods">
+                <Medal className="mr-3 h-6 w-6" />
+                Try a Hero WOD
+            </Link>
+        </Button>
 
       </div>
 
