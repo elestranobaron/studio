@@ -119,7 +119,7 @@ export function TimerClient({ wod }: { wod: WOD }) {
   const isCountDownTimer = wod.type === "AMRAP";
 
   const getInitialTime = useCallback(() => {
-    if (wod.type === 'EMOM' && wod.emomInterval) return wod.emomInterval;
+    if (wod.type === 'EMOM' && wod.emomInterval) return wod.emomInterval -1;
     if (wod.type === 'AMRAP' && wod.duration) return wod.duration * 60;
     if (wod.type === 'Tabata') return 20; // Tabata starts with 20s of work
     return 0;
@@ -165,7 +165,7 @@ export function TimerClient({ wod }: { wod: WOD }) {
       interval = setInterval(() => {
         
         // --- Sound alerts for final seconds ---
-        if (wod.type === 'EMOM' || wod.type === 'Tabata') {
+        if (wod.type === 'EMOM' || wod.type === 'Tabata' || wod.type === 'AMRAP') {
             if (time === 3 || time === 2 || time === 1) {
                 playFinalTicksSound();
             }
@@ -195,7 +195,7 @@ export function TimerClient({ wod }: { wod: WOD }) {
                         // Switch to REST
                         setWorkoutState('rest');
                         playFinishSound(); // Or a softer sound for rest
-                        return 10 - 1; // 10s rest
+                        return 10 -1;
                     } else { // workoutState === 'rest'
                         const nextRound = currentRound + 1;
                         if (nextRound > (wod.rounds || 8)) {
@@ -262,10 +262,10 @@ export function TimerClient({ wod }: { wod: WOD }) {
             return (time / totalDuration) * 100;
         case 'EMOM':
             if (!wod.emomInterval) return 0;
-            return (time / wod.emomInterval) * 100;
+            return ((time +1) / wod.emomInterval) * 100;
         case 'Tabata':
             const period = workoutState === 'work' ? 20 : 10;
-            return (time / period) * 100;
+            return ((time +1) / period) * 100;
         default:
             return 100;
     }
@@ -331,7 +331,7 @@ export function TimerClient({ wod }: { wod: WOD }) {
                         </p>
                          {wod.type === 'EMOM' && totalDuration > 0 && (
                             <p className="text-sm text-muted-foreground/80">
-                                Total: {formatTime((currentRound - 1) * (wod.emomInterval || 0) + ((wod.emomInterval || 0) - time))}
+                                Total: {formatTime((currentRound - 1) * (wod.emomInterval || 0) + ((wod.emomInterval || 0) - (time +1 )))}
                             </p>
                         )}
                     </div>
