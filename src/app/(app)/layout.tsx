@@ -16,41 +16,15 @@ import { UserNav } from "@/components/user-nav";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { useRef, useEffect, useState } from "react";
-import { ScrollProvider } from "@/hooks/use-scroll-context";
 
 function AppLayoutContent({ children }: { children: React.ReactNode }) {
     const { openMobile, setOpenMobile } = useSidebar();
     const isMobile = useIsMobile();
-    const scrollRef = useRef<HTMLDivElement | null>(null);
-    const [showScrollTop, setShowScrollTop] = useState(false);
-
-    useEffect(() => {
-        const scrollEl = scrollRef.current;
-        console.log('[DEBUG] Layout useEffect running. scrollEl:', scrollEl);
-
-        if (!scrollEl) return;
-
-        console.log('[DEBUG] Attaching scroll listener to:', scrollEl);
-        const handleScroll = () => {
-            const { scrollTop } = scrollEl;
-            console.log(`[DEBUG] Scroll event fired. scrollTop: ${scrollTop}`);
-            setShowScrollTop(scrollTop > 200);
-        };
-
-        scrollEl.addEventListener('scroll', handleScroll, { passive: true });
-        
-        return () => {
-            console.log('[DEBUG] Removing scroll listener from:', scrollEl);
-            scrollEl.removeEventListener('scroll', handleScroll);
-        };
-    }, []);
-
 
     const handleClose = () => setOpenMobile(false);
 
     return (
-        <ScrollProvider scrollContainerRef={scrollRef} showScrollTop={showScrollTop}>
+        <>
             <Sidebar className="flex flex-col">
                  <div className="absolute inset-0 w-full z-0 brightness-50 flex items-center justify-center overflow-hidden">
                     <div className="w-full h-full flex items-center justify-center">
@@ -93,8 +67,8 @@ function AppLayoutContent({ children }: { children: React.ReactNode }) {
                     </SidebarFooter>
                 </div>
             </Sidebar>
-            <SidebarInset ref={scrollRef}>{children}</SidebarInset>
-        </ScrollProvider>
+            <SidebarInset>{children}</SidebarInset>
+        </>
     );
 }
 

@@ -11,7 +11,7 @@ import { collection, query, orderBy, limit } from 'firebase/firestore';
 import { Skeleton } from '@/components/ui/skeleton';
 import type { WOD } from '@/lib/types';
 import { useUser } from '@/firebase/provider';
-import { useMemo, useState, Suspense, useRef } from 'react';
+import { useMemo, useState, Suspense, useRef, useEffect } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -21,7 +21,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
 import { AnimatePresence, motion } from 'framer-motion';
-import { useScrollContext } from '@/hooks/use-scroll-context';
 
 
 function WodSkeleton() {
@@ -236,12 +235,36 @@ function DashboardContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const defaultTab = searchParams.get('tab') === 'community' ? 'community' : 'personal';
+  const mainContentRef = useRef<HTMLDivElement>(null);
+  const [showScrollTop, setShowScrollTop] = useState(false);
 
-  // Consume scroll state from the context
-  const { showScrollTop, scrollContainerRef } = useScrollContext();
+  useEffect(() => {
+    const mainEl = mainContentRef.current;
+    console.log('[DEBUG] useEffect running. mainEl:', mainEl);
+
+    const handleScroll = () => {
+      if (mainEl) {
+        const { scrollTop } = mainEl;
+        console.log(`[DEBUG] Scroll event fired. scrollTop: ${scrollTop}`);
+        setShowScrollTop(scrollTop > 200);
+      }
+    };
+
+    if (mainEl) {
+      console.log('[DEBUG] Attaching scroll listener to:', mainEl);
+      mainEl.addEventListener('scroll', handleScroll, { passive: true });
+    }
+
+    return () => {
+      if (mainEl) {
+        console.log('[DEBUG] Removing scroll listener from:', mainEl);
+        mainEl.removeEventListener('scroll', handleScroll);
+      }
+    };
+  }, []); // Empty dependency array ensures this runs only once on mount and cleanup
 
   const scrollToTop = () => {
-    scrollContainerRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
+    mainContentRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const goToScanPage = () => {
@@ -273,7 +296,7 @@ function DashboardContent() {
           </Link>
         </Button>
       </header>
-      <main className="flex-1 overflow-y-auto" id="dashboard-main-content">
+      <main ref={mainContentRef} className="flex-1 overflow-y-auto" id="dashboard-main-content">
         <Tabs defaultValue={defaultTab} className="w-full">
           <div className="p-4 md:p-6 border-b">
             <TabsList className="grid w-full grid-cols-2 md:w-auto">
@@ -298,40 +321,23 @@ function DashboardContent() {
       </main>
       
       <div className="md:hidden fixed bottom-6 right-6 z-50">
-        <AnimatePresence mode="wait">
-          {showScrollTop ? (
-            <motion.div
-              key="scroll-top"
-              initial={{ opacity: 0, scale: 0.5 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.5 }}
+        <AnimatePresence>
+          <motion.div
+            key={showScrollTop ? 'scroll' : 'scan'}
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.8 }}
+            transition={{ duration: 0.2 }}
+          >
+            <Button
+              onClick={showScrollTop ? scrollToTop : goToScanPage}
+              size="icon"
+              className="h-16 w-16 rounded-full shadow-2xl shadow-primary/40 animate-pulse-glow"
+              aria-label={showScrollTop ? 'Scroll to top' : 'Scan New WOD'}
             >
-              <Button
-                onClick={scrollToTop}
-                size="icon"
-                className="h-16 w-16 rounded-full shadow-2xl bg-secondary text-secondary-foreground"
-                aria-label="Scroll to top"
-              >
-                <ArrowUp className="h-8 w-8" />
-              </Button>
-            </motion.div>
-          ) : (
-            <motion.div
-              key="scan"
-              initial={{ opacity: 0, scale: 0.5 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.5 }}
-            >
-              <Button
-                onClick={goToScanPage}
-                size="icon"
-                className="h-16 w-16 rounded-full shadow-2xl shadow-primary/40"
-                aria-label="Scan New WOD"
-              >
-                <ScanLine className="h-8 w-8" />
-              </Button>
-            </motion.div>
-          )}
+              {showScrollTop ? <ArrowUp className="h-8 w-8" /> : <ScanLine className="h-8 w-8" />}
+            </Button>
+          </motion.div>
         </AnimatePresence>
       </div>
     </div>
