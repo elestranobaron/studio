@@ -221,8 +221,8 @@ function CommunityWodList() {
             <WodList
                 wods={filteredWods}
                 isLoading={isCommunityWodsLoading}
-                emptyStateTitle={searchTerm ? "No WODs match your search." : "No community WODs yet."}
-                emptyStateDescription={searchTerm ? "Try a different search term." : "Be the first to share one!"}
+                emptyStateTitle={searchTerm ? "No WODs match your search." : "Be the first to share one!"}
+                emptyStateDescription={searchTerm ? "Try a different search term." : ""}
                 source="community"
             />
         </div>
@@ -252,7 +252,7 @@ function DashboardContent() {
 
     mainEl.addEventListener('scroll', handleScroll, { passive: true });
     return () => mainEl.removeEventListener('scroll', handleScroll);
-  }, [mainContentRef.current]);
+  }, []);
 
   const handleFabClick = () => {
     if (showScrollTop) {
@@ -312,16 +312,14 @@ function DashboardContent() {
       </main>
       
       <div className="md:hidden fixed bottom-6 right-6 z-50">
-          <motion.div
+          <Button
               onClick={handleFabClick}
+              size="icon"
               className={cn(
-                  "h-16 w-16 rounded-full shadow-2xl transition-colors duration-300 flex items-center justify-center",
+                  "h-16 w-16 rounded-full shadow-2xl transition-colors duration-300",
                   showScrollTop ? "bg-secondary hover:bg-secondary/80" : "bg-primary hover:bg-primary/90 shadow-primary/40"
               )}
-              initial={{ scale: 0, opacity: 0, y: 20 }}
-              animate={{ scale: 1, opacity: 1, y: 0 }}
-              exit={{ scale: 0, opacity: 0, y: 20 }}
-              transition={{ duration: 0.2 }}
+              aria-label={showScrollTop ? 'Scroll to top' : 'Scan New WOD'}
           >
               <AnimatePresence mode="wait" initial={false}>
                   <motion.div
@@ -334,8 +332,7 @@ function DashboardContent() {
                       {showScrollTop ? <ArrowUp className="h-8 w-8 text-secondary-foreground" /> : <ScanLine className="h-8 w-8 text-primary-foreground" />}
                   </motion.div>
               </AnimatePresence>
-              <span className="sr-only">{showScrollTop ? 'Scroll to top' : 'Scan New WOD'}</span>
-          </motion.div>
+          </Button>
       </div>
     </div>
   );
@@ -353,5 +350,7 @@ export default function DashboardPage() {
     
 
 
+
+    
 
     
