@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import Link from 'next/link';
@@ -240,26 +241,25 @@ function DashboardContent() {
   useEffect(() => {
     const mainEl = mainContentRef.current;
     console.log('[DEBUG] useEffect running. mainEl:', mainEl);
-
+    
     if (mainEl) {
-      const handleScroll = () => {
-        const { scrollTop } = mainEl;
-        console.log('[DEBUG] Scroll event fired. scrollTop:', scrollTop);
-        setShowScrollTop(scrollTop > 200);
-      };
-
-      console.log('[DEBUG] Attaching scroll listener to:', mainEl);
-      mainEl.addEventListener('scroll', handleScroll, { passive: true });
-
-      // Return cleanup function
-      return () => {
-        if (mainEl) {
-          console.log('[DEBUG] Removing scroll listener from:', mainEl);
-          mainEl.removeEventListener('scroll', handleScroll);
-        }
-      };
+        const handleScroll = () => {
+            const { scrollTop } = mainEl;
+            console.log('[DEBUG] Scroll event fired. scrollTop:', scrollTop);
+            setShowScrollTop(scrollTop > 200);
+        };
+        
+        console.log('[DEBUG] Attaching scroll listener to:', mainEl);
+        mainEl.addEventListener('scroll', handleScroll, { passive: true });
+        
+        return () => {
+            if (mainEl) {
+                console.log('[DEBUG] Removing scroll listener from:', mainEl);
+                mainEl.removeEventListener('scroll', handleScroll);
+            }
+        };
     }
-  }, []);
+}, [mainContentRef]);
 
 
   const scrollToTop = () => {
