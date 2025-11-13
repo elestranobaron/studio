@@ -241,17 +241,17 @@ function DashboardContent() {
   useEffect(() => {
     const mainEl = mainContentRef.current;
     console.log('[DEBUG] useEffect running. mainEl:', mainEl);
-    
+
     if (mainEl) {
         const handleScroll = () => {
             const { scrollTop } = mainEl;
             console.log('[DEBUG] Scroll event fired. scrollTop:', scrollTop);
             setShowScrollTop(scrollTop > 200);
         };
-        
+
         console.log('[DEBUG] Attaching scroll listener to:', mainEl);
         mainEl.addEventListener('scroll', handleScroll, { passive: true });
-        
+
         return () => {
             if (mainEl) {
                 console.log('[DEBUG] Removing scroll listener from:', mainEl);
@@ -259,7 +259,7 @@ function DashboardContent() {
             }
         };
     }
-}, [mainContentRef]);
+  }, []);
 
 
   const scrollToTop = () => {
@@ -298,7 +298,7 @@ function DashboardContent() {
           </Link>
         </Button>
       </header>
-      <div className="flex-grow flex flex-col min-h-0">
+      <div className="flex-1 flex flex-col min-h-0">
         <main ref={mainContentRef} className="flex-1 overflow-y-auto" id="dashboard-main-content">
           <Tabs defaultValue={defaultTab} className="w-full">
             <div className="p-4 md:p-6 border-b">
@@ -326,22 +326,41 @@ function DashboardContent() {
       
       <div className="md:hidden fixed bottom-6 right-6 z-50">
         <AnimatePresence>
-          <motion.div
-            key={showScrollTop ? 'scroll' : 'scan'}
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.8 }}
-            transition={{ duration: 0.2 }}
-          >
-            <Button
-              onClick={showScrollTop ? scrollToTop : goToScanPage}
-              size="icon"
-              className={cn("h-16 w-16 rounded-full shadow-2xl shadow-primary/40", !showScrollTop && "animate-pulse-glow")}
-              aria-label={showScrollTop ? 'Scroll to top' : 'Scan New WOD'}
+          {showScrollTop ? (
+            <motion.div
+              key="scroll"
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.8 }}
+              transition={{ duration: 0.2 }}
             >
-              {showScrollTop ? <ArrowUp className="h-8 w-8" /> : <ScanLine className="h-8 w-8" />}
-            </Button>
-          </motion.div>
+              <Button
+                onClick={scrollToTop}
+                size="icon"
+                className="h-16 w-16 rounded-full shadow-2xl shadow-primary/40"
+                aria-label="Scroll to top"
+              >
+                <ArrowUp className="h-8 w-8" />
+              </Button>
+            </motion.div>
+          ) : (
+            <motion.div
+              key="scan"
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.8 }}
+              transition={{ duration: 0.2 }}
+            >
+              <Button
+                onClick={goToScanPage}
+                size="icon"
+                className="h-16 w-16 rounded-full shadow-2xl shadow-primary/40 animate-pulse-glow"
+                aria-label="Scan New WOD"
+              >
+                <ScanLine className="h-8 w-8" />
+              </Button>
+            </motion.div>
+          )}
         </AnimatePresence>
       </div>
     </div>
@@ -360,3 +379,4 @@ export default function DashboardPage() {
     
 
     
+
