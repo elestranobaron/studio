@@ -240,33 +240,24 @@ function DashboardContent() {
 
   useEffect(() => {
     const mainEl = mainContentRef.current;
-    console.log('[DEBUG] useEffect running. mainEl:', mainEl);
-
     if (!mainEl) {
-      console.log('[DEBUG] mainEl is null, returning.');
       return;
     }
 
     const handleScroll = () => {
-      console.log('[DEBUG] Scroll event fired! scrollTop:', mainEl.scrollTop);
       if (mainEl.scrollTop > 200) {
         setShowScrollTop(true);
-        console.log('[DEBUG] showScrollTop set to TRUE');
       } else {
         setShowScrollTop(false);
-        console.log('[DEBUG] showScrollTop set to FALSE');
       }
     };
     
-    console.log('[DEBUG] Attaching scroll listener to:', mainEl);
     mainEl.addEventListener('scroll', handleScroll, { passive: true });
     
-    // Cleanup
     return () => {
-      console.log('[DEBUG] Removing scroll listener from:', mainEl);
       mainEl.removeEventListener('scroll', handleScroll);
     };
-  }, [mainContentRef.current]); // DEPENDENCY ADDED
+  }, []);
 
   const handleFabClick = () => {
     if (showScrollTop) {
