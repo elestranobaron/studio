@@ -240,19 +240,33 @@ function DashboardContent() {
 
   useEffect(() => {
     const mainEl = mainContentRef.current;
-    if (!mainEl) return;
+    console.log('[DEBUG] useEffect running. mainEl:', mainEl);
+
+    if (!mainEl) {
+      console.log('[DEBUG] mainEl is null, returning.');
+      return;
+    }
 
     const handleScroll = () => {
+      console.log('[DEBUG] Scroll event fired! scrollTop:', mainEl.scrollTop);
       if (mainEl.scrollTop > 200) {
         setShowScrollTop(true);
+        console.log('[DEBUG] showScrollTop set to TRUE');
       } else {
         setShowScrollTop(false);
+        console.log('[DEBUG] showScrollTop set to FALSE');
       }
     };
-
+    
+    console.log('[DEBUG] Attaching scroll listener to:', mainEl);
     mainEl.addEventListener('scroll', handleScroll, { passive: true });
-    return () => mainEl.removeEventListener('scroll', handleScroll);
-  }, []);
+    
+    // Cleanup
+    return () => {
+      console.log('[DEBUG] Removing scroll listener from:', mainEl);
+      mainEl.removeEventListener('scroll', handleScroll);
+    };
+  }, [mainContentRef.current]); // DEPENDENCY ADDED
 
   const handleFabClick = () => {
     if (showScrollTop) {
@@ -312,27 +326,27 @@ function DashboardContent() {
       </main>
       
       <div className="md:hidden fixed bottom-6 right-6 z-50">
-          <Button
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={showScrollTop ? 'arrow' : 'scan'}
+            initial={{ opacity: 0, scale: 0.5, rotate: -45 }}
+            animate={{ opacity: 1, scale: 1, rotate: 0 }}
+            exit={{ opacity: 0, scale: 0.5, rotate: 45 }}
+            transition={{ duration: 0.2 }}
+          >
+            <Button
               onClick={handleFabClick}
               size="icon"
               className={cn(
-                  "h-16 w-16 rounded-full shadow-2xl transition-colors duration-300",
-                  showScrollTop ? "bg-secondary hover:bg-secondary/80" : "bg-primary hover:bg-primary/90 shadow-primary/40"
+                "h-16 w-16 rounded-full shadow-2xl",
+                showScrollTop ? "bg-secondary text-secondary-foreground" : "bg-primary text-primary-foreground shadow-primary/40"
               )}
               aria-label={showScrollTop ? 'Scroll to top' : 'Scan New WOD'}
-          >
-              <AnimatePresence mode="wait" initial={false}>
-                  <motion.div
-                      key={showScrollTop ? 'arrow' : 'scan'}
-                      initial={{ opacity: 0, scale: 0.5, rotate: -90 }}
-                      animate={{ opacity: 1, scale: 1, rotate: 0 }}
-                      exit={{ opacity: 0, scale: 0.5, rotate: 90 }}
-                      transition={{ duration: 0.2 }}
-                  >
-                      {showScrollTop ? <ArrowUp className="h-8 w-8 text-secondary-foreground" /> : <ScanLine className="h-8 w-8 text-primary-foreground" />}
-                  </motion.div>
-              </AnimatePresence>
-          </Button>
+            >
+              {showScrollTop ? <ArrowUp className="h-8 w-8" /> : <ScanLine className="h-8 w-8" />}
+            </Button>
+          </motion.div>
+        </AnimatePresence>
       </div>
     </div>
   );
@@ -354,3 +368,5 @@ export default function DashboardPage() {
     
 
     
+
+  
