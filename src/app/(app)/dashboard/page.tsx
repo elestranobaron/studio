@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import Link from 'next/link';
@@ -244,7 +243,6 @@ function DashboardContent() {
 
     if (mainEl) {
         const handleScroll = () => {
-            // Use the ref directly inside the handler to get the current value
             if (mainContentRef.current) {
                 const { scrollTop } = mainContentRef.current;
                 console.log('[DEBUG] Scroll event fired. scrollTop:', scrollTop);
@@ -262,7 +260,7 @@ function DashboardContent() {
             }
         };
     }
-  }, []); // Empty dependency array is correct here.
+  }, []);
 
 
   const scrollToTop = () => {
@@ -382,5 +380,6 @@ export default function DashboardPage() {
     
 
     
+
 
 
