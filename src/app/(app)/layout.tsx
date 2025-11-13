@@ -27,15 +27,23 @@ function AppLayoutContent({ children }: { children: React.ReactNode }) {
 
     useEffect(() => {
         const scrollEl = scrollRef.current;
+        console.log('[DEBUG] Layout useEffect running. scrollEl:', scrollEl);
+
         if (!scrollEl) return;
 
+        console.log('[DEBUG] Attaching scroll listener to:', scrollEl);
         const handleScroll = () => {
             const { scrollTop } = scrollEl;
+            console.log(`[DEBUG] Scroll event fired. scrollTop: ${scrollTop}`);
             setShowScrollTop(scrollTop > 200);
         };
 
         scrollEl.addEventListener('scroll', handleScroll, { passive: true });
-        return () => scrollEl.removeEventListener('scroll', handleScroll);
+        
+        return () => {
+            console.log('[DEBUG] Removing scroll listener from:', scrollEl);
+            scrollEl.removeEventListener('scroll', handleScroll);
+        };
     }, []);
 
 
