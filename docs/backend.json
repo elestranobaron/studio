@@ -95,10 +95,46 @@
             "type": "array",
             "description": "An array of WOD IDs that the user has favorited.",
             "items": { "type": "string" }
+          },
+          "wodGenerationCount": {
+            "type": "number",
+            "description": "The number of WODs generated today.",
+            "default": 0
+          },
+          "wodGenerationReset": {
+            "type": "string",
+            "format": "date-time",
+            "description": "The timestamp when the wodGenerationCount will reset."
           }
         },
         "required": ["uid", "email"]
-      }
+      },
+      "Message": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Message",
+      "type": "object",
+      "description": "Represents a single chat message in a community WOD chat.",
+      "properties": {
+        "text": {
+          "type": "string",
+          "description": "The content of the chat message."
+        },
+        "userId": {
+          "type": "string",
+          "description": "The UID of the user who sent the message."
+        },
+        "userDisplayName": {
+          "type": "string",
+          "description": "The display name of the user who sent the message."
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time",
+          "description": "The server timestamp when the message was created."
+        }
+      },
+      "required": ["text", "userId", "userDisplayName", "timestamp"]
+    }
   },
   "auth": {
     "providers": [
@@ -126,6 +162,16 @@
             "$ref": "#/backend/entities/Wod"
           },
           "description": "Stores WODs created by a specific user. Access is restricted to the owner (user identified by userId)."
+        }
+      },
+       {
+        "path": "/communityWods/{wodId}/messages/{messageId}",
+        "definition": {
+          "entityName": "Message",
+          "schema": {
+            "$ref": "#/backend/entities/Message"
+          },
+          "description": "Stores chat messages for a specific community WOD. Messages are publicly readable."
         }
       }
     ]

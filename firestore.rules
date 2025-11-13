@@ -42,6 +42,13 @@ service cloud.firestore {
                        && (getUserData().premium == true || getUserData().dailyReactions < 5);
         allow delete: if isSignedIn() && isOwner(reactorId);
       }
+
+       match /messages/{messageId} {
+          allow read: if isSignedIn();
+          allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
+          // Deletion should be handled by a server-side function to enforce the 300 message limit
+          allow update, delete: if false; 
+      }
     }
   }
 }
