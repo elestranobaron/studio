@@ -253,8 +253,10 @@ function DashboardContent() {
 
       // Return cleanup function
       return () => {
-        console.log('[DEBUG] Removing scroll listener from:', mainEl);
-        mainEl.removeEventListener('scroll', handleScroll);
+        if (mainEl) {
+          console.log('[DEBUG] Removing scroll listener from:', mainEl);
+          mainEl.removeEventListener('scroll', handleScroll);
+        }
       };
     }
   }, []);
@@ -334,7 +336,7 @@ function DashboardContent() {
             <Button
               onClick={showScrollTop ? scrollToTop : goToScanPage}
               size="icon"
-              className="h-16 w-16 rounded-full shadow-2xl shadow-primary/40 animate-pulse-glow"
+              className={cn("h-16 w-16 rounded-full shadow-2xl shadow-primary/40", !showScrollTop && "animate-pulse-glow")}
               aria-label={showScrollTop ? 'Scroll to top' : 'Scan New WOD'}
             >
               {showScrollTop ? <ArrowUp className="h-8 w-8" /> : <ScanLine className="h-8 w-8" />}
@@ -353,6 +355,8 @@ export default function DashboardPage() {
     </Suspense>
   )
 }
+    
+
     
 
     
