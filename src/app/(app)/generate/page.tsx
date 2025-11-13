@@ -4,7 +4,7 @@
 import { useState } from "react";
 import { useUser, useFirebase } from "@/firebase";
 import { useRouter } from 'next/navigation';
-import { doc, updateDoc, increment, serverTimestamp } from "firebase/firestore";
+import { doc, collection, setDoc } from "firebase/firestore";
 import { Button } from "@/components/ui/button";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { useToast } from "@/hooks/use-toast";
@@ -54,25 +54,22 @@ export default function GenerateWodPage() {
         setGeneratedWod(null);
         setError(null);
         
-        if (!user || !firestore) {
-            toast({ variant: 'destructive', title: "Authentication error" });
+        // This check is simplified. A real app would need a more robust check,
+        // especially for anonymous users, but for now, we let it proceed.
+        if (!firestore) {
+            toast({ variant: 'destructive', title: "Service not available" });
             setIsLoading(false);
             return;
         }
 
         try {
-            // Here you would check for user's quota.
-            // For now, we will simulate it.
-            // In a real app, this logic would be more robust.
-            // await checkAndDecrementQuota();
-
             const result = await generateWod({});
-            const newWodId = doc(collection(firestore, 'temp')).id; // Just for a unique ID
-            const placeholderImageUrl = `https://picsum.photos/seed/${newWodId}/600/400`;
+            const tempId = doc(collection(firestore, 'temp')).id; // Just for a unique ID on the client
+            const placeholderImageUrl = `https://picsum.photos/seed/${tempId}/600/400`;
 
             const newWod: WOD = {
-                id: newWodId,
-                userId: user.uid,
+                id: tempId, // This is a temporary ID for the client
+                userId: user?.uid || 'anonymous',
                 name: result.name,
                 type: result.type,
                 description: result.description,
@@ -81,7 +78,18 @@ export default function GenerateWodPage() {
                 imageHint: result.imageHint,
                 duration: result.duration,
             };
-            setGeneratedWod(newWod);
+
+            // Before saving to state, we need to save this to Firestore to get a real ID
+            // This is a temporary solution for demonstration purposes.
+            // A better flow would be to save it when the user decides to start the timer.
+            const userWodCollection = collection(firestore, `users/${user?.uid || 'anonymous'}/wods`);
+            const newWodRef = doc(userWodCollection);
+            
+            const finalWod = { ...newWod, id: newWodRef.id };
+            await setDoc(newWodRef, finalWod);
+            
+            setGeneratedWod(finalWod);
+
         } catch (e: any) {
             console.error("WOD Generation Error:", e);
             setError("The AI coach is resting. Please try again in a moment.");
@@ -122,7 +130,7 @@ export default function GenerateWodPage() {
                                 {isLoading ? "Generating..." : "Generate a New WOD"}
                             </Button>
                             {isUserLoading && <Skeleton className="h-6 w-48" />}
-                             {!isUserLoading && user && !user.premium && (
+                             {!isUserLoading && (!user || user.isAnonymous) && (
                                 <Alert variant="default" className="border-blue-500/50 text-blue-500">
                                      <Info className="h-4 w-4 !text-blue-500" />
                                     <AlertTitle>Free Plan</AlertTitle>
@@ -156,7 +164,7 @@ export default function GenerateWodPage() {
                          <div className="space-y-4">
                             <h2 className="text-2xl font-bold font-headline text-center">Your Generated WOD</h2>
                             <WodCard wod={generatedWod} source="personal" />
-                            <p className="text-xs text-muted-foreground text-center">Note: This is a temporary preview. Go to the timer to automatically save it to your dashboard.</p>
+                            <p className="text-xs text-muted-foreground text-center">This WOD has been automatically saved to your dashboard.</p>
                          </div>
                     )}
                  </div>
