@@ -11,7 +11,7 @@ import { collection, query, orderBy, limit } from 'firebase/firestore';
 import { Skeleton } from '@/components/ui/skeleton';
 import type { WOD } from '@/lib/types';
 import { useUser } from '@/firebase/provider';
-import { useMemo, useState, Suspense, useRef, useEffect } from 'react';
+import { useMemo, useState, Suspense, useRef } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -21,6 +21,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
 import { AnimatePresence, motion } from 'framer-motion';
+import { useScrollContext } from '@/hooks/use-scroll-context';
 
 
 function WodSkeleton() {
@@ -235,35 +236,12 @@ function DashboardContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const defaultTab = searchParams.get('tab') === 'community' ? 'community' : 'personal';
-  const mainContentRef = useRef<HTMLElement | null>(null);
-  const [showScrollTop, setShowScrollTop] = useState(false);
 
-  useEffect(() => {
-    const mainEl = mainContentRef.current;
-    console.log('[DEBUG] useEffect running. mainEl:', mainEl);
-
-    if (!mainEl) {
-      return;
-    }
-
-    const handleScroll = () => {
-      const { scrollTop } = mainEl;
-      console.log(`[DEBUG] Scroll event fired. scrollTop: ${scrollTop}`);
-      setShowScrollTop(scrollTop > 200);
-    };
-
-    console.log('[DEBUG] Attaching scroll listener to:', mainEl);
-    mainEl.addEventListener('scroll', handleScroll, { passive: true });
-    
-    // Cleanup function
-    return () => {
-      console.log('[DEBUG] Removing scroll listener from:', mainEl);
-      mainEl.removeEventListener('scroll', handleScroll);
-    };
-  }, []); // Empty dependency array ensures this runs once after mount
+  // Consume scroll state from the context
+  const { showScrollTop, scrollContainerRef } = useScrollContext();
 
   const scrollToTop = () => {
-    mainContentRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
+    scrollContainerRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const goToScanPage = () => {
@@ -295,7 +273,7 @@ function DashboardContent() {
           </Link>
         </Button>
       </header>
-      <main ref={mainContentRef} className="flex-1 overflow-y-auto">
+      <main className="flex-1 overflow-y-auto" id="dashboard-main-content">
         <Tabs defaultValue={defaultTab} className="w-full">
           <div className="p-4 md:p-6 border-b">
             <TabsList className="grid w-full grid-cols-2 md:w-auto">
@@ -347,7 +325,7 @@ function DashboardContent() {
               <Button
                 onClick={goToScanPage}
                 size="icon"
-                className="h-16 w-16 rounded-full shadow-2xl shadow-primary/40 animate-pulse-glow"
+                className="h-16 w-16 rounded-full shadow-2xl shadow-primary/40"
                 aria-label="Scan New WOD"
               >
                 <ScanLine className="h-8 w-8" />

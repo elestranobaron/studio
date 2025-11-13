@@ -16,15 +16,33 @@ import { UserNav } from "@/components/user-nav";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useRef, useEffect, useState } from "react";
+import { ScrollProvider } from "@/hooks/use-scroll-context";
 
 function AppLayoutContent({ children }: { children: React.ReactNode }) {
     const { openMobile, setOpenMobile } = useSidebar();
     const isMobile = useIsMobile();
+    const scrollRef = useRef<HTMLDivElement | null>(null);
+    const [showScrollTop, setShowScrollTop] = useState(false);
+
+    useEffect(() => {
+        const scrollEl = scrollRef.current;
+        if (!scrollEl) return;
+
+        const handleScroll = () => {
+            const { scrollTop } = scrollEl;
+            setShowScrollTop(scrollTop > 200);
+        };
+
+        scrollEl.addEventListener('scroll', handleScroll, { passive: true });
+        return () => scrollEl.removeEventListener('scroll', handleScroll);
+    }, []);
+
 
     const handleClose = () => setOpenMobile(false);
 
     return (
-        <>
+        <ScrollProvider scrollContainerRef={scrollRef} showScrollTop={showScrollTop}>
             <Sidebar className="flex flex-col">
                  <div className="absolute inset-0 w-full z-0 brightness-50 flex items-center justify-center overflow-hidden">
                     <div className="w-full h-full flex items-center justify-center">
@@ -67,8 +85,8 @@ function AppLayoutContent({ children }: { children: React.ReactNode }) {
                     </SidebarFooter>
                 </div>
             </Sidebar>
-            <SidebarInset>{children}</SidebarInset>
-        </>
+            <SidebarInset ref={scrollRef}>{children}</SidebarInset>
+        </ScrollProvider>
     );
 }
 
