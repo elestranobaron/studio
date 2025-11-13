@@ -252,7 +252,7 @@ function DashboardContent() {
 
     mainEl.addEventListener('scroll', handleScroll, { passive: true });
     return () => mainEl.removeEventListener('scroll', handleScroll);
-  }, []);
+  }, [mainContentRef.current]); // Re-run when the ref is attached
 
   const handleFabClick = () => {
     if (showScrollTop) {
