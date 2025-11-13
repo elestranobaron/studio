@@ -240,18 +240,27 @@ function DashboardContent() {
 
   useEffect(() => {
     const mainEl = mainContentRef.current;
-    if (!mainEl) return;
+    console.log('[DEBUG] useEffect running. mainEl:', mainEl);
+
+    if (!mainEl) {
+      return;
+    }
 
     const handleScroll = () => {
-      setShowScrollTop(mainEl.scrollTop > 200);
+      const { scrollTop } = mainEl;
+      console.log(`[DEBUG] Scroll event fired. scrollTop: ${scrollTop}`);
+      setShowScrollTop(scrollTop > 200);
     };
 
+    console.log('[DEBUG] Attaching scroll listener to:', mainEl);
     mainEl.addEventListener('scroll', handleScroll, { passive: true });
     
+    // Cleanup function
     return () => {
+      console.log('[DEBUG] Removing scroll listener from:', mainEl);
       mainEl.removeEventListener('scroll', handleScroll);
     };
-  }, []);
+  }, []); // Empty dependency array ensures this runs once after mount
 
   const scrollToTop = () => {
     mainContentRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
@@ -310,41 +319,43 @@ function DashboardContent() {
         </Tabs>
       </main>
       
-      <AnimatePresence>
-        {showScrollTop ? (
-          <motion.div
-            className="md:hidden fixed bottom-6 right-6 z-50"
-            initial={{ opacity: 0, scale: 0.5 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.5 }}
-          >
-            <Button
-              onClick={scrollToTop}
-              size="icon"
-              className="h-16 w-16 rounded-full shadow-2xl bg-secondary text-secondary-foreground"
-              aria-label="Scroll to top"
+      <div className="md:hidden fixed bottom-6 right-6 z-50">
+        <AnimatePresence mode="wait">
+          {showScrollTop ? (
+            <motion.div
+              key="scroll-top"
+              initial={{ opacity: 0, scale: 0.5 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.5 }}
             >
-              <ArrowUp className="h-8 w-8" />
-            </Button>
-          </motion.div>
-        ) : (
-          <motion.div
-            className="md:hidden fixed bottom-6 right-6 z-50"
-            initial={{ opacity: 0, scale: 0.5 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.5 }}
-          >
-            <Button
-              onClick={goToScanPage}
-              size="icon"
-              className="h-16 w-16 rounded-full shadow-2xl shadow-primary/40 animate-pulse-glow"
-              aria-label="Scan New WOD"
+              <Button
+                onClick={scrollToTop}
+                size="icon"
+                className="h-16 w-16 rounded-full shadow-2xl bg-secondary text-secondary-foreground"
+                aria-label="Scroll to top"
+              >
+                <ArrowUp className="h-8 w-8" />
+              </Button>
+            </motion.div>
+          ) : (
+            <motion.div
+              key="scan"
+              initial={{ opacity: 0, scale: 0.5 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.5 }}
             >
-              <ScanLine className="h-8 w-8" />
-            </Button>
-          </motion.div>
-        )}
-      </AnimatePresence>
+              <Button
+                onClick={goToScanPage}
+                size="icon"
+                className="h-16 w-16 rounded-full shadow-2xl shadow-primary/40 animate-pulse-glow"
+                aria-label="Scan New WOD"
+              >
+                <ScanLine className="h-8 w-8" />
+              </Button>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
     </div>
   );
 }
