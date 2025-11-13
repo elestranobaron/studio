@@ -10,6 +10,7 @@ import {
   Settings,
   Gem,
   Medal,
+  Dice5,
 } from "lucide-react";
 import {
   SidebarMenu,
@@ -21,6 +22,7 @@ import {
 const links = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutGrid },
   { href: "/scan", label: "Scan WOD", icon: ScanLine },
+  { href: "/generate", label: "Generate WOD", icon: Dice5 },
   { href: "/timers", label: "Timers", icon: Timer },
   { href: "/hero-wods", label: "Hero WODs", icon: Medal },
 ];
