@@ -240,18 +240,12 @@ function DashboardContent() {
 
   useEffect(() => {
     const mainEl = mainContentRef.current;
-    if (!mainEl) {
-      return;
-    }
+    if (!mainEl) return;
 
     const handleScroll = () => {
-      if (mainEl.scrollTop > 200) {
-        setShowScrollTop(true);
-      } else {
-        setShowScrollTop(false);
-      }
+      setShowScrollTop(mainEl.scrollTop > 200);
     };
-    
+
     mainEl.addEventListener('scroll', handleScroll, { passive: true });
     
     return () => {
@@ -259,12 +253,12 @@ function DashboardContent() {
     };
   }, []);
 
-  const handleFabClick = () => {
-    if (showScrollTop) {
-      mainContentRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
-    } else {
-      router.push('/scan');
-    }
+  const scrollToTop = () => {
+    mainContentRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const goToScanPage = () => {
+    router.push('/scan');
   };
 
   const userWodsCollection = useMemo(() => {
@@ -316,29 +310,41 @@ function DashboardContent() {
         </Tabs>
       </main>
       
-      <div className="md:hidden fixed bottom-6 right-6 z-50">
-        <AnimatePresence mode="wait">
+      <AnimatePresence>
+        {showScrollTop ? (
           <motion.div
-            key={showScrollTop ? 'arrow' : 'scan'}
-            initial={{ opacity: 0, scale: 0.5, rotate: -45 }}
-            animate={{ opacity: 1, scale: 1, rotate: 0 }}
-            exit={{ opacity: 0, scale: 0.5, rotate: 45 }}
-            transition={{ duration: 0.2 }}
+            className="md:hidden fixed bottom-6 right-6 z-50"
+            initial={{ opacity: 0, scale: 0.5 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.5 }}
           >
             <Button
-              onClick={handleFabClick}
+              onClick={scrollToTop}
               size="icon"
-              className={cn(
-                "h-16 w-16 rounded-full shadow-2xl",
-                showScrollTop ? "bg-secondary text-secondary-foreground" : "bg-primary text-primary-foreground shadow-primary/40"
-              )}
-              aria-label={showScrollTop ? 'Scroll to top' : 'Scan New WOD'}
+              className="h-16 w-16 rounded-full shadow-2xl bg-secondary text-secondary-foreground"
+              aria-label="Scroll to top"
             >
-              {showScrollTop ? <ArrowUp className="h-8 w-8" /> : <ScanLine className="h-8 w-8" />}
+              <ArrowUp className="h-8 w-8" />
             </Button>
           </motion.div>
-        </AnimatePresence>
-      </div>
+        ) : (
+          <motion.div
+            className="md:hidden fixed bottom-6 right-6 z-50"
+            initial={{ opacity: 0, scale: 0.5 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.5 }}
+          >
+            <Button
+              onClick={goToScanPage}
+              size="icon"
+              className="h-16 w-16 rounded-full shadow-2xl shadow-primary/40 animate-pulse-glow"
+              aria-label="Scan New WOD"
+            >
+              <ScanLine className="h-8 w-8" />
+            </Button>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
@@ -361,5 +367,7 @@ export default function DashboardPage() {
     
 
   
+
+    
 
     
