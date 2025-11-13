@@ -323,7 +323,7 @@ function DashboardContent() {
                 size="icon" 
                 className={cn(
                     "h-16 w-16 rounded-full shadow-2xl transition-colors duration-300",
-                    showScrollTop ? "bg-secondary hover:bg-secondary/80" : "shadow-primary/40 animate-pulse-glow"
+                    showScrollTop ? "bg-secondary hover:bg-secondary/80" : "shadow-primary/40"
                 )}
             >
                 <AnimatePresence mode="wait" initial={false}>
