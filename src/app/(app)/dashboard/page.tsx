@@ -312,34 +312,30 @@ function DashboardContent() {
       </main>
       
       <div className="md:hidden fixed bottom-6 right-6 z-50">
-        <motion.div
-            initial={{ scale: 0, opacity: 0, y: 20 }}
-            animate={{ scale: 1, opacity: 1, y: 0 }}
-            exit={{ scale: 0, opacity: 0, y: 20 }}
-            transition={{ duration: 0.2 }}
-        >
-            <Button 
-                onClick={handleFabClick}
-                size="icon" 
-                className={cn(
-                    "h-16 w-16 rounded-full shadow-2xl transition-colors duration-300",
-                    showScrollTop ? "bg-secondary hover:bg-secondary/80" : "shadow-primary/40"
-                )}
-            >
-                <AnimatePresence mode="wait" initial={false}>
-                    <motion.div
-                        key={showScrollTop ? 'arrow' : 'scan'}
-                        initial={{ opacity: 0, scale: 0.5, rotate: -90 }}
-                        animate={{ opacity: 1, scale: 1, rotate: 0 }}
-                        exit={{ opacity: 0, scale: 0.5, rotate: 90 }}
-                        transition={{ duration: 0.2 }}
-                    >
-                        {showScrollTop ? <ArrowUp className="h-8 w-8" /> : <ScanLine className="h-8 w-8" />}
-                    </motion.div>
-                </AnimatePresence>
-                <span className="sr-only">{showScrollTop ? 'Scroll to top' : 'Scan New WOD'}</span>
-            </Button>
-        </motion.div>
+          <motion.div
+              onClick={handleFabClick}
+              className={cn(
+                  "h-16 w-16 rounded-full shadow-2xl transition-colors duration-300 flex items-center justify-center",
+                  showScrollTop ? "bg-secondary hover:bg-secondary/80" : "bg-primary hover:bg-primary/90 shadow-primary/40"
+              )}
+              initial={{ scale: 0, opacity: 0, y: 20 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0, opacity: 0, y: 20 }}
+              transition={{ duration: 0.2 }}
+          >
+              <AnimatePresence mode="wait" initial={false}>
+                  <motion.div
+                      key={showScrollTop ? 'arrow' : 'scan'}
+                      initial={{ opacity: 0, scale: 0.5, rotate: -90 }}
+                      animate={{ opacity: 1, scale: 1, rotate: 0 }}
+                      exit={{ opacity: 0, scale: 0.5, rotate: 90 }}
+                      transition={{ duration: 0.2 }}
+                  >
+                      {showScrollTop ? <ArrowUp className="h-8 w-8 text-secondary-foreground" /> : <ScanLine className="h-8 w-8 text-primary-foreground" />}
+                  </motion.div>
+              </AnimatePresence>
+              <span className="sr-only">{showScrollTop ? 'Scroll to top' : 'Scan New WOD'}</span>
+          </motion.div>
       </div>
     </div>
   );
@@ -356,3 +352,6 @@ export default function DashboardPage() {
 
     
 
+
+
+    
