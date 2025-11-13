@@ -242,7 +242,7 @@ function DashboardContent() {
     if (!mainEl) return;
 
     const handleScroll = () => {
-      if (mainEl.scrollTop > 20) {
+      if (mainEl.scrollTop > 200) { // Increased threshold
         setShowScrollTop(true);
       } else {
         setShowScrollTop(false);
