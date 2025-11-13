@@ -252,7 +252,7 @@ function DashboardContent() {
 
     mainEl.addEventListener('scroll', handleScroll, { passive: true });
     return () => mainEl.removeEventListener('scroll', handleScroll);
-  }, [mainContentRef.current]); // Re-run when the ref is attached
+  }, [mainContentRef.current]);
 
   const handleFabClick = () => {
     if (showScrollTop) {
@@ -355,3 +355,4 @@ export default function DashboardPage() {
     
 
     
+
