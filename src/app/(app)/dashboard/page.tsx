@@ -244,9 +244,12 @@ function DashboardContent() {
 
     if (mainEl) {
         const handleScroll = () => {
-            const { scrollTop } = mainEl;
-            console.log('[DEBUG] Scroll event fired. scrollTop:', scrollTop);
-            setShowScrollTop(scrollTop > 200);
+            // Use the ref directly inside the handler to get the current value
+            if (mainContentRef.current) {
+                const { scrollTop } = mainContentRef.current;
+                console.log('[DEBUG] Scroll event fired. scrollTop:', scrollTop);
+                setShowScrollTop(scrollTop > 200);
+            }
         };
 
         console.log('[DEBUG] Attaching scroll listener to:', mainEl);
@@ -259,7 +262,7 @@ function DashboardContent() {
             }
         };
     }
-  }, []);
+  }, []); // Empty dependency array is correct here.
 
 
   const scrollToTop = () => {
@@ -379,4 +382,5 @@ export default function DashboardPage() {
     
 
     
+
 
