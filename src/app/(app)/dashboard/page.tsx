@@ -16,7 +16,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { WelcomeEmptyState } from '@/components/welcome-empty-state';
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams, useRouter } from 'next/navigation';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
@@ -233,6 +233,7 @@ function DashboardContent() {
   const { firestore } = useFirebase();
   const { user, isUserLoading } = useUser();
   const searchParams = useSearchParams();
+  const router = useRouter();
   const defaultTab = searchParams.get('tab') === 'community' ? 'community' : 'personal';
   const mainContentRef = useRef<HTMLElement | null>(null);
   const [showScrollTop, setShowScrollTop] = useState(false);
@@ -242,19 +243,23 @@ function DashboardContent() {
     if (!mainEl) return;
 
     const handleScroll = () => {
-      if (mainEl.scrollTop > 200) { // Increased threshold
+      if (mainEl.scrollTop > 200) {
         setShowScrollTop(true);
       } else {
         setShowScrollTop(false);
       }
     };
 
-    mainEl.addEventListener('scroll', handleScroll);
+    mainEl.addEventListener('scroll', handleScroll, { passive: true });
     return () => mainEl.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const handleScrollToTop = () => {
-    mainContentRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
+  const handleFabClick = () => {
+    if (showScrollTop) {
+      mainContentRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
+    } else {
+      router.push('/scan');
+    }
   };
 
   const userWodsCollection = useMemo(() => {
@@ -307,37 +312,34 @@ function DashboardContent() {
       </main>
       
       <div className="md:hidden fixed bottom-6 right-6 z-50">
-        <AnimatePresence mode="wait">
-            {showScrollTop ? (
-                 <motion.div
-                    key="scrollTop"
-                    initial={{ scale: 0, opacity: 0, y: 20 }}
-                    animate={{ scale: 1, opacity: 1, y: 0 }}
-                    exit={{ scale: 0, opacity: 0, y: 20 }}
-                    transition={{ duration: 0.2 }}
-                 >
-                    <Button onClick={handleScrollToTop} size="icon" className="h-16 w-16 rounded-full shadow-2xl bg-secondary hover:bg-secondary/80">
-                        <ArrowUp className="h-8 w-8" />
-                        <span className="sr-only">Scroll to top</span>
-                    </Button>
-                </motion.div>
-            ) : (
-                <motion.div
-                    key="scan"
-                    initial={{ scale: 0, opacity: 0, y: 20 }}
-                    animate={{ scale: 1, opacity: 1, y: 0 }}
-                    exit={{ scale: 0, opacity: 0, y: 20 }}
-                    transition={{ duration: 0.2 }}
-                >
-                    <Button asChild size="icon" className="h-16 w-16 rounded-full shadow-2xl shadow-primary/40 animate-pulse-glow">
-                        <Link href="/scan">
-                            <ScanLine className="h-8 w-8" />
-                            <span className="sr-only">Scan New WOD</span>
-                        </Link>
-                    </Button>
-                </motion.div>
-            )}
-        </AnimatePresence>
+        <motion.div
+            initial={{ scale: 0, opacity: 0, y: 20 }}
+            animate={{ scale: 1, opacity: 1, y: 0 }}
+            exit={{ scale: 0, opacity: 0, y: 20 }}
+            transition={{ duration: 0.2 }}
+        >
+            <Button 
+                onClick={handleFabClick}
+                size="icon" 
+                className={cn(
+                    "h-16 w-16 rounded-full shadow-2xl transition-colors duration-300",
+                    showScrollTop ? "bg-secondary hover:bg-secondary/80" : "shadow-primary/40 animate-pulse-glow"
+                )}
+            >
+                <AnimatePresence mode="wait" initial={false}>
+                    <motion.div
+                        key={showScrollTop ? 'arrow' : 'scan'}
+                        initial={{ opacity: 0, scale: 0.5, rotate: -90 }}
+                        animate={{ opacity: 1, scale: 1, rotate: 0 }}
+                        exit={{ opacity: 0, scale: 0.5, rotate: 90 }}
+                        transition={{ duration: 0.2 }}
+                    >
+                        {showScrollTop ? <ArrowUp className="h-8 w-8" /> : <ScanLine className="h-8 w-8" />}
+                    </motion.div>
+                </AnimatePresence>
+                <span className="sr-only">{showScrollTop ? 'Scroll to top' : 'Scan New WOD'}</span>
+            </Button>
+        </motion.div>
       </div>
     </div>
   );
@@ -350,4 +352,6 @@ export default function DashboardPage() {
     </Suspense>
   )
 }
+    
+
     
