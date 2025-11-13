@@ -230,34 +230,35 @@ function CommunityWodList() {
 }
 
 function DashboardContent() {
-  const { firestore } = useFirebase();
-  const { user, isUserLoading } = useUser();
   const searchParams = useSearchParams();
   const router = useRouter();
   const defaultTab = searchParams.get('tab') === 'community' ? 'community' : 'personal';
+  
   const mainContentRef = useRef<HTMLDivElement>(null);
   const [showScrollTop, setShowScrollTop] = useState(false);
 
   useEffect(() => {
     const mainEl = mainContentRef.current;
-
-    const handleScroll = () => {
-      if (mainEl) {
-        const { scrollTop } = mainEl;
-        setShowScrollTop(scrollTop > 200);
-      }
-    };
+    console.log('[DEBUG] useEffect running. mainEl:', mainEl);
 
     if (mainEl) {
-      mainEl.addEventListener('scroll', handleScroll, { passive: true });
-    }
+      const handleScroll = () => {
+        const { scrollTop } = mainEl;
+        console.log('[DEBUG] Scroll event fired. scrollTop:', scrollTop);
+        setShowScrollTop(scrollTop > 200);
+      };
 
-    return () => {
-      if (mainEl) {
+      console.log('[DEBUG] Attaching scroll listener to:', mainEl);
+      mainEl.addEventListener('scroll', handleScroll, { passive: true });
+
+      // Return cleanup function
+      return () => {
+        console.log('[DEBUG] Removing scroll listener from:', mainEl);
         mainEl.removeEventListener('scroll', handleScroll);
-      }
-    };
+      };
+    }
   }, []);
+
 
   const scrollToTop = () => {
     mainContentRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
@@ -266,6 +267,9 @@ function DashboardContent() {
   const goToScanPage = () => {
     router.push('/scan');
   };
+
+  const { firestore } = useFirebase();
+  const { user, isUserLoading } = useUser();
 
   const userWodsCollection = useMemo(() => {
     if (!firestore || !user) return null;
@@ -292,29 +296,31 @@ function DashboardContent() {
           </Link>
         </Button>
       </header>
-      <main ref={mainContentRef} className="flex-1 overflow-y-auto" id="dashboard-main-content">
-        <Tabs defaultValue={defaultTab} className="w-full">
-          <div className="p-4 md:p-6 border-b">
-            <TabsList className="grid w-full grid-cols-2 md:w-auto">
-              <TabsTrigger value="personal">My WODs</TabsTrigger>
-              <TabsTrigger value="community">Community</TabsTrigger>
-            </TabsList>
-          </div>
-          <TabsContent value="personal" className="p-4 md:p-6">
-            <WodList 
-                wods={userWods} 
-                isLoading={showPersonalLoadingState}
-                emptyStateTitle="No WODs found here."
-                emptyStateDescription="Scan your first WOD to get started!"
-                showAddButton={true}
-                source="personal"
-            />
-          </TabsContent>
-          <TabsContent value="community" className="p-4 md:p-6">
-            <CommunityWodList />
-          </TabsContent>
-        </Tabs>
-      </main>
+      <div className="flex-grow flex flex-col min-h-0">
+        <main ref={mainContentRef} className="flex-1 overflow-y-auto" id="dashboard-main-content">
+          <Tabs defaultValue={defaultTab} className="w-full">
+            <div className="p-4 md:p-6 border-b">
+              <TabsList className="grid w-full grid-cols-2 md:w-auto">
+                <TabsTrigger value="personal">My WODs</TabsTrigger>
+                <TabsTrigger value="community">Community</TabsTrigger>
+              </TabsList>
+            </div>
+            <TabsContent value="personal" className="p-4 md:p-6">
+              <WodList 
+                  wods={userWods} 
+                  isLoading={showPersonalLoadingState}
+                  emptyStateTitle="No WODs found here."
+                  emptyStateDescription="Scan your first WOD to get started!"
+                  showAddButton={true}
+                  source="personal"
+              />
+            </TabsContent>
+            <TabsContent value="community" className="p-4 md:p-6">
+              <CommunityWodList />
+            </TabsContent>
+          </Tabs>
+        </main>
+      </div>
       
       <div className="md:hidden fixed bottom-6 right-6 z-50">
         <AnimatePresence>
@@ -347,4 +353,6 @@ export default function DashboardPage() {
     </Suspense>
   )
 }
+    
+
     
