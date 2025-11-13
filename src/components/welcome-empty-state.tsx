@@ -34,26 +34,17 @@ export function WelcomeEmptyState() {
           Scan a WOD from a photo
         </Button>
 
-        <TooltipProvider>
-            <Tooltip>
-                <TooltipTrigger asChild>
-                    <div className='w-full'>
-                        <Button
-                            size="lg"
-                            variant="outline"
-                            className="w-full h-14 text-base font-bold border-2 border-blue-400 text-blue-400 hover:bg-blue-400 hover:text-white transition-transform hover:-translate-y-0.5"
-                            disabled
-                            >
-                            <Dice5 className="mr-3 h-6 w-6" />
-                            Generate a random WOD
-                        </Button>
-                    </div>
-                </TooltipTrigger>
-                <TooltipContent>
-                    <p>Coming soon!</p>
-                </TooltipContent>
-            </Tooltip>
-        </TooltipProvider>
+        <Button
+            asChild
+            size="lg"
+            variant="outline"
+            className="w-full h-14 text-base font-bold border-2 border-blue-400 text-blue-400 hover:bg-blue-400 hover:text-white transition-transform hover:-translate-y-0.5"
+            >
+            <Link href="/generate">
+                <Dice5 className="mr-3 h-6 w-6" />
+                Generate a random WOD
+            </Link>
+        </Button>
 
         <Button
             asChild
