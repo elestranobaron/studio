@@ -53,7 +53,8 @@ export const sendMagicLink = onCall(async (request) => {
     });
     
     // Create the intermediate redirect link that forces opening in the main browser
-    const redirectLink = `https://wodburner.app/auth/redirect?continueUrl=${encodeURIComponent(firebaseLink)}`;
+    const baseLink = `https://wodburner.app/auth/redirect?continueUrl=${encodeURIComponent(firebaseLink)}`;
+    const redirectLink = `${baseLink}&utm_source=brevo&utm_campaign=WODBurner Magic Link EN&utm_medium=email&utm_id=2`;
 
     // Stockage Kraken
     await db.collection("magicLinks").doc(email).set({
