@@ -240,28 +240,24 @@ function DashboardContent() {
 
   useEffect(() => {
     const mainEl = mainContentRef.current;
-    console.log('[DEBUG] useEffect running. mainEl:', mainEl);
 
     const handleScroll = () => {
       if (mainEl) {
         const { scrollTop } = mainEl;
-        console.log(`[DEBUG] Scroll event fired. scrollTop: ${scrollTop}`);
         setShowScrollTop(scrollTop > 200);
       }
     };
 
     if (mainEl) {
-      console.log('[DEBUG] Attaching scroll listener to:', mainEl);
       mainEl.addEventListener('scroll', handleScroll, { passive: true });
     }
 
     return () => {
       if (mainEl) {
-        console.log('[DEBUG] Removing scroll listener from:', mainEl);
         mainEl.removeEventListener('scroll', handleScroll);
       }
     };
-  }, []); // Empty dependency array ensures this runs only once on mount and cleanup
+  }, []);
 
   const scrollToTop = () => {
     mainContentRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
@@ -351,18 +347,4 @@ export default function DashboardPage() {
     </Suspense>
   )
 }
-    
-
-    
-
-
-
-    
-
-    
-
-  
-
-    
-
     
