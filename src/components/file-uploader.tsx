@@ -162,7 +162,7 @@ export function FileUploader() {
 
         await setDoc(newWodRef, wodData);
 
-        if (shareToCommunity && user) {
+        if (shareToCommunity && user && !user.isAnonymous) {
             const userDisplayName = user.email?.split('@')[0] || 'Anonymous';
             const communityWodsCollection = collection(firestore, 'communityWods');
             const communityWodData = {
