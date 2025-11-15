@@ -238,29 +238,30 @@ function DashboardContent() {
   const [showScrollTop, setShowScrollTop] = useState(false);
 
   useEffect(() => {
+    console.log('[DEBUG] DashboardContent useEffect running.');
+
+    const handleScroll = () => {
+      // We check the scroll position of the main content area.
+      if (mainContentRef.current) {
+        const { scrollTop } = mainContentRef.current;
+        console.log('[DEBUG] Scroll event fired. scrollTop:', scrollTop);
+        setShowScrollTop(scrollTop > 200);
+      }
+    };
+
     const mainEl = mainContentRef.current;
-    console.log('[DEBUG] useEffect running. mainEl:', mainEl);
-
     if (mainEl) {
-        const handleScroll = () => {
-            if (mainContentRef.current) {
-                const { scrollTop } = mainContentRef.current;
-                console.log('[DEBUG] Scroll event fired. scrollTop:', scrollTop);
-                setShowScrollTop(scrollTop > 200);
-            }
-        };
-
-        console.log('[DEBUG] Attaching scroll listener to:', mainEl);
-        mainEl.addEventListener('scroll', handleScroll, { passive: true });
-
-        return () => {
-            if (mainEl) {
-                console.log('[DEBUG] Removing scroll listener from:', mainEl);
-                mainEl.removeEventListener('scroll', handleScroll);
-            }
-        };
+      console.log('[DEBUG] Attaching scroll listener to:', mainEl);
+      mainEl.addEventListener('scroll', handleScroll, { passive: true });
     }
-  }, []);
+
+    return () => {
+      if (mainEl) {
+        console.log('[DEBUG] Removing scroll listener from:', mainEl);
+        mainEl.removeEventListener('scroll', handleScroll);
+      }
+    };
+  }, []); // Empty dependency array ensures this runs only once after the component mounts.
 
 
   const scrollToTop = () => {
@@ -380,6 +381,7 @@ export default function DashboardPage() {
     
 
     
+
 
 
 
