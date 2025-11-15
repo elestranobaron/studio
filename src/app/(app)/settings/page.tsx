@@ -26,8 +26,9 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 import { useToast } from '@/hooks/use-toast';
-import { LoaderCircle, Trash2 } from 'lucide-react';
+import { LoaderCircle, Trash2, CreditCard } from 'lucide-react';
 import { SidebarTrigger } from '@/components/ui/sidebar';
+import { getFunctions, httpsCallable } from 'firebase/functions';
 
 export default function SettingsPage() {
   const { user, isUserLoading } = useUser();
@@ -36,6 +37,30 @@ export default function SettingsPage() {
   const router = useRouter();
   const { toast } = useToast();
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isPortalLoading, setIsPortalLoading] = useState(false);
+
+  const handleManageSubscription = async () => {
+    setIsPortalLoading(true);
+    try {
+      const functions = getFunctions();
+      const createCustomerPortal = httpsCallable(functions, 'createCustomerPortal');
+      const { data } = await createCustomerPortal();
+      const portalUrl = (data as { url: string }).url;
+      if (portalUrl) {
+        window.location.href = portalUrl;
+      } else {
+        throw new Error("Portal URL not returned from function.");
+      }
+    } catch (error: any) {
+      console.error("Error creating customer portal session:", error);
+      toast({
+        variant: 'destructive',
+        title: 'Error',
+        description: error.message || 'Could not open subscription management.',
+      });
+      setIsPortalLoading(false);
+    }
+  };
 
   const handleDeleteAccount = async () => {
     if (!user || !auth || !firestore) {
@@ -118,9 +143,19 @@ export default function SettingsPage() {
                             <p>Loading profile...</p>
                         </div>
                     ) : user ? (
-                        <div className="space-y-2">
+                        <div className="space-y-4">
                            <p><strong>Email:</strong> {user.email || "Not specified"}</p>
-                           <p><strong>Account Type:</strong> {user.isAnonymous ? "Anonymous (Temporary)" : "Permanent"}</p>
+                           <p><strong>Account Type:</strong> {user.isAnonymous ? "Anonymous (Temporary)" : (user.premium ? 'Premium' : 'Standard')}</p>
+                           {user.premium && (
+                             <Button onClick={handleManageSubscription} disabled={isPortalLoading}>
+                               {isPortalLoading ? (
+                                 <LoaderCircle className="mr-2 animate-spin" />
+                               ) : (
+                                 <CreditCard className="mr-2" />
+                               )}
+                               Manage My Subscription
+                             </Button>
+                           )}
                         </div>
                     ) : (
                          <p>User not found.</p>

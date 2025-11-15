@@ -205,6 +205,40 @@ export const createCheckout = onCall(
 );
 
 
+// ————— STRIPE CUSTOMER PORTAL —————
+export const createCustomerPortal = onCall(
+    { secrets: [stripeSecretKey] },
+    async (request) => {
+        if (!request.auth) {
+            throw new HttpsError("unauthenticated", "You must be logged in to manage your subscription.");
+        }
+
+        const stripe = new Stripe(stripeSecretKey.value(), {
+            apiVersion: "2024-06-20",
+        });
+
+        const userRef = db.collection('users').doc(request.auth.uid);
+        const userDoc = await userRef.get();
+
+        const stripeCustomerId = userDoc.data()?.stripeCustomerId;
+        if (!stripeCustomerId) {
+            throw new HttpsError("not-found", "No subscription found for this user.");
+        }
+
+        try {
+            const portalSession = await stripe.billingPortal.sessions.create({
+                customer: stripeCustomerId,
+                return_url: "https://wodburner.app/settings",
+            });
+            return { url: portalSession.url };
+        } catch (error: any) {
+            console.error("Customer portal creation failed:", error);
+            throw new HttpsError("internal", "Could not create customer portal session.");
+        }
+    }
+);
+
+
 // ————— STRIPE WEBHOOK —————
 export const stripeWebhook = onRequest(
   { secrets: [stripeSecretKey, stripeWebhookSecret] },
@@ -230,10 +264,16 @@ export const stripeWebhook = onRequest(
       
       const uid = session?.metadata?.uid;
       const customerEmail = session?.customer_details?.email;
+      const stripeCustomerId = session.customer; // <-- NOUVEAU
 
       if (!uid) {
         console.error("Webhook Error: No UID in session metadata.");
         response.status(400).send("No UID in session metadata.");
+        return;
+      }
+      if (!stripeCustomerId || typeof stripeCustomerId !== 'string') {
+        console.error("Webhook Error: No customer ID in session.");
+        response.status(400).send("No customer ID in session.");
         return;
       }
       
@@ -244,6 +284,7 @@ export const stripeWebhook = onRequest(
           premium: true,
           premiumSince: admin.firestore.FieldValue.serverTimestamp(),
           priceId: priceId,
+          stripeCustomerId: stripeCustomerId, // <-- NOUVEAU
         }, { merge: true });
         console.log(`Successfully granted premium access to user ${uid}`);
 
@@ -251,7 +292,7 @@ export const stripeWebhook = onRequest(
             const payload = {
                 sender: { name: "WODBurner Team", email: "noreply@wodburner.app" },
                 to: [{ email: customerEmail }],
-                templateId: 3, // Template ID for "Welcome Premium" email
+                templateId: 4, // Template ID for "Welcome Premium" email
             };
 
             await fetch("https://api.sendinblue.com/v3/smtp/email", {
@@ -276,4 +317,3 @@ export const stripeWebhook = onRequest(
     response.status(200).send();
   }
 );
-
