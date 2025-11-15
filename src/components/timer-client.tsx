@@ -94,7 +94,7 @@ function ShareModal({ wod, finalTime }: { wod: WOD; finalTime: string }) {
                             <Camera className="h-3 w-3"/> Ready for screenshot!
                         </p>
                         <span className="text-xl font-bold font-headline text-primary tracking-wider opacity-60">
-                            WODBurner
+                           WODBurner
                         </span>
                     </div>
                 </div>
@@ -127,7 +127,7 @@ export function TimerClient({ wod }: { wod: WOD }) {
     if (wod.type === 'AMRAP' && wod.duration) return wod.duration * 60;
     if (wod.type === 'Tabata') return 20; // Tabata starts with 20s of work
     return 0;
-  }, [wod.type, wod.duration, wod.emomInterval]);
+  }, [wod]);
 
   const resetTimer = useCallback(() => {
     setIsActive(false);
@@ -142,26 +142,23 @@ export function TimerClient({ wod }: { wod: WOD }) {
     if (timerRef.current) clearInterval(timerRef.current);
     if (animationFrameRef.current) cancelAnimationFrame(animationFrameRef.current);
     
-    // Reset progress bar visually
     if (progressRef.current) {
         const strokeDasharray = 2 * Math.PI * 140;
-        const progress = wod.type === 'For Time' || wod.type === 'Other' ? 100 : 0;
-        progressRef.current.style.transition = 'none'; // Disable transition for immediate reset
+        const progress = (wod.type === 'For Time' || wod.type === 'Other' || !isCountDownTimer) ? 100 : (initialTime / totalDuration * 100);
+        progressRef.current.style.transition = 'none';
         progressRef.current.style.strokeDashoffset = `${strokeDasharray * (1 - progress / 100)}`;
-        // Force reflow to apply the change immediately
         void progressRef.current.offsetHeight; 
-        progressRef.current.style.transition = ''; // Re-enable transitions for future animations
+        progressRef.current.style.transition = 'stroke-dashoffset 1s linear';
     }
 
-  }, [getInitialTime, wod.type]);
+  }, [getInitialTime, wod.type, isCountDownTimer, totalDuration]);
 
-  // Set initial time on component mount
+  // Reset timer whenever the WOD prop changes
   useEffect(() => {
     resetTimer();
-  }, [resetTimer]);
+  }, [wod, resetTimer]);
 
 
-  // Effect for the main timer logic (countdown and active timer)
   useEffect(() => {
     if (isCountingDown) {
         timerRef.current = setInterval(() => {
@@ -214,7 +211,7 @@ export function TimerClient({ wod }: { wod: WOD }) {
                 if (newTime <= 0) {
                     if (workoutState === 'work') {
                         setWorkoutState('rest');
-                        playFinishSound(); // Or a specific "rest" sound
+                        playFinishSound();
                         return 10;
                     } else { // workoutState === 'rest'
                         const nextRound = currentRound + 1;
@@ -248,7 +245,6 @@ export function TimerClient({ wod }: { wod: WOD }) {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isActive, isFinished, isCountingDown, wod, currentRound, workoutState]);
 
-    // Effect for smooth progress bar animation
     useEffect(() => {
         const circle = progressRef.current;
         if (!circle || !isActive) {
@@ -289,20 +285,18 @@ export function TimerClient({ wod }: { wod: WOD }) {
                 break;
             case 'EMOM':
                 period = wod.emomInterval || 60;
-                // On round change, we need to animate from 100%
                 startProgress = (time === period) ? 100 : (time / period) * 100;
                 endProgress = ((time - 1) / period) * 100;
                 animateProgress(startProgress, endProgress, 1000);
                 break;
             case 'Tabata':
                 period = workoutState === 'work' ? 20 : 10;
-                // On state change, we need to animate from 100%
                 startProgress = (time === period) ? 100 : (time / period) * 100;
                 endProgress = ((time - 1) / period) * 100;
                 animateProgress(startProgress, endProgress, 1000);
                 break;
-            default: // For Time
-                 circle.style.strokeDashoffset = '0'; // Always full
+            default:
+                 circle.style.strokeDashoffset = '0';
                 break;
         }
 
@@ -319,14 +313,11 @@ export function TimerClient({ wod }: { wod: WOD }) {
     if (isActive) {
         setIsActive(false);
     } else {
-        // Initial start from 00:00
         const isInitialStart = getInitialTime() === time;
-        // The first tick of the countdown is special
         if (countdown === 3 && isInitialStart) {
             setIsCountingDown(true);
             playCountdownTick();
         } else {
-            // This handles resuming
             playStartSound();
             setIsActive(true);
         }
@@ -340,7 +331,7 @@ export function TimerClient({ wod }: { wod: WOD }) {
     setFinalTime(finalTimeValue > 0 ? finalTimeValue : time);
   };
   
-  const getProgressOnload = () => {
+  const getProgressOnLoad = () => {
     if (wod.type === 'For Time' || wod.type === 'Other') {
         return 100;
     }
@@ -348,7 +339,7 @@ export function TimerClient({ wod }: { wod: WOD }) {
   }
 
   const progress = getProgressOnload();
-  const strokeDasharray = 2 * Math.PI * 140; // Circumference of the circle
+  const strokeDasharray = 2 * Math.PI * 140;
   const strokeDashoffset = strokeDasharray * (1 - progress / 100);
 
   const renderTimerCircle = () => {
@@ -387,17 +378,18 @@ export function TimerClient({ wod }: { wod: WOD }) {
                 transform="rotate(-90 150 150)"
                 className={cn(
                     "stroke-primary",
+                    "transition-stroke-dashoffset duration-1000 ease-linear",
                     {"animate-pulse": isActive && (isCountDownTimer || wod.type === 'EMOM' || wod.type === 'Tabata')}
                 )}
                 fill="transparent"
                 />
             </svg>
-            <div className="absolute inset-0 flex flex-col items-center justify-center">
+            <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
                  <p className="font-mono text-7xl md:text-8xl font-bold tracking-tighter text-foreground">
                     {mainTimeDisplay}
                 </p>
                  {(wod.type === 'EMOM' || wod.type === 'Tabata') && (
-                    <div className="text-center -mt-2">
+                    <div className="-mt-2">
                          {wod.type === 'Tabata' && (
                              <p className={cn("text-2xl font-bold", workoutState === 'work' ? 'text-green-500' : 'text-blue-500')}>
                                 {workoutState.toUpperCase()}
@@ -447,6 +439,12 @@ export function TimerClient({ wod }: { wod: WOD }) {
 
   return (
     <div className="flex flex-col items-center justify-center gap-8">
+        <div className="text-center">
+            <h1 className="text-4xl md:text-6xl font-extrabold font-headline text-foreground">
+                {wod.name}
+            </h1>
+            <p className="text-xl text-muted-foreground mt-2">{wod.type}</p>
+        </div>
       {renderTimerCircle()}
       <div className="flex justify-center gap-4">
         <Button
@@ -466,11 +464,11 @@ export function TimerClient({ wod }: { wod: WOD }) {
           <RotateCcw className="mr-2 h-5 w-5" /> Reset
         </Button>
       </div>
-      <Button onClick={() => handleFinish(time)} variant="destructive" size="lg" disabled={(!isActive && time === 0) || isCountingDown}>
-        <Flag className="mr-2 h-5 w-5" /> Finish
-      </Button>
+      {(wod.type === "For Time" || wod.type === "Other") && (
+         <Button onClick={() => handleFinish(time)} variant="destructive" size="lg" disabled={(!isActive && time === 0) || isCountingDown}>
+            <Flag className="mr-2 h-5 w-5" /> Finish
+        </Button>
+      )}
     </div>
   );
 }
-
-    

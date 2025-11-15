@@ -4,6 +4,10 @@ export type WodType = "For Time" | "AMRAP" | "EMOM" | "Tabata" | "Other";
 export type WodDescriptionSection = {
   title: string;
   content: string;
+  timerType?: WodType;
+  timerDuration?: number; // in minutes for AMRAP/EMOM
+  timerRounds?: number;   // for EMOM/Tabata
+  timerInterval?: number; // in seconds for EMOM
 };
 
 export type Reaction = 'fire' | 'poop';

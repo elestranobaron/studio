@@ -1,3 +1,4 @@
+
 'use client';
     
 import { useState, useEffect } from 'react';
@@ -24,6 +25,10 @@ export interface UseDocResult<T> {
   error: FirestoreError | Error | null; // Error object, or null.
 }
 
+type UseDocOptions<T> = {
+    onLoad?: (data: WithId<T> | null) => void;
+}
+
 /**
  * React hook to subscribe to a single Firestore document in real-time.
  * Handles nullable references.
@@ -40,16 +45,15 @@ export interface UseDocResult<T> {
  */
 export function useDoc<T = any>(
   memoizedDocRef: DocumentReference<DocumentData> | null | undefined,
+  options?: UseDocOptions<T>
 ): UseDocResult<T> {
   type StateDataType = WithId<T> | null;
 
   const [data, setData] = useState<StateDataType>(null);
-  // isLoading is now true if we have a ref but no data/error yet.
   const [isLoading, setIsLoading] = useState<boolean>(!!memoizedDocRef);
   const [error, setError] = useState<FirestoreError | Error | null>(null);
 
   useEffect(() => {
-    // If there's no reference, we're not loading and have no data/error.
     if (!memoizedDocRef) {
       setIsLoading(false);
       setData(null);
@@ -57,27 +61,24 @@ export function useDoc<T = any>(
       return;
     }
 
-    // We have a reference, so we are now loading. Clear previous state.
     setIsLoading(true);
     setError(null);
-    // DO NOT clear data here to prevent flickering. The new data/error state
-    // will overwrite it on the first snapshot event.
 
     const unsubscribe = onSnapshot(
       memoizedDocRef,
       (snapshot: DocumentSnapshot<DocumentData>) => {
-        // We received a snapshot, so loading is complete.
         setIsLoading(false);
+        let docData: StateDataType = null;
         if (snapshot.exists()) {
-          setData({ ...(snapshot.data() as T), id: snapshot.id });
+          docData = { ...(snapshot.data() as T), id: snapshot.id };
+          setData(docData);
         } else {
-          // Document does not exist. This is a valid state, not an error.
           setData(null);
         }
-        setError(null); // Clear any previous error.
+        setError(null);
+        options?.onLoad?.(docData);
       },
       (error: FirestoreError) => {
-        // An error occurred (e.g., permission denied).
         setIsLoading(false);
         setData(null);
         
@@ -88,13 +89,12 @@ export function useDoc<T = any>(
 
         setError(contextualError);
         
-        // Globally emit the rich, contextual error for debugging overlays.
         errorEmitter.emit('permission-error', contextualError);
       }
     );
 
-    // Cleanup subscription on unmount or if the reference changes.
     return () => unsubscribe();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [memoizedDocRef]);
 
   return { data, isLoading, error };
