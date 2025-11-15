@@ -11,7 +11,7 @@ import { doc } from 'firebase/firestore';
 import type { WOD, WodDescriptionSection } from '@/lib/types';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useUser } from '@/firebase/provider';
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import Image from 'next/image';
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { Separator } from '@/components/ui/separator';
@@ -98,6 +98,20 @@ export default function CommunityTimerPage() {
           }
       }
   });
+  
+    useEffect(() => {
+        if (heroWod && !activeWod) {
+            const mainSection = Array.isArray(heroWod.description)
+                ? heroWod.description.find(s => s.timerType) // Find first section with a timer
+                : null;
+            if (mainSection) {
+                setActiveWod(createWodFromSection(heroWod, mainSection));
+            } else {
+                setActiveWod(heroWod);
+            }
+        }
+    }, [heroWod, activeWod]);
+
 
   const wod = isHeroWod ? heroWod : firestoreWod;
   const isLoading = isUserLoading || (isFirestoreWodLoading && !isHeroWod);
