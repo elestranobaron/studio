@@ -66,6 +66,7 @@ export default function TimerPage() {
   const { firestore } = useFirebase();
   const { user, isUserLoading } = useUser();
   const [activeWod, setActiveWod] = useState<WOD | null>(null);
+  const [isSheetOpen, setIsSheetOpen] = useState(false);
 
   const wodRef = useMemo(() => {
     if (!firestore || !user || typeof id !== 'string') return null;
@@ -102,9 +103,11 @@ export default function TimerPage() {
 
   const handleSectionSelect = (section: WodDescriptionSection) => {
     setActiveWod(createWodFromSection(wod, section));
+    setIsSheetOpen(false);
   };
   const handleWodSelect = () => {
       setActiveWod(wod);
+      setIsSheetOpen(false);
   }
 
   return activeWod ? (
@@ -127,7 +130,7 @@ export default function TimerPage() {
         </div>
 
          <div className="absolute top-4 right-4 z-20">
-             <Sheet>
+             <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
                 <SheetTrigger asChild>
                     <Button variant="outline" className="bg-background/50 backdrop-blur-sm">
                         <BookOpen className="mr-2 h-4 w-4" /> View WOD
