@@ -189,19 +189,12 @@ export const createCheckout = onCall(
         payment_method_types: ["card"],
         line_items: [{ price: priceId, quantity: 1 }],
         mode: "subscription",
+        allow_promotion_codes: true, // Allow promo codes
         success_url: "https://wodburner.app/premium?success=true",
         cancel_url: "https://wodburner.app/premium?cancel=true",
         customer_email: request.auth.token.email || undefined,
         metadata: { uid: request.auth.uid },
       });
-
-      // MISE À JOUR PREMIUM DANS FIRESTORE
-      await db.collection('users').doc(request.auth.uid).set({
-        premium: true,
-        premiumUntil: null,
-        priceId: priceId,
-        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
-      }, { merge: true });
 
       return { id: session.id };
     } catch (error: any) {
@@ -262,5 +255,3 @@ export const stripeWebhook = onRequest(
     response.status(200).send();
   }
 );
-
-    
