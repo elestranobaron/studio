@@ -44,15 +44,37 @@ const analyzeWodPrompt = ai.definePrompt({
         },
     ]
   },
-  prompt: `You are an expert CrossFit coach. Your task is to analyze the provided image of a Workout of the Day (WOD) and extract its key details.
+  prompt: `You are an expert CrossFit coach and data analyst. Your task is to meticulously analyze the provided image of a Workout of the Day (WOD) and structure it into a machine-readable format.
 
-The image contains a description of a workout. It might be split into multiple columns or sections (like 'Strength', 'Metcon', 'Warm-up'). Please carefully read the ENTIRE image and extract the following information.
+The image contains a workout, often split into sections like 'Warm-up', 'Strength', 'Metcon'.
 
-1.  **Name**: The title of the workout (e.g., "Fran", "Murph", "Cindy"). If no name is present, create a descriptive name based on the exercises.
-2.  **Type**: The format of the main workout. Choose from "For Time", "AMRAP", "EMOM", "Tabata", or "Other".
-3.  **Description**: Analyze the workout and break it down into logical sections. Each section should have a 'title' (like 'Warm-up', 'Strength', 'Metcon', 'Accessory', or 'Cool-down') and 'content'. The content for each section must preserve the original formatting, including all line breaks and spacing, to ensure it is readable.
-4.  **Duration**: If the WOD is an AMRAP or EMOM, calculate its total duration in **minutes**. For example, an AMRAP in 20 minutes is 20. An EMOM for 10 rounds of 1 minute is 10. An EMOM for 6 rounds every 2 minutes 30 seconds is 15 (6 * 2.5). If it's "For Time" or the duration is not specified, leave this field empty.
-5.  **Image Hint**: Based on the main exercise(s), provide a one or two-word hint for finding a relevant stock photo. Examples: "running", "barbell", "kettlebell", "pull-up", "rowing".
+**Main Analysis (Overall WOD):**
+First, determine the primary details of the WOD. This is usually based on the "Metcon" or main conditioning piece.
+1.  **Name**: The title of the workout (e.g., "Murph"). If no name is present, create a descriptive name.
+2.  **Type**: The format of the *main workout*. Choose from "For Time", "AMRAP", "EMOM", "Tabata", or "Other".
+3.  **Duration**: The total duration in **minutes** of the *main workout*. For AMRAPs, use the specified time. For EMOMs, calculate total time (e.g., 'EMOM for 10 rounds of 1 minute' is 10. 'Every 2:30 for 6 rounds' is 15). Leave empty if not applicable (e.g., For Time).
+4.  **Image Hint**: Provide a one or two-word hint for a relevant stock photo based on the main exercises.
+
+**Detailed Section-by-Section Analysis:**
+Next, you MUST break the workout down into its logical sections. For **EACH** section, perform the following analysis:
+1.  **title**: The title of the section (e.g., 'Warm-up', 'Strength', 'Metcon').
+2.  **content**: The full, original text of that section. **Preserve all line breaks and formatting.**
+3.  **Timer Analysis (for this section only):**
+    *   **timerType**: If this specific section has a timer, identify its type ("For Time", "AMRAP", "EMOM", "Tabata", "Other").
+    *   **timerDuration**: For AMRAP/EMOM, what is its duration in minutes?
+    *   **timerRounds**: For EMOM/Tabata, how many rounds?
+    *   **timerInterval**: For EMOM, what is the interval in **seconds**? (e.g., "Every 90s" is 90).
+
+**Example:**
+If a "Strength" section says "EMOM 10 min: 1 Power Clean", you must extract:
+- title: 'Strength'
+- content: 'EMOM 10 min: 1 Power Clean'
+- timerType: 'EMOM'
+- timerDuration: 10
+- timerRounds: 10
+- timerInterval: 60
+
+If a section has no timer, do not fill in the timer fields for that section.
 
 Analyze the following image:
 {{media url=photoDataUri}}`,
