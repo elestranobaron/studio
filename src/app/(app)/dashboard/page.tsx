@@ -241,31 +241,26 @@ function DashboardContent() {
     console.log('[DEBUG] DashboardContent useEffect running.');
 
     const handleScroll = () => {
-      // We check the scroll position of the main content area.
-      if (mainContentRef.current) {
-        const { scrollTop } = mainContentRef.current;
-        console.log('[DEBUG] Scroll event fired. scrollTop:', scrollTop);
-        setShowScrollTop(scrollTop > 200);
-      }
+      const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
+      console.log(`[DEBUG] Scroll event fired. scrollTop: ${scrollTop}`);
+      setShowScrollTop(scrollTop > 200);
     };
 
-    const mainEl = mainContentRef.current;
-    if (mainEl) {
-      console.log('[DEBUG] Attaching scroll listener to:', mainEl);
-      mainEl.addEventListener('scroll', handleScroll, { passive: true });
-    }
+    console.log('[DEBUG] Attaching scroll listener to: window');
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    
+    // Initial check in case the page is already scrolled on load
+    handleScroll();
 
     return () => {
-      if (mainEl) {
-        console.log('[DEBUG] Removing scroll listener from:', mainEl);
-        mainEl.removeEventListener('scroll', handleScroll);
-      }
+      console.log('[DEBUG] Removing scroll listener from: window');
+      window.removeEventListener('scroll', handleScroll);
     };
-  }, []); // Empty dependency array ensures this runs only once after the component mounts.
+  }, []); // Empty dependency array ensures this runs only once.
 
 
   const scrollToTop = () => {
-    mainContentRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const goToScanPage = () => {
@@ -301,7 +296,7 @@ function DashboardContent() {
         </Button>
       </header>
       <div className="flex-1 flex flex-col min-h-0">
-        <main ref={mainContentRef} className="flex-1 overflow-y-auto" id="dashboard-main-content">
+        <main ref={mainContentRef} className="flex-1" id="dashboard-main-content">
           <Tabs defaultValue={defaultTab} className="w-full">
             <div className="p-4 md:p-6 border-b">
               <TabsList className="grid w-full grid-cols-2 md:w-auto">
@@ -381,6 +376,7 @@ export default function DashboardPage() {
     
 
     
+
 
 
 
