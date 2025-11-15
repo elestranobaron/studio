@@ -25,6 +25,8 @@ if (!BREVO_API_KEY) {
 // ————— STRIPE (Secret Manager ONLY) —————
 const stripeSecretKey = defineSecret("STRIPE_SECRET_KEY");
 const stripeWebhookSecret = defineSecret("STRIPE_WEBHOOK_SECRET");
+const STRIPE_MONTHLY_PRICE_ID = process.env.STRIPE_MONTHLY_PRICE_ID;
+const STRIPE_YEARLY_PRICE_ID = process.env.STRIPE_YEARLY_PRICE_ID;
 
 
 // ————— MAGIC LINK —————
@@ -53,7 +55,8 @@ export const sendMagicLink = onCall(async (request) => {
     });
     
     // Create the intermediate redirect link that forces opening in the main browser
-    const redirectLink = `https://wodburner.app/auth/redirect?continueUrl=${encodeURIComponent(firebaseLink)}`;
+    const baseLink = `https://wodburner.app/auth/redirect?continueUrl=${encodeURIComponent(firebaseLink)}`;
+    const redirectLink = `${baseLink}&utm_source=brevo&utm_campaign=WODBurner Magic Link EN&utm_medium=email&utm_id=2`;
 
     // Stockage Kraken
     await db.collection("magicLinks").doc(email).set({
@@ -167,6 +170,10 @@ export const createCheckout = onCall(
     if (!request.auth) {
       throw new HttpsError("unauthenticated", "Connecte-toi pour t'abonner.");
     }
+    
+    if (!STRIPE_MONTHLY_PRICE_ID || !STRIPE_YEARLY_PRICE_ID) {
+      throw new HttpsError("failed-precondition", "Stripe price IDs are not configured.");
+    }
 
     const stripe = new Stripe(stripeSecretKey.value(), {
       apiVersion: "2024-06-20",
@@ -174,27 +181,20 @@ export const createCheckout = onCall(
 
     const yearly = request.data.yearly === true;
     const priceId = yearly
-      ? "price_1SRThNBuRfqlcCPRez0Kp0yg"
-      : "price_1SRTeGBuRfqlcCPRtcWQEsj5";
+      ? STRIPE_YEARLY_PRICE_ID
+      : STRIPE_MONTHLY_PRICE_ID;
 
     try {
       const session = await stripe.checkout.sessions.create({
         payment_method_types: ["card"],
         line_items: [{ price: priceId, quantity: 1 }],
         mode: "subscription",
+        allow_promotion_codes: true, // Allow promo codes
         success_url: "https://wodburner.app/premium?success=true",
         cancel_url: "https://wodburner.app/premium?cancel=true",
         customer_email: request.auth.token.email || undefined,
         metadata: { uid: request.auth.uid },
       });
-
-      // MISE À JOUR PREMIUM DANS FIRESTORE
-      await db.collection('users').doc(request.auth.uid).set({
-        premium: true,
-        premiumUntil: null,
-        priceId: priceId,
-        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
-      }, { merge: true });
 
       return { id: session.id };
     } catch (error: any) {
@@ -229,6 +229,8 @@ export const stripeWebhook = onRequest(
       const session = event.data.object as Stripe.Checkout.Session;
       
       const uid = session?.metadata?.uid;
+      const customerEmail = session?.customer_details?.email;
+
       if (!uid) {
         console.error("Webhook Error: No UID in session metadata.");
         response.status(400).send("No UID in session metadata.");
@@ -244,10 +246,29 @@ export const stripeWebhook = onRequest(
           priceId: priceId,
         }, { merge: true });
         console.log(`Successfully granted premium access to user ${uid}`);
+
+        if (customerEmail) {
+            const payload = {
+                sender: { name: "WODBurner Team", email: "noreply@wodburner.app" },
+                to: [{ email: customerEmail }],
+                templateId: 4, // Template ID for "Welcome Premium" email
+            };
+
+            await fetch("https://api.sendinblue.com/v3/smtp/email", {
+                method: "POST",
+                headers: {
+                    "api-key": BREVO_API_KEY,
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(payload),
+            });
+             console.log(`Premium welcome email sent to ${customerEmail}`);
+        }
+
       } catch (dbError) {
-        console.error(`Firestore update failed for user ${uid}:`, dbError);
-        response.status(500).send("Database update failed.");
-        return;
+        console.error(`Firestore update or email sending failed for user ${uid}:`, dbError);
+        // We don't fail the entire webhook for an email error.
+        // The important part is granting premium access.
       }
     }
     
