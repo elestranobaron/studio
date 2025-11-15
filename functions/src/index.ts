@@ -2,6 +2,7 @@
 /**
  * WODBurner – VERSION FINALE QUI MARCHE À 100 %
  * Premium + Stripe + Brevo + Reset quotas + Secret Manager
+ * Force redeploy to ensure production secrets are used.
  */
 import "dotenv/config";
 import { onCall, HttpsError } from "firebase-functions/v2/https";
@@ -318,5 +319,3 @@ export const stripeWebhook = onRequest(
     response.status(200).send();
   }
 );
-
-    
