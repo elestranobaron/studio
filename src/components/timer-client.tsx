@@ -338,7 +338,7 @@ export function TimerClient({ wod }: { wod: WOD }) {
     return 100;
   }
 
-  const progress = getProgressOnload();
+  const progress = getProgressOnLoad();
   const strokeDasharray = 2 * Math.PI * 140;
   const strokeDashoffset = strokeDasharray * (1 - progress / 100);
 
