@@ -1,9 +1,13 @@
 // src/lib/stripe.ts
 import { loadStripe } from "@stripe/stripe-js";
 
-// COLLE TA PUBLISHABLE KEY ICI (celle qui commence par pk_test_...)
+if (!process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY) {
+  throw new Error("NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY is not set");
+}
+
+// Load Stripe with the publishable key from environment variables
 const stripePromise = loadStripe(
-  "pk_test_51M3JRFBuRfqlcCPRgOBJjp5vlhG9iU0rOpRABCcOebSmrWht97BAu22VeuPl0723K2KuWDN3DdheqU9HWUo3vjTM008rbnH1Qg"
+  process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
 );
 
 export default stripePromise;
