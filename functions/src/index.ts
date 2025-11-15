@@ -229,6 +229,8 @@ export const stripeWebhook = onRequest(
       const session = event.data.object as Stripe.Checkout.Session;
       
       const uid = session?.metadata?.uid;
+      const customerEmail = session?.customer_details?.email;
+
       if (!uid) {
         console.error("Webhook Error: No UID in session metadata.");
         response.status(400).send("No UID in session metadata.");
@@ -244,10 +246,29 @@ export const stripeWebhook = onRequest(
           priceId: priceId,
         }, { merge: true });
         console.log(`Successfully granted premium access to user ${uid}`);
+
+        if (customerEmail) {
+            const payload = {
+                sender: { name: "WODBurner Team", email: "noreply@wodburner.app" },
+                to: [{ email: customerEmail }],
+                templateId: 3, // Template ID for "Welcome Premium" email
+            };
+
+            await fetch("https://api.sendinblue.com/v3/smtp/email", {
+                method: "POST",
+                headers: {
+                    "api-key": BREVO_API_KEY,
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(payload),
+            });
+             console.log(`Premium welcome email sent to ${customerEmail}`);
+        }
+
       } catch (dbError) {
-        console.error(`Firestore update failed for user ${uid}:`, dbError);
-        response.status(500).send("Database update failed.");
-        return;
+        console.error(`Firestore update or email sending failed for user ${uid}:`, dbError);
+        // We don't fail the entire webhook for an email error.
+        // The important part is granting premium access.
       }
     }
     
@@ -255,3 +276,4 @@ export const stripeWebhook = onRequest(
     response.status(200).send();
   }
 );
+
