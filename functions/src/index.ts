@@ -189,7 +189,7 @@ export const createCheckout = onCall(
         payment_method_types: ["card"],
         line_items: [{ price: priceId, quantity: 1 }],
         mode: "subscription",
-        allow_promotion_codes: true, // Allow promo codes
+        allow_promotion_codes: true,
         success_url: "https://wodburner.app/premium?success=true",
         cancel_url: "https://wodburner.app/premium?cancel=true",
         customer_email: request.auth.token.email || undefined,
@@ -264,7 +264,7 @@ export const stripeWebhook = onRequest(
       
       const uid = session?.metadata?.uid;
       const customerEmail = session?.customer_details?.email;
-      const stripeCustomerId = session.customer; // <-- NOUVEAU
+      const stripeCustomerId = session.customer;
 
       if (!uid) {
         console.error("Webhook Error: No UID in session metadata.");
@@ -284,7 +284,7 @@ export const stripeWebhook = onRequest(
           premium: true,
           premiumSince: admin.firestore.FieldValue.serverTimestamp(),
           priceId: priceId,
-          stripeCustomerId: stripeCustomerId, // <-- NOUVEAU
+          stripeCustomerId: stripeCustomerId,
         }, { merge: true });
         console.log(`Successfully granted premium access to user ${uid}`);
 
