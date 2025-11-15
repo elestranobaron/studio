@@ -53,33 +53,35 @@ function PremiumContent() {
     }
   }, [success, cancel, toast]);
 
-  const handleCheckout = async (priceId: string, plan: 'monthly' | 'yearly') => {
+  const handleCheckout = async (plan: 'monthly' | 'yearly') => {
     if (!user || user.isAnonymous) {
       toast({ title: 'Please sign in', description: 'You need to have an account.', variant: 'destructive' });
       router.push('/login');
       return;
     }
-
+  
     setIsLoading(plan);
     try {
       const functions = getFunctions();
       const createCheckout = httpsCallable(functions, 'createCheckout');
-      const { data } = await createCheckout({ priceId, userId: user.uid });
+      
+      // Pass 'yearly' boolean instead of priceId
+      const { data } = await createCheckout({ yearly: plan === 'yearly' });
+  
       const sessionId = (data as { id: string }).id;
       if (!sessionId) throw new Error("No session ID");
-
+  
       const stripe = await stripePromise;
       if (!stripe) throw new Error("Stripe not loaded");
+  
       const { error } = await stripe.redirectToCheckout({ sessionId });
       if (error) throw error;
     } catch (error: any) {
       toast({ title: 'Checkout Error', description: error.message || 'Error', variant: 'destructive' });
+    } finally {
       setIsLoading(null);
     }
   };
-
-  const monthlyPriceId = process.env.NEXT_PUBLIC_STRIPE_MONTHLY_PRICE_ID || '';
-  const yearlyPriceId = process.env.NEXT_PUBLIC_STRIPE_YEARLY_PRICE_ID || '';
 
   if (user?.premium) {
     return (
@@ -90,7 +92,7 @@ function PremiumContent() {
           <p className="text-2xl text-muted-foreground">Badge Supporter activé</p>
           <p className="text-lg">Merci de soutenir WODBurner ❤️</p>
           <div className="flex gap-4 justify-center">
-            <Button size="lg" onClick={() => router.push('/community-timer')} className="bg-green-600 hover:bg-green-700">
+            <Button size="lg" onClick={() => router.push('/dashboard?tab=community')} className="bg-green-600 hover:bg-green-700">
               Voir la communauté
             </Button>
             <Button size="lg" variant="outline" onClick={() => router.push('/dashboard')}>
@@ -184,7 +186,7 @@ function PremiumContent() {
             </CardContent>
             <CardFooter>
               <Button 
-                onClick={() => handleCheckout(isYearly ? yearlyPriceId : monthlyPriceId, isYearly ? 'yearly' : 'monthly')} 
+                onClick={() => handleCheckout(isYearly ? 'yearly' : 'monthly')} 
                 className="w-full text-xl py-8" 
                 disabled={!!isLoading || isUserLoading}
               >
@@ -213,3 +215,5 @@ export default function PremiumPage() {
     </div>
   );
 }
+
+    

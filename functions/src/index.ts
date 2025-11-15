@@ -25,6 +25,8 @@ if (!BREVO_API_KEY) {
 // ————— STRIPE (Secret Manager ONLY) —————
 const stripeSecretKey = defineSecret("STRIPE_SECRET_KEY");
 const stripeWebhookSecret = defineSecret("STRIPE_WEBHOOK_SECRET");
+const STRIPE_MONTHLY_PRICE_ID = process.env.STRIPE_MONTHLY_PRICE_ID;
+const STRIPE_YEARLY_PRICE_ID = process.env.STRIPE_YEARLY_PRICE_ID;
 
 
 // ————— MAGIC LINK —————
@@ -168,6 +170,10 @@ export const createCheckout = onCall(
     if (!request.auth) {
       throw new HttpsError("unauthenticated", "Connecte-toi pour t'abonner.");
     }
+    
+    if (!STRIPE_MONTHLY_PRICE_ID || !STRIPE_YEARLY_PRICE_ID) {
+      throw new HttpsError("failed-precondition", "Stripe price IDs are not configured.");
+    }
 
     const stripe = new Stripe(stripeSecretKey.value(), {
       apiVersion: "2024-06-20",
@@ -175,8 +181,8 @@ export const createCheckout = onCall(
 
     const yearly = request.data.yearly === true;
     const priceId = yearly
-      ? "price_1SRThNBuRfqlcCPRez0Kp0yg"
-      : "price_1SRTeGBuRfqlcCPRtcWQEsj5";
+      ? STRIPE_YEARLY_PRICE_ID
+      : STRIPE_MONTHLY_PRICE_ID;
 
     try {
       const session = await stripe.checkout.sessions.create({
@@ -256,3 +262,5 @@ export const stripeWebhook = onRequest(
     response.status(200).send();
   }
 );
+
+    
