@@ -234,29 +234,22 @@ function DashboardContent() {
   const router = useRouter();
   const defaultTab = searchParams.get('tab') === 'community' ? 'community' : 'personal';
   
-  const mainContentRef = useRef<HTMLDivElement>(null);
   const [showScrollTop, setShowScrollTop] = useState(false);
 
   useEffect(() => {
-    console.log('[DEBUG] DashboardContent useEffect running.');
-
     const handleScroll = () => {
-      const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
-      console.log(`[DEBUG] Scroll event fired. scrollTop: ${scrollTop}`);
+      const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
       setShowScrollTop(scrollTop > 200);
     };
 
-    console.log('[DEBUG] Attaching scroll listener to: window');
     window.addEventListener('scroll', handleScroll, { passive: true });
     
-    // Initial check in case the page is already scrolled on load
     handleScroll();
 
     return () => {
-      console.log('[DEBUG] Removing scroll listener from: window');
       window.removeEventListener('scroll', handleScroll);
     };
-  }, []); // Empty dependency array ensures this runs only once.
+  }, []);
 
 
   const scrollToTop = () => {
@@ -296,7 +289,7 @@ function DashboardContent() {
         </Button>
       </header>
       <div className="flex-1 flex flex-col min-h-0">
-        <main ref={mainContentRef} className="flex-1" id="dashboard-main-content">
+        <main className="flex-1 overflow-y-auto" id="dashboard-main-content">
           <Tabs defaultValue={defaultTab} className="w-full">
             <div className="p-4 md:p-6 border-b">
               <TabsList className="grid w-full grid-cols-2 md:w-auto">
@@ -374,10 +367,3 @@ export default function DashboardPage() {
     
 
     
-
-    
-
-
-
-
-
