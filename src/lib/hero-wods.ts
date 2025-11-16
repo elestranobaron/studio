@@ -1,3 +1,4 @@
+
 import type { WOD } from './types';
 
 // A selection of famous CrossFit Hero WODs
@@ -36,7 +37,7 @@ export const heroWods: WOD[] = [
     duration: 20,
     date: 'Benchmark',
     description: [
-        { title: 'Another "Girls" WOD, a classic test of gymnastic endurance.', content: ''},
+        { title: 'Another "Girls" WOD, a classic test of gymnastic endurance.', content: ''},-
         { title: 'AMRAP in 20 Minutes', content: '5 Pull-ups\n10 Push-ups\n15 Squats', timerType: 'AMRAP', timerDuration: 20 },
     ],
     imageUrl: 'system-letter',
@@ -466,4 +467,218 @@ export const heroWods: WOD[] = [
     userId: 'system',
     userDisplayName: 'CrossFit HQ',
   },
+  // --- New batch of Premium WODs ---
+  {
+    id: 'hero-rah',
+    name: 'Rahoi',
+    type: 'AMRAP',
+    duration: 12,
+    date: 'Hero WOD',
+    isPremium: true,
+    description: [
+      { title: 'In honor of U.S. FBI Supervisory Special Agent Gregory J. Rahoi, 38, of Brookfield, Wisconsin, who was killed on December 6, 2006.', content: '' },
+      { title: 'AMRAP in 12 minutes', content: '12 Box Jumps (24/20 in)\n6 Thrusters (95/65 lb)\n6 Bar-Facing Burpees', timerType: 'AMRAP', timerDuration: 12 }
+    ],
+    imageUrl: 'system-letter',
+    userId: 'system',
+    userDisplayName: 'CrossFit HQ',
+  },
+  {
+    id: 'hero-javier',
+    name: 'Javier',
+    type: 'AMRAP',
+    duration: 25,
+    date: 'Hero WOD',
+    isPremium: true,
+    description: [
+      { title: 'In honor of U.S. Army Sergeant Javier Jaguar Gutierrez, 28, of San Antonio, Texas, who was killed in action on February 8, 2020, in Nangarhar Province, Afghanistan.', content: '' },
+      { title: 'AMRAP in 25 minutes', content: '100 meter Farmer\'s Carry (50/35 lb DBs)\n15 Pull-ups\n15 Push-ups', timerType: 'AMRAP', timerDuration: 25 }
+    ],
+    imageUrl: 'system-letter',
+    userId: 'system',
+    userDisplayName: 'CrossFit HQ',
+  },
+  {
+    id: 'hero-loredo',
+    name: 'Loredo',
+    type: 'For Time',
+    date: 'Hero WOD',
+    isPremium: true,
+    description: [
+      { title: 'In honor of U.S. Army Staff Sergeant Edwardo Loredo, 34, of Houston, Texas, who was killed in action on June 24, 2010, in Afghanistan.', content: '' },
+      { title: '6 Rounds For Time', content: '24 Squats\n24 Push-ups\n24 Walking Lunges\n400 meter Run', timerType: 'For Time' }
+    ],
+    imageUrl: 'system-letter',
+    userId: 'system',
+    userDisplayName: 'CrossFit HQ',
+  },
+  {
+    id: 'hero-adrian',
+    name: 'Adrian',
+    type: 'For Time',
+    date: 'Hero WOD',
+    isPremium: true,
+    description: [
+      { title: 'In honor of U.S. Army Sergeant First Class Adrian Elizalde, 30, of North Bend, Oregon, who was killed in action on August 23, 2007, in Iraq.', content: '' },
+      { title: '7 Rounds For Time', content: '3 Forward Rolls\n5 Wall Climbs\n7 Toes-to-Bar\n9 Box Jumps (30/24 in)', timerType: 'For Time' }
+    ],
+    imageUrl: 'system-letter',
+    userId: 'system',
+    userDisplayName: 'CrossFit HQ',
+  },
+  {
+    id: 'hero-manion',
+    name: 'Manion',
+    type: 'For Time',
+    date: 'Hero WOD',
+    isPremium: true,
+    description: [
+      { title: 'In honor of 1st Lt. Travis Manion, 26, of Doylestown, PA, who was killed by sniper fire on April 29, 2007.', content: '' },
+      { title: '7 Rounds For Time', content: '400 meter Run\n29 Back Squats (135/95 lb)', timerType: 'For Time' }
+    ],
+    imageUrl: 'system-letter',
+    userId: 'system',
+    userDisplayName: 'CrossFit HQ',
+  },
+  {
+    id: 'hero-chad',
+    name: 'Chad',
+    type: 'For Time',
+    date: 'Hero WOD',
+    isPremium: true,
+    description: [
+      { title: 'In honor of Navy SEAL Chad Wilkinson who took his own life on October 29, 2018 due to the effects of numerous deployments, blast wave injuries, and PTSD.', content: '' },
+      { title: 'For Time', content: '1,000 Box Step-ups (20 in box, 45/35 lb rucksack)', timerType: 'For Time' }
+    ],
+    imageUrl: 'system-letter',
+    userId: 'system',
+    userDisplayName: 'CrossFit HQ',
+  },
+  {
+    id: 'hero-coo',
+    name: 'Coo',
+    type: 'For Time',
+    date: 'Hero WOD',
+    isPremium: true,
+    description: [
+      { title: 'In honor of Corporal Andrew "Coo" Eykelenboom, 23, from Comox, British Columbia, who was killed by a suicide bomber on August 11, 2006.', content: '' },
+      { title: '10 Rounds For Time', content: '10 Bench Presses (bodyweight)\n10 Bent-Over Rows (bodyweight)', timerType: 'For Time' }
+    ],
+    imageUrl: 'system-letter',
+    userId: 'system',
+    userDisplayName: 'CrossFit HQ',
+  },
+  {
+    id: 'hero-whitten',
+    name: 'Whitten',
+    type: 'For Time',
+    date: 'Hero WOD',
+    isPremium: true,
+    description: [
+      { title: 'In honor of Army Captain Dan Whitten, 28, of Polk, Nebraska, who was killed in action on February 2, 2010, in Afghanistan.', content: '' },
+      { title: '5 Rounds For Time', content: '22 Kettlebell Swings (2 pood)\n22 Box Jumps (24 in)\n400 meter Run\n22 Burpees\n22 Wall Balls (20/14 lb)', timerType: 'For Time' }
+    ],
+    imageUrl: 'system-letter',
+    userId: 'system',
+    userDisplayName: 'CrossFit HQ',
+  },
+  {
+    id: 'hero-klepto',
+    name: 'Klepto',
+    type: 'For Time',
+    date: 'Hero WOD',
+    isPremium: true,
+    description: [
+      { title: 'In honor of U.S. Air Force Major David "Klepto" L. Brodeur, 34, of Auburn, Massachusetts, who was killed on April 27, 2011, in Afghanistan.', content: '' },
+      { title: '4 Rounds For Time', content: '27 Box Jumps (24/20 in)\n20 Burpees\n11 Squat Cleans (145/105 lb)', timerType: 'For Time' }
+    ],
+    imageUrl: 'system-letter',
+    userId: 'system',
+    userDisplayName: 'CrossFit HQ',
+  },
+  {
+    id: 'hero-zeus',
+    name: 'Zeus',
+    type: 'For Time',
+    date: 'Hero WOD',
+    isPremium: true,
+    description: [
+      { title: 'In honor of U.S. Army Spc. Nicholas P. Ziolkowski, 22, of Towson, Maryland, who was killed in action on August 11, 2004, in Iraq.', content: '' },
+      { title: '3 Rounds For Time', content: '30 Wall Balls (20/14 lb)\n30 Sumo Deadlift High-Pulls (75/55 lb)\n30 Box Jumps (20 in)\n30 Push Presses (75/55 lb)\n30-calorie Row\n30 Push-ups\n10 Body-Weight Back Squats', timerType: 'For Time' }
+    ],
+    imageUrl: 'system-letter',
+    userId: 'system',
+    userDisplayName: 'CrossFit HQ',
+  },
+  {
+    id: 'hero-severin',
+    name: 'Severin',
+    type: 'For Time',
+    date: 'Hero WOD',
+    isPremium: true,
+    description: [
+      { title: 'In honor of U.S. Army Sergeant 1st Class Severin W. Summers III, 43, of Bentonia, Mississippi, who was killed in action on August 2, 2009, in Afghanistan.', content: '' },
+      { title: 'For Time', content: '50 Strict Pull-ups\n100 Push-ups, hand-release\n5K Run\n*If you have a 20 lb vest, wear it.', timerType: 'For Time' }
+    ],
+    imageUrl: 'system-letter',
+    userId: 'system',
+    userDisplayName: 'CrossFit HQ',
+  },
+  {
+    id: 'hero-morrison',
+    name: 'Morrison',
+    type: 'For Time',
+    date: 'Hero WOD',
+    isPremium: true,
+    description: [
+      { title: 'In honor of U.S. Army Specialist Scott Morrison, 23, of Blue Ash, Ohio, who was killed on September 26, 2010, in Afghanistan.', content: '' },
+      { title: '50-40-30-20-10 Reps For Time', content: 'Wall Balls (20/14 lb)\nBox Jumps (24/20 in)\nKettlebell Swings (1.5/1 pood)', timerType: 'For Time' }
+    ],
+    imageUrl: 'system-letter',
+    userId: 'system',
+    userDisplayName: 'CrossFit HQ',
+  },
+  {
+    id: 'hero-johnson',
+    name: 'Johnson',
+    type: 'AMRAP',
+    duration: 20,
+    date: 'Hero WOD',
+    isPremium: true,
+    description: [
+      { title: 'In honor of U.S. Army Sergeant Kristopher Johnson, 25, of Orangeburg, South Carolina, who was killed in action on May 28, 2007, in Afghanistan.', content: '' },
+      { title: 'AMRAP in 20 minutes', content: '9 Deadlifts (245/165 lb)\n8 Muscle-ups\n9 Squat Cleans (155/105 lb)', timerType: 'AMRAP', timerDuration: 20 }
+    ],
+    imageUrl: 'system-letter',
+    userId: 'system',
+    userDisplayName: 'CrossFit HQ',
+  },
+  {
+    id: 'hero-roy',
+    name: 'Roy',
+    type: 'For Time',
+    date: 'Hero WOD',
+    isPremium: true,
+    description: [
+      { title: 'In honor of U.S. Marine Corps Sgt. Michael C. Roy, 25, of North Fort Myers, Florida, who was killed in action on July 8, 2009, in Afghanistan.', content: '' },
+      { title: '5 Rounds For Time', content: '15 Deadlifts (225/155 lb)\n20 Box Jumps (24/20 in)\n25 Pull-ups', timerType: 'For Time' }
+    ],
+    imageUrl: 'system-letter',
+    userId: 'system',
+    userDisplayName: 'CrossFit HQ',
+  },
+  {
+    id: 'hero-jared',
+    name: 'Jared',
+    type: 'For Time',
+    date: 'Hero WOD',
+    isPremium: true,
+    description: [
+      { title: 'In honor of U.S. Army SSG Jared W. Brown, 29, of Fort Walton Beach, Florida, who was killed in action on July 16, 2009, in Afghanistan.', content: '' },
+      { title: '4 Rounds For Time', content: '800 meter Run\n40 Pull-ups\n70 Push-ups', timerType: 'For Time' }
+    ],
+    imageUrl: 'system-letter',
+    userId: 'system',
+    userDisplayName: 'CrossFit HQ',
+  }
 ];
