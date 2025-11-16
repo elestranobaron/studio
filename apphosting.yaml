@@ -12,3 +12,5 @@ env:
     secret: STRIPE_MONTHLY_PRICE_ID
   - variable: STRIPE_YEARLY_PRICE_ID
     secret: STRIPE_YEARLY_PRICE_ID
+  - variable: NEXT_PUBLIC_APP_URL
+    value: "https://wodburner.app"
