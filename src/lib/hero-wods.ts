@@ -15,7 +15,6 @@ export const heroWods: WOD[] = [
     imageUrl: 'system-letter', // Identifier for HeroLetter component
     userId: 'system',
     userDisplayName: 'CrossFit HQ',
-    isPremium: false,
   },
   {
     id: 'hero-fran',
@@ -29,7 +28,6 @@ export const heroWods: WOD[] = [
     imageUrl: 'system-letter',
     userId: 'system',
     userDisplayName: 'CrossFit HQ',
-    isPremium: false,
   },
   {
     id: 'hero-cindy',
@@ -44,7 +42,6 @@ export const heroWods: WOD[] = [
     imageUrl: 'system-letter',
     userId: 'system',
     userDisplayName: 'CrossFit HQ',
-    isPremium: false,
   },
   {
     id: 'hero-dt',
@@ -58,7 +55,6 @@ export const heroWods: WOD[] = [
     imageUrl: 'system-letter',
     userId: 'system',
     userDisplayName: 'CrossFit HQ',
-    isPremium: false,
   },
   {
     id: 'hero-ryan',
@@ -72,7 +68,6 @@ export const heroWods: WOD[] = [
     imageUrl: 'system-letter',
     userId: 'system',
     userDisplayName: 'CrossFit HQ',
-    isPremium: true,
   },
   {
     id: 'hero-randy',
@@ -86,7 +81,6 @@ export const heroWods: WOD[] = [
     imageUrl: 'system-letter',
     userId: 'system',
     userDisplayName: 'CrossFit HQ',
-    isPremium: true,
   },
   {
     id: 'hero-jt',
@@ -100,7 +94,6 @@ export const heroWods: WOD[] = [
     imageUrl: 'system-letter',
     userId: 'system',
     userDisplayName: 'CrossFit HQ',
-    isPremium: true,
   },
   {
     id: 'hero-hotshots-19',
@@ -114,7 +107,6 @@ export const heroWods: WOD[] = [
     imageUrl: 'system-letter',
     userId: 'system',
     userDisplayName: 'CrossFit HQ',
-    isPremium: true,
   },
   {
     id: 'hero-the-seven',
@@ -128,7 +120,6 @@ export const heroWods: WOD[] = [
     imageUrl: 'system-letter',
     userId: 'system',
     userDisplayName: 'CrossFit HQ',
-    isPremium: true,
   },
   {
     id: 'hero-kalsu',
@@ -142,7 +133,6 @@ export const heroWods: WOD[] = [
     imageUrl: 'system-letter',
     userId: 'system',
     userDisplayName: 'CrossFit HQ',
-    isPremium: true,
   },
   {
     id: 'hero-arnie',
@@ -156,7 +146,6 @@ export const heroWods: WOD[] = [
     imageUrl: 'system-letter',
     userId: 'system',
     userDisplayName: 'CrossFit HQ',
-    isPremium: true,
   },
   {
     id: 'hero-lumberjack-20',
@@ -170,7 +159,6 @@ export const heroWods: WOD[] = [
     imageUrl: 'system-letter',
     userId: 'system',
     userDisplayName: 'CrossFit HQ',
-    isPremium: true,
   },
   {
     id: 'hero-bull',
@@ -184,7 +172,6 @@ export const heroWods: WOD[] = [
     imageUrl: 'system-letter',
     userId: 'system',
     userDisplayName: 'CrossFit HQ',
-    isPremium: true,
   },
   {
     id: 'hero-daniel',
@@ -198,7 +185,6 @@ export const heroWods: WOD[] = [
     imageUrl: 'system-letter',
     userId: 'system',
     userDisplayName: 'CrossFit HQ',
-    isPremium: true,
   },
   {
     id: 'hero-tommy-v',
@@ -212,7 +198,6 @@ export const heroWods: WOD[] = [
     imageUrl: 'system-letter',
     userId: 'system',
     userDisplayName: 'CrossFit HQ',
-    isPremium: true,
   },
   {
     id: 'hero-the-chief',
@@ -227,7 +212,6 @@ export const heroWods: WOD[] = [
     imageUrl: 'system-letter',
     userId: 'system',
     userDisplayName: 'CrossFit HQ',
-    isPremium: true,
   },
   {
     id: 'hero-fight-gone-bad',
@@ -241,7 +225,6 @@ export const heroWods: WOD[] = [
     imageUrl: 'system-letter',
     userId: 'system',
     userDisplayName: 'CrossFit HQ',
-    isPremium: true,
   },
   {
     id: 'hero-helen',
@@ -255,7 +238,6 @@ export const heroWods: WOD[] = [
     imageUrl: 'system-letter',
     userId: 'system',
     userDisplayName: 'CrossFit HQ',
-    isPremium: true,
   },
   {
     id: 'hero-karen',
@@ -269,6 +251,5 @@ export const heroWods: WOD[] = [
     imageUrl: 'system-letter',
     userId: 'system',
     userDisplayName: 'CrossFit HQ',
-    isPremium: true,
   },
 ];

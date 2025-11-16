@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Clock, Calendar, Repeat, Hourglass, Timer, Share2, LoaderCircle, User, MessageCircle, MoreHorizontal, Trash2, Pencil, Expand, Lock, Gem } from "lucide-react";
+import { Clock, Calendar, Repeat, Hourglass, Timer, Share2, LoaderCircle, User, MessageCircle, MoreHorizontal, Trash2, Pencil, Expand } from "lucide-react";
 import { format, isValid } from 'date-fns';
 import { useFirebase, useUser } from "@/firebase";
 import { useState, useMemo } from "react";
@@ -327,15 +327,11 @@ function ReactionButton({ initialWod }: { initialWod: WOD }) {
 }
 
 
-export function WodCard({ wod, source = 'personal', isLocked = false }: { wod: WOD, source?: 'personal' | 'community', isLocked?: boolean }) {
+export function WodCard({ wod, source = 'personal' }: { wod: WOD, source?: 'personal' | 'community' }) {
     
     const date = new Date(wod.date);
     const formattedDate = isValid(date) ? format(date, "PPP") : wod.date;
-    let href = source === 'community' ? `/community-timer/${wod.id}` : `/timer/${wod.id}`;
-    
-    if (isLocked) {
-        href = '/premium';
-    }
+    const href = source === 'community' ? `/community-timer/${wod.id}` : `/timer/${wod.id}`;
     
     const descriptionSections = Array.isArray(wod.description)
         ? wod.description
@@ -345,10 +341,7 @@ export function WodCard({ wod, source = 'personal', isLocked = false }: { wod: W
 
 
   return (
-    <Card className={cn(
-        "flex flex-col overflow-hidden transition-all duration-300 ease-in-out group relative",
-        isLocked ? "bg-card/50 border-dashed" : "hover:shadow-2xl hover:shadow-primary/20 hover:-translate-y-1"
-    )}>
+    <Card className="flex flex-col overflow-hidden transition-all duration-300 ease-in-out group relative hover:shadow-2xl hover:shadow-primary/20 hover:-translate-y-1">
        
             {isHeroWod ? (
                  <HeroLetter letter={wod.name.charAt(0)} className="h-48 w-full" />
@@ -356,23 +349,21 @@ export function WodCard({ wod, source = 'personal', isLocked = false }: { wod: W
                 <Dialog>
                     {wod.imageUrl && (
                         <div className="relative h-48 w-full overflow-hidden">
-                            <DialogTrigger asChild disabled={isLocked}>
-                                <div className={cn("absolute inset-0 group/image", isLocked ? "cursor-default" : "cursor-pointer")}>
+                            <DialogTrigger asChild>
+                                <div className="absolute inset-0 group/image cursor-pointer">
                                     <Image
                                         src={wod.imageUrl}
                                         alt={wod.name}
                                         fill
-                                        className={cn("object-cover transition-transform duration-300", !isLocked && "group-hover/image:scale-105")}
+                                        className="object-cover transition-transform duration-300 group-hover/image:scale-105"
                                         data-ai-hint={wod.imageHint}
                                     />
                                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-                                    {!isLocked && (
-                                        <div className="absolute inset-0 bg-black/20 opacity-0 group-hover/image:opacity-100 transition-opacity flex items-center justify-center">
-                                            <div className="p-2 rounded-full bg-black/50 text-white">
-                                                <Expand className="h-6 w-6" />
-                                            </div>
+                                    <div className="absolute inset-0 bg-black/20 opacity-0 group-hover/image:opacity-100 transition-opacity flex items-center justify-center">
+                                        <div className="p-2 rounded-full bg-black/50 text-white">
+                                            <Expand className="h-6 w-6" />
                                         </div>
-                                    )}
+                                    </div>
                                 </div>
                             </DialogTrigger>
                         {source === 'personal' && <PersonalWodActions wod={wod} />}
@@ -415,17 +406,11 @@ export function WodCard({ wod, source = 'personal', isLocked = false }: { wod: W
                 </div>
             )}
         </div>
-        {wod.isPremium && (
-            <Badge className={cn("absolute top-3 left-3 z-10", isLocked ? "bg-gray-500 text-white" : "bg-primary")}>
-                {isLocked ? <Lock className="mr-1.5 h-3 w-3" /> : <Gem className="mr-1.5 h-3 w-3" />}
-                Premium
-            </Badge>
-        )}
       </CardHeader>
       <CardContent className="flex-grow py-2">
          <Dialog>
-             <DialogTrigger asChild disabled={isLocked}>
-                <p className={cn("line-clamp-3 text-sm text-muted-foreground whitespace-pre-wrap transition-colors", !isLocked && "cursor-pointer hover:text-foreground")}>
+             <DialogTrigger asChild>
+                <p className="line-clamp-3 text-sm text-muted-foreground whitespace-pre-wrap transition-colors cursor-pointer hover:text-foreground">
                     {descriptionSections.map(s => s.content).join("\n")}
                 </p>
              </DialogTrigger>
@@ -450,9 +435,9 @@ export function WodCard({ wod, source = 'personal', isLocked = false }: { wod: W
          </Dialog>
       </CardContent>
       <CardFooter className="flex flex-col items-stretch gap-2 pt-2">
-         {source === 'community' && !isLocked && <ReactionButton initialWod={wod} />}
-        <Button asChild className="w-full" disabled={isLocked}>
-          <Link href={href}>{isLocked ? 'Premium Only' : 'Start WOD'}</Link>
+         {source === 'community' && <ReactionButton initialWod={wod} />}
+        <Button asChild className="w-full">
+          <Link href={href}>Start WOD</Link>
         </Button>
       </CardFooter>
     </Card>
