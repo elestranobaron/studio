@@ -32,4 +32,5 @@ export type WOD = {
   };
   commentCount?: number; // For community WODs
   emomInterval?: number; // Custom: Interval length in seconds for EMOM
+  isPremium?: boolean; // To mark premium content
 };

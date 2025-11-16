@@ -4,8 +4,23 @@
 import { WodCard } from '@/components/wod-card';
 import { SidebarTrigger } from '@/components/ui/sidebar';
 import { heroWods } from '@/lib/hero-wods';
+import { useUser } from '@/firebase';
+import { Skeleton } from '@/components/ui/skeleton';
+
+function WodSkeleton() {
+  return (
+    <div className="flex flex-col space-y-3">
+      <Skeleton className="h-[125px] w-full rounded-xl" />
+      <div className="space-y-2">
+        <Skeleton className="h-4 w-[250px]" />
+        <Skeleton className="h-4 w-[200px]" />
+      </div>
+    </div>
+  );
+}
 
 export default function HeroWodsPage() {
+  const { user, isUserLoading } = useUser();
 
   return (
     <div className="flex flex-col h-full">
@@ -22,9 +37,26 @@ export default function HeroWodsPage() {
             </p>
         </div>
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {heroWods.map((wod) => (
-            <WodCard key={wod.id} wod={wod} source="community" />
-          ))}
+          {isUserLoading ? (
+            <>
+              <WodSkeleton />
+              <WodSkeleton />
+              <WodSkeleton />
+              <WodSkeleton />
+            </>
+          ) : (
+            heroWods.map((wod) => {
+              const isLocked = wod.isPremium && !user?.premium;
+              return (
+                <WodCard 
+                  key={wod.id} 
+                  wod={wod} 
+                  source="community" 
+                  isLocked={isLocked}
+                />
+              )
+            })
+          )}
         </div>
       </main>
     </div>
