@@ -10,6 +10,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Gem, Sparkles } from 'lucide-react';
+import { useMemo } from 'react';
 
 
 function WodSkeleton() {
@@ -25,6 +26,9 @@ function WodSkeleton() {
 }
 
 function PremiumUpsellCard() {
+    const premiumWodCount = heroWods.filter(w => w.isPremium).length;
+    const totalWodCount = heroWods.length;
+
     return (
         <Card className="sm:col-span-2 lg:col-span-3 xl:col-span-4 bg-gradient-to-br from-primary/10 via-background to-background border-2 border-primary/50 shadow-2xl shadow-primary/10">
             <CardHeader className="text-center">
@@ -34,8 +38,8 @@ function PremiumUpsellCard() {
                 <CardTitle className="font-headline text-3xl text-foreground">
                     Unlock the Full Arsenal
                 </CardTitle>
-                <CardDescription className="text-lg">
-                    Go Premium to access the complete library of over 100+ Hero and Benchmark WODs.
+                <CardDescription className="text-lg max-w-2xl mx-auto">
+                    Go Premium to access the complete library of over {totalWodCount}+ Hero and Benchmark WODs, including {premiumWodCount} exclusive workouts.
                 </CardDescription>
             </CardHeader>
             <CardContent className="flex justify-center">
@@ -52,6 +56,15 @@ function PremiumUpsellCard() {
 
 export default function HeroWodsPage() {
   const { user, isUserLoading } = useUser();
+
+  const visibleWods = useMemo(() => {
+    if (user?.premium) {
+      // Premium users see all WODs
+      return heroWods;
+    }
+    // Free users see only non-premium WODs
+    return heroWods.filter(wod => !wod.isPremium);
+  }, [user]);
 
   return (
     <div className="flex flex-col h-full">
@@ -74,11 +87,10 @@ export default function HeroWodsPage() {
               <WodSkeleton />
               <WodSkeleton />
               <WodSkeleton />
-              {!user?.premium && <Skeleton className="h-64 sm:col-span-2 lg:col-span-3 xl:col-span-4" />}
             </>
           ) : (
             <>
-              {heroWods.map((wod) => (
+              {visibleWods.map((wod) => (
                 <WodCard 
                   key={wod.id} 
                   wod={wod} 
