@@ -15,19 +15,22 @@ function initializeFirebaseAdmin(): App {
 const app = initializeFirebaseAdmin();
 const auth = getAuth(app);
 
+// These are now read inside the POST handler
 const STRIPE_SECRET_KEY = process.env.STRIPE_SECRET_KEY;
 const STRIPE_MONTHLY_PRICE_ID = process.env.STRIPE_MONTHLY_PRICE_ID;
 const STRIPE_YEARLY_PRICE_ID = process.env.STRIPE_YEARLY_PRICE_ID;
 
-if (!STRIPE_SECRET_KEY) {
-  throw new Error('STRIPE_SECRET_KEY is not set in environment variables.');
-}
-
-const stripe = new Stripe(STRIPE_SECRET_KEY, {
-  apiVersion: "2024-06-20",
-});
-
 export async function POST(req: NextRequest) {
+  // Moved check inside the handler
+  if (!STRIPE_SECRET_KEY) {
+    console.error('STRIPE_SECRET_KEY is not set in environment variables.');
+    return NextResponse.json({ error: 'Server configuration error.' }, { status: 500 });
+  }
+
+  const stripe = new Stripe(STRIPE_SECRET_KEY, {
+    apiVersion: "2024-06-20",
+  });
+  
   try {
     const authorization = req.headers.get('Authorization');
     if (!authorization?.startsWith('Bearer ')) {
