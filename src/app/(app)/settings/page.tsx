@@ -179,14 +179,16 @@ export default function SettingsPage() {
                                  )}
                                  Manage My Subscription
                                </Button>
-                               <Button onClick={handleResetPremium} disabled={isResetting} variant="secondary">
-                                 {isResetting ? (
-                                   <LoaderCircle className="mr-2 animate-spin" />
-                                 ) : (
-                                   <RefreshCw className="mr-2" />
-                                 )}
-                                 Reset Premium (Dev)
-                               </Button>
+                               {user.email === 'thomaslloancy@gmail.com' && (
+                                <Button onClick={handleResetPremium} disabled={isResetting} variant="secondary">
+                                  {isResetting ? (
+                                    <LoaderCircle className="mr-2 animate-spin" />
+                                  ) : (
+                                    <RefreshCw className="mr-2" />
+                                  )}
+                                  Reset Premium (Dev)
+                                </Button>
+                               )}
                              </div>
                            )}
                         </div>
