@@ -42,12 +42,7 @@
       ],
       "environment": {
         "STRIPE_SECRET_KEY": "projects/364656552077/secrets/STRIPE_SECRET_KEY"
-      },
-      "env": [
-        {
-          "file": "functions/.env"
-        }
-      ]
+      }
     }
   ]
 }
