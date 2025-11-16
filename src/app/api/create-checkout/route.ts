@@ -60,7 +60,11 @@ export async function POST(req: NextRequest) {
     const { yearly } = await req.json();
 
     const priceId = yearly ? STRIPE_YEARLY_PRICE_ID : STRIPE_MONTHLY_PRICE_ID;
-    const appUrl = process.env.NEXT_PUBLIC_APP_URL || req.nextUrl.origin;
+    
+    // Determine the base URL based on the environment
+    const appUrl = process.env.NODE_ENV === 'production'
+      ? 'https://wodburner.app'
+      : 'http://localhost:9002';
 
 
     const session = await stripe.checkout.sessions.create({
