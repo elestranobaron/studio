@@ -22,6 +22,8 @@ export async function POST(req: NextRequest) {
     const STRIPE_SECRET_KEY = process.env.STRIPE_SECRET_KEY;
     const STRIPE_MONTHLY_PRICE_ID = process.env.STRIPE_MONTHLY_PRICE_ID;
     const STRIPE_YEARLY_PRICE_ID = process.env.STRIPE_YEARLY_PRICE_ID;
+    const NEXT_PUBLIC_APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:9002';
+
 
     if (!STRIPE_SECRET_KEY) {
         console.error('API Route Error: STRIPE_SECRET_KEY is not set in environment variables.');
@@ -66,8 +68,8 @@ export async function POST(req: NextRequest) {
       line_items: [{ price: priceId, quantity: 1 }],
       mode: "subscription",
       allow_promotion_codes: true,
-      success_url: `https://wodburner.app/premium?success=true`,
-      cancel_url: `https://wodburner.app/premium?cancel=true`,
+      success_url: `${NEXT_PUBLIC_APP_URL}/premium?success=true`,
+      cancel_url: `${NEXT_PUBLIC_APP_URL}/premium?cancel=true`,
       customer_email: userEmail || undefined,
       metadata: { uid: uid },
     });
