@@ -15,15 +15,14 @@ function initializeFirebaseAdmin(): App {
 const app = initializeFirebaseAdmin();
 const auth = getAuth(app);
 
-// These are now read inside the POST handler
-const STRIPE_SECRET_KEY = process.env.STRIPE_SECRET_KEY;
-const STRIPE_MONTHLY_PRICE_ID = process.env.STRIPE_MONTHLY_PRICE_ID;
-const STRIPE_YEARLY_PRICE_ID = process.env.STRIPE_YEARLY_PRICE_ID;
 
 export async function POST(req: NextRequest) {
-  // Moved check inside the handler
-  if (!STRIPE_SECRET_KEY) {
-    console.error('STRIPE_SECRET_KEY is not set in environment variables.');
+  const STRIPE_SECRET_KEY = process.env.STRIPE_SECRET_KEY;
+  const STRIPE_MONTHLY_PRICE_ID = process.env.STRIPE_MONTHLY_PRICE_ID;
+  const STRIPE_YEARLY_PRICE_ID = process.env.STRIPE_YEARLY_PRICE_ID;
+
+  if (!STRIPE_SECRET_KEY || !STRIPE_MONTHLY_PRICE_ID || !STRIPE_YEARLY_PRICE_ID) {
+    console.error('Stripe environment variables are not set.');
     return NextResponse.json({ error: 'Server configuration error.' }, { status: 500 });
   }
 
@@ -54,11 +53,6 @@ export async function POST(req: NextRequest) {
     const userEmail = decodedToken.email;
 
     const { yearly } = await req.json();
-
-    if (!STRIPE_MONTHLY_PRICE_ID || !STRIPE_YEARLY_PRICE_ID) {
-      console.error("Stripe price IDs are not configured in environment.");
-      return NextResponse.json({ error: 'Stripe price IDs are not configured.' }, { status: 500 });
-    }
 
     const priceId = yearly ? STRIPE_YEARLY_PRICE_ID : STRIPE_MONTHLY_PRICE_ID;
 

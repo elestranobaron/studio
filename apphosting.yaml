@@ -5,3 +5,10 @@ runConfig:
   # Increase this value if you'd like to automatically spin up
   # more instances in response to increased traffic.
   maxInstances: 1
+env:
+  - variable: STRIPE_SECRET_KEY
+    secret: STRIPE_SECRET_KEY
+  - variable: STRIPE_MONTHLY_PRICE_ID
+    secret: STRIPE_MONTHLY_PRICE_ID
+  - variable: STRIPE_YEARLY_PRICE_ID
+    secret: STRIPE_YEARLY_PRICE_ID
