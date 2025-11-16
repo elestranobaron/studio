@@ -17,18 +17,18 @@ const auth = getAuth(app);
 
 
 export async function POST(req: NextRequest) {
-  const STRIPE_SECRET_KEY = process.env.STRIPE_SECRET_KEY;
-  const STRIPE_MONTHLY_PRICE_ID = process.env.STRIPE_MONTHLY_PRICE_ID;
-  const STRIPE_YEARLY_PRICE_ID = process.env.STRIPE_YEARLY_PRICE_ID;
+    const STRIPE_SECRET_KEY = process.env.STRIPE_SECRET_KEY;
+    const STRIPE_MONTHLY_PRICE_ID = process.env.STRIPE_MONTHLY_PRICE_ID || 'price_1PxxUyRp45w1j9vNB3Qo7kAD';
+    const STRIPE_YEARLY_PRICE_ID = process.env.STRIPE_YEARLY_PRICE_ID || 'price_1PxxUyRp45w1j9vN297X6t5I';
 
-  if (!STRIPE_SECRET_KEY || !STRIPE_MONTHLY_PRICE_ID || !STRIPE_YEARLY_PRICE_ID) {
-    console.error('Stripe environment variables are not set.');
-    return NextResponse.json({ error: 'Server configuration error.' }, { status: 500 });
-  }
+    if (!STRIPE_SECRET_KEY) {
+        console.error('API Route Error: STRIPE_SECRET_KEY is not set in environment variables.');
+        return NextResponse.json({ error: 'Server configuration error: Stripe secret key is missing.' }, { status: 500 });
+    }
 
-  const stripe = new Stripe(STRIPE_SECRET_KEY, {
-    apiVersion: "2024-06-20",
-  });
+    const stripe = new Stripe(STRIPE_SECRET_KEY, {
+        apiVersion: "2024-06-20",
+    });
   
   try {
     const authorization = req.headers.get('Authorization');

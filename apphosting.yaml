@@ -8,7 +8,3 @@ runConfig:
 env:
   - variable: STRIPE_SECRET_KEY
     secret: STRIPE_SECRET_KEY
-  - variable: STRIPE_MONTHLY_PRICE_ID
-    secret: STRIPE_MONTHLY_PRICE_ID
-  - variable: STRIPE_YEARLY_PRICE_ID
-    secret: STRIPE_YEARLY_PRICE_ID
