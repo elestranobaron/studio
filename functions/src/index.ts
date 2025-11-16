@@ -163,7 +163,7 @@ export const resetReactions = onSchedule("0 0 * * *", async () => {
 });
 
 // ————— STRIPE CHECKOUT (PREMIUM) —————
-export const createStripeCheckout = onCall(
+export const createCheckout = onCall(
   {
     secrets: [stripeSecretKey],
   },
@@ -320,5 +320,3 @@ export const stripeWebhook = onRequest(
     response.status(200).send();
   }
 );
-
-    
