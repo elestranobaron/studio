@@ -1,18 +1,26 @@
+
 'use client';
 
 import React, { createContext, useContext, ReactNode, useMemo, useEffect, useState } from 'react';
 import { FirebaseApp } from 'firebase/app';
-import { Auth, onAuthStateChanged, signInAnonymously, User } from 'firebase/auth';
-import { Firestore } from 'firebase/firestore';
+import { Auth, onAuthStateChanged, User as FirebaseAuthUser } from 'firebase/auth';
+import { doc, Firestore, onSnapshot } from 'firebase/firestore';
 import { initializeFirebase } from '@/firebase/index';
 import { FirebaseErrorListener } from '@/components/FirebaseErrorListener';
+
+// This combines the Auth user with our custom Firestore data
+export type AppUser = FirebaseAuthUser & {
+    premium?: boolean;
+    // Add other custom fields from your Firestore 'users' document here
+};
+
 
 // CONTEXT
 export interface FirebaseContextState {
   firebaseApp: FirebaseApp | null;
   firestore: Firestore | null;
   auth: Auth | null;
-  user: User | null;
+  user: AppUser | null; // Use our merged user type
   isUserLoading: boolean;
   userError: Error | null;
 }
@@ -24,7 +32,7 @@ interface FirebaseProviderProps {
 }
 
 export const FirebaseProvider: React.FC<FirebaseProviderProps> = ({ children }) => {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<AppUser | null>(null);
   const [isUserLoading, setIsUserLoading] = useState(true);
   const [userError, setUserError] = useState<Error | null>(null);
 
@@ -37,7 +45,7 @@ export const FirebaseProvider: React.FC<FirebaseProviderProps> = ({ children }) 
     }
   }, []);
 
-  const { auth } = services;
+  const { auth, firestore } = services;
 
   useEffect(() => {
     if (!auth) {
@@ -45,11 +53,48 @@ export const FirebaseProvider: React.FC<FirebaseProviderProps> = ({ children }) 
       return;
     }
 
-    const unsubscribe = onAuthStateChanged(
+    // This is the main authentication state listener
+    const unsubscribeAuth = onAuthStateChanged(
       auth,
       (firebaseUser) => {
-        setUser(firebaseUser);
-        setIsUserLoading(false);
+        if (firebaseUser) {
+          // User is signed in, now listen for Firestore data
+          if (!firestore) {
+              setUser(firebaseUser as AppUser);
+              setIsUserLoading(false);
+              return;
+          }
+          
+          const userDocRef = doc(firestore, 'users', firebaseUser.uid);
+          
+          const unsubscribeFirestore = onSnapshot(userDocRef, (docSnapshot) => {
+              if (docSnapshot.exists()) {
+                  const firestoreData = docSnapshot.data();
+                  // Merge auth data with firestore data
+                  setUser({
+                      ...firebaseUser,
+                      ...firestoreData,
+                  } as AppUser);
+              } else {
+                  // User exists in Auth, but not in Firestore yet.
+                  // This can happen briefly during sign-up.
+                  setUser(firebaseUser as AppUser);
+              }
+              setIsUserLoading(false);
+          }, (error) => {
+              console.error("Firestore error listening to user doc:", error);
+              setUser(firebaseUser as AppUser); // Fallback to auth user
+              setIsUserLoading(false);
+          });
+
+          // Return the firestore unsubscribe function to be called when auth state changes
+          return unsubscribeFirestore;
+
+        } else {
+          // User is signed out
+          setUser(null);
+          setIsUserLoading(false);
+        }
       },
       (error) => {
         console.error("Auth error:", error);
@@ -59,8 +104,8 @@ export const FirebaseProvider: React.FC<FirebaseProviderProps> = ({ children }) 
       }
     );
 
-    return () => unsubscribe();
-  }, [auth]);
+    return () => unsubscribeAuth();
+  }, [auth, firestore]);
 
   const contextValue = useMemo((): FirebaseContextState => ({
     ...services,
@@ -88,7 +133,7 @@ export const useAuth = (): Auth | null => {
   return auth;
 };
 
-export const useUser = (): { user: User | null; isUserLoading: boolean; userError: Error | null } => {
+export const useUser = (): { user: AppUser | null; isUserLoading: boolean; userError: Error | null } => {
   const { user, isUserLoading, userError } = useFirebase();
   return { user, isUserLoading, userError };
 };
