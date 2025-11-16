@@ -5,7 +5,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth, useUser, useFirebase } from '@/firebase';
 import { deleteUser } from 'firebase/auth';
-import { collection, query, getDocs, writeBatch } from 'firebase/firestore';
+import { collection, query, getDocs, writeBatch, doc, updateDoc } from 'firebase/firestore';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -26,7 +26,7 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 import { useToast } from '@/hooks/use-toast';
-import { LoaderCircle, Trash2, CreditCard } from 'lucide-react';
+import { LoaderCircle, Trash2, CreditCard, RefreshCw } from 'lucide-react';
 import { SidebarTrigger } from '@/components/ui/sidebar';
 import { getFunctions, httpsCallable } from 'firebase/functions';
 
@@ -38,6 +38,7 @@ export default function SettingsPage() {
   const { toast } = useToast();
   const [isDeleting, setIsDeleting] = useState(false);
   const [isPortalLoading, setIsPortalLoading] = useState(false);
+  const [isResetting, setIsResetting] = useState(false);
 
   const handleManageSubscription = async () => {
     setIsPortalLoading(true);
@@ -121,6 +122,28 @@ export default function SettingsPage() {
     }
   };
 
+  const handleResetPremium = async () => {
+    if (!user || !firestore) return;
+    setIsResetting(true);
+    try {
+      const userDocRef = doc(firestore, 'users', user.uid);
+      await updateDoc(userDocRef, { premium: false });
+      toast({
+        title: 'Premium Reset',
+        description: 'Your account is now back to a standard plan.',
+      });
+    } catch (error) {
+      console.error('Error resetting premium status:', error);
+      toast({
+        variant: 'destructive',
+        title: 'Reset Failed',
+        description: 'Could not update your premium status.',
+      });
+    } finally {
+      setIsResetting(false);
+    }
+  };
+
   return (
     <div className="flex flex-col h-full">
       <header className="flex items-center gap-4 p-4 border-b md:p-6">
@@ -147,14 +170,24 @@ export default function SettingsPage() {
                            <p><strong>Email:</strong> {user.email || "Not specified"}</p>
                            <p><strong>Account Type:</strong> {user.isAnonymous ? "Anonymous (Temporary)" : (user.premium ? 'Premium' : 'Standard')}</p>
                            {user.premium && (
-                             <Button onClick={handleManageSubscription} disabled={isPortalLoading}>
-                               {isPortalLoading ? (
-                                 <LoaderCircle className="mr-2 animate-spin" />
-                               ) : (
-                                 <CreditCard className="mr-2" />
-                               )}
-                               Manage My Subscription
-                             </Button>
+                             <div className="flex flex-wrap gap-4">
+                               <Button onClick={handleManageSubscription} disabled={isPortalLoading}>
+                                 {isPortalLoading ? (
+                                   <LoaderCircle className="mr-2 animate-spin" />
+                                 ) : (
+                                   <CreditCard className="mr-2" />
+                                 )}
+                                 Manage My Subscription
+                               </Button>
+                               <Button onClick={handleResetPremium} disabled={isResetting} variant="secondary">
+                                 {isResetting ? (
+                                   <LoaderCircle className="mr-2 animate-spin" />
+                                 ) : (
+                                   <RefreshCw className="mr-2" />
+                                 )}
+                                 Reset Premium (Dev)
+                               </Button>
+                             </div>
                            )}
                         </div>
                     ) : (
