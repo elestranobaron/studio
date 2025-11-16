@@ -168,15 +168,27 @@ export const createCheckout = onCall(
     secrets: ["STRIPE_SECRET_KEY"],
   },
   async (request) => {
+    console.log("--- [DEBUG] createCheckout: Function called ---");
     if (!request.auth) {
+      console.error("[DEBUG] createCheckout: Unauthenticated user.");
       throw new HttpsError("unauthenticated", "Connecte-toi pour t'abonner.");
     }
     
+    // DEBUG: Log received environment variables
+    console.log(`[DEBUG] Monthly Price ID from env: ${STRIPE_MONTHLY_PRICE_ID}`);
+    console.log(`[DEBUG] Yearly Price ID from env: ${STRIPE_YEARLY_PRICE_ID}`);
+
     if (!STRIPE_MONTHLY_PRICE_ID || !STRIPE_YEARLY_PRICE_ID) {
+      console.error("[DEBUG] createCheckout: Stripe price IDs are not configured in environment.");
       throw new HttpsError("failed-precondition", "Stripe price IDs are not configured.");
     }
 
-    const stripe = new Stripe(stripeSecretKey.value(), {
+    const key = stripeSecretKey.value();
+    const keyType = key.includes('_test_') ? 'TEST' : 'LIVE';
+    console.log(`[DEBUG] createCheckout: Using Stripe key of type: ${keyType}`);
+
+
+    const stripe = new Stripe(key, {
       apiVersion: "2024-06-20",
     });
 
@@ -184,8 +196,11 @@ export const createCheckout = onCall(
     const priceId = yearly
       ? STRIPE_YEARLY_PRICE_ID
       : STRIPE_MONTHLY_PRICE_ID;
+    
+    console.log(`[DEBUG] createCheckout: Plan selected: ${yearly ? 'Yearly' : 'Monthly'}. Using Price ID: ${priceId}`);
 
     try {
+      console.log(`[DEBUG] createCheckout: Creating session for user ${request.auth.uid} with email ${request.auth.token.email}`);
       const session = await stripe.checkout.sessions.create({
         payment_method_types: ["card"],
         line_items: [{ price: priceId, quantity: 1 }],
@@ -197,10 +212,11 @@ export const createCheckout = onCall(
         metadata: { uid: request.auth.uid },
       });
 
+      console.log(`[DEBUG] createCheckout: Successfully created session with ID: ${session.id}`);
       return { id: session.id };
     } catch (error: any) {
-      console.error("Stripe session creation failed:", error);
-      throw new HttpsError("internal", "Impossible de créer la session Stripe.");
+      console.error("[DEBUG] createCheckout: Stripe session creation FAILED:", error.message);
+      throw new HttpsError("internal", `Impossible de créer la session Stripe: ${error.message}`);
     }
   }
 );
