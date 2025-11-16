@@ -177,7 +177,7 @@ export const createCheckout = onCall(
       throw new HttpsError("failed-precondition", "Stripe price IDs are not configured.");
     }
 
-    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string, {
+    const stripe = new Stripe(stripeSecretKey.value(), {
       apiVersion: "2024-06-20",
     });
 
@@ -215,7 +215,7 @@ export const createCustomerPortal = onCall(
             throw new HttpsError("unauthenticated", "You must be logged in to manage your subscription.");
         }
 
-        const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string, {
+        const stripe = new Stripe(stripeSecretKey.value(), {
             apiVersion: "2024-06-20",
         });
 

@@ -41,7 +41,7 @@
         "npm --prefix \"$RESOURCE_DIR\" run build"
       ],
       "environment": {
-        "STRIPE_SECRET_KEY": "projects/studio-9534743514-17d90/secrets/STRIPE_SECRET_KEY"
+        "STRIPE_SECRET_KEY": "projects/364656552077/secrets/STRIPE_SECRET_KEY"
       },
       "env": [
         {
