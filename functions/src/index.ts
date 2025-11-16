@@ -24,7 +24,7 @@ if (!BREVO_API_KEY) {
 }
 
 // ————— STRIPE (Secret Manager ONLY) —————
-const stripeSecretKey = defineSecret("STRIPE_SECRET_KEY");
+const stripeSecretKey = defineSecret("STRIPE_API_SECRET_KEY_PROD");
 const stripeWebhookSecret = defineSecret("STRIPE_WEBHOOK_SECRET");
 const STRIPE_MONTHLY_PRICE_ID = process.env.STRIPE_MONTHLY_PRICE_ID;
 const STRIPE_YEARLY_PRICE_ID = process.env.STRIPE_YEARLY_PRICE_ID;
@@ -163,11 +163,12 @@ export const resetReactions = onSchedule("0 0 * * *", async () => {
 });
 
 // ————— STRIPE CHECKOUT (PREMIUM) —————
-export const createCheckout = onCall(
+export const createStripeCheckout = onCall(
   {
     secrets: [stripeSecretKey],
   },
   async (request) => {
+    console.log("[WODBurner] --- createCheckout function started ---");
     if (!request.auth) {
       throw new HttpsError("unauthenticated", "Connecte-toi pour t'abonner.");
     }
@@ -209,7 +210,7 @@ export const createCheckout = onCall(
 
 // ————— STRIPE CUSTOMER PORTAL —————
 export const createCustomerPortal = onCall(
-    { secrets: ["STRIPE_SECRET_KEY"] },
+    { secrets: ["STRIPE_API_SECRET_KEY_PROD"] },
     async (request) => {
         if (!request.auth) {
             throw new HttpsError("unauthenticated", "You must be logged in to manage your subscription.");
@@ -319,3 +320,5 @@ export const stripeWebhook = onRequest(
     response.status(200).send();
   }
 );
+
+    

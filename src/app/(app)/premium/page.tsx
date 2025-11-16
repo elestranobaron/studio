@@ -63,10 +63,10 @@ function PremiumContent() {
     setIsLoading(plan);
     try {
       const functions = getFunctions();
-      const createCheckout = httpsCallable(functions, 'createCheckout');
+      const createStripeCheckout = httpsCallable(functions, 'createStripeCheckout');
       
       // Pass 'yearly' boolean instead of priceId
-      const { data } = await createCheckout({ yearly: plan === 'yearly' });
+      const { data } = await createStripeCheckout({ yearly: plan === 'yearly' });
   
       const sessionId = (data as { id: string }).id;
       if (!sessionId) throw new Error("No session ID");
