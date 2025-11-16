@@ -30,21 +30,5 @@
       "localhost",
       "wodburner.app"
     ]
-  },
-  "functions": [
-    {
-      "source": "functions",
-      "codebase": "default",
-      "runtime": "nodejs22",
-      "predeploy": [
-        "npm --prefix \"$RESOURCE_DIR\" run lint",
-        "npm --prefix \"$RESOURCE_DIR\" run build"
-      ],
-      "environment": {
-        "STRIPE_API_SECRET_KEY_PROD": "projects/364656552077/secrets/STRIPE_API_SECRET_KEY_PROD"
-      }
-    }
-  ]
+  }
 }
-
-    

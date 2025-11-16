@@ -2,7 +2,6 @@
 
 import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { getFunctions, httpsCallable } from 'firebase/functions';
 import { loadStripe } from '@stripe/stripe-js';
 import { Check, LoaderCircle, PartyPopper } from 'lucide-react';
 
@@ -10,7 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { SidebarTrigger } from '@/components/ui/sidebar';
 import { useToast } from '@/hooks/use-toast';
-import { useUser } from '@/firebase';
+import { useUser, useAuth } from '@/firebase';
 import { cn } from '@/lib/utils';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
@@ -30,6 +29,7 @@ const features = [
 // COMPOSANT INTERNE POUR useSearchParams (dans Suspense)
 function PremiumContent() {
   const { user, isUserLoading } = useUser();
+  const auth = useAuth();
   const router = useRouter();
   const { toast } = useToast();
   const searchParams = useSearchParams();
@@ -54,7 +54,7 @@ function PremiumContent() {
   }, [success, cancel, toast]);
 
   const handleCheckout = async (plan: 'monthly' | 'yearly') => {
-    if (!user || user.isAnonymous) {
+    if (!user || user.isAnonymous || !auth) {
       toast({ title: 'Please sign in', description: 'You need to have an account.', variant: 'destructive' });
       router.push('/login');
       return;
@@ -62,13 +62,27 @@ function PremiumContent() {
   
     setIsLoading(plan);
     try {
-      const functions = getFunctions();
-      const createCheckout = httpsCallable(functions, 'createCheckout');
+      const idToken = await auth.currentUser?.getIdToken();
+      if (!idToken) {
+          throw new Error("Could not authenticate user.");
+      }
+
+      const response = await fetch('/api/create-checkout', {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${idToken}`,
+          },
+          body: JSON.stringify({ yearly: plan === 'yearly' }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.details || "Failed to create checkout session.");
+      }
+
+      const { id: sessionId } = await response.json();
       
-      // Pass 'yearly' boolean instead of priceId
-      const { data } = await createCheckout({ yearly: plan === 'yearly' });
-  
-      const sessionId = (data as { id: string }).id;
       if (!sessionId) throw new Error("No session ID");
   
       const stripe = await stripePromise;
