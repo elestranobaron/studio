@@ -4,7 +4,6 @@
  * Premium + Stripe + Brevo + Reset quotas + Secret Manager
  * Force redeploy to ensure production secrets are used.
  */
-import "dotenv/config";
 import { onCall, HttpsError } from "firebase-functions/v2/https";
 import { onSchedule } from "firebase-functions/v2/scheduler";
 import { getFirestore } from "firebase-admin/firestore";
