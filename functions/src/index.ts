@@ -166,7 +166,7 @@ export const resetReactions = onSchedule("0 0 * * *", async () => {
 // ————— STRIPE CHECKOUT (PREMIUM) —————
 export const createCheckout = onCall(
   {
-    secrets: [stripeSecretKey],
+    secrets: ["STRIPE_SECRET_KEY"],
   },
   async (request) => {
     if (!request.auth) {
@@ -177,7 +177,7 @@ export const createCheckout = onCall(
       throw new HttpsError("failed-precondition", "Stripe price IDs are not configured.");
     }
 
-    const stripe = new Stripe(stripeSecretKey.value(), {
+    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string, {
       apiVersion: "2024-06-20",
     });
 
@@ -209,13 +209,13 @@ export const createCheckout = onCall(
 
 // ————— STRIPE CUSTOMER PORTAL —————
 export const createCustomerPortal = onCall(
-    { secrets: [stripeSecretKey] },
+    { secrets: ["STRIPE_SECRET_KEY"] },
     async (request) => {
         if (!request.auth) {
             throw new HttpsError("unauthenticated", "You must be logged in to manage your subscription.");
         }
 
-        const stripe = new Stripe(stripeSecretKey.value(), {
+        const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string, {
             apiVersion: "2024-06-20",
         });
 
