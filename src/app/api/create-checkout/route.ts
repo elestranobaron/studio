@@ -60,14 +60,16 @@ export async function POST(req: NextRequest) {
     const { yearly } = await req.json();
 
     const priceId = yearly ? STRIPE_YEARLY_PRICE_ID : STRIPE_MONTHLY_PRICE_ID;
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL || req.nextUrl.origin;
+
 
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ["card"],
       line_items: [{ price: priceId, quantity: 1 }],
       mode: "subscription",
       allow_promotion_codes: true,
-      success_url: `${req.nextUrl.origin}/premium?success=true`,
-      cancel_url: `${req.nextUrl.origin}/premium?cancel=true`,
+      success_url: `${appUrl}/premium?success=true`,
+      cancel_url: `${appUrl}/premium?cancel=true`,
       customer_email: userEmail || undefined,
       metadata: { uid: uid },
     });
