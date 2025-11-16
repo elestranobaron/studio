@@ -66,8 +66,8 @@ export async function POST(req: NextRequest) {
       line_items: [{ price: priceId, quantity: 1 }],
       mode: "subscription",
       allow_promotion_codes: true,
-      success_url: `${req.nextUrl.origin}/premium?success=true`,
-      cancel_url: `${req.nextUrl.origin}/premium?cancel=true`,
+      success_url: `https://wodburner.app/premium?success=true`,
+      cancel_url: `https://wodburner.app/premium?cancel=true`,
       customer_email: userEmail || undefined,
       metadata: { uid: uid },
     });
