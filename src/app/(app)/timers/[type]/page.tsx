@@ -170,12 +170,6 @@ export default function GenericTimerPage() {
             <main className="flex-1 flex flex-col items-center justify-center p-4">
                 {isStarted && wod ? (
                      <div className="relative z-10 flex flex-col items-center justify-center gap-8 w-full max-w-6xl">
-                        <div className="text-center">
-                            <h1 className="text-4xl md:text-6xl font-extrabold font-headline text-foreground">
-                                {wod.name}
-                            </h1>
-                            <p className="text-xl text-muted-foreground mt-2">{wod.type}</p>
-                        </div>
                         <TimerClient wod={wod} />
                     </div>
                 ) : (

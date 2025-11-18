@@ -100,15 +100,15 @@ function PremiumContent() {
       <div className="flex-1 flex items-center justify-center p-6">
         <div className="text-center space-y-8 max-w-md">
           <PartyPopper className="w-24 h-24 mx-auto text-yellow-500 animate-bounce" />
-          <h2 className="text-5xl font-extrabold text-green-500">TU ES PREMIUM !</h2>
-          <p className="text-2xl text-muted-foreground">Badge Supporter activé</p>
-          <p className="text-lg">Merci de soutenir WODBurner ❤️</p>
+          <h2 className="text-5xl font-extrabold text-green-500">YOU ARE PREMIUM !</h2>
+          <p className="text-2xl text-muted-foreground">Supporter Badge activated</p>
+          <p className="text-lg">Thank you for supporting WODBurner ❤️</p>
           <div className="flex gap-4 justify-center">
             <Button size="lg" onClick={() => router.push('/dashboard?tab=community')} className="bg-green-600 hover:bg-green-700">
-              Voir la communauté
+              View community
             </Button>
             <Button size="lg" variant="outline" onClick={() => router.push('/dashboard')}>
-              Tableau de bord
+              Dashboard
             </Button>
           </div>
         </div>
