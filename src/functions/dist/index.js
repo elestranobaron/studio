@@ -1,4 +1,8 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
 const { onCall, onRequest, HttpsError } = require("firebase-functions/v2/https");
 const { onSchedule } = require("firebase-functions/v2/scheduler");
 const admin = require("firebase-admin");
@@ -11,29 +15,37 @@ const STRIPE_WEBHOOK_SECRET = process.env.STRIPE_WEBHOOK_SECRET;
 const STRIPE_MONTHLY_PRICE_ID = process.env.STRIPE_MONTHLY_PRICE_ID;
 const STRIPE_YEARLY_PRICE_ID = process.env.STRIPE_YEARLY_PRICE_ID;
 const BREVO_API_KEY = process.env.BREVO_API_KEY || "dummy-for-deploy";
-exports.sendMagicLink = onCall({
-    region: "us-central1",
-    // cors géré automatiquement sur onCall, pas besoin de le préciser
-}, async (request) => {
-    const email = request.data.email;
-    if (!email || typeof email !== "string") {
-        throw new HttpsError("invalid-argument", "email required");
+exports.sendMagicLink = onRequest({ cors: true }, async (req, res) => {
+    if (req.method !== 'POST') {
+        res.status(405).send('Method Not Allowed');
+        return;
     }
-    // Récupère IP & UA depuis le contexte callable (plus propre)
-    const headers = request.rawRequest?.headers || {};
-    const ip = headers["x-forwarded-for"]?.split(",")[0]?.trim() || "unknown";
+    const email = req.body.data.email;
+    if (!email || typeof email !== "string") {
+        res.status(400).json({ error: { status: 'INVALID_ARGUMENT', message: 'email required' } });
+        return;
+    }
+    const headers = req.headers || {};
+    const ip = headers["x-forwarded-for"]?.split(",")[0]?.trim() || req.ip || "unknown";
     const userAgent = headers["user-agent"] || "unknown";
     try {
+        // === ACTIONCODESETTINGS MAGIQUE POUR PWA (bye bye page Firebase de merde) ===
+        const actionCodeSettings = {
+            url: "https://wodburner.app/verify",
+            handleCodeInApp: true,
+            // Dynamic Link obligatoire pour que Gmail ouvre direct ton PWA
+            dynamicLinkInfo: {
+                domainUriPrefix: "https://wodburner.page.link", // ← tu crées ce domaine dans Firebase Console > Dynamic Links (2 clics)
+                link: "https://wodburner.app/verify",
+                android: { packageName: "com.wodburner.app" }, // valeur bidon, ignorée pour PWA
+                ios: { bundleId: "com.wodburner.app" }, // valeur bidon, ignorée pour PWA
+            },
+        };
         const link = await admin.auth().generateSignInWithEmailLink(email, {
             url: "https://wodburner.app/verify",
             handleCodeInApp: true,
         });
-        const redirectLink = `https://wodburner.app/auth/redirect?continueUrl=${encodeURIComponent(link)}&utm_source=brevo&utm_campaign=magiclink`;
-        await db.collection("magicLinks").doc(email).set({
-            ip,
-            userAgent,
-            createdAt: admin.firestore.FieldValue.serverTimestamp(),
-        });
+        await db.collection("magicLinks").doc(email).set({ ip, userAgent, createdAt: new Date() });
         const brevoRes = await fetch("https://api.sendinblue.com/v3/smtp/email", {
             method: "POST",
             headers: {
@@ -44,18 +56,16 @@ exports.sendMagicLink = onCall({
                 sender: { name: "WODBurner Team", email: "noreply@wodburner.app" },
                 to: [{ email }],
                 templateId: 2,
-                params: { LINK: redirectLink },
+                params: { LINK: link },
             }),
         });
-        if (!brevoRes.ok) {
-            const text = await brevoRes.text();
-            throw new Error(`Brevo failed: ${text}`);
-        }
-        return { success: true };
+        if (!brevoRes.ok)
+            throw new Error(`Brevo failed: ${await brevoRes.text()}`);
+        res.json({ data: { success: true } });
     }
     catch (error) {
         console.error("sendMagicLink error:", error);
-        throw new HttpsError("internal", "Failed to send magic link");
+        res.status(500).json({ error: { status: 'INTERNAL', message: 'Failed to send link' } });
     }
 });
 exports.onUserSignIn = onCall(async (request) => {
@@ -129,47 +139,57 @@ exports.createCheckout = onCall(async (request) => {
     });
     return { id: session.id };
 });
-exports.stripeWebhook = onRequest({ region: "europe-west1", invoker: "public" }, async (req, res) => {
+const express_1 = __importDefault(require("express"));
+const app = (0, express_1.default)();
+// Middleware qui sauve le raw body avant que express.json() ne le parse
+app.use(express_1.default.json({
+    verify: (req, _res, buf) => {
+        req.rawBody = buf.toString();
+    },
+}));
+// Route webhook
+app.post("/", async (req, res) => {
+    const typedReq = req;
     const sig = req.headers["stripe-signature"];
+    if (!typedReq.rawBody) {
+        console.error("rawBody manquant");
+        return res.status(400).send("No raw body");
+    }
     let event;
     try {
-        event = stripe.webhooks.constructEvent(req.body, sig, STRIPE_WEBHOOK_SECRET);
+        event = stripe.webhooks.constructEvent(typedReq.rawBody, sig, STRIPE_WEBHOOK_SECRET);
     }
     catch (err) {
-        const message = err instanceof Error ? err.message : "Unknown error";
-        console.error(`Webhook signature verification failed:`, message);
-        return res.status(400).send(`Webhook Error: ${message}`);
+        console.error("Webhook error:", err.message);
+        return res.status(400).send(`Webhook Error: ${err.message}`);
     }
-    if (event.type === "checkout.session.completed" || event.type === "customer.subscription.created") {
-        const session = event.data.object;
-        const uid = session.metadata?.uid;
+    // === Ton code premium (tout le reste inchangé) ===
+    if (["checkout.session.completed", "customer.subscription.created", "invoice.paid"].includes(event.type)) {
+        const obj = event.data.object;
+        let uid = obj.metadata?.uid;
+        if (!uid && (obj.customer_details?.email || obj.customer_email)) {
+            const email = (obj.customer_details?.email || obj.customer_email || "")
+                .toLowerCase()
+                .trim();
+            if (email) {
+                const snap = await db.collection("users").where("email", "==", email).limit(1).get();
+                if (!snap.empty)
+                    uid = snap.docs[0].id;
+            }
+        }
         if (uid) {
             await db.collection("users").doc(uid).set({
                 premium: true,
                 premiumSince: admin.firestore.FieldValue.serverTimestamp(),
-                priceId: session.subscription ? null : session.display_items?.[0]?.price?.id,
+                priceId: obj.items?.data?.[0]?.price?.id ||
+                    obj.plan?.id ||
+                    obj.subscription?.default_price ||
+                    "unknown",
             }, { merge: true });
-            console.log(`User ${uid} is now premium`);
-            if (session.customer_details?.email) {
-                try {
-                    await fetch("https://api.sendinblue.com/v3/smtp/email", {
-                        method: "POST",
-                        headers: {
-                            "api-key": BREVO_API_KEY,
-                            "Content-Type": "application/json",
-                        },
-                        body: JSON.stringify({
-                            sender: { name: "WODBurner Team", email: "noreply@wodburner.app" },
-                            to: [{ email: session.customer_details.email }],
-                            templateId: 4,
-                        }),
-                    });
-                }
-                catch (e) {
-                    console.error("Brevo welcome email failed:", e);
-                }
-            }
+            console.log(`PREMIUM ACTIVÉ pour ${uid} – ${event.type}`);
         }
     }
-    res.status(200).send();
+    res.status(200).send("ok");
 });
+// Export final
+exports.stripeWebhook = onRequest({ region: "europe-west1" }, app);

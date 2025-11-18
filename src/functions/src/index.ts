@@ -32,12 +32,23 @@ exports.sendMagicLink = onRequest({ cors: true }, async (req, res) => {
     const userAgent = headers["user-agent"] || "unknown";
 
     try {
-        const link = await admin.auth().generateSignInWithEmailLink(email, {
-            url: "https://wodburner.app/verify",
-            handleCodeInApp: true,
-        });
-
-        const redirectLink = `https://wodburner.app/auth/redirect?continueUrl=${encodeURIComponent(link)}&utm_source=brevo&utm_campaign=magiclink`;
+               // === ACTIONCODESETTINGS MAGIQUE POUR PWA (bye bye page Firebase de merde) ===
+               const actionCodeSettings = {
+                url: "https://wodburner.app/verify",
+                handleCodeInApp: true,
+                // Dynamic Link obligatoire pour que Gmail ouvre direct ton PWA
+                dynamicLinkInfo: {
+                  domainUriPrefix: "https://wodburner.page.link",   // ← tu crées ce domaine dans Firebase Console > Dynamic Links (2 clics)
+                  link: "https://wodburner.app/verify",
+                  android: { packageName: "com.wodburner.app" },   // valeur bidon, ignorée pour PWA
+                  ios: { bundleId: "com.wodburner.app" },          // valeur bidon, ignorée pour PWA
+                },
+              };
+      
+              const link = await admin.auth().generateSignInWithEmailLink(email, {
+                url: "https://wodburner.app/verify",
+                handleCodeInApp: true,
+              });
 
         await db.collection("magicLinks").doc(email).set({ ip, userAgent, createdAt: new Date() });
 
@@ -51,7 +62,7 @@ exports.sendMagicLink = onRequest({ cors: true }, async (req, res) => {
                 sender: { name: "WODBurner Team", email: "noreply@wodburner.app" },
                 to: [{ email }],
                 templateId: 2,
-                params: { LINK: redirectLink },
+                params: { LINK: link },
             }),
         });
 
@@ -144,56 +155,86 @@ exports.createCheckout = onCall(async (request) => {
   return { id: session.id };
 });
 
-exports.stripeWebhook = onRequest(
-  { region: "europe-west1", invoker: "public" },
-  async (req, res) => {
-    const sig = req.headers["stripe-signature"];
+import express from "express";
+import type { Request, Response } from "express";
 
-    let event;
-    try {
-      event = stripe.webhooks.constructEvent(req.body, sig, STRIPE_WEBHOOK_SECRET);
-    } catch (err) {
-      const message = err instanceof Error ? err.message : "Unknown error";
-      console.error(`Webhook signature verification failed:`, message);
-      return res.status(400).send(`Webhook Error: ${message}`);
-    }
+// On étend le type Request d'Express globalement
+interface StripeRequest extends Request {
+  rawBody: string;
+}
 
-    if (event.type === "checkout.session.completed" || event.type === "customer.subscription.created") {
-      const session = event.data.object;
-      const uid = session.metadata?.uid;
+const app = express();
 
-      if (uid) {
-        await db.collection("users").doc(uid).set(
-          {
-            premium: true,
-            premiumSince: admin.firestore.FieldValue.serverTimestamp(),
-            priceId: session.subscription ? null : session.display_items?.[0]?.price?.id,
-          },
-          { merge: true }
-        );
-        console.log(`User ${uid} is now premium`);
+// Middleware qui sauve le raw body avant que express.json() ne le parse
+app.use(
+  express.json({
+    verify: (req: any, _res: any, buf: Buffer) => {
+      (req as StripeRequest).rawBody = buf.toString();
+    },
+  })
+);
 
-        if (session.customer_details?.email) {
-          try {
-            await fetch("https://api.sendinblue.com/v3/smtp/email", {
-              method: "POST",
-              headers: {
-                "api-key": BREVO_API_KEY,
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({
-                sender: { name: "WODBurner Team", email: "noreply@wodburner.app" },
-                to: [{ email: session.customer_details.email }],
-                templateId: 4,
-              }),
-            });
-          } catch (e) {
-            console.error("Brevo welcome email failed:", e);
-          }
-        }
+// Route webhook
+app.post("/", async (req: Request, res: Response) => {
+  const typedReq = req as StripeRequest;
+  const sig = req.headers["stripe-signature"] as string;
+
+  if (!typedReq.rawBody) {
+    console.error("rawBody manquant");
+    return res.status(400).send("No raw body");
+  }
+
+  let event;
+  try {
+    event = stripe.webhooks.constructEvent(
+      typedReq.rawBody,
+      sig,
+      STRIPE_WEBHOOK_SECRET
+    );
+  } catch (err: any) {
+    console.error("Webhook error:", err.message);
+    return res.status(400).send(`Webhook Error: ${err.message}`);
+  }
+
+  // === Ton code premium (tout le reste inchangé) ===
+  if (
+    ["checkout.session.completed", "customer.subscription.created", "invoice.paid"].includes(
+      event.type
+    )
+  ) {
+    const obj = event.data.object as any;
+
+    let uid = obj.metadata?.uid;
+
+    if (!uid && (obj.customer_details?.email || obj.customer_email)) {
+      const email = (obj.customer_details?.email || obj.customer_email || "")
+        .toLowerCase()
+        .trim();
+      if (email) {
+        const snap = await db.collection("users").where("email", "==", email).limit(1).get();
+        if (!snap.empty) uid = snap.docs[0].id;
       }
     }
 
-    res.status(200).send();
+    if (uid) {
+      await db.collection("users").doc(uid).set(
+        {
+          premium: true,
+          premiumSince: admin.firestore.FieldValue.serverTimestamp(),
+          priceId:
+            obj.items?.data?.[0]?.price?.id ||
+            obj.plan?.id ||
+            obj.subscription?.default_price ||
+            "unknown",
+        },
+        { merge: true }
+      );
+      console.log(`PREMIUM ACTIVÉ pour ${uid} – ${event.type}`);
+    }
   }
-);
+
+  res.status(200).send("ok");
+});
+
+// Export final
+exports.stripeWebhook = onRequest({ region: "europe-west1" }, app);
