@@ -264,13 +264,14 @@ function DashboardContent() {
   const { user, isUserLoading } = useUser();
 
   const userWodsCollection = useMemo(() => {
-    if (!firestore || !user) return null;
+    // Only create query if user is fully loaded, authenticated, and not anonymous
+    if (!firestore || isUserLoading || !user || user.isAnonymous) return null;
     return query(collection(firestore, 'users', user.uid, 'wods'), orderBy('date', 'desc'));
-  }, [firestore, user]);
+  }, [firestore, user, isUserLoading]);
 
   const { data: userWods, isLoading: isUserWodsLoading } = useCollection<WOD>(userWodsCollection);
 
-  const showPersonalLoadingState = isUserLoading || (user && isUserWodsLoading);
+  const showPersonalLoadingState = isUserLoading || (user && !user.isAnonymous && isUserWodsLoading);
 
   return (
     <div className="flex flex-col h-full">
