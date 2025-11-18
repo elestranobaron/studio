@@ -2,9 +2,7 @@
 
 import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { loadStripe } from '@stripe/stripe-js';
 import { Check, LoaderCircle, PartyPopper } from 'lucide-react';
-
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { SidebarTrigger } from '@/components/ui/sidebar';
@@ -14,7 +12,6 @@ import { cn } from '@/lib/utils';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
-const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || '');
 
 const features = [
   { text: 'Unlimited WOD Scans', free: '3 per month', premium: true },
@@ -26,7 +23,6 @@ const features = [
   { text: 'Exclusive Supporter Badge', free: false, premium: true },
 ];
 
-// COMPOSANT INTERNE POUR useSearchParams (dans Suspense)
 function PremiumContent() {
   const { user, isUserLoading } = useUser();
   const auth = useAuth();
@@ -44,59 +40,61 @@ function PremiumContent() {
         title: "Bienvenue dans WODBurner Premium !",
         description: "Ton badge Supporter est activé.",
       });
+      // Nettoie l'URL sans recharger
+      router.replace('/premium', { scroll: false });
     }
     if (cancel) {
       toast({
         title: "Paiement annulé",
         description: "Tu peux réessayer quand tu veux.",
       });
+      router.replace('/premium', { scroll: false });
     }
-  }, [success, cancel, toast]);
+  }, [success, cancel, toast, router]);
 
   const handleCheckout = async (plan: 'monthly' | 'yearly') => {
-    if (!user || user.isAnonymous || !auth) {
-      toast({ title: 'Please sign in', description: 'You need to have an account.', variant: 'destructive' });
+    if (!user || user.isAnonymous || !auth?.currentUser) {
+      toast({ title: 'Connexion requise', description: 'Crée un compte pour passer Premium.', variant: 'destructive' });
       router.push('/login');
       return;
     }
-  
-    setIsLoading(plan);
-    try {
-      const idToken = await auth.currentUser?.getIdToken();
-      if (!idToken) {
-          throw new Error("Could not authenticate user.");
-      }
 
-      const response = await fetch('/api/create-checkout', {
-          method: 'POST',
-          headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${idToken}`,
-          },
-          body: JSON.stringify({ yearly: plan === 'yearly' }),
+    setIsLoading(plan);
+
+    try {
+      const idToken = await auth.currentUser.getIdToken();
+
+      const res = await fetch('/api/create-checkout', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${idToken}`,
+        },
+        body: JSON.stringify({ yearly: plan === 'yearly' }),
       });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.details || "Failed to create checkout session.");
+      if (!res.ok) {
+        const error = await res.json();
+        throw new Error(error.details || error.error || 'Erreur serveur');
       }
 
-      const { id: sessionId } = await response.json();
-      
-      if (!sessionId) throw new Error("No session ID");
-  
-      const stripe = await stripePromise;
-      if (!stripe) throw new Error("Stripe not loaded");
-  
-      const { error } = await stripe.redirectToCheckout({ sessionId });
-      if (error) throw error;
+      const { url } = await res.json(); // Stripe renvoie maintenant directement l'URL !
+
+      // Nouvelle méthode officielle 2025 → redirection directe via l'URL de la session
+      window.location.href = url;
+
     } catch (error: any) {
-      toast({ title: 'Checkout Error', description: error.message || 'Error', variant: 'destructive' });
+      toast({
+        title: 'Erreur de paiement',
+        description: error.message || "Impossible de lancer le checkout",
+        variant: 'destructive',
+      });
     } finally {
       setIsLoading(null);
     }
   };
 
+  // === Reste identique (partie affichage Premium déjà actif) ===
   if (user?.premium) {
     return (
       <div className="flex-1 flex items-center justify-center p-6">
@@ -162,9 +160,7 @@ function PremiumContent() {
               </ul>
             </CardContent>
             <CardFooter>
-              <Button variant="outline" className="w-full" disabled>
-                Current Plan
-              </Button>
+              <Button variant="outline" className="w-full" disabled>Current Plan</Button>
             </CardFooter>
           </Card>
 
@@ -190,21 +186,20 @@ function PremiumContent() {
                     <Check className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
                     <div>
                       <span className="text-foreground">{feature.text}</span>
-                      <span className="block text-muted-foreground">
-                        {feature.premium === true ? 'Unlimited' : feature.premium}
-                      </span>
+                      <span className="block text-muted-foreground">Unlimited</span>
                     </div>
                   </li>
                 ))}
               </ul>
             </CardContent>
             <CardFooter>
-              <Button 
-                onClick={() => handleCheckout(isYearly ? 'yearly' : 'monthly')} 
-                className="w-full text-xl py-8" 
+              <Button
+                size="lg"
+                onClick={() => handleCheckout(isYearly ? 'yearly' : 'monthly')}
                 disabled={!!isLoading || isUserLoading}
+                className="w-full text-xl py-8"
               >
-                {isLoading ? <LoaderCircle className="animate-spin mr-2" /> : 'Go Premium'}
+                {isLoading ? <> <LoaderCircle className="animate-spin mr-3" /> Chargement...</> : 'Go Premium →'}
               </Button>
             </CardFooter>
           </Card>
@@ -219,9 +214,7 @@ export default function PremiumPage() {
     <div className="flex flex-col h-full">
       <header className="flex items-center gap-4 p-4 border-b md:p-6">
         <SidebarTrigger className="md:hidden" />
-        <h1 className="text-2xl font-bold tracking-tight font-headline md:text-3xl">
-          Premium
-        </h1>
+        <h1 className="text-2xl font-bold tracking-tight font-headline md:text-3xl">Premium</h1>
       </header>
       <Suspense fallback={<div className="flex-1 flex items-center justify-center"><LoaderCircle className="animate-spin" /></div>}>
         <PremiumContent />

@@ -35,7 +35,7 @@ export async function POST(req: NextRequest) {
     }
 
     const stripe = new Stripe(STRIPE_SECRET_KEY, {
-        apiVersion: "2024-06-20",
+        apiVersion: "2025-10-29.clover",
     });
 
     const authorization = req.headers.get('Authorization');
@@ -74,7 +74,7 @@ export async function POST(req: NextRequest) {
       metadata: { uid: uid },
     });
 
-    return NextResponse.json({ id: session.id });
+    return NextResponse.json({ url: session.url });
 
   } catch (error: any) {
     console.error("API Route Error:", error);

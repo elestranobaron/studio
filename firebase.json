@@ -30,5 +30,18 @@
       "localhost",
       "wodburner.app"
     ]
-  }
+  },
+  "functions": [
+
+    {
+
+      "source": "src/functions",
+
+      "codebase": "functions",
+
+      "runtime": "nodejs20"
+
+    }
+
+  ]
 }
