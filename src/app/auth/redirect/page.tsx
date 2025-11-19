@@ -13,10 +13,10 @@ function Redirector() {
   if (!continueUrl) {
     return (
       <div className="flex h-screen flex-col items-center justify-center p-4 text-center">
-        <h1 className="text-xl font-bold text-destructive">Lien invalide</h1>
-        <p className="text-muted-foreground mt-2">Ce lien de connexion est incorrect ou a expiré. Veuillez en demander un nouveau.</p>
+        <h1 className="text-xl font-bold text-destructive">Invalid Link</h1>
+        <p className="text-muted-foreground mt-2">This sign-in link is incorrect or has expired. Please request a new one.</p>
         <Button onClick={() => window.location.href = '/login'} className="mt-4">
-          Retour à la page de connexion
+          Back to Login Page
         </Button>
       </div>
     );
@@ -38,10 +38,10 @@ function Redirector() {
                 className="mx-auto mb-6 rounded-2xl"
             />
             <h1 className="text-2xl font-bold font-headline text-primary mb-3">
-                Finaliser la connexion
+                Finalize Sign-In
             </h1>
             <p className="text-muted-foreground mb-6">
-                Cliquez ci-dessous pour ouvrir l'application et vous connecter en toute sécurité.
+                Click below to open the app and sign in securely.
             </p>
             <Button
                 onClick={handleOpenInBrowser}
@@ -49,10 +49,10 @@ function Redirector() {
                 className="w-full h-14 text-lg"
             >
                 <ExternalLink className="mr-3 h-5 w-5" />
-                Ouvrir dans le navigateur
+                Open in Browser
             </Button>
             <p className="text-xs text-muted-foreground/80 mt-4">
-                Cette étape est nécessaire pour quitter la vue interne de votre application e-mail.
+                This step is necessary to exit your email app's internal view.
             </p>
         </div>
     </div>
@@ -65,7 +65,7 @@ export default function RedirectPage() {
         <Suspense fallback={
             <div className="flex h-screen w-full flex-col items-center justify-center gap-4">
                 <LoaderCircle className="h-12 w-12 animate-spin text-primary" />
-                <p className="text-muted-foreground">Chargement...</p>
+                <p className="text-muted-foreground">Loading...</p>
             </div>
         }>
             <Redirector />

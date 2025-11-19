@@ -58,7 +58,7 @@ export default function HallOfFamePage() {
         )}
         
         <br /><br />
-        <p className="text-white">Tu seras ici pour toujours si tu fais partie des 300 premiers Premium annuels 🔥</p>
+        <p className="text-white">You will be here forever if you are one of the first 300 annual Premium members 🔥</p>
       </div>
 
       <p className="mt-10">

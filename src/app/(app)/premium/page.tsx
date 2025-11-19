@@ -37,16 +37,16 @@ function PremiumContent() {
   useEffect(() => {
     if (success) {
       toast({
-        title: "Bienvenue dans WODBurner Premium !",
-        description: "Ton badge Supporter est activé.",
+        title: "Welcome to WODBurner Premium!",
+        description: "Your Supporter badge is now active.",
       });
-      // Nettoie l'URL sans recharger
+      // Clean the URL without reloading
       router.replace('/premium', { scroll: false });
     }
     if (cancel) {
       toast({
-        title: "Paiement annulé",
-        description: "Tu peux réessayer quand tu veux.",
+        title: "Payment Canceled",
+        description: "You can try again whenever you're ready.",
       });
       router.replace('/premium', { scroll: false });
     }
@@ -54,7 +54,7 @@ function PremiumContent() {
 
   const handleCheckout = async (plan: 'monthly' | 'yearly') => {
     if (!user || user.isAnonymous || !auth?.currentUser) {
-      toast({ title: 'Connexion requise', description: 'Crée un compte pour passer Premium.', variant: 'destructive' });
+      toast({ title: 'Login Required', description: 'Create an account to upgrade to Premium.', variant: 'destructive' });
       router.push('/login');
       return;
     }
@@ -75,18 +75,18 @@ function PremiumContent() {
 
       if (!res.ok) {
         const error = await res.json();
-        throw new Error(error.details || error.error || 'Erreur serveur');
+        throw new Error(error.details || error.error || 'Server error');
       }
 
-      const { url } = await res.json(); // Stripe renvoie maintenant directement l'URL !
+      const { url } = await res.json(); 
 
-      // Nouvelle méthode officielle 2025 → redirection directe via l'URL de la session
+      // New official method 2025 -> direct redirect via session URL
       window.location.href = url;
 
     } catch (error: any) {
       toast({
-        title: 'Erreur de paiement',
-        description: error.message || "Impossible de lancer le checkout",
+        title: 'Payment Error',
+        description: error.message || "Could not initiate checkout.",
         variant: 'destructive',
       });
     } finally {
@@ -94,7 +94,6 @@ function PremiumContent() {
     }
   };
 
-  // === Reste identique (partie affichage Premium déjà actif) ===
   if (user?.premium) {
     return (
       <div className="flex-1 flex items-center justify-center p-6">
@@ -144,7 +143,7 @@ function PremiumContent() {
               <CardDescription>For casual tracking</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <p className="text-4xl font-bold">€0<span className="text-lg font-normal text-muted-foreground">/month</span></p>
+              <p className="text-4xl font-bold">$0<span className="text-lg font-normal text-muted-foreground">/month</span></p>
               <ul className="space-y-3 text-sm">
                 {features.map((feature, i) => (
                   <li key={i} className="flex items-start gap-3">
@@ -173,10 +172,10 @@ function PremiumContent() {
             <CardContent className="space-y-4">
               <div className="relative h-16">
                 <div className={cn("absolute inset-0 flex flex-col items-center justify-center transition-opacity duration-300", isYearly ? "opacity-0" : "opacity-100")}>
-                  <p className="text-4xl font-bold">€1.99<span className="text-lg font-normal text-muted-foreground">/month</span></p>
+                  <p className="text-4xl font-bold">$1.99<span className="text-lg font-normal text-muted-foreground">/month</span></p>
                 </div>
                 <div className={cn("absolute inset-0 flex flex-col items-center justify-center transition-opacity duration-300", isYearly ? "opacity-100" : "opacity-0")}>
-                  <p className="text-4xl font-bold">€19.99<span className="text-lg font-normal text-muted-foreground">/year</span></p>
+                  <p className="text-4xl font-bold">$19.99<span className="text-lg font-normal text-muted-foreground">/year</span></p>
                   <p className="text-sm text-muted-foreground -mt-1">Billed annually</p>
                 </div>
               </div>
@@ -199,7 +198,7 @@ function PremiumContent() {
                 disabled={!!isLoading || isUserLoading}
                 className="w-full text-xl py-8"
               >
-                {isLoading ? <> <LoaderCircle className="animate-spin mr-3" /> Chargement...</> : 'Go Premium →'}
+                {isLoading ? <> <LoaderCircle className="animate-spin mr-3" /> Loading...</> : 'Go Premium →'}
               </Button>
             </CardFooter>
           </Card>

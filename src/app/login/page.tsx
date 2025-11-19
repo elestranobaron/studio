@@ -103,7 +103,7 @@ function LoginClientContent() {
         }
 
         try {
-            // === ENVOI VIA BREVO (CLOUD FUNCTION) ===
+            // === SEND VIA BREVO (CLOUD FUNCTION) ===
             const functions = getFunctions();
             const sendMagicLink = httpsCallable(functions, 'sendMagicLink');
 

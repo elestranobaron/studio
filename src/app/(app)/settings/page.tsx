@@ -90,7 +90,13 @@ export default function SettingsPage() {
       }
 
       // 2. Delete the user from Firebase Authentication
-      await deleteUser(user);
+      // This requires recent login, which is a security feature.
+      if (auth.currentUser) {
+        await deleteUser(auth.currentUser);
+      } else {
+        throw new Error("No authenticated user found to delete.");
+      }
+
 
       toast({
         title: 'Account Deleted',
@@ -107,7 +113,9 @@ export default function SettingsPage() {
       if (error.code === 'auth/requires-recent-login') {
         description = "This operation is sensitive and requires recent authentication. Please sign in again before retrying.";
         // Optional: sign out the user to force them to re-authenticate
-        auth.signOut();
+        if (auth) {
+            await auth.signOut();
+        }
         router.push('/login');
       }
       
@@ -173,7 +181,7 @@ export default function SettingsPage() {
             <CardContent>
               <AlertDialog>
                 <AlertDialogTrigger asChild>
-                  <Button variant="destructive" disabled={isDeleting || isUserLoading || !user}>
+                  <Button variant="destructive" disabled={isDeleting || isUserLoading || !user || user.isAnonymous}>
                      {isDeleting ? (
                         <LoaderCircle className="animate-spin mr-2" />
                      ) : (

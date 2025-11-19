@@ -45,7 +45,7 @@ export default function VerifyClient() {
     <div className="fixed inset-0 flex items-center justify-center bg-background">
       <div className="flex flex-col items-center gap-6">
         <LoaderCircle className="h-16 w-16 animate-spin text-primary" />
-        <p className="text-lg font-medium">Connexion magique en cours…</p>
+        <p className="text-lg font-medium">Magic sign-in in progress...</p>
       </div>
     </div>
   );
