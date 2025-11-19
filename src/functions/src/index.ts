@@ -45,8 +45,11 @@ exports.sendMagicLink = onRequest({ cors: true }, async (req, res) => {
                 },
               };
       
+              // On passe l’email dans l’URL pour que ça marche même dans Chrome Custom Tab
+              const continueUrl = `https://wodburner.app/verify?email=${encodeURIComponent(email)}`;
+
               const link = await admin.auth().generateSignInWithEmailLink(email, {
-                url: "https://wodburner.app/verify",
+                url: continueUrl,
                 handleCodeInApp: true,
               });
 
