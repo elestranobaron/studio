@@ -11,6 +11,7 @@ import {
   Gem,
   Medal,
   Dice5,
+  Trophy,
 } from "lucide-react";
 import {
   SidebarMenu,
@@ -29,6 +30,7 @@ const links = [
 
 const secondaryLinks = [
     { href: "/premium", label: "Go Premium", icon: Gem, className: "text-primary hover:text-primary" },
+    { href: "/hall-of-fame", label: "Hall of Fame", icon: Trophy, className: "text-yellow-400 hover:text-yellow-400" },
 ]
 
 export function MainNav() {

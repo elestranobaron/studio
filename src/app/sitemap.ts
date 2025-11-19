@@ -20,6 +20,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     '/premium',
     '/settings',
     '/wod/new',
+    '/hall-of-fame',
   ].map((route) => ({
     url: `${baseUrl}${route}`,
     lastModified: new Date(),
