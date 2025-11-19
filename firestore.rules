@@ -50,6 +50,12 @@ service cloud.firestore {
           allow update, delete: if false; 
       }
     }
+
+    // HALL OF FAME
+    match /hallOfFame/{userId} {
+      allow read: if true; // Publicly readable
+      allow write: if false; // Only backend can write
+    }
   }
 }
 
