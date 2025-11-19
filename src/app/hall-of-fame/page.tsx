@@ -1,9 +1,11 @@
+
 'use client';
 
 import { useCollection, useFirebase } from '@/firebase';
 import { collection, query, orderBy } from 'firebase/firestore';
 import { LoaderCircle } from 'lucide-react';
 import Link from 'next/link';
+import { useMemo } from 'react';
 
 interface HallOfFameEntry {
   rank: number;
@@ -13,8 +15,13 @@ interface HallOfFameEntry {
 
 export default function HallOfFamePage() {
   const { firestore } = useFirebase();
-  const ogsCollection = collection(firestore, 'hallOfFame');
-  const ogsQuery = query(ogsCollection, orderBy('rank', 'asc'));
+
+  const ogsQuery = useMemo(() => {
+    if (!firestore) return null;
+    const ogsCollection = collection(firestore, 'hallOfFame');
+    return query(ogsCollection, orderBy('rank', 'asc'));
+  }, [firestore]);
+  
   const { data: ogs, isLoading } = useCollection<HallOfFameEntry>(ogsQuery);
 
   const ogCount = ogs?.length ?? 0;
@@ -24,7 +31,7 @@ export default function HallOfFamePage() {
       <h1 className="text-5xl font-bold mb-5">🏆 WodBurner Hall of Fame 🏆</h1>
       <p className="text-xl">The First 300 OGs – FREE FOR LIFE</p>
 
-      {isLoading ? (
+      {isLoading && !ogs ? (
         <div className="flex justify-center items-center my-10">
           <LoaderCircle className="h-16 w-16 animate-spin text-[#00ff00]" />
         </div>
