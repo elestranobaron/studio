@@ -22,7 +22,7 @@ function HallOfFameSkeleton() {
     return (
         <div className="space-y-4">
             <Skeleton className="h-8 w-2/3 mx-auto" />
-            <Skeleton className="h-24 w-1/2 mx-auto" />
+            <Skeleton className="h-48 w-48 mx-auto rounded-full" />
             <Skeleton className="h-6 w-3/4 mx-auto" />
              <div className="max-w-md mx-auto space-y-2 mt-8">
                 <Skeleton className="h-8 w-full" />
@@ -33,6 +33,45 @@ function HallOfFameSkeleton() {
         </div>
     )
 }
+
+function ProgressCircle({ value, max }: { value: number, max: number }) {
+  const percentage = (value / max) * 100;
+  const circumference = 2 * Math.PI * 80; // 2 * pi * radius
+  const strokeDashoffset = circumference - (percentage / 100) * circumference;
+
+  return (
+    <div className="relative h-48 w-48 mx-auto">
+      <svg className="h-full w-full" viewBox="0 0 200 200">
+        <circle
+          cx="100"
+          cy="100"
+          r="80"
+          fill="transparent"
+          stroke="hsl(var(--muted))"
+          strokeWidth="15"
+        />
+        <circle
+          cx="100"
+          cy="100"
+          r="80"
+          fill="transparent"
+          stroke="hsl(var(--primary))"
+          strokeWidth="15"
+          strokeLinecap="round"
+          strokeDasharray={circumference}
+          strokeDashoffset={strokeDashoffset}
+          transform="rotate(-90 100 100)"
+          className="transition-all duration-1000 ease-in-out"
+        />
+      </svg>
+      <div className="absolute inset-0 flex flex-col items-center justify-center">
+        <span className="text-5xl font-bold text-green-400">{value}</span>
+        <span className="text-lg text-muted-foreground">/ {max}</span>
+      </div>
+    </div>
+  );
+}
+
 
 export default function HallOfFamePage() {
   const { firestore } = useFirebase();
@@ -73,11 +112,11 @@ export default function HallOfFamePage() {
                            <HallOfFameSkeleton />
                         ) : (
                             <>
-                                <div className="p-4 rounded-lg bg-background/50">
-                                    <div className="text-6xl font-bold text-green-400">{ogCount} / 300</div>
-                                    <p className="text-sm font-medium text-red-400 animate-pulse">
-                                        {isFull ? "The list is now closed forever." : `Only ${spotsLeft} spots remaining!`}
-                                    </p>
+                                <div className="space-y-2 py-4">
+                                  <ProgressCircle value={ogCount} max={300} />
+                                  <p className="text-sm font-medium text-red-400 animate-pulse">
+                                      {isFull ? "The list is now closed forever." : `Only ${spotsLeft} spots remaining!`}
+                                  </p>
                                 </div>
                                 <Card>
                                     <ScrollArea className="h-72">
