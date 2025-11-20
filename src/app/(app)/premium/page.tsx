@@ -124,7 +124,7 @@ function PremiumContent() {
             Become a WODBurner Premium member to get unlimited access to all features and support the app's development.
           </p>
           <div className="inline-block mt-4 bg-destructive/80 text-destructive-foreground text-xs font-bold px-3 py-1 rounded-full">
-            LIFETIME LAUNCH OFFER for the first 500 members!
+            LIFETIME LAUNCH OFFER for the first 300 members!
           </div>
         </div>
 
