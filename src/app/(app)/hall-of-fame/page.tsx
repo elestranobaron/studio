@@ -3,7 +3,7 @@
 
 import { useCollection, useFirebase } from '@/firebase';
 import { collection, query, orderBy } from 'firebase/firestore';
-import { LoaderCircle, Crown, ShieldCheck } from 'lucide-react';
+import { Crown, ShieldCheck } from 'lucide-react';
 import Link from 'next/link';
 import { useMemo } from 'react';
 import { SidebarTrigger } from '@/components/ui/sidebar';
