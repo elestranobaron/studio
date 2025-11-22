@@ -13,8 +13,10 @@ import { useAuth } from "@/firebase/provider";
 import { useRouter } from "next/navigation";
 import { Avatar, AvatarImage, AvatarFallback } from "./ui/avatar";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 
 export function UserNav() {
+  const t = useTranslations('UserNav');
   const { user, isUserLoading } = useUser();
   const auth = useAuth();
   const router = useRouter();
@@ -42,7 +44,7 @@ export function UserNav() {
                     <SidebarMenuItem>
                         <SidebarMenuButton disabled>
                             <LoaderCircle className="animate-spin" />
-                            <span>Loading...</span>
+                            <span>{t('loading')}</span>
                         </SidebarMenuButton>
                     </SidebarMenuItem>
                 </SidebarMenu>
@@ -58,7 +60,7 @@ export function UserNav() {
                 <SidebarMenuItem>
                     <SidebarMenuButton onClick={handleLogin}>
                         <LogIn />
-                        <span>Sign In</span>
+                        <span>{t('signIn')}</span>
                     </SidebarMenuButton>
                 </SidebarMenuItem>
             </SidebarMenu>
@@ -70,17 +72,17 @@ export function UserNav() {
     <div>
         <SidebarMenu>
             <SidebarMenuItem>
-                <SidebarMenuButton asChild tooltip={{children: "Settings"}} onClick={() => setOpenMobile(false)}>
+                <SidebarMenuButton asChild tooltip={{children: t('settingsTooltip')}} onClick={() => setOpenMobile(false)}>
                     <Link href="/settings">
                         <Settings />
-                        <span>Settings</span>
+                        <span>{t('settingsTooltip')}</span>
                     </Link>
                 </SidebarMenuButton>
             </SidebarMenuItem>
             <SidebarMenuItem>
                 <SidebarMenuButton onClick={handleLogout}>
                     <LogOut />
-                    <span>Sign Out</span>
+                    <span>{t('signOut')}</span>
                 </SidebarMenuButton>
             </SidebarMenuItem>
         </SidebarMenu>
@@ -95,10 +97,10 @@ export function UserNav() {
             </Avatar>
             <div className="flex flex-col truncate">
                 <span className="font-semibold text-sm text-sidebar-foreground">
-                    {user.isAnonymous ? 'Anonymous User' : (user.email || 'User')}
+                    {user.isAnonymous ? t('anonymousUser') : (user.email || 'User')}
                 </span>
                 <span className="text-xs text-sidebar-foreground/70">
-                    {user.isAnonymous ? 'Temporary Profile' : user.email}
+                    {user.isAnonymous ? t('temporaryProfile') : user.email}
                 </span>
             </div>
         </div>

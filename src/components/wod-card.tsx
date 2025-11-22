@@ -28,6 +28,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, Dialog
 import { WodContentParser } from "./wod-content-parser";
 import { Separator } from "./ui/separator";
 import { HeroLetter } from "./hero-letter";
+import { useTranslations } from "next-intl";
 
 function WodIcon({ type }: { type: WOD["type"] }) {
   switch (type) {
@@ -45,6 +46,7 @@ function WodIcon({ type }: { type: WOD["type"] }) {
 }
 
 function PersonalWodActions({ wod }: { wod: WOD }) {
+    const t = useTranslations('WodCard');
     const { firestore } = useFirebase();
     const { user } = useUser();
     const { toast } = useToast();
@@ -76,7 +78,7 @@ function PersonalWodActions({ wod }: { wod: WOD }) {
                 batch.update(userWodRef, { communityWodId: "" });
                 await batch.commit();
                 
-                toast({ title: "WOD Unshared", description: "Your WOD has been removed from the community." });
+                toast({ title: t('unsharedToastTitle'), description: t('unsharedToastDescription') });
             } else {
                 // --- Share ---
                 const userDisplayName = user.email?.split('@')[0] || 'Anonymous';
@@ -95,12 +97,12 @@ function PersonalWodActions({ wod }: { wod: WOD }) {
                 await updateDoc(userWodRef, {
                     communityWodId: newCommunityDocRef.id
                 });
-                toast({ title: "WOD Shared!", description: "Your WOD is now visible to the community." });
+                toast({ title: t('sharedToastTitle'), description: t('sharedToastDescription') });
             }
              setIsDropdownOpen(false); // Close dropdown on success
         } catch (error) {
             console.error("Error toggling share status:", error);
-            toast({ variant: "destructive", title: "Action Failed", description: "Could not update the share status." });
+            toast({ variant: "destructive", title: t('shareErrorToastTitle'), description: t('shareErrorToastDescription') });
         } finally {
             setIsSharing(false);
         }
@@ -124,11 +126,11 @@ function PersonalWodActions({ wod }: { wod: WOD }) {
             }
 
             await batch.commit();
-            toast({ title: "WOD Deleted", description: "Your WOD has been successfully removed." });
+            toast({ title: t('deleteToastTitle'), description: t('deleteToastDescription') });
             // No need to close dropdown here, as the component will unmount
         } catch (error) {
             console.error("Error deleting WOD:", error);
-            toast({ variant: "destructive", title: "Deletion Failed", description: "Could not delete the WOD." });
+            toast({ variant: "destructive", title: t('deleteErrorToastTitle'), description: t('deleteErrorToastDescription') });
         } finally {
             setIsDeleting(false);
             setIsDeleteDialogOpen(false);
@@ -146,20 +148,19 @@ function PersonalWodActions({ wod }: { wod: WOD }) {
             <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
                 <AlertDialogContent>
                     <AlertDialogHeader>
-                        <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                        <AlertDialogTitle>{t('deleteDialogTitle')}</AlertDialogTitle>
                         <AlertDialogDescription>
-                            This action cannot be undone. This will permanently delete your WOD
-                            {wod.communityWodId && " and remove it from the community"}.
+                            {t('deleteDialogDescription', { isShared: !!wod.communityWodId })}
                         </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
-                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogCancel>{t('deleteDialogCancel')}</AlertDialogCancel>
                         <AlertDialogAction
                             onClick={handleDelete}
                             className="bg-destructive hover:bg-destructive/90"
                             disabled={isDeleting}
                         >
-                             {isDeleting ? <LoaderCircle className="h-4 w-4 animate-spin" /> : "Delete"}
+                             {isDeleting ? <LoaderCircle className="h-4 w-4 animate-spin" /> : t('deleteDialogConfirm')}
                         </AlertDialogAction>
                     </AlertDialogFooter>
                 </AlertDialogContent>
@@ -176,13 +177,13 @@ function PersonalWodActions({ wod }: { wod: WOD }) {
                         }}
                     >
                         <MoreHorizontal className="h-4 w-4" />
-                        <span className="sr-only">WOD options</span>
+                        <span className="sr-only">{t('optionsAlt')}</span>
                     </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" onClick={(e) => { e.stopPropagation(); e.preventDefault(); }}>
                      <DropdownMenuItem onSelect={handleEdit}>
                         <Pencil className="mr-2 h-4 w-4" />
-                        <span>Edit</span>
+                        <span>{t('edit')}</span>
                     </DropdownMenuItem>
                     <div onPointerDown={e => e.preventDefault()}>
                         <DropdownMenuItem
@@ -196,7 +197,7 @@ function PersonalWodActions({ wod }: { wod: WOD }) {
                             ) : (
                                 <Share2 className="mr-2 h-4 w-4" />
                             )}
-                            <span>{wod.communityWodId ? "Unshare" : "Share"}</span>
+                            <span>{wod.communityWodId ? t('unshare') : t('share')}</span>
                         </DropdownMenuItem>
                     </div>
                     <DropdownMenuSeparator />
@@ -205,7 +206,7 @@ function PersonalWodActions({ wod }: { wod: WOD }) {
                         onSelect={() => setIsDeleteDialogOpen(true)}
                     >
                         <Trash2 className="mr-2 h-4 w-4" />
-                        <span>Delete</span>
+                        <span>{t('delete')}</span>
                     </DropdownMenuItem>
                 </DropdownMenuContent>
             </DropdownMenu>
@@ -214,6 +215,7 @@ function PersonalWodActions({ wod }: { wod: WOD }) {
 }
 
 function ReactionButton({ initialWod }: { initialWod: WOD }) {
+    const t = useTranslations('WodCard');
     const { firestore } = useFirebase();
     const { user } = useUser();
     const { toast } = useToast();
@@ -283,7 +285,7 @@ function ReactionButton({ initialWod }: { initialWod: WOD }) {
             });
         } catch (error) {
             console.error("Transaction failed: ", error);
-            toast({ variant: "destructive", title: "Oops!", description: "Could not save your reaction." });
+            toast({ variant: "destructive", title: t('reactionErrorToastTitle'), description: t('reactionErrorToastDescription') });
             // Revert optimistic update on failure
             setWod(originalWod);
             setUserReaction(originalReaction);
@@ -328,7 +330,7 @@ function ReactionButton({ initialWod }: { initialWod: WOD }) {
 
 
 export function WodCard({ wod, source = 'personal' }: { wod: WOD, source?: 'personal' | 'community' }) {
-    
+    const t = useTranslations('WodCard');
     const date = new Date(wod.date);
     const formattedDate = isValid(date) ? format(date, "PPP") : wod.date;
     const href = source === 'community' ? `/community-timer/${wod.id}` : `/timer/${wod.id}`;
@@ -371,7 +373,7 @@ export function WodCard({ wod, source = 'personal' }: { wod: WOD, source?: 'pers
                     )}
                     <DialogContent className="max-w-4xl p-2">
                         <DialogHeader className="sr-only">
-                            <DialogTitle>{wod.name} - Original Image</DialogTitle>
+                            <DialogTitle>{t('viewImageAlt', { wodName: wod.name })}</DialogTitle>
                         </DialogHeader>
                         <div className="relative w-full h-auto">
                             <Image
@@ -418,8 +420,8 @@ export function WodCard({ wod, source = 'personal' }: { wod: WOD, source?: 'pers
                  <DialogHeader>
                     <DialogTitle className="font-headline text-primary text-2xl">{wod.name}</DialogTitle>
                      <DialogDescription>
-                        {wod.type} - {formattedDate}
-                        {wod.userDisplayName && <span className="block mt-1">Shared by {wod.userDisplayName}</span>}
+                        {t('viewWodDescription', { type: wod.type, date: formattedDate })}
+                        {wod.userDisplayName && <span className="block mt-1">{t('viewWodSharedBy', { displayName: wod.userDisplayName })}</span>}
                     </DialogDescription>
                  </DialogHeader>
                  <div className="py-4 space-y-6 max-h-[70vh] overflow-y-auto pr-4">
@@ -437,7 +439,7 @@ export function WodCard({ wod, source = 'personal' }: { wod: WOD, source?: 'pers
       <CardFooter className="flex flex-col items-stretch gap-2 pt-2">
          {source === 'community' && <ReactionButton initialWod={wod} />}
         <Button asChild className="w-full">
-          <Link href={href}>Start WOD</Link>
+          <Link href={href}>{t('startWod')}</Link>
         </Button>
       </CardFooter>
     </Card>

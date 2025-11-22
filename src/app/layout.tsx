@@ -3,6 +3,8 @@ import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 import { cn } from "@/lib/utils";
 import { FirebaseClientProvider } from "@/firebase";
+import {NextIntlClientProvider} from 'next-intl';
+import {getMessages} from 'next-intl/server';
 
 export const metadata: Metadata = {
   title: "WODBurner",
@@ -24,13 +26,17 @@ export const appleWebApp = {
   title: "WODBurner",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
+  params: {locale}
 }: Readonly<{
   children: React.ReactNode;
+  params: {locale: string};
 }>) {
+  const messages = await getMessages();
+
   return (
-    <html lang="en" className="dark">
+    <html lang={locale} className="dark">
       <head>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
@@ -60,9 +66,11 @@ export default function RootLayout({
   />
 </head>
       <body className={cn("font-body antialiased", "min-h-screen bg-background font-sans")}>
-        <FirebaseClientProvider>
-          {children}
-        </FirebaseClientProvider>
+        <NextIntlClientProvider messages={messages}>
+          <FirebaseClientProvider>
+            {children}
+          </FirebaseClientProvider>
+        </NextIntlClientProvider>
         <Toaster />
       </body>
     </html>

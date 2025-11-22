@@ -19,23 +19,26 @@ import {
   SidebarMenuButton,
   useSidebar,
 } from "@/components/ui/sidebar";
-
-const links = [
-  { href: "/dashboard", label: "Dashboard", icon: LayoutGrid },
-  { href: "/scan", label: "Scan WOD", icon: ScanLine },
-  { href: "/generate", label: "Generate WOD", icon: Dice5 },
-  { href: "/hero-wods", label: "Hero WODs", icon: Medal },
-  { href: "/timers", label: "Timers", icon: Timer },
-];
-
-const secondaryLinks = [
-    { href: "/premium", label: "Go Premium", icon: Gem, className: "text-primary hover:text-primary" },
-    { href: "/hall-of-fame", label: "Hall of Fame", icon: Trophy, className: "text-yellow-400 hover:text-yellow-400" },
-]
+import { useTranslations } from "next-intl";
 
 export function MainNav() {
+  const t = useTranslations('MainNav');
   const pathname = usePathname();
   const { setOpenMobile } = useSidebar();
+
+  const links = [
+    { href: "/dashboard", label: t('dashboard'), icon: LayoutGrid },
+    { href: "/scan", label: t('scanWod'), icon: ScanLine },
+    { href: "/generate", label: t('generateWod'), icon: Dice5 },
+    { href: "/hero-wods", label: t('heroWods'), icon: Medal },
+    { href: "/timers", label: t('timers'), icon: Timer },
+  ];
+
+  const secondaryLinks = [
+      { href: "/premium", label: t('goPremium'), icon: Gem, className: "text-primary hover:text-primary" },
+      { href: "/hall-of-fame", label: t('hallOfFame'), icon: Trophy, className: "text-yellow-400 hover:text-yellow-400" },
+  ]
+
 
   return (
     <SidebarMenu>
@@ -43,7 +46,7 @@ export function MainNav() {
         <SidebarMenuItem key={link.href}>
           <SidebarMenuButton
             asChild
-            isActive={pathname.startsWith(link.href)}
+            isActive={pathname.endsWith(link.href)}
             tooltip={{ children: link.label }}
             onClick={() => setOpenMobile(false)}
           >
@@ -58,7 +61,7 @@ export function MainNav() {
         <SidebarMenuItem key={link.href}>
           <SidebarMenuButton
             asChild
-            isActive={pathname.startsWith(link.href)}
+            isActive={pathname.endsWith(link.href)}
             tooltip={{ children: link.label }}
             onClick={() => setOpenMobile(false)}
             className={link.className}
