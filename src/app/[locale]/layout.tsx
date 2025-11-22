@@ -1,5 +1,5 @@
 import {NextIntlClientProvider, useMessages} from 'next-intl';
-
+ 
 export default function LocaleLayout({
   children,
   params: {locale}
@@ -11,7 +11,7 @@ export default function LocaleLayout({
  
   return (
     <NextIntlClientProvider locale={locale} messages={messages}>
-        {children}
+      {children}
     </NextIntlClientProvider>
   );
 }
