@@ -1,6 +1,30 @@
 import {NextIntlClientProvider} from 'next-intl';
 import {getMessages} from 'next-intl/server';
+import type { Metadata } from "next";
+import "../globals.css";
+import { Toaster } from "@/components/ui/toaster";
+import { FirebaseClientProvider } from "@/firebase";
  
+export const metadata: Metadata = {
+  title: "WODBurner",
+  description: "Scan any WOD in seconds, time it perfectly, share instantly, and join the strongest French-speaking CrossFit community.",
+  manifest: "/manifest.json",
+  icons: {
+    icon: "/icon-192.png",
+    apple: "/icon-512.png",
+  },
+};
+
+export const viewport = {
+  themeColor: "#ff0000",
+};
+
+export const appleWebApp = {
+  capable: true,
+  statusBarStyle: "black-translucent",
+  title: "WODBurner",
+};
+
 export default async function LocaleLayout({
   children,
   params: {locale}
@@ -21,27 +45,13 @@ export default async function LocaleLayout({
             href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700;800&display=swap"
             rel="stylesheet"
           />
-          <link rel="manifest" href="/manifest.json" />
-          <link rel="icon" href="/icon-192.png" sizes="192x192" />
-          <link rel="apple-touch-icon" href="/icon-512.png" />
-          <meta name="theme-color" content="#ff0000" />
-          <script
-            dangerouslySetInnerHTML={{
-              __html: `
-                if ('serviceWorker' in navigator) {
-                  window.addEventListener('load', () => {
-                    navigator.serviceWorker.register('/service-worker.js')
-                      .then(reg => console.log('SW registered:', reg))
-                      .catch(err => console.log('SW error:', err));
-                  });
-                }
-              `,
-            }}
-          />
       </head>
       <body className="font-body antialiased min-h-screen bg-background font-sans">
         <NextIntlClientProvider locale={locale} messages={messages}>
-          {children}
+          <FirebaseClientProvider>
+            {children}
+          </FirebaseClientProvider>
+          <Toaster />
         </NextIntlClientProvider>
       </body>
     </html>
