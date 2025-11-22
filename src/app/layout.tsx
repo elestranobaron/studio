@@ -1,6 +1,4 @@
-// This is the root layout component for your Next.js app.
-// Learn more: https://nextjs.org/docs/app/building-your-application/routing/pages-and-layouts#root-layout-required
-
+// This file is intentionally blank. The root layout is handled by [locale]/layout.tsx
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return children;
 }
