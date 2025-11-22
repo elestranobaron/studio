@@ -1,3 +1,4 @@
+
 'use server';
 /**
  * @fileOverview A WOD (Workout of the Day) analysis AI agent.
@@ -52,7 +53,11 @@ The image contains a workout, often split into sections like 'Warm-up', 'Strengt
 First, determine the primary details of the WOD. This is usually based on the "Metcon" or main conditioning piece.
 1.  **Name**: The title of the workout (e.g., "Murph"). If no name is present, create a descriptive name.
 2.  **Type**: The format of the *main workout*. Choose from "For Time", "AMRAP", "EMOM", "Tabata", or "Other".
-3.  **Duration**: The total duration in **minutes** of the *main workout*. For AMRAPs, use the specified time. For EMOMs, calculate total time (e.g., 'EMOM for 10 rounds of 1 minute' is 10. 'Every 2:30 for 6 rounds' is 15). Leave empty if not applicable (e.g., For Time).
+3.  **Duration**: The total duration in **minutes** of the *main workout*. 
+    *   For AMRAPs, use the specified time. 
+    *   For EMOMs, calculate total time (e.g., 'EMOM for 10 rounds of 1 minute' is 10. 'Every 2:30 for 6 rounds' is 15).
+    *   For "For Time" workouts, look for a "Time Cap" or "TC" and use that value. Example: "For Time (TC 25)" means the duration is 25.
+    *   Leave empty if not applicable.
 4.  **Image Hint**: Provide a one or two-word hint for a relevant stock photo based on the main exercises.
 
 **Detailed Section-by-Section Analysis:**
@@ -61,7 +66,7 @@ Next, you MUST break the workout down into its logical sections. For **EACH** se
 2.  **content**: The full, original text of that section. **Preserve all line breaks and formatting.**
 3.  **Timer Analysis (for this section only):**
     *   **timerType**: If this specific section has a timer, identify its type ("For Time", "AMRAP", "EMOM", "Tabata", "Other").
-    *   **timerDuration**: For AMRAP/EMOM, what is its duration in minutes?
+    *   **timerDuration**: For AMRAP/EMOM, what is its duration in minutes? For "For Time", check for a Time Cap.
     *   **timerRounds**: For EMOM/Tabata, how many rounds?
     *   **timerInterval**: For EMOM, what is the interval in **seconds**? (e.g., "Every 90s" is 90).
 
