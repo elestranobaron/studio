@@ -24,7 +24,7 @@ export const appleWebApp = {
   statusBarStyle: "black-translucent",
   title: "WODBurner",
 };
-
+ 
 export default async function LocaleLayout({
   children,
   params: {locale}
@@ -32,8 +32,6 @@ export default async function LocaleLayout({
   children: React.ReactNode;
   params: {locale: string};
 }) {
-  // Providing all messages to the client
-  // side is the easiest way to get started
   const messages = await getMessages();
  
   return (
