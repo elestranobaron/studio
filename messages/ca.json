@@ -1,0 +1,400 @@
+
+{
+  "UserNav": {
+    "signIn": "Inicia sessió",
+    "signOut": "Tanca sessió",
+    "loading": "S'està carregant...",
+    "anonymousUser": "Usuari anònim",
+    "temporaryProfile": "Perfil temporal",
+    "settingsTooltip": "Configuració"
+  },
+  "MainNav": {
+    "dashboard": "Dashboard",
+    "scanWod": "Escaneja WOD",
+    "generateWod": "Genera WOD",
+    "heroWods": "Hero WODs",
+    "timers": "Temporitzadors",
+    "goPremium": "Fes-te Premium",
+    "hallOfFame": "Saló de la Fama"
+  },
+  "DashboardPage": {
+    "title": "Dashboard",
+    "scanNewWod": "Escaneja un nou WOD",
+    "tabs": {
+      "personal": "Els meus WODs",
+      "community": "Comunitat"
+    },
+    "PersonalWodList": {
+      "emptyTitle": "No s'han trobat WODs aquí.",
+      "emptyDescription": "Escaneja el teu primer WOD per començar!"
+    },
+    "CommunityWodList": {
+      "joinTitle": "Uneix-te a la comunitat!",
+      "joinDescription": "Crea un compte gratuït per veure, compartir i inspirar-te amb els WODs de tota la comunitat.",
+      "joinButton": "Registra't / Inicia sessió",
+      "errorTitle": "S'ha produït un error",
+      "errorDescription": "No s'han pogut carregar els WODs de la comunitat. Si us plau, torna-ho a provar més tard.",
+      "searchInputPlaceholder": "Cerca WODs de la comunitat...",
+      "sortByLabel": "Ordena per",
+      "sort": {
+        "recent": "Més recents",
+        "popular": "Més populars",
+        "alphabetical": "Alfabètic (A-Z)"
+      },
+      "emptySearchTitle": "Cap WOD coincideix amb la teva cerca.",
+      "emptySearchDescription": "Prova un altre terme de cerca.",
+      "emptyCommunityTitle": "Sigues el primer a compartir-ne un!"
+    },
+    "ScrollTop": {
+      "label": "Desplaça't amunt"
+    }
+  },
+  "WelcomeEmptyState": {
+    "title": "Benvingut a WODBurner!",
+    "subtitle": "Registra el teu primer WOD en 3 segons:",
+    "scanButton": "Escaneja un WOD des d'una foto",
+    "generateButton": "Genera un WOD aleatori",
+    "heroButton": "Prova un Hero WOD",
+    "communityLink": "O explora la {community} per veure què estan cremant els altres avui.",
+    "community": "comunitat"
+  },
+  "WodCard": {
+    "optionsAlt": "Opcions del WOD",
+    "share": "Comparteix",
+    "unshare": "Deixa de compartir",
+    "edit": "Edita",
+    "delete": "Suprimeix",
+    "sharedToastTitle": "WOD compartit!",
+    "sharedToastDescription": "El teu WOD ara és visible per a la comunitat.",
+    "unsharedToastTitle": "WOD ja no compartit",
+    "unsharedToastDescription": "El teu WOD s'ha eliminat de la comunitat.",
+    "shareErrorToastTitle": "L'acció ha fallat",
+    "shareErrorToastDescription": "No s'ha pogut actualitzar l'estat de compartició.",
+    "deleteDialogTitle": "Estàs absolutament segur?",
+    "deleteDialogDescription": "Aquesta acció no es pot desfer. Això suprimirà permanentment el teu WOD{isShared, select, true { i l'eliminarà de la comunitat} other {}}.",
+    "deleteDialogCancel": "Cancel·la",
+    "deleteDialogConfirm": "Suprimeix",
+    "deleteToastTitle": "WOD suprimit",
+    "deleteToastDescription": "El teu WOD s'ha eliminat correctament.",
+    "deleteErrorToastTitle": "La supressió ha fallat",
+    "deleteErrorToastDescription": "No s'ha pogut suprimir el WOD.",
+    "reactionErrorToastTitle": "Ups!",
+    "reactionErrorToastDescription": "No s'ha pogut desar la teva reacció.",
+    "viewImageAlt": "{wodName} - Imatge original",
+    "viewWodDescription": "{type} - {date}",
+    "viewWodSharedBy": "Compartit per {displayName}",
+    "startWod": "Inicia WOD"
+  },
+  "TimerPage": {
+    "backToDashboard": "Torna al Dashboard",
+    "viewWod": "Mostra el WOD",
+    "fullWodLabel": "WOD complet: {wodName}",
+    "startSection": "Inicia",
+    "accessRestricted": {
+      "title": "Accés restringit",
+      "description": "Si us plau, registra't o inicia sessió per veure els WODs de la comunitat i utilitzar el temporitzador.",
+      "button": "Registra't / Inicia sessió"
+    }
+  },
+  "FileUploader": {
+    "dragAndDropPrompt": "Arrossega i deixa anar la imatge del teu WOD o fes clic per seleccionar-la",
+    "dragActivePrompt": "Deixa anar la imatge aquí...",
+    "fileTypes": "PNG, JPG o GIF (màx. 5 MB)",
+    "analyzingTitle": "S'està analitzant el WOD...",
+    "analyzingDescription": "L'IA s'està escalfant. Això pot trigar un moment.",
+    "analysisFailedTitle": "L'anàlisi ha fallat",
+    "analysisFailedDescription": "No s'ha pogut analitzar la imatge del WOD. Si us plau, torna-ho a provar.",
+    "duplicateDialogTitle": "S'ha detectat un WOD duplicat",
+    "duplicateDialogDescription": "Aquest entrenament sembla idèntic a un WOD que ja has desat.",
+    "duplicateDialogSavedOn": "Desat el {date}",
+    "duplicateDialogQuestion": "Vols desar aquest nou de totes maneres?",
+    "duplicateDialogCancel": "Cancel·la",
+    "duplicateDialogConfirm": "Desa igualment",
+    "saveFailedTitle": "El desament ha fallat",
+    "saveFailedDescription": "S'ha produït un error en desar el WOD.",
+    "wodSavedTitle": "WOD desat!",
+    "wodSavedDescription": "El teu nou WOD s'ha afegit al teu dashboard.",
+    "authErrorTitle": "No s'ha pogut desar",
+    "authErrorDescription": "Els serveis d'autenticació no estan disponibles.",
+    "wodPreviewAlt": "Visualització prèvia del WOD",
+    "analyzeButton": "Analitza el WOD",
+    "analysisResultTitle": "Resultat de l'anàlisi",
+    "wodNamePlaceholder": "Nom del WOD",
+    "wodTypePlaceholder": "Tipus de WOD",
+    "durationPlaceholder": "Durada (minuts)",
+    "shareCheckbox": "Comparteix amb la comunitat",
+    "shareAnonymousHelp": "Registra't per obtenir un compte i compartir els teus WODs amb la comunitat.",
+    "saveWodButton": "Desa el WOD",
+    "savingButton": "S'està desant..."
+  },
+  "LoginPage": {
+    "verifying": "S'està verificant...",
+    "confirmEmailTitle": "Confirma el correu electrònic",
+    "confirmEmailDescription": "Per completar l'inici de sessió en aquest dispositiu, si us plau, proporciona l'adreça de correu electrònic on has rebut l'enllaç.",
+    "confirmEmailFailedTitle": "L'inici de sessió ha fallat",
+    "confirmEmailSignInButton": "Inicia sessió",
+    "featureTitle": "Porta-ho al següent nivell.",
+    "featureDescription": "Crea un compte gratuït per desbloquejar totes les funcions i no tornar a perdre mai més un WOD.",
+    "featureManual": "Creació manual",
+    "featureManualDescription": "Afegeix els teus propis WODs sense necessitat d'una foto.",
+    "featureHistory": "Historial complet",
+    "featureHistoryDescription": "Desa i troba tots els teus entrenaments en qualsevol moment.",
+    "featureTracking": "Seguiment del rendiment (Properament!)",
+    "featureTrackingDescription": "Analitza el teu progrés i visualitza el teu rendiment.",
+    "formTitle": "Inicia sessió / Registra't",
+    "formDescription": "Introdueix el teu correu electrònic per rebre un enllaç d'inici de sessió segur. No es requereix contrasenya.",
+    "emailSentTitle": "Comprova el teu correu electrònic!",
+    "emailSentDescription": "S'ha enviat un enllaç per iniciar sessió a {email}.",
+    "sendLinkButton": "Envia enllaç màgic",
+    "authError": "El servei d'autenticació no està a punt.",
+    "sendLinkError": "No hem pogut enviar l'enllaç. Si us plau, torna-ho a provar.",
+    "linkSentToast": "Enllaç enviat!",
+    "linkSentToastDescription": "Comprova la teva safata d'entrada per a un enllaç d'inici de sessió. Si no el veus, si us plau, comprova la teva carpeta de correu brossa.",
+    "signInSuccessToast": "Inici de sessió correcte!",
+    "signInSuccessToastDescription": "Ja has iniciat sessió.",
+    "genericError": "S'ha produït un error. Si us plau, torna-ho a provar.",
+    "invalidLinkError": "L'enllaç d'inici de sessió no és vàlid, ha caducat o el correu electrònic és incorrecte. Si us plau, sol·licita'n un de nou."
+  },
+  "PremiumPage": {
+    "title": "Premium",
+    "alreadyPremium": {
+      "title": "ETS PREMIUM!",
+      "subtitle": "Insígnia de patrocinador activada",
+      "description": "Gràcies per donar suport a WODBurner ❤️",
+      "communityButton": "Mostra la comunitat",
+      "dashboardButton": "Dashboard"
+    },
+    "headerTitle": "Allibera tot el teu potencial",
+    "headerDescription": "Fes-te membre de WODBurner Premium per obtenir accés il·limitat a totes les funcions i donar suport al desenvolupament de l'aplicació.",
+    "offer": "OFERTA DE LLANÇAMENT PER A TOTA LA VIDA per als primers 300 membres!",
+    "monthly": "Mensual",
+    "yearly": "Anual",
+    "discount": "-20%",
+    "freePlan": {
+      "title": "Gratuït",
+      "description": "Per a un seguiment ocasional",
+      "price": "0 €",
+      "perMonth": "/mes",
+      "currentPlan": "Pla actual"
+    },
+    "premiumPlan": {
+      "title": "Premium",
+      "description": "Per a atletes dedicats",
+      "priceMonthly": "1,99 €",
+      "priceYearly": "19,99 €",
+      "perMonth": "/mes",
+      "perYear": "/any",
+      "billedAnnually": "Facturat anualment",
+      "goPremium": "Fes-te Premium →",
+      "loading": "S'està carregant..."
+    },
+    "features": {
+      "scans": "Escanejos de WOD il·limitats",
+      "scansFree": "3 al mes",
+      "reactions": "Reaccions de la comunitat il·limitades",
+      "reactionsFree": "5 al dia",
+      "comments": "Publica comentaris",
+      "commentsFree": "Només lectura",
+      "favorites": "WODs preferits il·limitats",
+      "favoritesFree": "Màx. 10",
+      "customs": "WODs personalitzats il·limitats",
+      "customsFree": "Màx. 3",
+      "search": "Filtres de cerca avançats",
+      "badge": "Insígnia de patrocinador exclusiva",
+      "unlimited": "Il·limitat",
+      "notIncluded": "No inclòs"
+    },
+    "toasts": {
+      "welcomeTitle": "Benvingut a WODBurner Premium!",
+      "welcomeDescription": "La teva insígnia de patrocinador ja està activa.",
+      "cancelTitle": "Pagament cancel·lat",
+      "cancelDescription": "Pots tornar-ho a provar quan estiguis a punt.",
+      "loginRequiredTitle": "Cal iniciar sessió",
+      "loginRequiredDescription": "Crea un compte per passar a Premium.",
+      "paymentErrorTitle": "Error de pagament",
+      "paymentErrorDescription": "No s'ha pogut iniciar el procés de pagament."
+    }
+  },
+  "SettingsPage": {
+    "title": "Configuració",
+    "profile": {
+      "title": "Perfil",
+      "description": "Informació sobre el teu compte.",
+      "loading": "S'està carregant el perfil...",
+      "email": "Correu electrònic: {email}",
+      "emailNotSpecified": "No especificat",
+      "accountType": "Tipus de compte: {type}",
+      "typeAnonymous": "Anònim (temporal)",
+      "typePremium": "Premium",
+      "typeStandard": "Estàndard",
+      "manageSubscription": "Gestiona la meva subscripció",
+      "userNotFound": "No s'ha trobat l'usuari."
+    },
+    "dangerZone": {
+      "title": "Zona de perill",
+      "description": "Aquestes accions són permanents i no es poden desfer.",
+      "deleteButton": "Suprimeix el meu compte",
+      "deletingButton": "S'està suprimint...",
+      "dialogTitle": "Estàs absolutament segur?",
+      "dialogDescription": "Aquesta acció és irreversible. Suprimirà permanentment el teu compte i esborrarà totes les teves dades, inclosos tots els teus WODs desats, dels nostres servidors.",
+      "dialogCancel": "Cancel·la",
+      "dialogConfirm": "Sí, suprimeix el meu compte",
+      "helpText": "Si suprimeixes el teu compte, totes les teves dades es perdran per sempre."
+    },
+    "toasts": {
+      "deleteError": "No s'ha pogut suprimir el compte. L'usuari o els serveis de Firebase no estan disponibles.",
+      "deleteSuccessTitle": "Compte suprimit",
+      "deleteSuccessDescription": "El teu compte i totes les teves dades s'han suprimit correctament.",
+      "deleteFailedTitle": "La supressió ha fallat",
+      "deleteFailedDescription": "S'ha produït un error. Si us plau, torna-ho a provar.",
+      "deleteFailedRecentLogin": "Aquesta operació és sensible i requereix autenticació recent. Si us plau, torna a iniciar sessió abans de tornar-ho a provar.",
+      "portalError": "No s'ha pogut obrir la gestió de subscripcions."
+    }
+  },
+  "ScanPage": {
+    "title": "Escaneja WOD",
+    "manualButton": "Afegeix manualment"
+  },
+  "NewWodPage": {
+    "title": "Crea un WOD manualment",
+    "cardTitle": "Detalls de l'entrenament",
+    "namePlaceholder": "Nom del WOD (p. ex., Fran)",
+    "typePlaceholder": "Tipus de WOD",
+    "durationPlaceholder": "Durada (minuts)",
+    "imageHintPlaceholder": "Pista d'imatge (p. ex., barra)",
+    "descriptionPlaceholder": "Descripció del WOD...",
+    "saveButton": "Desa el WOD",
+    "savingButton": "S'està desant...",
+    "backLink": "Torna a Escanejar",
+    "duplicateDialog": {
+      "title": "S'ha detectat un WOD duplicat",
+      "description": "Aquest entrenament sembla idèntic a un WOD que ja has desat.",
+      "savedOn": "Desat el {date}",
+      "question": "Vols desar aquest nou de totes maneres?",
+      "cancel": "Cancel·la",
+      "confirm": "Desa igualment"
+    },
+    "toasts": {
+      "saveSuccessTitle": "WOD desat!",
+      "saveSuccessDescription": "El teu nou WOD s'ha afegit al teu dashboard.",
+      "saveFailedTitle": "El desament ha fallat",
+      "saveFailedDescription": "S'ha produït un error en desar el WOD."
+    }
+  },
+  "EditWodPage": {
+    "title": "Edita el WOD",
+    "cardTitle": "Detalls de l'entrenament",
+    "saveButton": "Desa els canvis",
+    "savingButton": "S'estan desant els canvis...",
+    "backLink": "Torna al Dashboard",
+    "toasts": {
+      "updateSuccessTitle": "WOD actualitzat!",
+      "updateSuccessDescription": "Els teus canvis s'han desat.",
+      "updateFailedTitle": "L'actualització ha fallat",
+      "updateFailedDescription": "S'ha produït un error en desar els teus canvis."
+    }
+  },
+  "GenericTimerPage": {
+    "backLink": "Torna a Temporitzadors",
+    "startButton": "Inicia el temporitzador",
+    "forTime": {
+      "title": "For Time",
+      "description": "Un cronòmetre simple per mesurar el teu entrenament. Opcionalment, estableix un límit de temps.",
+      "timeCapLabel": "Límit de temps (minuts, opcional)",
+      "timeCapPlaceholder": "p. ex., 20"
+    },
+    "amrap": {
+      "title": "Temporitzador AMRAP",
+      "description": "Estableix una durada i mira quantes rondes o repeticions pots completar.",
+      "durationLabel": "Durada (minuts)"
+    },
+    "emom": {
+      "title": "Temporitzador EMOM",
+      "description": "Cada minut en el minut. Estableix l'interval i el nombre de rondes.",
+      "roundsLabel": "Nombre de rondes",
+      "intervalLabel": "Durada de l'interval",
+      "intervalMinutes": "min",
+      "intervalSeconds": "seg"
+    },
+    "tabata": {
+      "title": "Temporitzador Tabata",
+      "description": "Intervals d'alta intensitat de 20 s de treball, 10 s de descans. Personalitza les rondes.",
+      "roundsLabel": "Rondes"
+    }
+  },
+  "TimersPage": {
+    "title": "Temporitzadors intel·ligents",
+    "forTime": "For Time",
+    "forTimeDescription": "Un cronòmetre simple per mesurar el teu entrenament.",
+    "amrap": "AMRAP",
+    "amrapDescription": "Tantes rondes/repeticions com sigui possible en un temps establert.",
+    "emom": "EMOM",
+    "emomDescription": "Cada minut en el minut, durant un nombre determinat de minuts.",
+    "tabata": "Tabata",
+    "tabataDescription": "Intervals d'alta intensitat de 20 s de treball, 10 s de descans.",
+    "footer": "O selecciona un WOD del dashboard per iniciar un temporitzador preconfigurat."
+  },
+  "HeroWodsPage": {
+    "title": "Hero WODs",
+    "description": "Els \"Hero\" WODs són entrenaments especials a CrossFit dedicats a homes i dones que han donat la seva vida en acte de servei. Són una oportunitat per reflexionar i honorar el seu sacrifici.",
+    "premiumUpsell": {
+      "title": "Desbloqueja tot l'arsenal",
+      "description": "Fes-te Premium per accedir a la biblioteca completa de més de {totalWodCount}+ Hero i Benchmark WODs, inclosos {premiumWodCount} entrenaments exclusius.",
+      "button": "Fes-te Premium"
+    }
+  },
+  "HallOfFamePage": {
+    "title": "Saló de la Fama",
+    "cardTitle": "Els primers 300 OGs",
+    "cardDescription": "Gratis per a tota la vida. Un lloc permanent per als nostres primers patrocinadors.",
+    "spotsRemaining": "Només queden {spotsLeft} places!",
+    "spotsFull": "La llista ja està tancada per sempre.",
+    "claimSpotButton": "Reclama la teva plaça ara",
+    "emptyList": "Sigues el primer a reclamar una plaça!"
+  },
+  "TimerClient": {
+    "workoutComplete": "Entrenament completat!",
+    "totalTime": "Temps total",
+    "timeCompleted": "Temps completat",
+    "goAgain": "Una altra vegada",
+    "shareResult": "Comparteix el resultat",
+    "shareModal": {
+      "title": "Resultat del WOD: {wodName}",
+      "description": "El teu temps final ha estat {finalTime}. Aquesta targeta està a punt per ser compartida.",
+      "finalTimeLabel": "TEMPS FINAL",
+      "screenshotReady": "A punt per a la captura de pantalla!"
+    },
+    "timeCap": "Límit de temps: {duration}:00",
+    "pause": "Pausa",
+    "start": "Inicia",
+    "reset": "Reinicia",
+    "finish": "Finalitza",
+    "round": "Ronda {current} / {total}",
+    "totalTimeElapsed": "Total: {time}"
+  },
+  "GenerateWodPage": {
+    "title": "Generador de WOD amb IA",
+    "cardTitle": "WODBot 3000",
+    "cardDescription": "Et sents sense inspiració? Deixa que el nostre entrenador d'IA et generi un entrenament únic i desafiant.",
+    "generateButton": "Genera un nou WOD",
+    "generatingButton": "S'està generant...",
+    "freePlanAlert": {
+      "title": "Pla gratuït",
+      "description": "Tens un nombre limitat de generacions diàries. {link} per a un accés il·limitat.",
+      "link": "Fes-te Premium"
+    },
+    "premiumPlanMessage": "Generacions il·limitades activades.",
+    "generatingState": {
+      "title": "S'està generant el teu WOD...",
+      "description": "L'entrenador d'IA s'està escalfant. Això pot trigar un moment."
+    },
+    "errorAlert": {
+      "title": "La generació ha fallat",
+      "description": "L'entrenador d'IA està descansant. Si us plau, torna-ho a provar en un moment."
+    },
+    "result": {
+      "title": "El teu WOD generat",
+      "savedMessage": "Aquest WOD s'ha desat automàticament al teu dashboard."
+    }
+  }
+}

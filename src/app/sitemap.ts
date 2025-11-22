@@ -1,7 +1,7 @@
 import { MetadataRoute } from 'next';
 import { heroWods } from '@/lib/hero-wods';
 
-const locales = ['en', 'fr', 'es', 'it', 'de'];
+const locales = ['en', 'fr', 'es', 'it', 'de', 'pt', 'ru', 'el', 'cs', 'is', 'sv', 'fi', 'no', 'hi', 'ko', 'ja', 'zh', 'ar', 'he', 'ln', 'ca'];
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = 'https://wodburner.app';
