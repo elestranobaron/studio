@@ -6,7 +6,7 @@ import { useDropzone } from "react-dropzone";
 import Image from "next/image";
 import { UploadCloud, X, LoaderCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useToast } from "@/hooks/use-toast";
+import { useToast } from "@/components/ui/use-toast";
 import { useRouter } from "next/navigation";
 import type { AnalyzeWodOutput } from "@/ai/schema/wod-schema";
 import { Input } from "./ui/input";

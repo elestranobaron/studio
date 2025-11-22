@@ -1,6 +1,10 @@
+// next.config.js
+import createNextIntlPlugin from 'next-intl/plugin';
+
+const withNextIntl = createNextIntlPlugin();
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  /* config options here */
   typescript: {
     ignoreBuildErrors: true,
   },
@@ -31,4 +35,4 @@ const nextConfig = {
   },
 };
 
-module.exports = nextConfig;
+export default withNextIntl(nextConfig);

@@ -5,7 +5,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { useRouter, useParams, notFound } from 'next/navigation';
 import { useUser, useFirebase, useDoc } from '@/firebase';
 import { doc, updateDoc, writeBatch } from 'firebase/firestore';
-import { useToast } from '@/hooks/use-toast';
+import { useToast } from '@/components/ui/use-toast';
 import { LoaderCircle, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';

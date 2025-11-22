@@ -25,7 +25,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
-import { useToast } from '@/hooks/use-toast';
+import { useToast } from '@/components/ui/use-toast';
 import { LoaderCircle, Trash2, CreditCard } from 'lucide-react';
 import { SidebarTrigger } from '@/components/ui/sidebar';
 import { getFunctions, httpsCallable } from 'firebase/functions';

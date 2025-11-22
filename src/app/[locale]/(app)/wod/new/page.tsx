@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useUser, useFirebase } from "@/firebase";
 import { doc, collection, setDoc, query, where, getDocs } from "firebase/firestore";
-import { useToast } from "@/hooks/use-toast";
+import { useToast } from "@/components/ui/use-toast";
 import { format } from "date-fns";
 import { LoaderCircle, ArrowLeft } from "lucide-react";
 import Link from "next/link";

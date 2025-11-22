@@ -19,7 +19,7 @@ import { format, isValid } from 'date-fns';
 import { useFirebase, useUser } from "@/firebase";
 import { useState, useMemo } from "react";
 import { doc, collection, addDoc, deleteDoc, updateDoc, writeBatch, runTransaction, DocumentData } from "firebase/firestore";
-import { useToast } from "@/hooks/use-toast";
+import { useToast } from "@/components/ui/use-toast";
 import { cn } from "@/lib/utils";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "./ui/dropdown-menu";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "./ui/alert-dialog";

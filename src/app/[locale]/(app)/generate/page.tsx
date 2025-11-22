@@ -7,7 +7,7 @@ import { useRouter } from 'next/navigation';
 import { doc, collection, setDoc } from "firebase/firestore";
 import { Button } from "@/components/ui/button";
 import { SidebarTrigger } from "@/components/ui/sidebar";
-import { useToast } from "@/hooks/use-toast";
+import { useToast } from "@/components/ui/use-toast";
 import { generateWod } from "@/ai/flows/generate-wod-flow";
 import { WodCard } from "@/components/wod-card";
 import { type WOD } from "@/lib/types";

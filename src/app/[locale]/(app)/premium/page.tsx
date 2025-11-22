@@ -6,7 +6,7 @@ import { Check, LoaderCircle, PartyPopper } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { SidebarTrigger } from '@/components/ui/sidebar';
-import { useToast } from '@/hooks/use-toast';
+import { useToast } from '@/components/ui/use-toast';
 import { useUser, useAuth } from '@/firebase';
 import { cn } from '@/lib/utils';
 import { Switch } from '@/components/ui/switch';
