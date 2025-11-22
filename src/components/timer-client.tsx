@@ -120,12 +120,13 @@ export function TimerClient({ wod }: { wod: WOD }) {
   const animationFrameRef = useRef<number | null>(null);
 
   const totalDuration = wod.duration ? wod.duration * 60 : 0;
-  const isCountDownTimer = wod.type === "AMRAP";
+  const isCountDownTimer = wod.type === "AMRAP" || (wod.type === "For Time" && !!wod.duration);
 
   const getInitialTime = useCallback(() => {
     if (wod.type === 'EMOM' && wod.emomInterval) return wod.emomInterval;
     if (wod.type === 'AMRAP' && wod.duration) return wod.duration * 60;
     if (wod.type === 'Tabata') return 20; // Tabata starts with 20s of work
+    if (wod.type === 'For Time' && wod.duration) return wod.duration * 60; // For Time with time cap
     return 0;
   }, [wod]);
 
@@ -186,7 +187,7 @@ export function TimerClient({ wod }: { wod: WOD }) {
         setTime(prevTime => {
             let newTime = prevTime;
 
-            const needsAlerts = wod.type === 'EMOM' || wod.type === 'Tabata' || wod.type === 'AMRAP';
+            const needsAlerts = wod.type === 'EMOM' || wod.type === 'Tabata' || wod.type === 'AMRAP' || (wod.type === 'For Time' && !!wod.duration);
             if (needsAlerts) {
                 if (newTime === 11) playTenSecondWarning();
                 if (newTime === 4 || newTime === 3 || newTime === 2) {
@@ -225,13 +226,13 @@ export function TimerClient({ wod }: { wod: WOD }) {
                         return 20;
                     }
                 }
-            } else if (isCountDownTimer) { // AMRAP
+            } else if (isCountDownTimer) { // AMRAP or For Time with cap
                 newTime -= 1;
                 if (newTime <= 0) {
                     handleFinish(totalDuration);
                     return 0;
                 }
-            } else { // For Time
+            } else { // For Time without cap
                 newTime += 1;
             }
             return newTime;
@@ -276,6 +277,7 @@ export function TimerClient({ wod }: { wod: WOD }) {
         
         switch(wod.type) {
             case 'AMRAP':
+            case 'For Time':
                 if (totalDuration > 0) {
                     period = totalDuration;
                     startProgress = (time / period) * 100;
@@ -439,12 +441,11 @@ export function TimerClient({ wod }: { wod: WOD }) {
 
   return (
     <div className="flex flex-col items-center justify-center gap-8">
+      {wod.type === "For Time" && wod.duration ? (
         <div className="text-center">
-            <h1 className="text-4xl md:text-6xl font-extrabold font-headline text-foreground">
-                {wod.name}
-            </h1>
-            <p className="text-xl text-muted-foreground mt-2">{wod.type}</p>
+            <p className="text-lg text-muted-foreground">Time Cap: {wod.duration}:00</p>
         </div>
+      ) : null}
       {renderTimerCircle()}
       <div className="flex justify-center gap-4">
         <Button
@@ -464,7 +465,7 @@ export function TimerClient({ wod }: { wod: WOD }) {
           <RotateCcw className="mr-2 h-5 w-5" /> Reset
         </Button>
       </div>
-      {(wod.type === "For Time" || wod.type === "Other") && (
+      {(wod.type === "For Time" && !wod.duration) && (
          <Button onClick={() => handleFinish(time)} variant="destructive" size="lg" disabled={(!isActive && time === 0) || isCountingDown}>
             <Flag className="mr-2 h-5 w-5" /> Finish
         </Button>

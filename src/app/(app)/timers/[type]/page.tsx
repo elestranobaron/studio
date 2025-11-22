@@ -14,16 +14,19 @@ import { Label } from '@/components/ui/label';
 import { SidebarTrigger } from '@/components/ui/sidebar';
 
 const timerConfigs: Record<string, { name: WodType, title: string, description: string }> = {
-    'for-time': { name: 'For Time', title: 'For Time', description: 'A simple stopwatch to time your workout.' },
+    'for-time': { name: 'For Time', title: 'For Time', description: 'A simple stopwatch to time your workout. Optionally set a time cap.' },
     'amrap': { name: 'AMRAP', title: 'AMRAP Timer', description: 'Set a duration and see how many rounds or reps you can complete.' },
     'emom': { name: 'EMOM', title: 'EMOM Timer', description: 'Every Minute On the Minute. Set the interval and number of rounds.' },
-    'tabata': { name: 'Tabata', title: 'Tabata Timer', description: '8 rounds of 20s work, 10s rest. The timer is pre-configured.' },
+    'tabata': { name: 'Tabata', title: 'Tabata Timer', description: 'High-intensity intervals of 20s work, 10s rest. Customize the rounds.' },
 };
 
 export default function GenericTimerPage() {
     const params = useParams();
     const type = Array.isArray(params.type) ? params.type[0] : params.type;
     const config = timerConfigs[type];
+
+    // State for For Time
+    const [forTimeCap, setForTimeCap] = useState<number | undefined>();
 
     // State for AMRAP
     const [amrapDuration, setAmrapDuration] = useState<number>(20);
@@ -32,6 +35,9 @@ export default function GenericTimerPage() {
     const [emomRounds, setEmomRounds] = useState<number>(10);
     const [emomIntervalMinutes, setEmomIntervalMinutes] = useState<number>(1);
     const [emomIntervalSeconds, setEmomIntervalSeconds] = useState<number>(0);
+
+    // State for Tabata
+    const [tabataRounds, setTabataRounds] = useState<number>(8);
 
     const [isStarted, setIsStarted] = useState(false);
     const [wod, setWod] = useState<WOD | null>(null);
@@ -55,6 +61,11 @@ export default function GenericTimerPage() {
         };
 
         switch (type) {
+            case 'for-time':
+                if (forTimeCap && forTimeCap > 0) {
+                    generatedWod.duration = forTimeCap;
+                }
+                break;
             case 'amrap':
                 generatedWod.duration = amrapDuration;
                 break;
@@ -65,8 +76,8 @@ export default function GenericTimerPage() {
                 generatedWod.emomInterval = intervalInSeconds; // Custom property for interval length in seconds
                 break;
             case 'tabata':
-                 generatedWod.duration = 8 * 30 / 60; // 8 rounds of 30s (20+10) = 4 minutes
-                 generatedWod.rounds = 8;
+                 generatedWod.duration = tabataRounds * 30 / 60; // Each round is 30s (20+10)
+                 generatedWod.rounds = tabataRounds;
                 break;
         }
 
@@ -76,6 +87,26 @@ export default function GenericTimerPage() {
 
     const renderConfigForm = () => {
         switch (type) {
+            case 'for-time':
+                return (
+                     <form onSubmit={createWodAndStart} className="space-y-6">
+                        <div className="space-y-2">
+                            <Label htmlFor="timeCap">Time Cap (minutes, optional)</Label>
+                            <Input
+                                id="timeCap"
+                                type="number"
+                                placeholder="e.g., 20"
+                                value={forTimeCap || ''}
+                                onChange={(e) => setForTimeCap(e.target.value ? parseInt(e.target.value) : undefined)}
+                                min="1"
+                                className="text-center text-lg"
+                            />
+                        </div>
+                        <Button type="submit" className="w-full" size="lg">
+                            <Play className="mr-2 h-5 w-5" /> Start Timer
+                        </Button>
+                    </form>
+                );
             case 'amrap':
                 return (
                     <form onSubmit={createWodAndStart} className="space-y-6">
@@ -140,8 +171,26 @@ export default function GenericTimerPage() {
                         </Button>
                     </form>
                  );
-            case 'for-time':
             case 'tabata':
+                return (
+                    <form onSubmit={createWodAndStart} className="space-y-6">
+                        <div className="space-y-2">
+                            <Label htmlFor="tabataRounds">Rounds</Label>
+                            <Input
+                                id="tabataRounds"
+                                type="number"
+                                value={tabataRounds}
+                                onChange={(e) => setTabataRounds(Math.max(1, parseInt(e.target.value) || 1))}
+                                min="1"
+                                required
+                                className="text-center text-lg"
+                            />
+                        </div>
+                        <Button type="submit" className="w-full" size="lg">
+                            <Play className="mr-2 h-5 w-5" /> Start Timer
+                        </Button>
+                    </form>
+                );
             default:
                 return (
                     <Button onClick={() => createWodAndStart()} className="w-full" size="lg">
