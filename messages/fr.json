@@ -143,7 +143,7 @@
     "formTitle": "Connexion / Inscription",
     "formDescription": "Entrez votre e-mail pour recevoir un lien de connexion sécurisé. Aucun mot de passe requis.",
     "emailSentTitle": "Vérifiez vos e-mails !",
-    "emailSentDescription": "Un lien de connexion a été envoyé à {email}.",
+    "emailSentDescription": "Un lien de connexion a été envoyé à <bold>{{email}}</bold>. Vérifiez votre boîte de réception (et les spams).",
     "sendLinkButton": "Envoyer le Lien Magique",
     "authError": "Le service d'authentification n'est pas prêt.",
     "sendLinkError": "Nous n'avons pas pu envoyer le lien. Veuillez réessayer.",

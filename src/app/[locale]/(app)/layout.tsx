@@ -19,7 +19,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { useTranslations } from "next-intl";
 
 function AppLayoutContent({ children }: { children: React.ReactNode }) {
-    const { openMobile, setOpenMobile } = useSidebar();
+    const { openMobile, setOpenMobile, toggleSidebar } = useSidebar();
     const isMobile = useIsMobile();
     const t = useTranslations('UserNav');
 
@@ -53,11 +53,15 @@ function AppLayoutContent({ children }: { children: React.ReactNode }) {
                                 <span>Back</span>
                             </Button>
                         ) : (
-                            <div className="h-10 flex items-center px-2">
+                             <button
+                                onClick={toggleSidebar}
+                                className="h-10 flex items-center px-2 w-full text-left focus:outline-none focus:ring-2 focus:ring-sidebar-ring rounded-md"
+                                aria-label="Toggle sidebar"
+                            >
                                  <div className="text-2xl font-bold font-headline text-primary tracking-wider">
                                     WODBurner
                                  </div>
-                            </div>
+                            </button>
                         )}
                     </SidebarHeader>
                     <SidebarContent className="flex-1">

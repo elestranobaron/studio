@@ -143,7 +143,7 @@
     "formTitle": "Iniciar sesión / Registrarse",
     "formDescription": "Introduce tu correo electrónico para recibir un enlace de inicio de sesión seguro. No se requiere contraseña.",
     "emailSentTitle": "¡Revisa tu correo electrónico!",
-    "emailSentDescription": "Se ha enviado un enlace para iniciar sesión a {email}.",
+    "emailSentDescription": "Se ha enviado un enlace de acceso a <bold>{{email}}</bold>. Revisa tu bandeja de entrada (y la carpeta spam).",
     "sendLinkButton": "Enviar enlace mágico",
     "authError": "El servicio de autenticación no está listo.",
     "sendLinkError": "No pudimos enviar el enlace. Por favor, inténtalo de nuevo.",

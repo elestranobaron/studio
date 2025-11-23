@@ -226,10 +226,15 @@ function LoginClientContent() {
                     <CardContent>
                         {emailSent ? (
                             <div className="text-center text-green-500 flex flex-col items-center gap-4">
-                                <CheckCircle className="h-16 w-16" />
-                                <p className="font-semibold">{t('emailSentTitle')}</p>
-                                <p className="text-sm text-muted-foreground">{t('emailSentDescription', { email: <span className="font-bold">{email}</span> })}</p>
-                            </div>
+                            <CheckCircle className="h-16 w-16" />
+                            <p className="font-semibold">{t('emailSentTitle')}</p>
+                            <p className="text-sm text-muted-foreground">
+                              {t.rich('emailSentDescription', {
+                                email,
+                                bold: (chunks) => <span className="font-bold">{chunks}</span>
+                              })}
+                            </p>
+                          </div>
                         ) : (
                             <form onSubmit={handleLogin} className="space-y-4">
                                 {signInError && (

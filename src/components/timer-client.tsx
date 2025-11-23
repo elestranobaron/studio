@@ -148,7 +148,7 @@ export function TimerClient({ wod }: { wod: WOD }) {
         const progress = (wod.type === 'For Time' || wod.type === 'Other' || !isCountDownTimer) ? 100 : (initialTime / totalDuration * 100);
         progressRef.current.style.transition = 'none';
         progressRef.current.style.strokeDashoffset = `${strokeDasharray * (1 - progress / 100)}`;
-        void progressRef.current.offsetHeight; 
+        progressRef.current?.getBoundingClientRect(); 
         progressRef.current.style.transition = 'stroke-dashoffset 1s linear';
     }
 

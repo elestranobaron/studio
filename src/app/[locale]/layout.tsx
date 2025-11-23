@@ -1,10 +1,13 @@
 // src/app/[locale]/layout.tsx
-import {NextIntlClientProvider} from 'next-intl';
-import {getMessages} from 'next-intl/server';
+import { NextIntlClientProvider } from 'next-intl';
+import { getMessages } from 'next-intl/server';
 import type { Metadata } from "next";
 import "../globals.css";
 import { Toaster } from "@/components/ui/toaster";
-import { FirebaseClientProvider } from "@/firebase";
+import { FirebaseProvider } from "@/firebase/provider";
+
+// ON SUPPRIME CET IMPORT → C’EST LUI QUI TE NIQUE
+// import { initializeFirebase } from "@/firebase/index";
 
 export const metadata: Metadata = {
   title: "WODBurner",
@@ -28,13 +31,16 @@ export const appleWebApp = {
 
 export default async function LocaleLayout({
   children,
-  params // ← on ne déstructure PLUS ici
+  params,
 }: {
   children: React.ReactNode;
-  params: Promise<{ locale: string }>; // ← type correct en 2025
+  params: Promise<{ locale: string }>;
 }) {
-  const { locale } = await params;     // ← on attend les params
-  const messages = await getMessages(); // next-intl utilise le locale résolu
+  const { locale } = await params;
+  const messages = await getMessages();
+
+  // ON SUPPRIME CETTE LIGNE → C’EST LA SOURCE DE TOUS TES MALHEURS
+  // const firebaseServices = initializeFirebase();
 
   return (
     <html lang={locale} className="dark">
@@ -48,10 +54,11 @@ export default async function LocaleLayout({
       </head>
       <body className="font-body antialiased min-h-screen bg-background font-sans">
         <NextIntlClientProvider locale={locale} messages={messages}>
-          <FirebaseClientProvider>
+          {/* ON GARDE LE PROVIDER, MAIS SANS PASSER DE PROPS CÔTÉ SERVEUR */}
+          <FirebaseProvider>
             {children}
-          </FirebaseClientProvider>
-          <Toaster />
+            <Toaster />
+          </FirebaseProvider>
         </NextIntlClientProvider>
       </body>
     </html>

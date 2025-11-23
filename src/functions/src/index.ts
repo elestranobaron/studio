@@ -1,5 +1,5 @@
 "use strict";
-
+import type { QuerySnapshot, DocumentSnapshot } from "firebase-admin/firestore";
 const { onCall, onRequest, HttpsError } = require("firebase-functions/v2/https");
 const { onSchedule } = require("firebase-functions/v2/scheduler");
 const admin = require("firebase-admin");
@@ -15,7 +15,7 @@ const STRIPE_MONTHLY_PRICE_ID = process.env.STRIPE_MONTHLY_PRICE_ID;
 const STRIPE_YEARLY_PRICE_ID = process.env.STRIPE_YEARLY_PRICE_ID;
 const BREVO_API_KEY = process.env.BREVO_API_KEY || "dummy-for-deploy";
 
-exports.sendMagicLink = onRequest({ cors: true }, async (req, res) => {
+exports.sendMagicLink = onRequest({ cors: true }, async (req: any, res: any) => {
     if (req.method !== 'POST') {
         res.status(405).send('Method Not Allowed');
         return;
@@ -79,7 +79,7 @@ exports.sendMagicLink = onRequest({ cors: true }, async (req, res) => {
 });
 
 
-exports.onUserSignIn = onCall(async (request) => {
+exports.onUserSignIn = onCall(async (request: any) => {
   if (!request.auth?.uid) return;
   const userRef = db.collection("users").doc(request.auth.uid);
   const doc = await userRef.get();
@@ -93,7 +93,7 @@ exports.onUserSignIn = onCall(async (request) => {
   return { success: true };
 });
 
-exports.verifyMagicLinkAccess = onCall(async (request) => {
+exports.verifyMagicLinkAccess = onCall(async (request: any) => {
   const email = request.data.email;
   if (!email) throw new HttpsError("invalid-argument", "email required");
 
@@ -120,22 +120,30 @@ exports.verifyMagicLinkAccess = onCall(async (request) => {
 });
 
 exports.resetOCR = onSchedule("0 0 1 * *", async () => {
-  const snapshot = await db.collection("users").get();
+  const snapshot: QuerySnapshot = await db.collection("users").get();
   const batch = db.batch();
-  snapshot.forEach(doc => batch.update(doc.ref, { ocrCount: 0 }));
+
+  snapshot.docs.forEach((doc: DocumentSnapshot) => {
+    batch.update(doc.ref, { ocrCount: 0 });
+  });
+
   await batch.commit();
   console.log(`OCR reset for ${snapshot.size} users`);
 });
 
 exports.resetReactions = onSchedule("0 0 * * *", async () => {
-  const snapshot = await db.collection("users").get();
+  const snapshot: QuerySnapshot = await db.collection("users").get();
   const batch = db.batch();
-  snapshot.forEach(doc => batch.update(doc.ref, { dailyReactions: 0 }));
+
+  snapshot.docs.forEach((doc: DocumentSnapshot) => {
+    batch.update(doc.ref, { dailyReactions: 0 });
+  });
+
   await batch.commit();
   console.log(`Reactions reset for ${snapshot.size} users`);
 });
 
-exports.createCheckout = onCall(async (request) => {
+exports.createCheckout = onCall(async (request: any) => {
   if (!request.auth?.uid) throw new HttpsError("unauthenticated", "Login required");
 
   const yearly = request.data.yearly === true;

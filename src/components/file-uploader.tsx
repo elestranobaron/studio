@@ -413,7 +413,7 @@ export function FileUploader() {
                   id="share" 
                   checked={shareToCommunity} 
                   onCheckedChange={(checked) => setShareToCommunity(checked as boolean)}
-                  disabled={isActionDisabled || (user && user.isAnonymous)}
+                  disabled={isActionDisabled || !!user?.isAnonymous}
                 />
                 <Label htmlFor="share" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
                     Share with the Community
