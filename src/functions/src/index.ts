@@ -1,5 +1,5 @@
 "use strict";
-import type { QuerySnapshot, DocumentSnapshot } from "firebase-admin/firestore";
+import type { QuerySnapshot, DocumentSnapshot, Transaction } from "firebase-admin/firestore";
 const { onCall, onRequest, HttpsError } = require("firebase-functions/v2/https");
 const { onSchedule } = require("firebase-functions/v2/scheduler");
 const admin = require("firebase-admin");
@@ -226,7 +226,7 @@ app.post("/", async (req: Request, res: Response) => {
         const userRef = db.collection("users").doc(uid);
         const priceId = obj.items?.data?.[0]?.price?.id || obj.plan?.id || obj.subscription?.default_price || "unknown";
 
-        await db.runTransaction(async (transaction) => {
+        await db.runTransaction(async (transaction: Transaction) => {
             const userDoc = await transaction.get(userRef);
 
             transaction.set(userRef, {

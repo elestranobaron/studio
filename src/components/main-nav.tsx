@@ -19,6 +19,7 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { useTranslations } from "next-intl";
+import { cn } from "@/lib/utils";
 
 export function MainNav() {
   const t = useTranslations('MainNav');
@@ -38,9 +39,8 @@ export function MainNav() {
       { href: "/hall-of-fame", label: t('hallOfFame'), icon: Trophy, className: "text-yellow-400 hover:text-yellow-400" },
   ]
 
-  const handleLinkClick = (href: string, isAlreadyActive: boolean) => {
+  const handleLinkClick = (isAlreadyActive: boolean) => {
     if (isAlreadyActive) {
-      // Find the main content area and scroll to top
       const mainContent = document.querySelector('#dashboard-main-content') || window;
       mainContent.scrollTo({ top: 0, behavior: 'smooth' });
     }
@@ -59,11 +59,12 @@ export function MainNav() {
               asChild
               isActive={isCurrentPage}
               tooltip={{ children: link.label }}
-              onClick={() => !isCurrentPage && setOpenMobile(false)}
+              // Add a hover effect even when active to show it's clickable
+              className={cn(isCurrentPage && "cursor-pointer hover:bg-sidebar-accent/80")}
             >
               <Comp 
-                href={link.href} 
-                onClick={isCurrentPage ? () => handleLinkClick(link.href, true) : undefined}
+                href={isCurrentPage ? undefined : link.href} 
+                onClick={() => handleLinkClick(isCurrentPage)}
               >
                 <link.icon />
                 <span>{link.label}</span>
@@ -82,12 +83,11 @@ export function MainNav() {
                 asChild
                 isActive={isCurrentPage}
                 tooltip={{ children: link.label }}
-                className={link.className}
-                onClick={() => !isCurrentPage && setOpenMobile(false)}
+                className={cn(link.className, isCurrentPage && "cursor-pointer hover:bg-sidebar-accent/80")}
               >
                 <Comp 
-                  href={link.href}
-                  onClick={isCurrentPage ? () => handleLinkClick(link.href, true) : undefined}
+                  href={isCurrentPage ? undefined : link.href}
+                  onClick={() => handleLinkClick(isCurrentPage)}
                 >
                   <link.icon />
                   <span>{link.label}</span>
