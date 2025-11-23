@@ -1,0 +1,402 @@
+
+{
+  "UserNav": {
+    "signIn": "登录",
+    "signOut": "登出",
+    "loading": "加载中...",
+    "anonymousUser": "匿名用户",
+    "temporaryProfile": "临时个人资料",
+    "settingsTooltip": "设置"
+  },
+  "MainNav": {
+    "dashboard": "仪表板",
+    "scanWod": "扫描WOD",
+    "generateWod": "生成WOD",
+    "heroWods": "英雄WOD",
+    "timers": "计时器",
+    "goPremium": "升级为高级会员",
+    "hallOfFame": "名人堂"
+  },
+  "DashboardPage": {
+    "title": "仪表板",
+    "scanNewWod": "扫描新WOD",
+    "tabs": {
+      "personal": "我的WOD",
+      "community": "社区"
+    },
+    "PersonalWodList": {
+      "emptyTitle": "此处未找到WOD。",
+      "emptyDescription": "扫描您的第一个WOD以开始！"
+    },
+    "CommunityWodList": {
+      "joinTitle": "加入社区！",
+      "joinDescription": "创建一个免费帐户，以查看、分享和从整个社区的WOD中获得灵感。",
+      "joinButton": "注册/登录",
+      "errorTitle": "发生错误",
+      "errorDescription": "无法加载社区WOD。请稍后再试。",
+      "searchInputPlaceholder": "搜索社区WOD...",
+      "sortByLabel": "排序方式",
+      "sort": {
+        "recent": "最近",
+        "popular": "最受欢迎",
+        "alphabetical": "字母顺序 (A-Z)"
+      },
+      "emptySearchTitle": "没有与您的搜索匹配的WOD。",
+      "emptySearchDescription": "请尝试其他搜索词。",
+      "emptyCommunityTitle": "成为第一个分享的人！"
+    },
+    "ScrollTop": {
+      "label": "滚动到顶部"
+    }
+  },
+  "WelcomeEmptyState": {
+    "title": "欢迎来到WODBurner！",
+    "subtitle": "在3秒内记录您的第一个WOD：",
+    "scanButton": "从照片扫描WOD",
+    "generateButton": "生成随机WOD",
+    "heroButton": "尝试英雄WOD",
+    "communityLink": "或者，探索{community}，看看今天其他人在燃烧什么。",
+    "community": "社区"
+  },
+  "WodCard": {
+    "optionsAlt": "WOD选项",
+    "share": "分享",
+    "unshare": "取消分享",
+    "edit": "编辑",
+    "delete": "删除",
+    "sharedToastTitle": "WOD已分享！",
+    "sharedToastDescription": "您的WOD现在对社区可见。",
+    "unsharedToastTitle": "WOD已取消分享",
+    "unsharedToastDescription": "您的WOD已从社区中移除。",
+    "shareErrorToastTitle": "操作失败",
+    "shareErrorToastDescription": "无法更新分享状态。",
+    "deleteDialogTitle": "您确定吗？",
+    "deleteDialogDescription": "此操作无法撤销。这将永久删除您的WOD{isShared, select, true {并将其从社区中移除} other {}}。",
+    "deleteDialogCancel": "取消",
+    "deleteDialogConfirm": "删除",
+    "deleteToastTitle": "WOD已删除",
+    "deleteToastDescription": "您的WOD已成功移除。",
+    "deleteErrorToastTitle": "删除失败",
+    "deleteErrorToastDescription": "无法删除WOD。",
+    "reactionErrorToastTitle": "哎呀！",
+    "reactionErrorToastDescription": "无法保存您的反应。",
+    "viewImageAlt": "{wodName} - 原始图片",
+    "viewWodDescription": "{type} - {date}",
+    "viewWodSharedBy": "由{displayName}分享",
+    "startWod": "开始WOD"
+  },
+  "TimerPage": {
+    "backToDashboard": "返回仪表板",
+    "viewWod": "查看WOD",
+    "fullWodLabel": "完整WOD：{wodName}",
+    "startSection": "开始",
+    "accessRestricted": {
+      "title": "访问受限",
+      "description": "请注册或登录以查看社区WOD并使用计时器。",
+      "button": "注册/登录"
+    }
+  },
+  "FileUploader": {
+    "dragAndDropPrompt": "拖放您的WOD图片，或点击选择",
+    "dragActivePrompt": "在此处放下图片...",
+    "fileTypes": "PNG, JPG, 或 GIF (最大 5MB)",
+    "analyzingTitle": "正在分析WOD...",
+    "analyzingDescription": "AI正在热身。这可能需要一点时间。",
+    "analysisFailedTitle": "分析失败",
+    "analysisFailedDescription": "无法分析WOD图片。请重试。",
+    "duplicateDialogTitle": "检测到重复的WOD",
+    "duplicateDialogDescription": "此锻炼似乎与您已保存的WOD相同。",
+    "duplicateDialogSavedOn": "保存于 {date}",
+    "duplicateDialogQuestion": "您还想保存这个新的吗？",
+    "duplicateDialogCancel": "取消",
+    "duplicateDialogConfirm": "仍然保存",
+    "saveFailedTitle": "保存失败",
+    "saveFailedDescription": "保存WOD时发生错误。",
+    "wodSavedTitle": "WOD已保存！",
+    "wodSavedDescription": "您的新WOD已添加到您的仪表板。",
+    "authErrorTitle": "无法保存",
+    "authErrorDescription": "身份验证服务不可用。",
+    "wodPreviewAlt": "WOD预览",
+    "analyzeButton": "分析WOD",
+    "analysisResultTitle": "分析结果",
+    "wodNamePlaceholder": "WOD名称",
+    "wodTypePlaceholder": "WOD类型",
+    "durationPlaceholder": "持续时间（分钟）",
+    "shareCheckbox": "与社区分享",
+    "shareAnonymousHelp": "注册帐户以与社区分享您的WOD。",
+    "saveWodButton": "保存WOD",
+    "savingButton": "保存中..."
+  },
+  "LoginPage": {
+    "verifying": "验证中...",
+    "confirmEmailTitle": "确认电子邮件",
+    "confirmEmailDescription": "要在此设备上完成登录，请输入您收到链接的电子邮件地址。",
+    "confirmEmailFailedTitle": "登录失败",
+    "confirmEmailSignInButton": "登录",
+    "featureTitle": "更上一层楼。",
+    "featureDescription": "创建一个免费帐户以解锁所有功能，再也不会丢失WOD。",
+    "featureManual": "手动创建",
+    "featureManualDescription": "无需照片即可添加您自己的WOD。",
+    "featureHistory": "完整历史记录",
+    "featureHistoryDescription": "随时保存并查找您的所有锻炼。",
+    "featureTracking": "性能跟踪（即将推出！）",
+    "featureTrackingDescription": "分析您的进度并可视化您的表现。",
+    "formTitle": "登录/注册",
+    "formDescription": "输入您的电子邮件以接收安全的登录链接。无需密码。",
+    "emailSentTitle": "请检查您的电子邮件！",
+    "emailSentDescription": "登录链接已发送至<bold>{{email}}</bold>。请检查您的收件箱（以及垃圾邮件文件夹）。",
+    "sendLinkButton": "发送魔术链接",
+    "authError": "身份验证服务尚未准备就绪。",
+    "sendLinkError": "我们无法发送链接。请重试。",
+    "linkSentToast": "链接已发送！",
+    "linkSentToastDescription": "请检查您的收件箱以获取登录链接。如果您没有看到它，请检查您的垃圾邮件文件夹。",
+    "signInSuccessToast": "登录成功！",
+    "signInSuccessToastDescription": "您现在已登录。",
+    "genericError": "发生错误。请重试。",
+    "invalidLinkError": "登录链接无效、已过期或电子邮件不正确。请申请新的链接。"
+  },
+  "PremiumPage": {
+    "title": "高级会员",
+    "alreadyPremium": {
+      "title": "您是高级会员！",
+      "subtitle": "支持者徽章已激活",
+      "description": "感谢您支持WODBurner ❤️",
+      "communityButton": "查看社区",
+      "dashboardButton": "仪表板"
+    },
+    "headerTitle": "释放您的全部潜力",
+    "headerDescription": "成为WODBurner高级会员，即可无限制地访问所有功能并支持应用程序的开发。",
+    "offer": "前300名会员的终身启动优惠！",
+    "monthly": "每月",
+    "yearly": "每年",
+    "discount": "-20%",
+    "freePlan": {
+      "title": "免费",
+      "description": "用于偶尔跟踪",
+      "price": "¥0",
+      "perMonth": "/月",
+      "currentPlan": "当前计划"
+    },
+    "premiumPlan": {
+      "title": "高级",
+      "description": "为专注的运动员",
+      "priceMonthly": "¥15",
+      "priceYearly": "¥150",
+      "perMonth": "/月",
+      "perYear": "/年",
+      "billedAnnually": "按年计费",
+      "goPremium": "升级为高级会员 →",
+      "loading": "加载中..."
+    },
+    "features": {
+      "scans": "无限WOD扫描",
+      "scansFree": "每月3次",
+      "reactions": "无限社区反应",
+      "reactionsFree": "每天5次",
+      "comments": "发表评论",
+      "commentsFree": "只读",
+      "favorites": "无限收藏WOD",
+      "favoritesFree": "最多10个",
+      "customs": "无限自定义WOD",
+      "customsFree": "最多3个",
+      "search": "高级搜索过滤器",
+      "badge": "独家支持者徽章",
+      "unlimited": "无限",
+      "notIncluded": "不包括"
+    },
+    "toasts": {
+      "welcomeTitle": "欢迎加入WODBurner高级会员！",
+      "welcomeDescription": "您的支持者徽章现已激活。",
+      "cancelTitle": "付款已取消",
+      "cancelDescription": "您可以在准备好时再试一次。",
+      "loginRequiredTitle": "需要登录",
+      "loginRequiredDescription": "创建帐户以升级到高级会员。",
+      "paymentErrorTitle": "付款错误",
+      "paymentErrorDescription": "无法启动结帐。"
+    }
+  },
+  "SettingsPage": {
+    "title": "设置",
+    "profile": {
+      "title": "个人资料",
+      "description": "关于您帐户的信息。",
+      "loading": "正在加载个人资料...",
+      "email": "电子邮件：{email}",
+      "emailNotSpecified": "未指定",
+      "accountType": "帐户类型：{type}",
+      "typeAnonymous": "匿名（临时）",
+      "typePremium": "高级",
+      "typeStandard": "标准",
+      "manageSubscription": "管理我的订阅",
+      "userNotFound": "未找到用户。"
+    },
+    "dangerZone": {
+      "title": "危险区域",
+      "description": "这些操作是永久性的，无法撤销。",
+      "deleteButton": "删除我的帐户",
+      "deletingButton": "删除中...",
+      "dialogTitle": "您确定吗？",
+      "dialogDescription": "此操作不可逆。它将永久删除您的帐户并从我们的服务器上删除您的所有数据，包括您所有已保存的WOD。",
+      "dialogCancel": "取消",
+      "dialogConfirm": "是的，删除我的帐户",
+      "helpText": "如果您删除帐户，您的所有数据将永远丢失。"
+    },
+    "toasts": {
+      "deleteError": "无法删除帐户。用户或Firebase服务不可用。",
+      "deleteSuccessTitle": "帐户已删除",
+      "deleteSuccessDescription": "您的帐户和所有数据已成功删除。",
+      "deleteFailedTitle": "删除失败",
+      "deleteFailedDescription": "发生错误。请重试。",
+      "deleteFailedRecentLogin": "此操作敏感，需要最近的身份验证。请在重试前重新登录。",
+      "portalError": "无法打开订阅管理。"
+    }
+  },
+  "ScanPage": {
+    "title": "扫描WOD",
+    "manualButton": "手动添加"
+  },
+  "NewWodPage": {
+    "title": "手动创建WOD",
+    "cardTitle": "锻炼详情",
+    "namePlaceholder": "WOD名称（例如Fran）",
+    "typePlaceholder": "WOD类型",
+    "durationPlaceholder": "持续时间（分钟）",
+    "imageHintPlaceholder": "图片提示（例如杠铃）",
+    "descriptionPlaceholder": "WOD描述...",
+    "saveButton": "保存WOD",
+    "savingButton": "保存中...",
+    "backLink": "返回扫描",
+    "duplicateDialog": {
+      "title": "检测到重复的WOD",
+      "description": "此锻炼似乎与您已保存的WOD相同。",
+      "savedOn": "保存于 {date}",
+      "question": "您还想保存这个新的吗？",
+      "cancel": "取消",
+      "confirm": "仍然保存"
+    },
+    "toasts": {
+      "saveSuccessTitle": "WOD已保存！",
+      "saveSuccessDescription": "您的新WOD已添加到您的仪表板。",
+      "saveFailedTitle": "保存失败",
+      "saveFailedDescription": "保存WOD时发生错误。"
+    }
+  },
+  "EditWodPage": {
+    "title": "编辑WOD",
+    "cardTitle": "锻炼详情",
+    "saveButton": "保存更改",
+    "savingButton": "保存更改中...",
+    "backLink": "返回仪表板",
+    "toasts": {
+      "updateSuccessTitle": "WOD已更新！",
+      "updateSuccessDescription": "您的更改已保存。",
+      "updateFailedTitle": "更新失败",
+      "updateFailedDescription": "保存更改时发生错误。"
+    }
+  },
+  "GenericTimerPage": {
+    "backLink": "返回计时器",
+    "startButton": "开始计时器",
+    "forTime": {
+      "title": "计时赛",
+      "description": "一个简单的秒表，用于为您的锻炼计时。可选择设置时间上限。",
+      "timeCapLabel": "时间上限（分钟，可选）",
+      "timeCapPlaceholder": "例如20"
+    },
+    "amrap": {
+      "title": "AMRAP计时器",
+      "description": "设置一个持续时间，看看您能完成多少轮或多少次重复。",
+      "durationLabel": "持续时间（分钟）"
+    },
+    "emom": {
+      "title": "EMOM计时器",
+      "description": "每分钟一轮。设置间隔和轮数。",
+      "roundsLabel": "轮数",
+      "intervalLabel": "间隔长度",
+      "intervalMinutes": "分钟",
+      "intervalSeconds": "秒"
+    },
+    "tabata": {
+      "title": "Tabata计时器",
+      "description": "20秒工作，10秒休息的高强度间歇。自定义轮数。",
+      "roundsLabel": "轮数"
+    }
+  },
+  "TimersPage": {
+    "title": "智能计时器",
+    "forTime": "计时赛",
+    "forTimeDescription": "一个简单的秒表，用于为您的锻炼计时。",
+    "amrap": "AMRAP",
+    "amrapDescription": "在设定时间内完成尽可能多的轮次/次数。",
+    "emom": "EMOM",
+    "emomDescription": "每分钟一轮，持续设定的分钟数。",
+    "tabata": "Tabata",
+    "tabataDescription": "20秒工作，10秒休息的高强度间歇。",
+    "footer": "或者，从仪表板选择一个WOD以启动预配置的计时器。"
+  },
+  "HeroWodsPage": {
+    "title": "英雄WOD",
+    "description": "“英雄”WOD是CrossFit中专门为在执勤中献出生命的男女设计的特殊锻炼。这是一个反思和纪念他们牺牲的机会。",
+    "premiumUpsell": {
+      "title": "解锁全部武器库",
+      "description": "升级为高级会员，即可访问包含{totalWodCount}多个英雄和基准WOD的完整库，其中包括{premiumWodCount}个独家锻炼。",
+      "button": "升级为高级会员"
+    }
+  },
+  "HallOfFamePage": {
+    "title": "名人堂",
+    "cardTitle": "前300名元老",
+    "cardDescription": "终身免费。为我们最早的支持者提供一个永久的位置。",
+    "spotsRemaining": "仅剩{spotsLeft}个名额！",
+    "spotsFull": "列表现已永久关闭。",
+    "claimSpotButton": "立即认领您的位置",
+    "emptyList": "成为第一个认领位置的人！"
+  },
+  "TimerClient": {
+    "workoutComplete": "锻炼完成！",
+    "totalTime": "总时间",
+    "timeCompleted": "完成时间",
+    "goAgain": "再来一次",
+    "shareResult": "分享结果",
+    "shareModal": {
+      "title": "WOD结果：{wodName}",
+      "description": "您的最终时间是{finalTime}。此卡片已准备好分享。",
+      "finalTimeLabel": "最终时间",
+      "screenshotReady": "准备截图！"
+    },
+    "timeCap": "时间上限：{duration}:00",
+    "pause": "暂停",
+    "start": "开始",
+    "reset": "重置",
+    "finish": "完成",
+    "round": "第{current}轮/共{total}轮",
+    "totalTimeElapsed": "总计：{time}"
+  },
+  "GenerateWodPage": {
+    "title": "AI WOD生成器",
+    "cardTitle": "WODBot 3000",
+    "cardDescription": "感觉没有灵感？让我们的AI教练为您生成一个独特且具有挑战性的锻炼。",
+    "generateButton": "生成新WOD",
+    "generatingButton": "生成中...",
+    "freePlanAlert": {
+      "title": "免费计划",
+      "description": "您每天的生成次数有限。{link}以获得无限制访问。",
+      "link": "升级为高级会员"
+    },
+    "premiumPlanMessage": "已启用无限生成。",
+    "generatingState": {
+      "title": "正在生成您的WOD...",
+      "description": "AI教练正在热身。这可能需要一点时间。"
+    },
+    "errorAlert": {
+      "title": "生成失败",
+      "description": "AI教练正在休息。请稍后再试。"
+    },
+    "result": {
+      "title": "您生成的WOD",
+      "savedMessage": "此WOD已自动保存到您的仪表板。"
+    }
+  }
+}
+
+    
