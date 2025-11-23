@@ -97,6 +97,7 @@ const RenderNoteLine: React.FC<{ line: ParsedLine }> = ({ line }) => {
     );
 };
 
+
 const RenderRoundsHeader: React.FC<{ line: ParsedLine }> = ({ line }) => (
     <p className="font-semibold text-foreground flex items-center gap-2 text-base">
         <ArrowRight className="h-4 w-4 text-primary" />
@@ -130,8 +131,8 @@ export function WodContentParser({ content }: { content: string }) {
     }
   };
 
-  const blocks: JSX.Element[][] = [];
-  let currentBlock: JSX.Element[] = [];
+  const blocks: (JSX.Element | null)[][] = [];
+  let currentBlock: (JSX.Element | null)[] = [];
 
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i];
@@ -161,10 +162,13 @@ export function WodContentParser({ content }: { content: string }) {
       {blocks.map((block, index) => {
         if (block.length === 0 || block.every(item => item === null)) return null;
         
-        const isExerciseBlock = block.some(item => 
-            item?.props?.line?.type === 'exercise' || 
-            item?.props?.line?.type === 'note'
-        );
+        const blockProps = block[0]?.props;
+        const lineType = blockProps?.line?.type;
+
+        const isExerciseBlock = block.some(item => {
+            const itemLineType = item?.props?.line?.type;
+            return itemLineType === 'exercise' || itemLineType === 'note';
+        });
         const hasHeader = block.some(item => item?.props?.line?.type === 'rounds_header');
 
         if (isExerciseBlock && !hasHeader) {
