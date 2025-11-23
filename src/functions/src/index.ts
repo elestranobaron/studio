@@ -226,35 +226,36 @@ app.post("/", async (req: Request, res: Response) => {
         const userRef = db.collection("users").doc(uid);
         const priceId = obj.items?.data?.[0]?.price?.id || obj.plan?.id || obj.subscription?.default_price || "unknown";
 
-        await db.runTransaction(async (transaction: Transaction) => {
-            const userDoc = await transaction.get(userRef);
-
-            transaction.set(userRef, {
-                premium: true,
-                premiumSince: admin.firestore.FieldValue.serverTimestamp(),
-                priceId: priceId,
-            }, { merge: true });
-
-            if (priceId === STRIPE_YEARLY_PRICE_ID && !userDoc.data()?.isOg) {
-                const hallOfFameRef = db.collection("hallOfFame");
-                const ogQuery = await hallOfFameRef.get();
-                const ogCount = ogQuery.size;
-
-                if (ogCount < 300) {
-                    const rank = ogCount + 1;
-                    const authUser = await admin.auth().getUser(uid);
-                    const displayName = authUser.email?.split('@')[0] || `user${rank}`;
-                    
-                    const ogDocRef = hallOfFameRef.doc(uid);
-                    transaction.set(ogDocRef, {
-                        uid: uid,
-                        displayName: displayName,
-                        rank: rank,
-                        joinedAt: admin.firestore.FieldValue.serverTimestamp()
-                    });
-                    transaction.update(userRef, { isOg: true });
-                }
+        await db.runTransaction(async (transaction: any) => {
+          const userSnap = await transaction.get(userRef);
+          const userData = userSnap.data();
+        
+          transaction.set(userRef, {
+            premium: true,
+            premiumSince: admin.firestore.FieldValue.serverTimestamp(),
+            priceId: priceId,
+          }, { merge: true });
+        
+          if (priceId === STRIPE_YEARLY_PRICE_ID && !userData?.isOg) {
+            const hallOfFameRef = db.collection("hallOfFame");
+            const ogQuery = await hallOfFameRef.get();
+            const ogCount = ogQuery.size;
+        
+            if (ogCount < 300) {
+              const rank = ogCount + 1;
+              const authUser = await admin.auth().getUser(uid);
+              const displayName = authUser.email?.split('@')[0] || `user${rank}`;
+        
+              const ogDocRef = hallOfFameRef.doc(uid);
+              transaction.set(ogDocRef, {
+                uid,
+                displayName,
+                rank,
+                joinedAt: admin.firestore.FieldValue.serverTimestamp()
+              });
+              transaction.update(userRef, { isOg: true });
             }
+          }
         });
 
         console.log(`PREMIUM ACTIVÉ pour ${uid} – ${event.type}`);

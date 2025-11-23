@@ -10,6 +10,7 @@ export const wods: WOD[] = [
     result: '45:32',
     imageUrl: 'https://picsum.photos/seed/murph/600/400',
     imageHint: 'man running',
+    userId: 'test-user-1',
   },
   {
     id: '2',
@@ -21,6 +22,7 @@ export const wods: WOD[] = [
     result: '23 Rounds + 5 pull-ups',
     imageUrl: 'https://picsum.photos/seed/cindy/600/400',
     imageHint: 'woman pull-up',
+    userId: 'test-user-1',
   },
   {
     id: '3',
@@ -31,6 +33,7 @@ export const wods: WOD[] = [
     result: '03:45',
     imageUrl: 'https://picsum.photos/seed/fran/600/400',
     imageHint: 'barbell gym',
+    userId: 'test-user-2',
   },
   {
     id: '4',
@@ -42,6 +45,7 @@ export const wods: WOD[] = [
     result: '17 Rounds',
     imageUrl: 'https://picsum.photos/seed/burpee/600/400',
     imageHint: 'person tired',
+    userId: 'test-user-2',
   },
   {
     id: '5',
@@ -52,5 +56,6 @@ export const wods: WOD[] = [
     result: '421 Reps',
     imageUrl: 'https://picsum.photos/seed/tabata/600/400',
     imageHint: 'stopwatch gym',
+    userId: 'test-user-3',
   },
 ];
