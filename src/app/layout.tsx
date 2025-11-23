@@ -28,10 +28,15 @@ export const appleWebApp = {
 
 export default async function RootLayout({
   children,
+  params, // We need to receive params here
 }: {
   children: React.ReactNode;
+  params: { locale: string };
 }) {
-  const locale = await getLocale();
+  // Although the root layout doesn't have the locale in its path,
+  // Next.js provides it in the params for the top-level layout.
+  // If not, we fall back to getting it from the request.
+  const locale = params.locale || await getLocale();
   const messages = await getMessages();
 
   return (
