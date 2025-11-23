@@ -1,3 +1,4 @@
+
 // src/app/layout.tsx
 import { NextIntlClientProvider } from 'next-intl';
 import { getMessages, getLocale } from 'next-intl/server';
