@@ -24,6 +24,7 @@ import { FirestorePermissionError } from "@/firebase/errors";
 import { initiateAnonymousSignIn } from "@/firebase/non-blocking-login";
 import { Checkbox } from "./ui/checkbox";
 import { Label } from "./ui/label";
+import { useTranslations } from "next-intl";
 
 
 const toBase64 = (file: File): Promise<string> =>
@@ -55,6 +56,7 @@ const toBase64 = (file: File): Promise<string> =>
   });
 
 export function FileUploader() {
+  const t = useTranslations('FileUploader');
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -110,8 +112,8 @@ export function FileUploader() {
       console.error("Analysis Error:", error);
       toast({
         variant: "destructive",
-        title: "Analysis Failed",
-        description: "The WOD image could not be analyzed. Please try again.",
+        title: t('analysisFailedTitle'),
+        description: t('analysisFailedDescription'),
       });
     } finally {
       setIsLoading(false);
@@ -177,8 +179,8 @@ export function FileUploader() {
         }
 
         toast({
-            title: "WOD Saved!",
-            description: "Your new WOD has been added to your dashboard.",
+            title: t('wodSavedTitle'),
+            description: t('wodSavedDescription'),
         });
         router.push("/dashboard");
 
@@ -196,8 +198,8 @@ export function FileUploader() {
         console.error("An unexpected error occurred during the save process:", errorToEmit);
         toast({
             variant: "destructive",
-            title: "Save Failed",
-            description: "An error occurred while saving the WOD.",
+            title: t('saveFailedTitle'),
+            description: t('saveFailedDescription'),
         });
 
     } finally {
@@ -216,8 +218,8 @@ export function FileUploader() {
     } else {
       toast({
         variant: "destructive",
-        title: "Could not save",
-        description: "Authentication services are not available.",
+        title: t('authErrorTitle'),
+        description: t('authErrorDescription'),
       });
     }
   };
@@ -277,8 +279,8 @@ export function FileUploader() {
           playsInline
           className="w-48 h-48 rounded-lg"
         />
-        <h2 className="text-2xl font-headline font-bold text-foreground">Analyzing WOD...</h2>
-        <p className="text-muted-foreground">The AI is warming up. This might take a moment.</p>
+        <h2 className="text-2xl font-headline font-bold text-foreground">{t('analyzingTitle')}</h2>
+        <p className="text-muted-foreground">{t('analyzingDescription')}</p>
       </div>
     );
   }
@@ -289,21 +291,21 @@ export function FileUploader() {
       <AlertDialog open={!!duplicateWod} onOpenChange={(open) => !open && setDuplicateWod(null)}>
         <AlertDialogContent>
             <AlertDialogHeader>
-                <AlertDialogTitle>Duplicate WOD Detected</AlertDialogTitle>
+                <AlertDialogTitle>{t('duplicateDialogTitle')}</AlertDialogTitle>
                 <AlertDialogDescription>
-                    This workout seems identical to a WOD you've already saved.
+                    {t('duplicateDialogDescription')}
                     <br/><br/>
                     <div className="p-4 border rounded-md bg-muted/50">
                         <div className="font-bold">{duplicateWod?.name}</div>
-                        <div className="text-sm text-muted-foreground">{duplicateWod?.date ? `Saved on ${format(new Date(duplicateWod.date), 'PPP')}` : ''}</div>
+                        <div className="text-sm text-muted-foreground">{duplicateWod?.date ? t('duplicateDialogSavedOn', { date: format(new Date(duplicateWod.date), 'PPP') }) : ''}</div>
                     </div>
                     <br/>
-                    Do you want to save this new one anyway?
+                    {t('duplicateDialogQuestion')}
                 </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
-                <AlertDialogCancel onClick={() => setDuplicateWod(null)}>Cancel</AlertDialogCancel>
-                <AlertDialogAction onClick={handleForceSave}>Save Anyway</AlertDialogAction>
+                <AlertDialogCancel onClick={() => setDuplicateWod(null)}>{t('duplicateDialogCancel')}</AlertDialogCancel>
+                <AlertDialogAction onClick={handleForceSave}>{t('duplicateDialogConfirm')}</AlertDialogAction>
             </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
@@ -320,11 +322,11 @@ export function FileUploader() {
             <UploadCloud className="w-16 h-16 mx-auto text-primary" />
             <p className="mt-4 text-lg font-semibold text-foreground">
             {isDragActive
-                ? "Drop the image here..."
-                : "Drag & drop your WOD image, or click to select"}
+                ? t('dragActivePrompt')
+                : t('dragAndDropPrompt')}
             </p>
             <p className="mt-1 text-sm text-muted-foreground">
-            PNG, JPG, or GIF (max 5MB)
+            {t('fileTypes')}
             </p>
           </div>
         </div>
@@ -333,7 +335,7 @@ export function FileUploader() {
           <div className="relative w-full p-4 border border-dashed rounded-lg">
             <Image
               src={preview}
-              alt="WOD preview"
+              alt={t('wodPreviewAlt')}
               width={600}
               height={400}
               className="object-contain w-full h-auto max-h-96 rounded-md"
@@ -355,12 +357,12 @@ export function FileUploader() {
               disabled={isActionDisabled}
               className="w-full"
             >
-              Analyze WOD
+              {t('analyzeButton')}
             </Button>
           ) : (
             <div className="space-y-4">
               <h3 className="text-lg font-semibold font-headline">
-                Analysis Result
+                {t('analysisResultTitle')}
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                  <Input
@@ -368,7 +370,7 @@ export function FileUploader() {
                   onChange={(e) =>
                     analysisResult && setAnalysisResult({ ...analysisResult, name: e.target.value })
                   }
-                  placeholder="WOD Name"
+                  placeholder={t('wodNamePlaceholder')}
                   disabled={isActionDisabled}
                 />
                  <Select
@@ -377,7 +379,7 @@ export function FileUploader() {
                   disabled={isActionDisabled}
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder="WOD Type" />
+                    <SelectValue placeholder={t('wodTypePlaceholder')} />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="For Time">For Time</SelectItem>
@@ -395,7 +397,7 @@ export function FileUploader() {
                     onChange={(e) =>
                         analysisResult && setAnalysisResult({ ...analysisResult, duration: e.target.value ? parseInt(e.target.value) : undefined })
                     }
-                    placeholder="Duration (minutes)"
+                    placeholder={t('durationPlaceholder')}
                     disabled={isActionDisabled}
                     />
                </div>
@@ -416,20 +418,20 @@ export function FileUploader() {
                   disabled={isActionDisabled || !!user?.isAnonymous}
                 />
                 <Label htmlFor="share" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                    Share with the Community
+                    {t('shareCheckbox')}
                 </Label>
               </div>
                {user && user.isAnonymous && (
-                 <p className="text-xs text-muted-foreground">Sign up for an account to share your WODs with the community.</p>
+                 <p className="text-xs text-muted-foreground">{t('shareAnonymousHelp')}</p>
                )}
 
               <Button onClick={handleSave} className="w-full" disabled={isActionDisabled}>
                 {isSaving ? (
                      <>
                         <LoaderCircle className="animate-spin mr-2" />
-                        Saving...
+                        {t('savingButton')}
                     </>
-                ): "Save WOD"}
+                ): t('saveWodButton')}
               </Button>
             </div>
           )}

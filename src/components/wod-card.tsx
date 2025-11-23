@@ -1,3 +1,4 @@
+
 'use client';
 
 import Link from "next/link";
@@ -65,8 +66,8 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
   DialogDescription,
+  DialogTrigger,
 } from "./ui/dialog";
 import { WodContentParser } from "./wod-content-parser";
 import { Separator } from "./ui/separator";
@@ -392,8 +393,11 @@ export function WodCard({ wod, source = "personal" }: { wod: WOD; source?: "pers
             </div>
           )}
           <DialogContent className="max-w-4xl p-2">
-            <DialogHeader className="sr-only">
-              <DialogTitle>{t("viewImageAlt", { wodName: wod.name })}</DialogTitle>
+            <DialogHeader>
+              <DialogTitle>{t('viewImageAlt', { wodName: wod.name })}</DialogTitle>
+              <DialogDescription>
+                {t('viewWodDescription', { type: wod.type, date: formattedDate })}
+              </DialogDescription>
             </DialogHeader>
             <div className="relative w-full h-auto">
               <Image

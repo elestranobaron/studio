@@ -19,6 +19,7 @@ import { Separator } from "./ui/separator";
 import { playStartSound, playFinishSound, playCountdownTick, playCountdownEnd, playTenSecondWarning, playThreeSecondWarning } from "@/lib/sounds";
 import { WodContentParser } from "./wod-content-parser";
 import { ScrollArea } from "./ui/scroll-area";
+import { useTranslations } from "next-intl";
 
 const formatTime = (time: number) => {
   const minutes = Math.floor(time / 60);
@@ -30,6 +31,7 @@ const formatTime = (time: number) => {
 };
 
 function ShareModal({ wod, finalTime }: { wod: WOD; finalTime: string }) {
+    const t = useTranslations('TimerClient.shareModal');
     
     const getMainWorkoutContent = () => {
         if (!wod.description) return "";
@@ -63,16 +65,16 @@ function ShareModal({ wod, finalTime }: { wod: WOD; finalTime: string }) {
     return (
         <Dialog>
             <DialogTrigger asChild>
-                <Button variant="outline"><Share2 className="mr-2 h-4 w-4"/>Share Result</Button>
+                <Button variant="outline"><Share2 className="mr-2 h-4 w-4"/>{useTranslations('TimerClient')('shareResult')}</Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-md p-0 bg-background border-2 border-primary/50 shadow-2xl shadow-primary/20">
-                <DialogHeader className="sr-only">
-                    <DialogTitle>WOD Result: {wod.name}</DialogTitle>
-                    <DialogDescription>Your final time was {finalTime}. This card is ready for sharing.</DialogDescription>
+                <DialogHeader>
+                    <DialogTitle>{t('title', { wodName: wod.name })}</DialogTitle>
+                    <DialogDescription>{t('description', { finalTime })}</DialogDescription>
                 </DialogHeader>
                 <div className="p-6 flex flex-col gap-4 text-center h-[90vh] max-h-[800px]">
                     <div className="flex-shrink-0">
-                        <p className="text-muted-foreground text-sm font-semibold tracking-widest">FINAL TIME</p>
+                        <p className="text-muted-foreground text-sm font-semibold tracking-widest">{t('finalTimeLabel')}</p>
                         <p className="text-8xl font-bold font-mono text-primary -my-2">{finalTime}</p>
                     </div>
                     
@@ -91,7 +93,7 @@ function ShareModal({ wod, finalTime }: { wod: WOD; finalTime: string }) {
 
                     <div className="pt-4 mt-auto flex-shrink-0">
                         <p className="text-xs text-muted-foreground/50 flex items-center justify-center gap-2 mb-2">
-                            <Camera className="h-3 w-3"/> Ready for screenshot!
+                            <Camera className="h-3 w-3"/> {t('screenshotReady')}
                         </p>
                         <span className="text-xl font-bold font-headline text-primary tracking-wider opacity-60">
                            WODBurner
@@ -104,6 +106,7 @@ function ShareModal({ wod, finalTime }: { wod: WOD; finalTime: string }) {
 }
 
 export function TimerClient({ wod }: { wod: WOD }) {
+  const t = useTranslations('TimerClient');
   const [time, setTime] = useState(0);
   const [isActive, setIsActive] = useState(false);
   const [isFinished, setIsFinished] = useState(false);
@@ -398,11 +401,11 @@ export function TimerClient({ wod }: { wod: WOD }) {
                              </p>
                          )}
                         <p className="text-xl font-semibold text-muted-foreground">
-                            Round {currentRound} / {wod.rounds || 8}
+                            {t('round', { current: currentRound, total: wod.rounds || 8 })}
                         </p>
                          {wod.type === 'EMOM' && totalDuration > 0 && wod.emomInterval && (
                             <p className="text-sm text-muted-foreground/80">
-                                Total: {formatTime((currentRound - 1) * wod.emomInterval + (wod.emomInterval - time))}
+                                {t('totalTimeElapsed', { time: formatTime((currentRound - 1) * wod.emomInterval + (wod.emomInterval - time)) })}
                             </p>
                         )}
                     </div>
@@ -416,18 +419,18 @@ export function TimerClient({ wod }: { wod: WOD }) {
   if (isFinished) {
     return (
       <div className="text-center space-y-6 flex flex-col items-center">
-        <h2 className="text-4xl font-headline text-foreground">Workout Complete!</h2>
+        <h2 className="text-4xl font-headline text-foreground">{t('workoutComplete')}</h2>
         <Card className="max-w-sm w-full bg-card/50 backdrop-blur-sm">
             <CardHeader>
                 <CardTitle className="font-headline text-primary">{wod.name}</CardTitle>
             </CardHeader>
             <CardContent>
                 <p className="text-6xl font-bold font-mono">{formatTime(finalTime)}</p>
-                <p className="text-muted-foreground">{wod.type === "For Time" ? "Total Time" : "Time Completed"}</p>
+                <p className="text-muted-foreground">{wod.type === "For Time" ? t('totalTime') : t('timeCompleted')}</p>
             </CardContent>
         </Card>
         <div className="flex gap-4">
-            <Button onClick={resetTimer} size="lg"><RotateCcw className="mr-2 h-4 w-4" /> Go Again</Button>
+            <Button onClick={resetTimer} size="lg"><RotateCcw className="mr-2 h-4 w-4" /> {t('goAgain')}</Button>
             <ShareModal wod={wod} finalTime={formatTime(finalTime)} />
         </div>
          <div className="pt-8 opacity-50">
@@ -443,7 +446,7 @@ export function TimerClient({ wod }: { wod: WOD }) {
     <div className="flex flex-col items-center justify-center gap-8">
       {wod.type === "For Time" && wod.duration ? (
         <div className="text-center">
-            <p className="text-lg text-muted-foreground">Time Cap: {wod.duration}:00</p>
+            <p className="text-lg text-muted-foreground">{t('timeCap', { duration: wod.duration })}</p>
         </div>
       ) : null}
       {renderTimerCircle()}
@@ -456,18 +459,18 @@ export function TimerClient({ wod }: { wod: WOD }) {
           disabled={isCountingDown}
         >
           {isActive ? (
-            <><Pause className="mr-2 h-5 w-5" /> Pause</>
+            <><Pause className="mr-2 h-5 w-5" /> {t('pause')}</>
           ) : (
-            <><Play className="mr-2 h-5 w-5" /> Start</>
+            <><Play className="mr-2 h-5 w-5" /> {t('start')}</>
           )}
         </Button>
         <Button onClick={resetTimer} variant="outline" size="lg" className="w-36" disabled={isCountingDown}>
-          <RotateCcw className="mr-2 h-5 w-5" /> Reset
+          <RotateCcw className="mr-2 h-5 w-5" /> {t('reset')}
         </Button>
       </div>
       {(wod.type === "For Time" && !wod.duration) && (
          <Button onClick={() => handleFinish(time)} variant="destructive" size="lg" disabled={(!isActive && time === 0) || isCountingDown}>
-            <Flag className="mr-2 h-5 w-5" /> Finish
+            <Flag className="mr-2 h-5 w-5" /> {t('finish')}
         </Button>
       )}
     </div>
