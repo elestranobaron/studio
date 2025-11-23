@@ -7,7 +7,6 @@ import {
   LayoutGrid,
   ScanLine,
   Timer,
-  Settings,
   Gem,
   Medal,
   Dice5,
@@ -39,40 +38,64 @@ export function MainNav() {
       { href: "/hall-of-fame", label: t('hallOfFame'), icon: Trophy, className: "text-yellow-400 hover:text-yellow-400" },
   ]
 
-
+  const handleLinkClick = (href: string, isAlreadyActive: boolean) => {
+    if (isAlreadyActive) {
+      // Find the main content area and scroll to top
+      const mainContent = document.querySelector('#dashboard-main-content') || window;
+      mainContent.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+    setOpenMobile(false);
+  };
+  
   return (
     <SidebarMenu>
-      {links.map((link) => (
-        <SidebarMenuItem key={link.href}>
-          <SidebarMenuButton
-            asChild
-            isActive={pathname.endsWith(link.href)}
-            tooltip={{ children: link.label }}
-            onClick={() => setOpenMobile(false)}
-          >
-            <Link href={link.href}>
-              <link.icon />
-              <span>{link.label}</span>
-            </Link>
-          </SidebarMenuButton>
-        </SidebarMenuItem>
-      ))}
-       {secondaryLinks.map((link) => (
-        <SidebarMenuItem key={link.href}>
-          <SidebarMenuButton
-            asChild
-            isActive={pathname.endsWith(link.href)}
-            tooltip={{ children: link.label }}
-            onClick={() => setOpenMobile(false)}
-            className={link.className}
-          >
-            <Link href={link.href}>
-              <link.icon />
-              <span>{link.label}</span>
-            </Link>
-          </SidebarMenuButton>
-        </SidebarMenuItem>
-      ))}
+      {links.map((link) => {
+        const isCurrentPage = pathname.endsWith(link.href);
+        const Comp = isCurrentPage ? 'button' : Link;
+        
+        return (
+          <SidebarMenuItem key={link.href}>
+            <SidebarMenuButton
+              asChild
+              isActive={isCurrentPage}
+              tooltip={{ children: link.label }}
+              onClick={() => !isCurrentPage && setOpenMobile(false)}
+            >
+              <Comp 
+                href={link.href} 
+                onClick={isCurrentPage ? () => handleLinkClick(link.href, true) : undefined}
+              >
+                <link.icon />
+                <span>{link.label}</span>
+              </Comp>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        );
+      })}
+       {secondaryLinks.map((link) => {
+         const isCurrentPage = pathname.endsWith(link.href);
+         const Comp = isCurrentPage ? 'button' : Link;
+
+         return (
+            <SidebarMenuItem key={link.href}>
+              <SidebarMenuButton
+                asChild
+                isActive={isCurrentPage}
+                tooltip={{ children: link.label }}
+                className={link.className}
+                onClick={() => !isCurrentPage && setOpenMobile(false)}
+              >
+                <Comp 
+                  href={link.href}
+                  onClick={isCurrentPage ? () => handleLinkClick(link.href, true) : undefined}
+                >
+                  <link.icon />
+                  <span>{link.label}</span>
+                </Comp>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+         )
+      })}
     </SidebarMenu>
   );
 }
