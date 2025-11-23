@@ -37,7 +37,7 @@ export const heroWods: WOD[] = [
     duration: 20,
     date: 'Benchmark',
     description: [
-        { title: 'Another "Girls" WOD, a classic test of gymnastic endurance.', content: ''},-
+        { title: 'Another "Girls" WOD, a classic test of gymnastic endurance.', content: ''},
         { title: 'AMRAP in 20 Minutes', content: '5 Pull-ups\n10 Push-ups\n15 Squats', timerType: 'AMRAP', timerDuration: 20 },
     ],
     imageUrl: 'system-letter',
