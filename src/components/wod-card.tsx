@@ -1,4 +1,3 @@
-
 'use client';
 
 import Link from "next/link";
@@ -14,17 +13,61 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Clock, Calendar, Repeat, Hourglass, Timer, Share2, LoaderCircle, User, MessageCircle, MoreHorizontal, Trash2, Pencil, Expand } from "lucide-react";
-import { format, isValid } from 'date-fns';
+import {
+  Clock,
+  Calendar,
+  Repeat,
+  Hourglass,
+  Timer,
+  Share2,
+  LoaderCircle,
+  User,
+  MessageCircle,
+  MoreHorizontal,
+  Trash2,
+  Pencil,
+  Expand,
+} from "lucide-react";
+import { format, isValid } from "date-fns";
 import { useFirebase, useUser } from "@/firebase";
 import { useState, useMemo } from "react";
-import { doc, collection, addDoc, deleteDoc, updateDoc, writeBatch, runTransaction, DocumentData } from "firebase/firestore";
+import {
+  doc,
+  collection,
+  addDoc,
+  deleteDoc,
+  updateDoc,
+  writeBatch,
+  runTransaction,
+} from "firebase/firestore";
 import { useToast } from "@/components/ui/use-toast";
 import { cn } from "@/lib/utils";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "./ui/dropdown-menu";
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "./ui/alert-dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "./ui/dropdown-menu";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "./ui/alert-dialog";
 import { useRouter } from "next/navigation";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from "./ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogDescription,
+} from "./ui/dialog";
 import { WodContentParser } from "./wod-content-parser";
 import { Separator } from "./ui/separator";
 import { HeroLetter } from "./hero-letter";
@@ -46,347 +89,324 @@ function WodIcon({ type }: { type: WOD["type"] }) {
 }
 
 function PersonalWodActions({ wod }: { wod: WOD }) {
-    const t = useTranslations('WodCard');
-    const { firestore } = useFirebase();
-    const { user } = useUser();
-    const { toast } = useToast();
-    const router = useRouter();
-    const [isSharing, setIsSharing] = useState(false);
-    const [isDeleting, setIsDeleting] = useState(false);
-    const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const t = useTranslations("WodCard");
+  const { firestore } = useFirebase();
+  const { user } = useUser();
+  const { toast } = useToast();
+  const router = useRouter();
+  const [isSharing, setIsSharing] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
+  if (!user || user.isAnonymous || wod.userId !== user.uid) {
+    return null;
+  }
 
-    if (!user || user.isAnonymous || wod.userId !== user.uid) {
-        return null;
-    }
+  const handleShareToggle = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!firestore || !user) return;
+    setIsSharing(true);
 
-    const handleShareToggle = async (e: React.MouseEvent) => {
-        e.preventDefault();
-        e.stopPropagation();
-        if (!firestore || !user) return;
-        setIsSharing(true);
+    const userWodRef = doc(firestore, "users", user.uid, "wods", wod.id);
 
-        const userWodRef = doc(firestore, 'users', user.uid, 'wods', wod.id);
-
-        try {
-            if (wod.communityWodId) {
-                // --- Unshare ---
-                const communityWodRef = doc(firestore, 'communityWods', wod.communityWodId);
-                const batch = writeBatch(firestore);
-                batch.delete(communityWodRef);
-                batch.update(userWodRef, { communityWodId: "" });
-                await batch.commit();
-                
-                toast({ title: t('unsharedToastTitle'), description: t('unsharedToastDescription') });
-            } else {
-                // --- Share ---
-                const userDisplayName = user.email?.split('@')[0] || 'Anonymous';
-                const communityWodData = { 
-                    ...wod, 
-                    date: new Date(wod.date).toISOString(),
-                    userId: user.uid,
-                    userDisplayName,
-                    reactions: { fire: 0, poop: 0 },
-                    commentCount: 0
-                 };
-                
-                const communityWodsCollection = collection(firestore, 'communityWods');
-                const newCommunityDocRef = await addDoc(communityWodsCollection, communityWodData);
-                
-                await updateDoc(userWodRef, {
-                    communityWodId: newCommunityDocRef.id
-                });
-                toast({ title: t('sharedToastTitle'), description: t('sharedToastDescription') });
-            }
-             setIsDropdownOpen(false); // Close dropdown on success
-        } catch (error) {
-            console.error("Error toggling share status:", error);
-            toast({ variant: "destructive", title: t('shareErrorToastTitle'), description: t('shareErrorToastDescription') });
-        } finally {
-            setIsSharing(false);
-        }
-    };
-    
-    const handleDelete = async () => {
-        if (!firestore || !user) return;
-        setIsDeleting(true);
-
-        const userWodRef = doc(firestore, 'users', user.uid, 'wods', wod.id);
+    try {
+      if (wod.communityWodId) {
+        const communityWodRef = doc(firestore, "communityWods", wod.communityWodId);
         const batch = writeBatch(firestore);
+        batch.delete(communityWodRef);
+        batch.update(userWodRef, { communityWodId: "" });
+        await batch.commit();
+        toast({ title: t("unsharedToastTitle"), description: t("unsharedToastDescription") });
+      } else {
+        const userDisplayName = user.email?.split("@")[0] || "Anonymous";
+        const communityWodData = {
+          ...wod,
+          date: new Date(wod.date).toISOString(),
+          userId: user.uid,
+          userDisplayName,
+          reactions: { fire: 0, poop: 0 },
+          commentCount: 0,
+        };
 
-        try {
-            // Delete personal WOD
-            batch.delete(userWodRef);
+        const communityWodsCollection = collection(firestore, "communityWods");
+        const newCommunityDocRef = await addDoc(communityWodsCollection, communityWodData);
+        await updateDoc(userWodRef, { communityWodId: newCommunityDocRef.id });
+        toast({ title: t("sharedToastTitle"), description: t("sharedToastDescription") });
+      }
+      setIsDropdownOpen(false);
+    } catch (error) {
+      console.error("Error toggling share status:", error);
+      toast({
+        variant: "destructive",
+        title: t("shareErrorToastTitle"),
+        description: t("shareErrorToastDescription"),
+      });
+    } finally {
+      setIsSharing(false);
+    }
+  };
 
-            // If shared, delete community WOD too
-            if (wod.communityWodId) {
-                const communityWodRef = doc(firestore, 'communityWods', wod.communityWodId);
-                batch.delete(communityWodRef);
-            }
+  const handleDelete = async () => {
+    if (!firestore || !user) return;
+    setIsDeleting(true);
+    const userWodRef = doc(firestore, "users", user.uid, "wods", wod.id);
+    const batch = writeBatch(firestore);
 
-            await batch.commit();
-            toast({ title: t('deleteToastTitle'), description: t('deleteToastDescription') });
-            // No need to close dropdown here, as the component will unmount
-        } catch (error) {
-            console.error("Error deleting WOD:", error);
-            toast({ variant: "destructive", title: t('deleteErrorToastTitle'), description: t('deleteErrorToastDescription') });
-        } finally {
-            setIsDeleting(false);
-            setIsDeleteDialogOpen(false);
-        }
-    };
-    
-    const handleEdit = () => {
-        router.push(`/wod/${wod.id}/edit`);
-    };
-    
-    const onSelect = (e: Event) => e.preventDefault();
+    try {
+      batch.delete(userWodRef);
+      if (wod.communityWodId) {
+        const communityWodRef = doc(firestore, "communityWods", wod.communityWodId);
+        batch.delete(communityWodRef);
+      }
+      await batch.commit();
+      toast({ title: t("deleteToastTitle"), description: t("deleteToastDescription") });
+    } catch (error) {
+      console.error("Error deleting WOD:", error);
+      toast({
+        variant: "destructive",
+        title: t("deleteErrorToastTitle"),
+        description: t("deleteErrorToastDescription"),
+      });
+    } finally {
+      setIsDeleting(false);
+      setIsDeleteDialogOpen(false);
+    }
+  };
 
-    return (
-        <>
-            <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
-                <AlertDialogContent>
-                    <AlertDialogHeader>
-                        <AlertDialogTitle>{t('deleteDialogTitle')}</AlertDialogTitle>
-                        <AlertDialogDescription>
-                            {t('deleteDialogDescription', { isShared: !!wod.communityWodId })}
-                        </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                        <AlertDialogCancel>{t('deleteDialogCancel')}</AlertDialogCancel>
-                        <AlertDialogAction
-                            onClick={handleDelete}
-                            className="bg-destructive hover:bg-destructive/90"
-                            disabled={isDeleting}
-                        >
-                             {isDeleting ? <LoaderCircle className="h-4 w-4 animate-spin" /> : t('deleteDialogConfirm')}
-                        </AlertDialogAction>
-                    </AlertDialogFooter>
-                </AlertDialogContent>
-            </AlertDialog>
-            <DropdownMenu open={isDropdownOpen} onOpenChange={setIsDropdownOpen}>
-                <DropdownMenuTrigger asChild>
-                    <Button 
-                        variant="ghost" 
-                        size="icon" 
-                        className="absolute top-2 right-2 z-10 h-8 w-8 rounded-full bg-card/60 backdrop-blur-sm hover:bg-card"
-                        onClick={(e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                        }}
-                    >
-                        <MoreHorizontal className="h-4 w-4" />
-                        <span className="sr-only">{t('optionsAlt')}</span>
-                    </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" onClick={(e) => { e.stopPropagation(); e.preventDefault(); }}>
-                     <DropdownMenuItem onSelect={handleEdit}>
-                        <Pencil className="mr-2 h-4 w-4" />
-                        <span>{t('edit')}</span>
-                    </DropdownMenuItem>
-                    <div onPointerDown={e => e.preventDefault()}>
-                        <DropdownMenuItem
-                            onSelect={onSelect}
-                            onClick={handleShareToggle}
-                            disabled={isSharing}
-                            className={cn(wod.communityWodId && "text-primary")}
-                        >
-                            {isSharing ? (
-                                <LoaderCircle className="mr-2 h-4 w-4 animate-spin" />
-                            ) : (
-                                <Share2 className="mr-2 h-4 w-4" />
-                            )}
-                            <span>{wod.communityWodId ? t('unshare') : t('share')}</span>
-                        </DropdownMenuItem>
-                    </div>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem 
-                        className="text-destructive"
-                        onSelect={() => setIsDeleteDialogOpen(true)}
-                    >
-                        <Trash2 className="mr-2 h-4 w-4" />
-                        <span>{t('delete')}</span>
-                    </DropdownMenuItem>
-                </DropdownMenuContent>
-            </DropdownMenu>
-        </>
-    );
+  const handleEdit = () => {
+    router.push(`/wod/${wod.id}/edit`);
+  };
+
+  return (
+    <>
+      <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{t("deleteDialogTitle")}</AlertDialogTitle>
+            <AlertDialogDescription>
+                {t.rich("deleteDialogDescription", {
+                    isShared: wod.communityWodId ? "true" : "other"
+                })}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>{t("deleteDialogCancel")}</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDelete}
+              className="bg-destructive hover:bg-destructive/90"
+              disabled={isDeleting}
+            >
+              {isDeleting ? <LoaderCircle className="h-4 w-4 animate-spin" /> : t("deleteDialogConfirm")}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <DropdownMenu open={isDropdownOpen} onOpenChange={setIsDropdownOpen}>
+        <DropdownMenuTrigger asChild>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="absolute top-2 right-2 z-10 h-8 w-8 rounded-full bg-card/60 backdrop-blur-sm hover:bg-card"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+            }}
+          >
+            <MoreHorizontal className="h-4 w-4" />
+            <span className="sr-only">{t("optionsAlt")}</span>
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()}>
+          <DropdownMenuItem onSelect={handleEdit}>
+            <Pencil className="mr-2 h-4 w-4" />
+            <span>{t("edit")}</span>
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            onSelect={(e) => {
+              e.preventDefault();
+              handleShareToggle(e as unknown as React.MouseEvent);
+            }}
+            disabled={isSharing}
+            className={cn(wod.communityWodId && "text-primary")}
+          >
+            {isSharing ? <LoaderCircle className="mr-2 h-4 w-4 animate-spin" /> : <Share2 className="mr-2 h-4 w-4" />}
+            <span>{wod.communityWodId ? t("unshare") : t("share")}</span>
+          </DropdownMenuItem>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem className="text-destructive" onSelect={() => setIsDeleteDialogOpen(true)}>
+            <Trash2 className="mr-2 h-4 w-4" />
+            <span>{t("delete")}</span>
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </>
+  );
 }
 
 function ReactionButton({ initialWod }: { initialWod: WOD }) {
-    const t = useTranslations('WodCard');
-    const { firestore } = useFirebase();
-    const { user } = useUser();
-    const { toast } = useToast();
-    const [isLoading, setIsLoading] = useState(false);
-    const [wod, setWod] = useState(initialWod);
-    const [userReaction, setUserReaction] = useState<Reaction | null>(null);
+  const t = useTranslations("WodCard");
+  const { firestore } = useFirebase();
+  const { user } = useUser();
+  const { toast } = useToast();
+  const [isLoading, setIsLoading] = useState(false);
+  const [wod, setWod] = useState(initialWod);
+  const [userReaction, setUserReaction] = useState<Reaction | null>(null);
 
-    const reactorRef = useMemo(() => {
-        if (!firestore || !user) return null;
-        return doc(firestore, `communityWods/${wod.id}/reactors/${user.uid}`);
-    }, [firestore, user, wod.id]);
+  const reactorRef = useMemo(() => {
+    if (!firestore || !user) return null;
+    return doc(firestore, `communityWods/${wod.id}/reactors/${user.uid}`);
+  }, [firestore, user, wod.id]);
 
-    if (!firestore || !user || user.isAnonymous || !reactorRef) {
-        return null;
-    }
+  if (!firestore || !user || user.isAnonymous || !reactorRef) {
+    return null;
+  }
 
-    const handleReaction = async (e: React.MouseEvent, reactionType: Reaction) => {
-        e.preventDefault();
-        e.stopPropagation();
-        
-        const originalWod = { ...wod };
-        const originalReaction = userReaction;
+  const handleReaction = async (e: React.MouseEvent, reactionType: Reaction) => {
+    e.preventDefault();
+    e.stopPropagation();
 
-        // Optimistic update
-        setWod(currentWod => {
-            const newReactions = { ...(currentWod.reactions || { fire: 0, poop: 0 }) };
-            
-            if (userReaction === reactionType) { // Undoing reaction
-                newReactions[reactionType]--;
-                setUserReaction(null);
-            } else {
-                if(userReaction) newReactions[userReaction]--; // Changing reaction
-                newReactions[reactionType]++;
-                setUserReaction(reactionType);
-            }
-            return { ...currentWod, reactions: newReactions };
-        });
+    const originalWod = { ...wod };
+    const originalReaction = userReaction;
 
-        const communityWodRef = doc(firestore, "communityWods", wod.id);
+    setWod((currentWod) => {
+      const newReactions = { ...(currentWod.reactions || { fire: 0, poop: 0 }) };
+      if (userReaction === reactionType) {
+        newReactions[reactionType]--;
+        setUserReaction(null);
+      } else {
+        if (userReaction) newReactions[userReaction]--;
+        newReactions[reactionType]++;
+        setUserReaction(reactionType);
+      }
+      return { ...currentWod, reactions: newReactions };
+    });
 
-        try {
-            await runTransaction(firestore, async (transaction) => {
-                const reactionDoc = await transaction.get(reactorRef);
-                const wodDoc = await transaction.get(communityWodRef);
+    const communityWodRef = doc(firestore, "communityWods", wod.id);
 
-                if (!wodDoc.exists()) throw "WOD does not exist!";
+    try {
+      await runTransaction(firestore, async (transaction) => {
+        const reactionDoc = await transaction.get(reactorRef);
+        const wodDoc = await transaction.get(communityWodRef);
 
-                const currentReactions = wodDoc.data().reactions || { fire: 0, poop: 0 };
-                const newReactions = { ...currentReactions };
+        if (!wodDoc.exists()) throw "WOD does not exist!";
 
-                if (reactionDoc.exists()) {
-                    const previousReaction = reactionDoc.data().type as Reaction;
-                    if (previousReaction === reactionType) {
-                        newReactions[reactionType] = Math.max(0, newReactions[reactionType] - 1);
-                        transaction.delete(reactorRef);
-                    } else {
-                        newReactions[previousReaction] = Math.max(0, newReactions[previousReaction] - 1);
-                        newReactions[reactionType]++;
-                        transaction.set(reactorRef, { type: reactionType });
-                    }
-                } else {
-                    newReactions[reactionType]++;
-                    transaction.set(reactorRef, { type: reactionType });
-                }
+        const currentReactions = wodDoc.data().reactions || { fire: 0, poop: 0 };
+        const newReactions = { ...currentReactions };
 
-                transaction.update(communityWodRef, { reactions: newReactions });
-            });
-        } catch (error) {
-            console.error("Transaction failed: ", error);
-            toast({ variant: "destructive", title: t('reactionErrorToastTitle'), description: t('reactionErrorToastDescription') });
-            // Revert optimistic update on failure
-            setWod(originalWod);
-            setUserReaction(originalReaction);
+        if (reactionDoc.exists()) {
+          const previousReaction = reactionDoc.data().type as Reaction;
+          if (previousReaction === reactionType) {
+            newReactions[reactionType] = Math.max(0, newReactions[reactionType] - 1);
+            transaction.delete(reactorRef);
+          } else {
+            newReactions[previousReaction] = Math.max(0, newReactions[previousReaction] - 1);
+            newReactions[reactionType]++;
+            transaction.set(reactorRef, { type: reactionType });
+          }
+        } else {
+          newReactions[reactionType]++;
+          transaction.set(reactorRef, { type: reactionType });
         }
-    };
 
-    return (
-        <div className="flex items-center gap-1">
-            <Button
-                variant="ghost"
-                size="sm"
-                className={cn(
-                    "flex items-center gap-1.5 text-muted-foreground px-2",
-                    userReaction === 'fire' && 'bg-primary/10 text-primary'
-                )}
-                onClick={(e) => handleReaction(e, 'fire')}
-                disabled={isLoading}
-            >
-                <span className="text-base">🔥</span>
-                <span className="text-sm font-medium tabular-nums">{wod.reactions?.fire ?? 0}</span>
-            </Button>
-            <Button
-                variant="ghost"
-                size="sm"
-                className={cn(
-                    "flex items-center gap-1.5 text-muted-foreground px-2",
-                    userReaction === 'poop' && 'bg-amber-800/20 text-amber-600'
-                )}
-                onClick={(e) => handleReaction(e, 'poop')}
-                disabled={isLoading}
-            >
-                <span className="text-base">💩</span>
-                <span className="text-sm font-medium tabular-nums">{wod.reactions?.poop ?? 0}</span>
-            </Button>
-            <div className="flex items-center gap-1.5 text-muted-foreground pl-2">
-                <MessageCircle className="h-4 w-4" />
-                <span className="text-sm font-medium tabular-nums">{wod.commentCount ?? 0}</span>
-            </div>
-        </div>
-    );
+        transaction.update(communityWodRef, { reactions: newReactions });
+      });
+    } catch (error) {
+      console.error("Transaction failed: ", error);
+      toast({ variant: "destructive", title: t("reactionErrorToastTitle"), description: t("reactionErrorToastDescription") });
+      setWod(originalWod);
+      setUserReaction(originalReaction);
+    }
+  };
+
+  return (
+    <div className="flex items-center gap-1">
+      <Button
+        variant="ghost"
+        size="sm"
+        className={cn("flex items-center gap-1.5 text-muted-foreground px-2", userReaction === "fire" && "bg-primary/10 text-primary")}
+        onClick={(e) => handleReaction(e, "fire")}
+        disabled={isLoading}
+      >
+        <span className="text-base">Fire</span>
+        <span className="text-sm font-medium tabular-nums">{wod.reactions?.fire ?? 0}</span>
+      </Button>
+      <Button
+        variant="ghost"
+        size="sm"
+        className={cn("flex items-center gap-1.5 text-muted-foreground px-2", userReaction === "poop" && "bg-amber-800/20 text-amber-600")}
+        onClick={(e) => handleReaction(e, "poop")}
+        disabled={isLoading}
+      >
+        <span className="text-base">Poop</span>
+        <span className="text-sm font-medium tabular-nums">{wod.reactions?.poop ?? 0}</span>
+      </Button>
+      <div className="flex items-center gap-1.5 text-muted-foreground pl-2">
+        <MessageCircle className="h-4 w-4" />
+        <span className="text-sm font-medium tabular-nums">{wod.commentCount ?? 0}</span>
+      </div>
+    </div>
+  );
 }
 
+export function WodCard({ wod, source = "personal" }: { wod: WOD; source?: "personal" | "community" }) {
+  const t = useTranslations("WodCard");
+  const date = new Date(wod.date);
+  const formattedDate = isValid(date) ? format(date, "PPP") : wod.date;
+  const href = source === "community" ? `/community-timer/${wod.id}` : `/timer/${wod.id}`;
 
-export function WodCard({ wod, source = 'personal' }: { wod: WOD, source?: 'personal' | 'community' }) {
-    const t = useTranslations('WodCard');
-    const date = new Date(wod.date);
-    const formattedDate = isValid(date) ? format(date, "PPP") : wod.date;
-    const href = source === 'community' ? `/community-timer/${wod.id}` : `/timer/${wod.id}`;
-    
-    const descriptionSections = Array.isArray(wod.description)
-        ? wod.description
-        : [{ title: "Workout", content: wod.description || "" }];
-    
-    const isHeroWod = wod.userId === 'system';
+  const descriptionSections = Array.isArray(wod.description)
+    ? wod.description
+    : [{ title: "Workout", content: wod.description || "" }];
 
+  const isHeroWod = wod.userId === "system";
 
   return (
     <Card className="flex flex-col overflow-hidden transition-all duration-300 ease-in-out group relative hover:shadow-2xl hover:shadow-primary/20 hover:-translate-y-1">
-       
-            {isHeroWod ? (
-                 <HeroLetter letter={wod.name.charAt(0)} className="h-48 w-full" />
-            ) : (
-                <Dialog>
-                    {wod.imageUrl && (
-                        <div className="relative h-48 w-full overflow-hidden">
-                            <DialogTrigger asChild>
-                                <div className="absolute inset-0 group/image cursor-pointer">
-                                    <Image
-                                        src={wod.imageUrl}
-                                        alt={wod.name}
-                                        fill
-                                        className="object-cover transition-transform duration-300 group-hover/image:scale-105"
-                                        data-ai-hint={wod.imageHint}
-                                    />
-                                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-                                    <div className="absolute inset-0 bg-black/20 opacity-0 group-hover/image:opacity-100 transition-opacity flex items-center justify-center">
-                                        <div className="p-2 rounded-full bg-black/50 text-white">
-                                            <Expand className="h-6 w-6" />
-                                        </div>
-                                    </div>
-                                </div>
-                            </DialogTrigger>
-                        {source === 'personal' && <PersonalWodActions wod={wod} />}
-                        </div>
-                    )}
-                    <DialogContent className="max-w-4xl p-2">
-                        <DialogHeader className="sr-only">
-                            <DialogTitle>{t('viewImageAlt', { wodName: wod.name })}</DialogTitle>
-                        </DialogHeader>
-                        <div className="relative w-full h-auto">
-                            <Image
-                                src={wod.imageUrl}
-                                alt={wod.name}
-                                width={1200}
-                                height={800}
-                                className="object-contain w-full h-auto max-h-[80vh] rounded-md"
-                            />
-                        </div>
-                    </DialogContent>
-                </Dialog>
-            )}
+      {isHeroWod ? (
+        <HeroLetter letter={wod.name.charAt(0)} className="h-48 w-full" />
+      ) : (
+        <Dialog>
+          {wod.imageUrl && (
+            <div className="relative h-48 w-full overflow-hidden">
+              <DialogTrigger asChild>
+                <div className="absolute inset-0 group/image cursor-pointer">
+                  <Image
+                    src={wod.imageUrl}
+                    alt={wod.name}
+                    fill
+                    className="object-cover transition-transform duration-300 group-hover/image:scale-105"
+                    data-ai-hint={wod.imageHint}
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                  <div className="absolute inset-0 bg-black/20 opacity-0 group-hover/image:opacity-100 transition-opacity flex items-center justify-center">
+                    <div className="p-2 rounded-full bg-black/50 text-white">
+                      <Expand className="h-6 w-6" />
+                    </div>
+                  </div>
+                </div>
+              </DialogTrigger>
+              {source === "personal" && <PersonalWodActions wod={wod} />}
+            </div>
+          )}
+          <DialogContent className="max-w-4xl p-2">
+            <DialogHeader className="sr-only">
+              <DialogTitle>{t("viewImageAlt", { wodName: wod.name })}</DialogTitle>
+            </DialogHeader>
+            <div className="relative w-full h-auto">
+              <Image
+                src={wod.imageUrl!}
+                alt={wod.name}
+                width={1200}
+                height={800}
+                className="object-contain w-full h-auto max-h-[80vh] rounded-md"
+              />
+            </div>
+          </DialogContent>
+        </Dialog>
+      )}
 
       <CardHeader className="pt-4 pb-2">
         <div className="flex items-start justify-between gap-2">
@@ -396,50 +416,56 @@ export function WodCard({ wod, source = 'personal' }: { wod: WOD, source?: 'pers
             <span className="ml-2">{wod.type}</span>
           </Badge>
         </div>
-         <div className="flex items-center justify-between text-sm text-muted-foreground pt-1">
+        <div className="flex items-center justify-between text-sm text-muted-foreground pt-1">
+          <div className="flex items-center gap-2">
+            <Calendar className="h-4 w-4" />
+            <span>{formattedDate}</span>
+          </div>
+          {source === "community" && wod.userDisplayName && (
             <div className="flex items-center gap-2">
-                <Calendar className="h-4 w-4" />
-                <span>{formattedDate}</span>
+              <User className="h-4 w-4" />
+              <span>{wod.userDisplayName}</span>
             </div>
-            {source === 'community' && wod.userDisplayName && (
-                <div className="flex items-center gap-2">
-                     <User className="h-4 w-4" />
-                     <span>{wod.userDisplayName}</span>
-                </div>
-            )}
+          )}
         </div>
       </CardHeader>
+
       <CardContent className="flex-grow py-2">
-         <Dialog>
-             <DialogTrigger asChild>
-                <p className="line-clamp-3 text-sm text-muted-foreground whitespace-pre-wrap transition-colors cursor-pointer hover:text-foreground">
-                    {descriptionSections.map(s => s.content).join("\n")}
-                </p>
-             </DialogTrigger>
-             <DialogContent className="max-w-2xl">
-                 <DialogHeader>
-                    <DialogTitle className="font-headline text-primary text-2xl">{wod.name}</DialogTitle>
-                     <DialogDescription>
-                        {t('viewWodDescription', { type: wod.type, date: formattedDate })}
-                        {wod.userDisplayName && <span className="block mt-1">{t('viewWodSharedBy', { displayName: wod.userDisplayName })}</span>}
-                    </DialogDescription>
-                 </DialogHeader>
-                 <div className="py-4 space-y-6 max-h-[70vh] overflow-y-auto pr-4">
-                    {descriptionSections.map((section, index) => (
-                        <div key={index}>
-                            <h4 className="font-headline text-lg text-foreground mb-2">{section.title}</h4>
-                            <WodContentParser content={section.content} />
-                            {index < descriptionSections.length - 1 && <Separator className="mt-6" />}
-                        </div>
-                    ))}
-                 </div>
-             </DialogContent>
-         </Dialog>
+        <Dialog>
+          <DialogTrigger asChild>
+            <p className="line-clamp-3 text-sm text-muted-foreground whitespace-pre-wrap transition-colors cursor-pointer hover:text-foreground">
+              {descriptionSections.map((s) => s.content).join("\n")}
+            </p>
+          </DialogTrigger>
+          <DialogContent className="max-w-2xl">
+            <DialogHeader>
+              <DialogTitle className="font-headline text-primary text-2xl">{wod.name}</DialogTitle>
+              <DialogDescription>
+                {t("viewWodDescription", { type: wod.type, date: formattedDate })}
+                {wod.userDisplayName && (
+                  <span className="block mt-1">
+                    {t("viewWodSharedBy", { displayName: wod.userDisplayName })}
+                  </span>
+                )}
+              </DialogDescription>
+            </DialogHeader>
+            <div className="py-4 space-y-6 max-h-[70vh] overflow-y-auto pr-4">
+              {descriptionSections.map((section, index) => (
+                <div key={index}>
+                  <h4 className="font-headline text-lg text-foreground mb-2">{section.title}</h4>
+                  <WodContentParser content={section.content} />
+                  {index < descriptionSections.length - 1 && <Separator className="mt-6" />}
+                </div>
+              ))}
+            </div>
+          </DialogContent>
+        </Dialog>
       </CardContent>
+
       <CardFooter className="flex flex-col items-stretch gap-2 pt-2">
-         {source === 'community' && <ReactionButton initialWod={wod} />}
-        <Button asChild className="w-full">
-          <Link href={href}>{t('startWod')}</Link>
+        {source === "community" && <ReactionButton initialWod={wod} />}
+        <Button asChild className=" W-full">
+          <Link href={href}>{t("startWod")}</Link>
         </Button>
       </CardFooter>
     </Card>
