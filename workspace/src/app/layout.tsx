@@ -4,8 +4,8 @@ import { NextIntlClientProvider } from 'next-intl';
 import { getMessages, getLocale } from 'next-intl/server';
 import { Toaster } from "@/components/ui/toaster";
 import { FirebaseProvider } from "@/firebase/provider";
-import "../app/globals.css";
-import { defaultLocale } from '@/next-intl.config';
+import "./globals.css";
+import { defaultLocale } from '@/../next-intl.config';
 
 export const metadata = {
   title: "WODBurner",
@@ -30,7 +30,6 @@ export const appleWebApp = {
 
 export default async function RootLayout({
   children,
-  params, // We need to receive params here
 }: {
   children: React.ReactNode;
   params: { locale: string };
@@ -39,15 +38,12 @@ export default async function RootLayout({
   try {
     // Attempt to get locale from the request
     locale = await getLocale();
-    console.log(`[DEBUG] src/app/layout.tsx: Successfully got locale: "${locale}"`);
   } catch (error) {
     // If it fails (e.g., in a context where headers are not available),
     // fall back to the default locale from your config.
-    console.error(`[DEBUG] src/app/layout.tsx: Failed to get locale, falling back to default. Error: ${error}`);
     locale = defaultLocale;
   }
   
-  console.log(`[DEBUG] src/app/layout.tsx: Using locale: "${locale}"`);
   const messages = await getMessages({locale});
 
   return (
