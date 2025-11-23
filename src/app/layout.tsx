@@ -1,6 +1,6 @@
 // src/app/layout.tsx
 import { NextIntlClientProvider } from 'next-intl';
-import { getMessages } from 'next-intl/server';
+import { getMessages, getLocale } from 'next-intl/server';
 import { Toaster } from "@/components/ui/toaster";
 import { FirebaseProvider } from "@/firebase/provider";
 import "../app/globals.css";
@@ -28,13 +28,11 @@ export const appleWebApp = {
 
 export default async function RootLayout({
   children,
-  params,
 }: {
   children: React.ReactNode;
-  params: { locale: string };
 }) {
+  const locale = await getLocale();
   const messages = await getMessages();
-  const { locale } = params;
 
   return (
     <html lang={locale} className="dark">
