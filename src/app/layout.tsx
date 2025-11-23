@@ -4,8 +4,8 @@ import { NextIntlClientProvider } from 'next-intl';
 import { getMessages, getLocale } from 'next-intl/server';
 import { Toaster } from "@/components/ui/toaster";
 import { FirebaseProvider } from "@/firebase/provider";
-import "../app/globals.css";
-import { defaultLocale } from '@/../next-intl.config';
+import "./globals.css";
+import { defaultLocale } from '../../next-intl.config';
 
 export const metadata = {
   title: "WODBurner",
@@ -30,10 +30,8 @@ export const appleWebApp = {
 
 export default async function RootLayout({
   children,
-  params, // We need to receive params here
 }: {
   children: React.ReactNode;
-  params: { locale: string };
 }) {
   let locale;
   try {
