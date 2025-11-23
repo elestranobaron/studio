@@ -305,7 +305,7 @@ function DashboardContent() {
             <TabsContent value="personal" className="p-4 md:p-6">
               <WodList 
                   wods={userWods} 
-                  isLoading={showPersonalLoadingState}
+                  isLoading={!!showPersonalLoadingState}
                   emptyStateTitle={t('PersonalWodList.emptyTitle')}
                   emptyStateDescription={t('PersonalWodList.emptyDescription')}
                   showAddButton={true}

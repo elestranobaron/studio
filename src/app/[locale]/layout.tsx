@@ -1,11 +1,11 @@
-
+// src/app/[locale]/layout.tsx
 import {NextIntlClientProvider} from 'next-intl';
 import {getMessages} from 'next-intl/server';
 import type { Metadata } from "next";
 import "../globals.css";
 import { Toaster } from "@/components/ui/toaster";
 import { FirebaseClientProvider } from "@/firebase";
- 
+
 export const metadata: Metadata = {
   title: "WODBurner",
   description: "Scan any WOD in seconds, time it perfectly, share instantly, and join the strongest French-speaking CrossFit community.",
@@ -25,25 +25,26 @@ export const appleWebApp = {
   statusBarStyle: "black-translucent",
   title: "WODBurner",
 };
- 
+
 export default async function LocaleLayout({
   children,
-  params: {locale}
+  params // ← on ne déstructure PLUS ici
 }: {
   children: React.ReactNode;
-  params: {locale: string};
+  params: Promise<{ locale: string }>; // ← type correct en 2025
 }) {
-  const messages = await getMessages();
- 
+  const { locale } = await params;     // ← on attend les params
+  const messages = await getMessages(); // next-intl utilise le locale résolu
+
   return (
     <html lang={locale} className="dark">
       <head>
-          <link rel="preconnect" href="https://fonts.googleapis.com" />
-          <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-          <link
-            href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700;800&display=swap"
-            rel="stylesheet"
-          />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700;800&display=swap"
+          rel="stylesheet"
+        />
       </head>
       <body className="font-body antialiased min-h-screen bg-background font-sans">
         <NextIntlClientProvider locale={locale} messages={messages}>
