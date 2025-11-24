@@ -15,8 +15,7 @@ import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { useTranslations } from 'next-intl';
 
-function PremiumContent() {
-  const t = useTranslations('PremiumPage');
+function PremiumContent({ t }: { t: any }) {
   const { user, isUserLoading } = useUser();
   const auth = useAuth();
   const router = useRouter();
@@ -226,7 +225,7 @@ export default function PremiumPage() {
         <h1 className="text-2xl font-bold tracking-tight font-headline md:text-3xl hidden md:block">{t('title')}</h1>
       </header>
       <Suspense fallback={<div className="flex-1 flex items-center justify-center"><LoaderCircle className="animate-spin" /></div>}>
-        <PremiumContent />
+        <PremiumContent t={t} />
       </Suspense>
     </div>
   );

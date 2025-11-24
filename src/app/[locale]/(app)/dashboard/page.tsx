@@ -233,8 +233,7 @@ function CommunityWodList() {
     );
 }
 
-function DashboardContent() {
-  const t = useTranslations('DashboardPage');
+function DashboardContent({ t }: { t: (key: string) => string }) {
   const searchParams = useSearchParams();
   const router = useRouter();
   const defaultTab = searchParams.get('tab') === 'community' ? 'community' : 'personal';
@@ -371,10 +370,11 @@ function DashboardContent() {
 }
 
 export default function DashboardPage() {
-  const t = useTranslations('UserNav');
+  const t = useTranslations('DashboardPage');
+  const t_nav = useTranslations('UserNav');
   return (
-    <Suspense fallback={<div>{t('loading')}</div>}>
-      <DashboardContent />
+    <Suspense fallback={<div>{t_nav('loading')}</div>}>
+      <DashboardContent t={t} />
     </Suspense>
   )
 }

@@ -19,8 +19,7 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { useTranslations } from 'next-intl';
 
 
-function LoginClientContent() {
-    const t = useTranslations('LoginPage');
+function LoginClientContent({ t }: { t: any }) {
     const [email, setEmail] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [isCheckingLink, setIsCheckingLink] = useState(true);
@@ -273,7 +272,7 @@ export default function LoginPage() {
                 <p className="text-muted-foreground">{t('verifying')}</p>
             </div>
         }>
-            <LoginClientContent />
+            <LoginClientContent t={t} />
         </Suspense>
     )
 }
