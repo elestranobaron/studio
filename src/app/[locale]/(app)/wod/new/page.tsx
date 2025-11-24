@@ -17,7 +17,7 @@ import { WodType, type WOD } from "@/lib/types";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { useTranslations } from "next-intl";
-import { SidebarTrigger } from "@/components/ui/sidebar";
+import { SidebarTrigger, useSidebar } from "@/components/ui/sidebar";
 
 export default function NewWodPage() {
     const t = useTranslations('NewWodPage');
@@ -25,6 +25,8 @@ export default function NewWodPage() {
     const { user, isUserLoading } = useUser();
     const { firestore } = useFirebase();
     const { toast } = useToast();
+    const { toggleSidebar } = useSidebar();
+
 
     const [isSaving, setIsSaving] = useState(false);
     const [name, setName] = useState('');
@@ -141,10 +143,12 @@ export default function NewWodPage() {
 
             <header className="flex items-center justify-between p-4 border-b md:p-6">
                  <div className="flex items-center gap-4 md:hidden">
-                    <SidebarTrigger />
-                    <h1 className="text-2xl font-bold tracking-tight font-headline md:text-3xl">
-                        {t('title')}
-                    </h1>
+                    <div onClick={toggleSidebar} className="flex items-center gap-4 cursor-pointer">
+                        <SidebarTrigger />
+                        <h1 className="text-2xl font-bold tracking-tight font-headline md:text-3xl">
+                            {t('title')}
+                        </h1>
+                    </div>
                 </div>
                  <h1 className="text-2xl font-bold tracking-tight font-headline md:text-3xl hidden md:block">
                     {t('title')}

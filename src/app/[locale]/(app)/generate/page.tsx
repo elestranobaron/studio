@@ -6,7 +6,7 @@ import { useUser, useFirebase } from "@/firebase";
 import { useRouter } from 'next/navigation';
 import { doc, collection, setDoc } from "firebase/firestore";
 import { Button } from "@/components/ui/button";
-import { SidebarTrigger } from "@/components/ui/sidebar";
+import { SidebarTrigger, useSidebar } from "@/components/ui/sidebar";
 import { useToast } from "@/components/ui/use-toast";
 import { generateWod } from "@/ai/flows/generate-wod-flow";
 import { WodCard } from "@/components/wod-card";
@@ -51,6 +51,8 @@ export default function GenerateWodPage() {
     const { firestore } = useFirebase();
     const router = useRouter();
     const { toast } = useToast();
+    const { toggleSidebar } = useSidebar();
+
 
     const handleGenerate = async () => {
         setIsLoading(true);
@@ -105,10 +107,12 @@ export default function GenerateWodPage() {
         <div className="flex flex-col h-full">
             <header className="flex items-center justify-between p-4 border-b md:p-6">
                 <div className="flex items-center gap-4 md:hidden">
-                    <SidebarTrigger />
-                    <h1 className="text-2xl font-bold tracking-tight font-headline md:text-3xl">
-                        {t('title')}
-                    </h1>
+                     <div onClick={toggleSidebar} className="flex items-center gap-4 cursor-pointer">
+                        <SidebarTrigger />
+                        <h1 className="text-2xl font-bold tracking-tight font-headline md:text-3xl">
+                            {t('title')}
+                        </h1>
+                    </div>
                 </div>
                 <h1 className="text-2xl font-bold tracking-tight font-headline md:text-3xl hidden md:block">
                     {t('title')}

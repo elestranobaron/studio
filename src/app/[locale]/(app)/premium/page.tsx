@@ -6,7 +6,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { Check, LoaderCircle, PartyPopper } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { SidebarTrigger } from '@/components/ui/sidebar';
+import { SidebarTrigger, useSidebar } from '@/components/ui/sidebar';
 import { useToast } from '@/components/ui/use-toast';
 import { useUser, useAuth } from '@/firebase';
 import { cn } from '@/lib/utils';
@@ -213,12 +213,15 @@ function PremiumContent() {
 
 export default function PremiumPage() {
   const t = useTranslations('PremiumPage');
+  const { toggleSidebar } = useSidebar();
   return (
     <div className="flex flex-col h-full">
       <header className="flex items-center gap-4 p-4 border-b md:p-6">
         <div className="flex items-center gap-4 md:hidden">
-            <SidebarTrigger />
-            <h1 className="text-2xl font-bold tracking-tight font-headline md:text-3xl">{t('title')}</h1>
+            <div onClick={toggleSidebar} className="flex items-center gap-4 cursor-pointer">
+                <SidebarTrigger />
+                <h1 className="text-2xl font-bold tracking-tight font-headline md:text-3xl">{t('title')}</h1>
+            </div>
         </div>
         <h1 className="text-2xl font-bold tracking-tight font-headline md:text-3xl hidden md:block">{t('title')}</h1>
       </header>

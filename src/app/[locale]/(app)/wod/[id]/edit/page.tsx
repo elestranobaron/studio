@@ -16,7 +16,7 @@ import { WodType, type WOD } from '@/lib/types';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useTranslations } from 'next-intl';
-import { SidebarTrigger } from '@/components/ui/sidebar';
+import { SidebarTrigger, useSidebar } from '@/components/ui/sidebar';
 
 function EditWodPageSkeleton() {
     return (
@@ -61,6 +61,8 @@ export default function EditWodPage() {
     const { user, isUserLoading } = useUser();
     const { firestore } = useFirebase();
     const { toast } = useToast();
+    const { toggleSidebar } = useSidebar();
+
 
     const wodRef = useMemo(() => {
         if (!user || !firestore || typeof wodId !== 'string') return null;
@@ -155,10 +157,12 @@ export default function EditWodPage() {
         <div className="flex flex-col h-full">
             <header className="flex items-center justify-between p-4 border-b md:p-6">
                 <div className="flex items-center gap-4 md:hidden">
-                    <SidebarTrigger />
-                    <h1 className="text-2xl font-bold tracking-tight font-headline md:text-3xl">
-                        {t('title')}
-                    </h1>
+                    <div onClick={toggleSidebar} className="flex items-center gap-4 cursor-pointer">
+                        <SidebarTrigger />
+                        <h1 className="text-2xl font-bold tracking-tight font-headline md:text-3xl">
+                            {t('title')}
+                        </h1>
+                    </div>
                 </div>
                 <h1 className="text-2xl font-bold tracking-tight font-headline md:text-3xl hidden md:block">
                     {t('title')}

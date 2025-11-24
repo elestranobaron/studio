@@ -27,7 +27,7 @@ import {
 } from '@/components/ui/alert-dialog';
 import { useToast } from '@/components/ui/use-toast';
 import { LoaderCircle, Trash2, CreditCard } from 'lucide-react';
-import { SidebarTrigger } from '@/components/ui/sidebar';
+import { SidebarTrigger, useSidebar } from '@/components/ui/sidebar';
 import { getFunctions, httpsCallable } from 'firebase/functions';
 import { useTranslations } from 'next-intl';
 
@@ -40,6 +40,8 @@ export default function SettingsPage() {
   const { toast } = useToast();
   const [isDeleting, setIsDeleting] = useState(false);
   const [isPortalLoading, setIsPortalLoading] = useState(false);
+  const { toggleSidebar } = useSidebar();
+
 
   const handleManageSubscription = async () => {
     setIsPortalLoading(true);
@@ -137,10 +139,12 @@ export default function SettingsPage() {
     <div className="flex flex-col h-full">
       <header className="flex items-center gap-4 p-4 border-b md:p-6">
         <div className="flex items-center gap-4 md:hidden">
-            <SidebarTrigger />
-            <h1 className="text-2xl font-bold tracking-tight font-headline md:text-3xl">
-                {t('title')}
-            </h1>
+             <div onClick={toggleSidebar} className="flex items-center gap-4 cursor-pointer">
+                <SidebarTrigger />
+                <h1 className="text-2xl font-bold tracking-tight font-headline md:text-3xl">
+                    {t('title')}
+                </h1>
+            </div>
         </div>
         <h1 className="text-2xl font-bold tracking-tight font-headline md:text-3xl hidden md:block">
           {t('title')}

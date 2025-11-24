@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { WodCard } from '@/components/wod-card';
 import { LogIn, PlusCircle, Search, ScanLine, ArrowDownUp, ArrowUp } from 'lucide-react';
-import { SidebarTrigger } from '@/components/ui/sidebar';
+import { SidebarTrigger, useSidebar } from '@/components/ui/sidebar';
 import { useCollection, useFirebase } from '@/firebase';
 import { collection, query, orderBy, limit } from 'firebase/firestore';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -240,6 +240,8 @@ function DashboardContent() {
   const defaultTab = searchParams.get('tab') === 'community' ? 'community' : 'personal';
   
   const [showScrollTop, setShowScrollTop] = useState(false);
+  const { toggleSidebar } = useSidebar();
+
 
   useEffect(() => {
     const handleScroll = () => {
@@ -282,10 +284,12 @@ function DashboardContent() {
     <div className="flex flex-col h-full">
       <header className="flex items-center justify-between p-4 border-b md:p-6">
         <div className="flex items-center gap-4 md:hidden">
-            <SidebarTrigger />
-            <h1 className="text-2xl font-bold tracking-tight font-headline md:text-3xl">
-              {t('title')}
-            </h1>
+            <div onClick={toggleSidebar} className="flex items-center gap-4 cursor-pointer">
+                <SidebarTrigger />
+                <h1 className="text-2xl font-bold tracking-tight font-headline md:text-3xl">
+                  {t('title')}
+                </h1>
+            </div>
         </div>
         <h1 className="text-2xl font-bold tracking-tight font-headline md:text-3xl hidden md:block">
           {t('title')}

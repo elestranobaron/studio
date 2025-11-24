@@ -6,7 +6,7 @@ import { collection, query, orderBy } from 'firebase/firestore';
 import { Crown, ShieldCheck } from 'lucide-react';
 import Link from 'next/link';
 import { useMemo } from 'react';
-import { SidebarTrigger } from '@/components/ui/sidebar';
+import { SidebarTrigger, useSidebar } from '@/components/ui/sidebar';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -77,6 +77,8 @@ function ProgressCircle({ value, max }: { value: number, max: number }) {
 export default function HallOfFamePage() {
   const t = useTranslations('HallOfFamePage');
   const { firestore } = useFirebase();
+  const { toggleSidebar } = useSidebar();
+
 
   const ogsQuery = useMemo(() => {
     if (!firestore) return null;
@@ -94,11 +96,12 @@ export default function HallOfFamePage() {
     <div className="flex flex-col h-full">
          <header className="flex items-center gap-4 p-4 border-b md:p-6">
             <div className="flex items-center gap-2 md:hidden">
-                <SidebarTrigger />
-                <Crown className="text-yellow-400"/>
-                <h1 className="text-2xl font-bold tracking-tight font-headline md:text-3xl">
-                  {t('title')}
-                </h1>
+                <div onClick={toggleSidebar} className="flex items-center gap-4 cursor-pointer">
+                    <SidebarTrigger />
+                    <h1 className="text-2xl font-bold tracking-tight font-headline md:text-3xl">
+                    {t('title')}
+                    </h1>
+                </div>
             </div>
             <div className="hidden md:flex items-center gap-2">
                 <Crown className="text-yellow-400"/>

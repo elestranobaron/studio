@@ -17,7 +17,7 @@ import {
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { SidebarTrigger } from '@/components/ui/sidebar';
+import { SidebarTrigger, useSidebar } from '@/components/ui/sidebar';
 import { useTranslations } from 'next-intl';
 
 // 1. Déclaration des types valides (les slugs dans l’URL)
@@ -34,6 +34,8 @@ type TimerConfig = {
 export default function GenericTimerPage() {
   const t = useTranslations('GenericTimerPage');
   const params = useParams();
+  const { toggleSidebar } = useSidebar();
+
 
   // params.type peut être string | string[] → on normalise
   const rawType = Array.isArray(params.type) ? params.type[0] : params.type;
@@ -242,13 +244,14 @@ export default function GenericTimerPage() {
   return (
     <div className="flex flex-col h-full">
       <header className="flex items-center justify-between p-4 border-b md:p-6">
-        <SidebarTrigger asChild className="md:hidden">
-            <button className="flex items-center gap-4">
+        <div className="md:hidden">
+            <div onClick={toggleSidebar} className="flex items-center gap-4 cursor-pointer">
+                <SidebarTrigger />
                 <h1 className="text-2xl font-bold tracking-tight font-headline md:text-3xl">
                     {config.title}
                 </h1>
-            </button>
-        </SidebarTrigger>
+            </div>
+        </div>
         <h1 className="text-2xl font-bold tracking-tight font-headline md:text-3xl hidden md:block">
             {config.title}
         </h1>
