@@ -1,9 +1,10 @@
+
 // src/app/layout.tsx
 import { NextIntlClientProvider } from 'next-intl';
 import { getMessages, getLocale } from 'next-intl/server';
 import { Toaster } from "@/components/ui/toaster";
 import { FirebaseProvider } from "@/firebase/provider";
-import "@/app/globals.css";
+import "./globals.css";
 import { defaultLocale } from '../../next-intl.config';
 
 export const metadata = {
