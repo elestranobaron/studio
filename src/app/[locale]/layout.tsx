@@ -1,9 +1,22 @@
 
-// This file is the root layout for all localized routes.
-// It simply passes its children through, as the main layout structure
-// is defined in the root layout.tsx and the app-specific layout
-// is in (app)/layout.tsx.
+// src/app/[locale]/layout.tsx
+import { NextIntlClientProvider } from 'next-intl';
+import { getLocale, getMessages } from 'next-intl/server';
+import { defaultLocale } from '@/next-intl.config';
 
-export default function LocaleLayout({ children }: { children: React.ReactNode }) {
-  return children;
+export default async function LocaleLayout({ children }: { children: React.ReactNode }) {
+  let locale;
+  try {
+    locale = await getLocale();
+  } catch (error) {
+    locale = defaultLocale;
+  }
+  
+  const messages = await getMessages({locale});
+
+  return (
+    <NextIntlClientProvider locale={locale} messages={messages}>
+      {children}
+    </NextIntlClientProvider>
+  );
 }
