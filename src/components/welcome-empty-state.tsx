@@ -4,7 +4,6 @@
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Flame, Camera, Dice5, Medal } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import React from 'react';
@@ -63,9 +62,9 @@ export function WelcomeEmptyState() {
 
       </div>
 
-      <p className="mt-10 text-sm text-muted-foreground/80">
+       <p className="mt-10 text-sm text-muted-foreground/80">
         {t.rich('communityLink', {
-          community: (chunks) => <Link href="/dashboard?tab=community" className="underline text-primary/90 hover:text-primary">{chunks}</Link>
+          communityLink: (chunks) => <Link href="/dashboard?tab=community" className="underline text-primary/90 hover:text-primary">{chunks}</Link>
         })}
       </p>
     </div>

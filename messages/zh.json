@@ -55,8 +55,7 @@
     "scanButton": "从照片扫描WOD",
     "generateButton": "生成随机WOD",
     "heroButton": "尝试英雄WOD",
-    "communityLink": "或者，探索{community}，看看今天其他人在燃烧什么。",
-    "community": "社区"
+    "communityLink": "或者，探索<communityLink>社区</communityLink>，看看今天其他人在燃烧什么。"
   },
   "WodCard": {
     "optionsAlt": "WOD选项",
@@ -398,5 +397,3 @@
     }
   }
 }
-
-    

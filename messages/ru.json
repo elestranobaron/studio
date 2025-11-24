@@ -55,8 +55,7 @@
     "scanButton": "Отсканировать WOD с фотографии",
     "generateButton": "Создать случайный WOD",
     "heroButton": "Попробовать Hero WOD",
-    "communityLink": "Или исследуйте {community}, чтобы увидеть, что сегодня сжигают другие.",
-    "community": "сообщество"
+    "communityLink": "Или исследуйте <communityLink>сообщество</communityLink>, чтобы увидеть, что сегодня сжигают другие."
   },
   "WodCard": {
     "optionsAlt": "Опции WOD",
@@ -398,5 +397,3 @@
     }
   }
 }
-
-    

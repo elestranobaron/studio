@@ -55,8 +55,7 @@
     "scanButton": "写真からWODをスキャン",
     "generateButton": "ランダムなWODを生成",
     "heroButton": "ヒーローWODを試す",
-    "communityLink": "または、{community}を探索して、他の人が今日何を燃やしているかを見てみましょう。",
-    "community": "コミュニティ"
+    "communityLink": "または、<communityLink>コミュニティ</communityLink>を探索して、他の人が今日何を燃やしているかを見てみましょう。"
   },
   "WodCard": {
     "optionsAlt": "WODオプション",
@@ -398,5 +397,3 @@
     }
   }
 }
-
-    

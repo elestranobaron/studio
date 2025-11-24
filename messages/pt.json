@@ -55,8 +55,7 @@
     "scanButton": "Escanear um WOD de uma foto",
     "generateButton": "Gerar um WOD aleatório",
     "heroButton": "Experimente um Hero WOD",
-    "communityLink": "Ou explore a {community} para ver o que os outros estão queimando hoje.",
-    "community": "comunidade"
+    "communityLink": "Ou explore a <communityLink>comunidade</communityLink> para ver o que os outros estão queimando hoje."
   },
   "WodCard": {
     "optionsAlt": "Opções do WOD",
@@ -398,5 +397,3 @@
     }
   }
 }
-
-    

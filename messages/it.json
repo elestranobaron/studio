@@ -1,3 +1,4 @@
+
 {
   "UserNav": {
     "signIn": "Accedi",
@@ -54,8 +55,7 @@
     "scanButton": "Scansiona un WOD da una foto",
     "generateButton": "Genera un WOD casuale",
     "heroButton": "Prova un Hero WOD",
-    "communityLink": "Oppure esplora la {community} per vedere cosa stanno bruciando gli altri oggi.",
-    "community": "comunità"
+    "communityLink": "Oppure esplora la <communityLink>comunità</communityLink> per vedere cosa stanno bruciando gli altri oggi."
   },
   "WodCard": {
     "optionsAlt": "Opzioni WOD",
