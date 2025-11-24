@@ -26,7 +26,7 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 import { useToast } from '@/components/ui/use-toast';
-import { LoaderCircle, Trash2, CreditCard } from 'lucide-react';
+import { LoaderCircle, Trash2, CreditCard, ArrowLeft } from 'lucide-react';
 import { SidebarTrigger, useSidebar } from '@/components/ui/sidebar';
 import { getFunctions, httpsCallable } from 'firebase/functions';
 import { useTranslations } from 'next-intl';
@@ -137,18 +137,23 @@ export default function SettingsPage() {
 
   return (
     <div className="flex flex-col h-full">
-      <header className="flex items-center gap-4 p-4 border-b md:p-6">
-        <div className="flex items-center gap-4 md:hidden">
+      <header className="flex items-center justify-between p-4 border-b md:p-6">
+        <div className="flex items-center gap-2 md:hidden">
+             <Button variant="ghost" size="icon" onClick={() => router.back()}>
+                <ArrowLeft className="h-5 w-5" />
+            </Button>
              <div onClick={toggleSidebar} className="flex items-center gap-4 cursor-pointer">
-                <SidebarTrigger />
-                <h1 className="text-2xl font-bold tracking-tight font-headline md:text-3xl">
+                <h1 className="text-2xl font-bold tracking-tight font-headline">
                     {t('title')}
                 </h1>
             </div>
         </div>
-        <h1 className="text-2xl font-bold tracking-tight font-headline md:text-3xl hidden md:block">
-          {t('title')}
-        </h1>
+        <div className="hidden items-center gap-4 md:flex">
+            <SidebarTrigger />
+            <h1 className="text-2xl font-bold tracking-tight font-headline md:text-3xl">
+              {t('title')}
+            </h1>
+        </div>
       </header>
       <main className="flex-1 overflow-y-auto p-4 md:p-6">
         <div className="max-w-2xl mx-auto space-y-8">
@@ -233,3 +238,4 @@ export default function SettingsPage() {
 }
 
     
+

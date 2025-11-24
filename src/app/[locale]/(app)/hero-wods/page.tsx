@@ -9,9 +9,10 @@ import { useUser } from '@/firebase';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Gem, Sparkles } from 'lucide-react';
+import { Gem, Sparkles, ArrowLeft } from 'lucide-react';
 import { useMemo } from 'react';
 import { useTranslations } from 'next-intl';
+import { useRouter } from 'next/navigation';
 
 
 function WodSkeleton() {
@@ -60,6 +61,7 @@ export default function HeroWodsPage() {
   const t = useTranslations('HeroWodsPage');
   const { user, isUserLoading } = useUser();
   const { toggleSidebar } = useSidebar();
+  const router = useRouter();
 
 
   const visibleWods = useMemo(() => {
@@ -73,18 +75,23 @@ export default function HeroWodsPage() {
 
   return (
     <div className="flex flex-col h-full">
-      <header className="flex items-center gap-4 p-4 border-b md:p-6">
-        <div className="flex items-center gap-4 md:hidden">
+      <header className="flex items-center justify-between p-4 border-b md:p-6">
+        <div className="flex items-center gap-2 md:hidden">
+            <Button variant="ghost" size="icon" onClick={() => router.back()}>
+                <ArrowLeft className="h-5 w-5" />
+            </Button>
             <div onClick={toggleSidebar} className="flex items-center gap-4 cursor-pointer">
-                <SidebarTrigger />
-                <h1 className="text-2xl font-bold tracking-tight font-headline md:text-3xl">
+                <h1 className="text-2xl font-bold tracking-tight font-headline">
                 {t('title')}
                 </h1>
             </div>
         </div>
-        <h1 className="text-2xl font-bold tracking-tight font-headline md:text-3xl hidden md:block">
-          {t('title')}
-        </h1>
+        <div className="hidden items-center gap-4 md:flex">
+          <SidebarTrigger />
+          <h1 className="text-2xl font-bold tracking-tight font-headline md:text-3xl">
+            {t('title')}
+          </h1>
+        </div>
       </header>
       <main className="flex-1 overflow-y-auto p-4 md:p-6">
         <div className="mb-6">
@@ -119,3 +126,4 @@ export default function HeroWodsPage() {
 }
 
     
+

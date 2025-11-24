@@ -1,4 +1,6 @@
 
+'use client';
+
 import Link from "next/link";
 import {
   Card,
@@ -6,12 +8,17 @@ import {
   CardTitle,
   CardDescription,
 } from "@/components/ui/card";
-import { Repeat, Clock, Hourglass, Timer as TimerIcon } from "lucide-react";
-import { SidebarTrigger } from "@/components/ui/sidebar";
-import { getTranslations } from "next-intl/server";
+import { Repeat, Clock, Hourglass, Timer as TimerIcon, ArrowLeft } from "lucide-react";
+import { SidebarTrigger, useSidebar } from "@/components/ui/sidebar";
+import { useTranslations } from "next-intl";
+import { Button } from "@/components/ui/button";
+import { useRouter } from "next/navigation";
 
-export default async function TimersPage() {
-  const t = await getTranslations('TimersPage');
+export default function TimersPage() {
+  const t = useTranslations('TimersPage');
+  const { toggleSidebar } = useSidebar();
+  const router = useRouter();
+
 
   const timerTypes = [
     {
@@ -42,16 +49,23 @@ export default async function TimersPage() {
 
   return (
     <div className="flex flex-col h-full">
-      <header className="flex items-center gap-4 p-4 border-b md:p-6">
-         <div className="flex items-center gap-4 md:hidden">
+      <header className="flex items-center justify-between p-4 border-b md:p-6">
+         <div className="flex items-center gap-2 md:hidden">
+            <Button variant="ghost" size="icon" onClick={() => router.back()}>
+                <ArrowLeft className="h-5 w-5" />
+            </Button>
+            <div onClick={toggleSidebar} className="flex items-center gap-4 cursor-pointer">
+                <h1 className="text-2xl font-bold tracking-tight font-headline">
+                    {t('title')}
+                </h1>
+            </div>
+        </div>
+        <div className="hidden items-center gap-4 md:flex">
             <SidebarTrigger />
             <h1 className="text-2xl font-bold tracking-tight font-headline md:text-3xl">
-                {t('title')}
+              {t('title')}
             </h1>
         </div>
-        <h1 className="text-2xl font-bold tracking-tight font-headline md:text-3xl hidden md:block">
-          {t('title')}
-        </h1>
       </header>
       <main className="flex-1 p-4 md:p-6">
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
@@ -80,3 +94,4 @@ export default async function TimersPage() {
 }
 
     
+

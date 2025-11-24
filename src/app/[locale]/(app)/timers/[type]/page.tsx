@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useParams, notFound } from 'next/navigation';
+import { useParams, notFound, useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { TimerClient } from '@/components/timer-client';
 import { type WOD, type WodType } from '@/lib/types';
@@ -35,6 +35,7 @@ export default function GenericTimerPage() {
   const t = useTranslations('GenericTimerPage');
   const params = useParams();
   const { toggleSidebar } = useSidebar();
+  const router = useRouter();
 
 
   // params.type peut être string | string[] → on normalise
@@ -244,17 +245,22 @@ export default function GenericTimerPage() {
   return (
     <div className="flex flex-col h-full">
       <header className="flex items-center justify-between p-4 border-b md:p-6">
-        <div className="md:hidden">
+        <div className="flex items-center gap-2 md:hidden">
+            <Button variant="ghost" size="icon" onClick={() => router.back()}>
+                <ArrowLeft className="h-5 w-5" />
+            </Button>
             <div onClick={toggleSidebar} className="flex items-center gap-4 cursor-pointer">
-                <SidebarTrigger />
-                <h1 className="text-2xl font-bold tracking-tight font-headline md:text-3xl">
+                <h1 className="text-2xl font-bold tracking-tight font-headline">
                     {config.title}
                 </h1>
             </div>
         </div>
-        <h1 className="text-2xl font-bold tracking-tight font-headline md:text-3xl hidden md:block">
-            {config.title}
-        </h1>
+        <div className="hidden items-center gap-4 md:flex">
+            <SidebarTrigger />
+            <h1 className="text-2xl font-bold tracking-tight font-headline md:text-3xl">
+                {config.title}
+            </h1>
+        </div>
         <Button asChild variant="outline">
           <Link href="/timers">
             <ArrowLeft className="mr-2 h-4 =&4 w-4" /> {t('backLink')}
@@ -281,3 +287,4 @@ export default function GenericTimerPage() {
     </div>
   );
 }
+

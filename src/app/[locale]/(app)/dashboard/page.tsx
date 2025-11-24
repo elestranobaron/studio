@@ -4,7 +4,7 @@
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { WodCard } from '@/components/wod-card';
-import { LogIn, PlusCircle, Search, ScanLine, ArrowDownUp, ArrowUp } from 'lucide-react';
+import { LogIn, PlusCircle, Search, ScanLine, ArrowDownUp, ArrowUp, ArrowLeft } from 'lucide-react';
 import { SidebarTrigger, useSidebar } from '@/components/ui/sidebar';
 import { useCollection, useFirebase } from '@/firebase';
 import { collection, query, orderBy, limit } from 'firebase/firestore';
@@ -283,17 +283,22 @@ function DashboardContent({ t }: { t: (key: string) => string }) {
   return (
     <div className="flex flex-col h-full">
       <header className="flex items-center justify-between p-4 border-b md:p-6">
-        <div className="flex items-center gap-4 md:hidden">
+        <div className="flex items-center gap-2 md:hidden">
+            <Button variant="ghost" size="icon" onClick={() => router.back()}>
+                <ArrowLeft className="h-5 w-5" />
+            </Button>
             <div onClick={toggleSidebar} className="flex items-center gap-4 cursor-pointer">
-                <SidebarTrigger />
                 <h1 className="text-2xl font-bold tracking-tight font-headline md:text-3xl">
                   {t('title')}
                 </h1>
             </div>
         </div>
-        <h1 className="text-2xl font-bold tracking-tight font-headline md:text-3xl hidden md:block">
-          {t('title')}
-        </h1>
+        <div className="hidden items-center gap-4 md:flex">
+            <SidebarTrigger />
+            <h1 className="text-2xl font-bold tracking-tight font-headline md:text-3xl">
+              {t('title')}
+            </h1>
+        </div>
         <Button asChild className="hidden md:inline-flex">
           <Link href="/scan">
             <PlusCircle className="mr-2 h-4 w-4" />
@@ -384,3 +389,4 @@ export default function DashboardPage() {
     
 
     
+

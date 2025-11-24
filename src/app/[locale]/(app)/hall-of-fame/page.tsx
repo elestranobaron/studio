@@ -3,7 +3,7 @@
 
 import { useCollection, useFirebase } from '@/firebase';
 import { collection, query, orderBy } from 'firebase/firestore';
-import { Crown, ShieldCheck } from 'lucide-react';
+import { Crown, ShieldCheck, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import { useMemo } from 'react';
 import { SidebarTrigger, useSidebar } from '@/components/ui/sidebar';
@@ -12,6 +12,7 @@ import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useTranslations } from 'next-intl';
+import { useRouter } from 'next/navigation';
 
 interface HallOfFameEntry {
   rank: number;
@@ -78,6 +79,7 @@ export default function HallOfFamePage() {
   const t = useTranslations('HallOfFamePage');
   const { firestore } = useFirebase();
   const { toggleSidebar } = useSidebar();
+  const router = useRouter();
 
 
   const ogsQuery = useMemo(() => {
@@ -94,20 +96,25 @@ export default function HallOfFamePage() {
 
   return (
     <div className="flex flex-col h-full">
-         <header className="flex items-center gap-4 p-4 border-b md:p-6">
+         <header className="flex items-center justify-between p-4 border-b md:p-6">
             <div className="flex items-center gap-2 md:hidden">
+                <Button variant="ghost" size="icon" onClick={() => router.back()}>
+                    <ArrowLeft className="h-5 w-5" />
+                </Button>
                 <div onClick={toggleSidebar} className="flex items-center gap-4 cursor-pointer">
-                    <SidebarTrigger />
-                    <h1 className="text-2xl font-bold tracking-tight font-headline md:text-3xl">
+                    <h1 className="text-2xl font-bold tracking-tight font-headline">
                     {t('title')}
                     </h1>
                 </div>
             </div>
-            <div className="hidden md:flex items-center gap-2">
-                <Crown className="text-yellow-400"/>
-                <h1 className="text-2xl font-bold tracking-tight font-headline md:text-3xl">
-                {t('title')}
-                </h1>
+            <div className="hidden md:flex items-center gap-4">
+                <SidebarTrigger />
+                <div className="flex items-center gap-2">
+                    <Crown className="text-yellow-400"/>
+                    <h1 className="text-2xl font-bold tracking-tight font-headline md:text-3xl">
+                    {t('title')}
+                    </h1>
+                </div>
             </div>
         </header>
         <main className="flex-1 overflow-y-auto p-4 md:p-6">
@@ -170,3 +177,4 @@ export default function HallOfFamePage() {
 }
 
     
+
