@@ -3,8 +3,8 @@ import { NextIntlClientProvider } from 'next-intl';
 import { getMessages, getLocale } from 'next-intl/server';
 import { Toaster } from "@/components/ui/toaster";
 import { FirebaseProvider } from "@/firebase/provider";
-import "./globals.css";
-import { defaultLocale } from '../next-intl.config';
+import "@/app/globals.css";
+import { defaultLocale } from '../../next-intl.config';
 
 export const metadata = {
   title: "WODBurner",
@@ -34,9 +34,11 @@ export default async function RootLayout({
 }) {
   let locale;
   try {
+    // Attempt to get locale from the request
     locale = await getLocale();
   } catch (error) {
-    console.error('Could not get locale, falling back to default:', error);
+    // If it fails (e.g., in a context where headers are not available),
+    // fall back to the default locale from your config.
     locale = defaultLocale;
   }
   
