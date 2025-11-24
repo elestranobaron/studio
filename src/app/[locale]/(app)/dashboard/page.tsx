@@ -22,6 +22,7 @@ import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useTranslations } from 'next-intl';
+import React from 'react';
 
 
 function WodSkeleton() {
@@ -280,13 +281,12 @@ function DashboardContent() {
   return (
     <div className="flex flex-col h-full">
       <header className="flex items-center justify-between p-4 border-b md:p-6">
-        <SidebarTrigger asChild className="md:hidden">
-          <button className="flex items-center gap-4">
+        <div className="flex items-center gap-4 md:hidden">
+            <SidebarTrigger />
             <h1 className="text-2xl font-bold tracking-tight font-headline md:text-3xl">
               {t('title')}
             </h1>
-          </button>
-        </SidebarTrigger>
+        </div>
         <h1 className="text-2xl font-bold tracking-tight font-headline md:text-3xl hidden md:block">
           {t('title')}
         </h1>
@@ -374,6 +374,8 @@ export default function DashboardPage() {
     </Suspense>
   )
 }
+    
+
     
 
     

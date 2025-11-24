@@ -154,13 +154,12 @@ export default function EditWodPage() {
     return (
         <div className="flex flex-col h-full">
             <header className="flex items-center justify-between p-4 border-b md:p-6">
-                <SidebarTrigger asChild className="md:hidden">
-                    <button className="flex items-center gap-4">
-                        <h1 className="text-2xl font-bold tracking-tight font-headline md:text-3xl">
-                            {t('title')}
-                        </h1>
-                    </button>
-                </SidebarTrigger>
+                <div className="flex items-center gap-4 md:hidden">
+                    <SidebarTrigger />
+                    <h1 className="text-2xl font-bold tracking-tight font-headline md:text-3xl">
+                        {t('title')}
+                    </h1>
+                </div>
                 <h1 className="text-2xl font-bold tracking-tight font-headline md:text-3xl hidden md:block">
                     {t('title')}
                 </h1>
@@ -246,3 +245,5 @@ export default function EditWodPage() {
         </div>
     );
 }
+
+    
