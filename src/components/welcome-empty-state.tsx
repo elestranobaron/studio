@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Flame, Camera, Dice5, Medal } from 'lucide-react';
 import { useTranslations } from 'next-intl';
+import React from 'react';
 
 export function WelcomeEmptyState() {
   const t = useTranslations('WelcomeEmptyState');
@@ -63,9 +64,11 @@ export function WelcomeEmptyState() {
       </div>
 
       <p className="mt-10 text-sm text-muted-foreground/80">
-        {t.rich('communityLink', {
-          community: (chunks) => <Link href="/dashboard?tab=community" className="underline text-primary/90 hover:text-primary">{chunks}</Link>
-        })}
+        <React.Fragment>
+            {t.rich('communityLink', {
+              community: (chunks) => <Link href="/dashboard?tab=community" className="underline text-primary/90 hover:text-primary">{chunks}</Link>
+            })}
+        </React.Fragment>
       </p>
     </div>
   );
