@@ -475,3 +475,5 @@ export function WodCard({ wod, source = "personal" }: { wod: WOD; source?: "pers
     </Card>
   );
 }
+
+    
