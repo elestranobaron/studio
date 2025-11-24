@@ -11,7 +11,7 @@ import { collection, query, orderBy, limit } from 'firebase/firestore';
 import { Skeleton } from '@/components/ui/skeleton';
 import type { WOD } from '@/lib/types';
 import { useUser } from '@/firebase/provider';
-import { useMemo, useState, Suspense, useRef, useEffect } from 'react';
+import { useMemo, useState, Suspense, useRef, useEffect, useId } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -240,6 +240,7 @@ function DashboardContent({ t }: { t: (key: string) => string }) {
   
   const [showScrollTop, setShowScrollTop] = useState(false);
   const { toggleSidebar } = useSidebar();
+  const baseId = useId();
 
 
   useEffect(() => {
@@ -302,7 +303,7 @@ function DashboardContent({ t }: { t: (key: string) => string }) {
       </header>
       <div className="flex-1 flex flex-col min-h-0">
         <main className="flex-1 overflow-y-auto" id="dashboard-main-content">
-          <Tabs defaultValue={defaultTab} className="w-full">
+          <Tabs defaultValue={defaultTab} className="w-full" id={baseId}>
             <div className="p-4 md:p-6 border-b">
               <TabsList className="grid w-full grid-cols-2 md:w-auto">
                 <TabsTrigger value="personal">{t('tabs.personal')}</TabsTrigger>
