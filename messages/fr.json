@@ -151,7 +151,6 @@
     "linkSentToastDescription": "Consultez votre boîte de réception pour un lien de connexion. Si vous ne le voyez pas, veuillez vérifier votre dossier spam.",
     "signInSuccessToast": "Connexion Réussie !",
     "signInSuccessToastDescription": "Vous êtes maintenant connecté.",
-
     "genericError": "Une erreur s'est produite. Veuillez réessayer.",
     "invalidLinkError": "Le lien de connexion est invalide, a expiré ou l'e-mail est incorrect. Veuillez en demander un nouveau."
   },
