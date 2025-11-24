@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from "react";
@@ -16,6 +17,7 @@ import { WodType, type WOD } from "@/lib/types";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { useTranslations } from "next-intl";
+import { SidebarTrigger } from "@/components/ui/sidebar";
 
 export default function NewWodPage() {
     const t = useTranslations('NewWodPage');
@@ -138,14 +140,16 @@ export default function NewWodPage() {
             </AlertDialog>
 
             <header className="flex items-center justify-between p-4 border-b md:p-6">
-                <div className="flex items-center gap-4">
-                    <Button asChild variant="ghost" size="icon" className="md:hidden">
-                        <Link href="/scan"><ArrowLeft/></Link>
-                    </Button>
-                    <h1 className="text-2xl font-bold tracking-tight font-headline md:text-3xl">
-                        {t('title')}
-                    </h1>
-                </div>
+                 <SidebarTrigger asChild className="md:hidden">
+                    <button className="flex items-center gap-4">
+                        <h1 className="text-2xl font-bold tracking-tight font-headline md:text-3xl">
+                            {t('title')}
+                        </h1>
+                    </button>
+                </SidebarTrigger>
+                 <h1 className="text-2xl font-bold tracking-tight font-headline md:text-3xl hidden md:block">
+                    {t('title')}
+                </h1>
             </header>
             <main className="flex-1 overflow-y-auto p-4 md:p-6">
                 <div className="max-w-2xl mx-auto">

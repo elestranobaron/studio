@@ -104,12 +104,16 @@ export default function GenerateWodPage() {
     return (
         <div className="flex flex-col h-full">
             <header className="flex items-center justify-between p-4 border-b md:p-6">
-                <div className="flex items-center gap-4">
-                    <SidebarTrigger className="md:hidden" />
-                    <h1 className="text-2xl font-bold tracking-tight font-headline md:text-3xl">
-                        {t('title')}
-                    </h1>
-                </div>
+                <SidebarTrigger asChild className="md:hidden">
+                    <button className="flex items-center gap-4">
+                        <h1 className="text-2xl font-bold tracking-tight font-headline md:text-3xl">
+                            {t('title')}
+                        </h1>
+                    </button>
+                </SidebarTrigger>
+                <h1 className="text-2xl font-bold tracking-tight font-headline md:text-3xl hidden md:block">
+                    {t('title')}
+                </h1>
             </header>
             <main className="flex-1 overflow-y-auto p-4 md:p-6">
                  <div className="max-w-xl mx-auto space-y-8">

@@ -27,12 +27,16 @@ export default function ScanPage() {
     return (
         <div className="flex flex-col h-full">
             <header className="flex items-center justify-between gap-4 p-4 border-b md:p-6">
-                <div className="flex items-center gap-4">
-                    <SidebarTrigger className="md:hidden" />
-                    <h1 className="text-2xl font-bold tracking-tight font-headline md:text-3xl">
-                        {t('title')}
-                    </h1>
-                </div>
+                <SidebarTrigger asChild className="md:hidden">
+                    <button className="flex items-center gap-4">
+                        <h1 className="text-2xl font-bold tracking-tight font-headline md:text-3xl">
+                            {t('title')}
+                        </h1>
+                    </button>
+                </SidebarTrigger>
+                <h1 className="text-2xl font-bold tracking-tight font-headline md:text-3xl hidden md:block">
+                    {t('title')}
+                </h1>
                 <Button onClick={handleManualAddClick} variant="outline">
                     <PlusCircle className="mr-2 h-4 w-4" />
                     {t('manualButton')}

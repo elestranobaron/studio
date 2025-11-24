@@ -93,11 +93,20 @@ export default function HallOfFamePage() {
   return (
     <div className="flex flex-col h-full">
          <header className="flex items-center gap-4 p-4 border-b md:p-6">
-            <SidebarTrigger className="md:hidden" />
-            <h1 className="text-2xl font-bold tracking-tight font-headline md:text-3xl flex items-center gap-2">
-              <Crown className="text-yellow-400"/>
-              {t('title')}
-            </h1>
+            <SidebarTrigger asChild className="md:hidden">
+              <button className="flex items-center gap-2">
+                <Crown className="text-yellow-400"/>
+                <h1 className="text-2xl font-bold tracking-tight font-headline md:text-3xl">
+                  {t('title')}
+                </h1>
+              </button>
+            </SidebarTrigger>
+            <div className="hidden md:flex items-center gap-2">
+                <Crown className="text-yellow-400"/>
+                <h1 className="text-2xl font-bold tracking-tight font-headline md:text-3xl">
+                {t('title')}
+                </h1>
+            </div>
         </header>
         <main className="flex-1 overflow-y-auto p-4 md:p-6">
             <div className="max-w-2xl mx-auto text-center">
