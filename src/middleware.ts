@@ -6,6 +6,10 @@ export default createMiddleware({
   locales,
   defaultLocale,
   localePrefix,
+  // By disabling locale detection, we prevent next-intl from trying to guess
+  // the language from the Accept-Language header, which can be inconsistent
+  // with VPNs. This makes language switching more predictable.
+  localeDetection: false,
 
   // This function is called before the internationalization is handled.
   // It's a good place to add redirects.
