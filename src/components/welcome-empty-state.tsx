@@ -17,9 +17,6 @@ export function WelcomeEmptyState() {
     router.push('/scan');
   };
 
-  const communityLinkText = t('communityLink');
-  const [before, after] = communityLinkText.split('{community}');
-
   return (
     <div className="text-center py-16 px-4">
       <Flame className="w-24 h-24 mx-auto text-primary/80 animate-logo-pulse" strokeWidth={1.5} />
@@ -67,11 +64,9 @@ export function WelcomeEmptyState() {
       </div>
 
       <p className="mt-10 text-sm text-muted-foreground/80">
-        {before}
-        <Link href="/dashboard?tab=community" className="underline text-primary/90 hover:text-primary">
-            {t('community')}
-        </Link>
-        {after}
+        {t.rich('communityLink', {
+          community: (chunks) => <Link href="/dashboard?tab=community" className="underline text-primary/90 hover:text-primary">{chunks}</Link>
+        })}
       </p>
     </div>
   );
