@@ -1,4 +1,3 @@
-
 import { redirect } from 'next/navigation';
 
 // This page only redirects to the dashboard.
