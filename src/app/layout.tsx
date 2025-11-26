@@ -5,7 +5,7 @@ import { getMessages, getLocale } from 'next-intl/server';
 import { Toaster } from "@/components/ui/toaster";
 import { FirebaseProvider } from "@/firebase/provider";
 import "./globals.css";
-import { defaultLocale } from '../next-intl.config';
+//import { defaultLocale } from '../next-intl.config';
 
 export const metadata = {
   title: "WODBurner",
@@ -40,7 +40,7 @@ export default async function RootLayout({
   } catch (error) {
     // If it fails (e.g., in a context where headers are not available),
     // fall back to the default locale from your config.
-    locale = defaultLocale;
+    //locale = defaultLocale;
   }
   
   const messages = await getMessages({locale});
