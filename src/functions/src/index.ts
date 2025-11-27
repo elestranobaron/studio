@@ -1,3 +1,4 @@
+
 "use strict";
 import type { QuerySnapshot, DocumentSnapshot, Transaction } from "firebase-admin/firestore";
 const { onCall, onRequest, HttpsError } = require("firebase-functions/v2/https");
@@ -15,69 +16,114 @@ const STRIPE_MONTHLY_PRICE_ID = process.env.STRIPE_MONTHLY_PRICE_ID;
 const STRIPE_YEARLY_PRICE_ID = process.env.STRIPE_YEARLY_PRICE_ID;
 const BREVO_API_KEY = process.env.BREVO_API_KEY || "dummy-for-deploy";
 
-exports.sendMagicLink = onRequest({ cors: true }, async (req: any, res: any) => {
-    if (req.method !== 'POST') {
-        res.status(405).send('Method Not Allowed');
-        return;
+
+// --- NEW DIGICODE AUTHENTICATION ---
+
+function generateDigicode() {
+  // Generate a 6-digit code
+  return Math.floor(100000 + Math.random() * 900000).toString();
+}
+
+exports.sendDigicode = onCall(async (request: any) => {
+  const email = request.data.email;
+  if (!email || typeof email !== "string") {
+    throw new HttpsError("invalid-argument", "A valid email address is required.");
+  }
+
+  const code = generateDigicode();
+  const expires = admin.firestore.Timestamp.fromMillis(Date.now() + 10 * 60 * 1000); // 10 minutes expiration
+
+  // Store the code securely in Firestore
+  await db.collection("digicodes").doc(email).set({
+    code: code,
+    expires: expires,
+  });
+
+  try {
+    const brevoRes = await fetch("https://api.sendinblue.com/v3/smtp/email", {
+      method: "POST",
+      headers: {
+        "api-key": BREVO_API_KEY,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        sender: { name: "WODBurner Team", email: "noreply@wodburner.app" },
+        to: [{ email }],
+        templateId: 3, // IMPORTANT: Assumes template ID 3 is for the digicode
+        params: { DIGICODE: code },
+      }),
+    });
+
+    if (!brevoRes.ok) {
+      const errorText = await brevoRes.text();
+      console.error("Brevo API error:", errorText);
+      throw new HttpsError("internal", "Failed to send the authentication code. Please try again.");
     }
 
-    const email = req.body.data.email;
-    if (!email || typeof email !== "string") {
-        res.status(400).json({ error: { status: 'INVALID_ARGUMENT', message: 'email required' } });
-        return;
+    return { success: true };
+  } catch (error) {
+    console.error("sendDigicode error:", error);
+    throw new HttpsError("internal", "An unexpected error occurred while sending the code.");
+  }
+});
+
+
+exports.verifyDigicode = onCall(async (request: any) => {
+    const { email, code } = request.data;
+  
+    if (!email || !code) {
+      throw new HttpsError("invalid-argument", "Email and code are required.");
     }
-
-    const headers = req.headers || {};
-    const ip = headers["x-forwarded-for"]?.split(",")[0]?.trim() || req.ip || "unknown";
-    const userAgent = headers["user-agent"] || "unknown";
-
+  
+    const codeRef = db.collection("digicodes").doc(email);
+    const codeDoc = await codeRef.get();
+  
+    if (!codeDoc.exists) {
+      throw new HttpsError("not-found", "Invalid code. Please request a new one.");
+    }
+  
+    const { code: storedCode, expires } = codeDoc.data();
+  
+    if (expires.toMillis() < Date.now()) {
+      await codeRef.delete();
+      throw new HttpsError("deadline-exceeded", "The code has expired. Please request a new one.");
+    }
+  
+    if (storedCode !== code) {
+      throw new HttpsError("unauthenticated", "Invalid code. Please try again.");
+    }
+  
+    // Code is valid, delete it and create a custom auth token
+    await codeRef.delete();
+  
     try {
-               // === ACTIONCODESETTINGS MAGIQUE POUR PWA (bye bye page Firebase de merde) ===
-               const actionCodeSettings = {
-                url: "https://wodburner.app/verify",
-                handleCodeInApp: true,
-                // Dynamic Link obligatoire pour que Gmail ouvre direct ton PWA
-                dynamicLinkInfo: {
-                  domainUriPrefix: "https://wodburner.page.link",   // ← tu crées ce domaine dans Firebase Console > Dynamic Links (2 clics)
-                  link: "https://wodburner.app/verify",
-                  android: { packageName: "com.wodburner.app" },   // valeur bidon, ignorée pour PWA
-                  ios: { bundleId: "com.wodburner.app" },          // valeur bidon, ignorée pour PWA
-                },
-              };
-      
-              // On passe l’email dans l’URL pour que ça marche même dans Chrome Custom Tab
-              const continueUrl = `https://wodburner.app/verify?email=${encodeURIComponent(email)}`;
-
-              const link = await admin.auth().generateSignInWithEmailLink(email, {
-                url: continueUrl,
-                handleCodeInApp: true,
-              });
-
-        await db.collection("magicLinks").doc(email).set({ ip, userAgent, createdAt: new Date() });
-
-        const brevoRes = await fetch("https://api.sendinblue.com/v3/smtp/email", {
-            method: "POST",
-            headers: {
-                "api-key": BREVO_API_KEY,
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-                sender: { name: "WODBurner Team", email: "noreply@wodburner.app" },
-                to: [{ email }],
-                templateId: 2,
-                params: { LINK: link },
-            }),
-        });
-
-        if (!brevoRes.ok) throw new Error(`Brevo failed: ${await brevoRes.text()}`);
-
-        res.json({ data: { success: true } });
+      let user = await admin.auth().getUserByEmail(email).catch(() => null);
+      let uid;
+  
+      if (user) {
+        uid = user.uid;
+      } else {
+        // If user does not exist, create a new one
+        const newUser = await admin.auth().createUser({ email: email });
+        uid = newUser.uid;
+        // Optionally create user profile in Firestore here
+        await db.collection("users").doc(uid).set({
+            email: email,
+            premium: false,
+            createdAt: admin.firestore.FieldValue.serverTimestamp(),
+        }, { merge: true });
+      }
+  
+      const customToken = await admin.auth().createCustomToken(uid);
+      return { token: customToken };
     } catch (error) {
-        console.error("sendMagicLink error:", error);
-        res.status(500).json({ error: { status: 'INTERNAL', message: 'Failed to send link' } });
+      console.error("Error creating custom token:", error);
+      throw new HttpsError("internal", "Could not complete the sign-in process.");
     }
 });
 
+
+// --- USER AND STRIPE FUNCTIONS (Unchanged but kept for context) ---
 
 exports.onUserSignIn = onCall(async (request: any) => {
   if (!request.auth?.uid) return;
@@ -91,32 +137,6 @@ exports.onUserSignIn = onCall(async (request: any) => {
     });
   }
   return { success: true };
-});
-
-exports.verifyMagicLinkAccess = onCall(async (request: any) => {
-  const email = request.data.email;
-  if (!email) throw new HttpsError("invalid-argument", "email required");
-
-  const headers = request.rawRequest?.headers || {};
-  const ip = headers["x-forwarded-for"]?.split(",")[0]?.trim() || request.rawRequest?.ip || "unknown";
-  const userAgent = headers["user-agent"] || "unknown";
-
-  const doc = await db.collection("magicLinks").doc(email).get();
-  if (!doc.exists) return { allowed: false, reason: "no_attempt" };
-
-  const data = doc.data();
-  const age = Date.now() - data.createdAt.toDate().getTime();
-  if (age > 15 * 60 * 1000) {
-    await doc.ref.delete();
-    return { allowed: false, reason: "expired" };
-  }
-  if (data.ip !== ip || data.userAgent !== userAgent) {
-    await doc.ref.delete();
-    return { allowed: false, reason: "mismatch" };
-  }
-
-  await doc.ref.delete();
-  return { allowed: true };
 });
 
 exports.resetOCR = onSchedule("0 0 1 * *", async () => {
@@ -169,14 +189,12 @@ exports.createCheckout = onCall(async (request: any) => {
 import express from "express";
 import type { Request, Response } from "express";
 
-// On étend le type Request d'Express globalement
 interface StripeRequest extends Request {
   rawBody: string;
 }
 
 const app = express();
 
-// Middleware qui sauve le raw body avant que express.json() ne le parse
 app.use(
   express.json({
     verify: (req: any, _res: any, buf: Buffer) => {
@@ -185,7 +203,6 @@ app.use(
   })
 );
 
-// Route webhook
 app.post("/", async (req: Request, res: Response) => {
   const typedReq = req as StripeRequest;
   const sig = req.headers["stripe-signature"] as string;
@@ -265,5 +282,4 @@ app.post("/", async (req: Request, res: Response) => {
   res.status(200).send("ok");
 });
 
-// Export final
 exports.stripeWebhook = onRequest({ region: "europe-west1" }, app);
