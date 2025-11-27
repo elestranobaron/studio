@@ -4,8 +4,6 @@
 import { useState, useEffect, Suspense, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth, useUser } from '@/firebase/provider';
-import { getFunctions, httpsCallable } from 'firebase/functions';
-import { signInWithCustomToken, Auth } from 'firebase/auth';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -37,22 +35,14 @@ function LoginClientContent({ t }: { t: any }) {
     e.preventDefault();
     setIsLoading(true);
     setError(null);
-
-    if (!auth) {
-      toast({ variant: 'destructive', title: 'Error', description: t('authError') });
-      setIsLoading(false);
-      return;
-    }
-
     try {
-      const functions = getFunctions();
-      const sendDigicode = httpsCallable(functions, 'sendDigicode');
-      await sendDigicode({ email });
-      
-      toast({
-        title: t('linkSentToast'), // Re-using translation for "code sent"
-        description: t('linkSentToastDescription'),
+      const res = await fetch('/api/auth/send-code', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
       });
+      if (!res.ok) throw new Error('Failed to send code');
+      toast({ title: t('linkSentToast'), description: t('linkSentToastDescription') });
       setStep('code');
     } catch (err: any) {
       console.error(err);
@@ -61,42 +51,28 @@ function LoginClientContent({ t }: { t: any }) {
       setIsLoading(false);
     }
   };
-
+  
   const handleVerifyCode = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (code.length !== 6) {
-      setError('The code must be 6 digits long.');
-      return;
-    }
+    if (code.length !== 6) return setError('The code must be 6 digits long.');
     setIsVerifying(true);
     setError(null);
-
-    if (!auth) {
-      toast({ variant: 'destructive', title: 'Error', description: t('authError') });
-      setIsVerifying(false);
-      return;
-    }
-
     try {
-      const functions = getFunctions();
-      const verifyDigicode = httpsCallable(functions, 'verifyDigicode');
-      const result = await verifyDigicode({ email, code });
-      
-      const { token } = result.data as { token: string };
-
-      if (token) {
-        await signInWithCustomToken(auth, token);
-        toast({
-          title: t('signInSuccessToast'),
-          description: t('signInSuccessToastDescription'),
-        });
-        router.push('/dashboard');
-      } else {
-        throw new Error('Invalid authentication token received.');
+      const res = await fetch('/api/auth/verify-code', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, code }),
+      });
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error || 'Invalid code');
       }
+      // Plus besoin de Firebase → on a déjà le cookie JWT
+      toast({ title: t('signInSuccessToast'), description: t('signInSuccessToastDescription') });
+      router.push('/dashboard');
     } catch (err: any) {
       console.error(err);
-      setError(err.message || t('invalidLinkError')); // Re-using translation for "invalid code"
+      setError(err.message || t('invalidLinkError'));
     } finally {
       setIsVerifying(false);
     }
