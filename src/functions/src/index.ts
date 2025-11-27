@@ -49,7 +49,7 @@ exports.sendDigicode = onCall(async (request: any) => {
       body: JSON.stringify({
         sender: { name: "WODBurner Team", email: "noreply@wodburner.app" },
         to: [{ email }],
-        templateId: 3, // IMPORTANT: Assumes template ID 3 is for the digicode
+        templateId: 2, // IMPORTANT: Assumes template ID 2 is for the digicode
         params: { DIGICODE: code },
       }),
     });
