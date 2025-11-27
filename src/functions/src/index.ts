@@ -14,7 +14,6 @@ const stripe = Stripe(process.env.STRIPE_SECRET_KEY, { apiVersion: "2024-06-20" 
 const STRIPE_WEBHOOK_SECRET = process.env.STRIPE_WEBHOOK_SECRET;
 const STRIPE_MONTHLY_PRICE_ID = process.env.STRIPE_MONTHLY_PRICE_ID;
 const STRIPE_YEARLY_PRICE_ID = process.env.STRIPE_YEARLY_PRICE_ID;
-const BREVO_API_KEY = process.env.BREVO_API_KEY;
 
 
 // --- NEW DIGICODE AUTHENTICATION ---
@@ -43,7 +42,7 @@ exports.sendDigicode = onCall(async (request: any) => {
     const brevoRes = await fetch("https://api.sendinblue.com/v3/smtp/email", {
       method: "POST",
       headers: {
-        "api-key": BREVO_API_KEY,
+        "api-key": process.env.BREVO_API_KEY,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
