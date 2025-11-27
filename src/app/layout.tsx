@@ -1,52 +1,13 @@
-
-// src/app/layout.tsx
-import { NextIntlClientProvider } from 'next-intl';
-import { getMessages, getLocale } from 'next-intl/server';
-import { Toaster } from "@/components/ui/toaster";
-import { FirebaseProvider } from "@/firebase/provider";
-import "./globals.css";
-//import { defaultLocale } from '../next-intl.config';
-
-export const metadata = {
-  title: "WODBurner",
-  description: "Scan any WOD in seconds, time it perfectly, share instantly, and join the strongest French-speaking CrossFit community.",
-  manifest: "/manifest.json",
-  icons: {
-    icon: "/icon-192.png",
-    apple: "/icon-512.png",
-  },
-};
-
-export const viewport = {
-  themeColor: "#ff0000",
-};
-
-export const appleWebApp = {
-  capable: true,
-  statusBarStyle: "black-translucent",
-  title: "WODBurner",
-};
-
-
-export default async function RootLayout({
+// This file is intentionally blank.
+// The root layout is now handled by src/app/[locale]/layout.tsx
+// to support internationalized routing.
+export default function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  let locale;
-  try {
-    // Attempt to get locale from the request
-    locale = await getLocale();
-  } catch (error) {
-    // If it fails (e.g., in a context where headers are not available),
-    // fall back to the default locale from your config.
-    //locale = defaultLocale;
-  }
-  
-  const messages = await getMessages({locale});
-
   return (
-    <html lang={locale} className="dark">
+    <html lang="en">
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
@@ -55,14 +16,7 @@ export default async function RootLayout({
           rel="stylesheet"
         />
       </head>
-      <body className="font-body antialiased min-h-screen bg-background font-sans">
-        <NextIntlClientProvider locale={locale} messages={messages}>
-          <FirebaseProvider>
-            {children}
-            <Toaster />
-          </FirebaseProvider>
-        </NextIntlClientProvider>
-      </body>
+      <body>{children}</body>
     </html>
   );
 }
