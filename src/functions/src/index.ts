@@ -29,11 +29,6 @@ exports.sendDigicode = onCall(async (request: any) => {
   if (!email || typeof email !== "string") {
     throw new HttpsError("invalid-argument", "A valid email address is required.");
   }
-  
-  if (!BREVO_API_KEY) {
-      console.error("Brevo API key is not configured.");
-      throw new HttpsError("internal", "The mail service is not configured.");
-  }
 
   const code = generateDigicode();
   const expires = admin.firestore.Timestamp.fromMillis(Date.now() + 10 * 60 * 1000); // 10 minutes expiration
