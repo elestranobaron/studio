@@ -17,7 +17,8 @@ export async function POST(req: NextRequest) {
     const code = crypto.randomInt(100000, 999999).toString().padStart(6, '0');
     const expires = Date.now() + 10 * 60 * 1000;
 
-    digicodeStore.set(email.toLowerCase(), { code, expires });  // ← même Map
+    // digicodeStore.set(...) → 
+    await setCode(email.toLowerCase(), code);
 
     const sendTransacEmail = {
       sender: { name: 'WODBurner', email: 'no-reply@wodburner.app' },

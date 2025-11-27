@@ -10,7 +10,12 @@ export async function POST(req: NextRequest) {
   try {
     const { email, code } = await req.json();
     const key = email.toLowerCase();
-    const stored = digicodeStore.get(key);
+    // const stored = digicodeStore.get(...) → 
+    const storedCode = await getCode(key);
+    if (!storedCode || storedCode !== code) { ... }
+
+    // et
+    await deleteCode(key);
 
     if (!stored || Date.now() > stored.expires || stored.code !== code) {
       return NextResponse.json({ error: 'Invalid or expired code' }, { status: 400 });
