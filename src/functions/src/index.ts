@@ -14,7 +14,7 @@ const stripe = Stripe(process.env.STRIPE_SECRET_KEY, { apiVersion: "2024-06-20" 
 const STRIPE_WEBHOOK_SECRET = process.env.STRIPE_WEBHOOK_SECRET;
 const STRIPE_MONTHLY_PRICE_ID = process.env.STRIPE_MONTHLY_PRICE_ID;
 const STRIPE_YEARLY_PRICE_ID = process.env.STRIPE_YEARLY_PRICE_ID;
-const BREVO_API_KEY = process.env.BREVO_API_KEY || "dummy-for-deploy";
+const BREVO_API_KEY = process.env.BREVO_API_KEY;
 
 
 // --- NEW DIGICODE AUTHENTICATION ---
@@ -28,6 +28,11 @@ exports.sendDigicode = onCall(async (request: any) => {
   const email = request.data.email;
   if (!email || typeof email !== "string") {
     throw new HttpsError("invalid-argument", "A valid email address is required.");
+  }
+  
+  if (!BREVO_API_KEY) {
+      console.error("Brevo API key is not configured.");
+      throw new HttpsError("internal", "The mail service is not configured.");
   }
 
   const code = generateDigicode();
