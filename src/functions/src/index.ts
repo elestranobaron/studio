@@ -29,6 +29,11 @@ exports.sendDigicode = onCall(async (request: any) => {
     throw new HttpsError("invalid-argument", "A valid email address is required.");
   }
 
+  if (!process.env.BREVO_API_KEY) {
+    console.error("Brevo API key is not configured.");
+    throw new HttpsError("internal", "The mail service is not configured.");
+  }
+
   const code = generateDigicode();
   const expires = admin.firestore.Timestamp.fromMillis(Date.now() + 10 * 60 * 1000); // 10 minutes expiration
 
@@ -282,3 +287,23 @@ app.post("/", async (req: Request, res: Response) => {
 });
 
 exports.stripeWebhook = onRequest({ region: "europe-west1" }, app);
+
+exports.createCustomerPortal = onCall(async (request: any) => {
+    if (!request.auth) {
+        throw new HttpsError('unauthenticated', 'You must be logged in.');
+    }
+    const uid = request.auth.uid;
+    const userDoc = await db.collection('users').doc(uid).get();
+    const customerId = userDoc.data()?.stripeCustomerId;
+
+    if (!customerId) {
+        throw new HttpsError('not-found', 'Stripe customer ID not found.');
+    }
+    
+    const portalSession = await stripe.billingPortal.sessions.create({
+        customer: customerId,
+        return_url: 'https://wodburner.app/settings',
+    });
+
+    return { url: portalSession.url };
+});
