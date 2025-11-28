@@ -78,7 +78,6 @@ function LoginClientContent({ t }: { t: any }) {
         throw new Error(data.error || 'Invalid code');
       }
 
-      // THE MAGIC LINE: This is what actually signs the user in on the client
       await signInWithCustomToken(auth, data.token);
 
       toast({ title: t('signInSuccessToast'), description: t('signInSuccessToastDescription') });
@@ -103,7 +102,7 @@ function LoginClientContent({ t }: { t: any }) {
   return (
     <div className="flex h-screen w-full items-center justify-center bg-background p-4">
       <div className="grid lg:grid-cols-2 max-w-4xl w-full gap-16 items-center">
-        <div className="flex-col items-center lg:items-start text-center lg:text-left hidden lg:flex">
+        <div className="flex-col items-center lg:items-start text-center hidden lg:flex">
           <div className="text-3xl font-bold font-headline text-primary tracking-wider">
             WODBurner
           </div>
@@ -143,7 +142,12 @@ function LoginClientContent({ t }: { t: any }) {
           <CardHeader>
             <CardTitle>{t('formTitle')}</CardTitle>
             <CardDescription>
-              {step === 'email' ? t('formDescription') : t('emailSentDescription', { email })}
+              {step === 'email' 
+                ? t('formDescription') 
+                : t.rich('emailSentDescription', {
+                    bold: (chunks: React.ReactNode) => <strong>{chunks}</strong>,
+                    email
+                  })}
             </CardDescription>
           </CardHeader>
           <CardContent>
