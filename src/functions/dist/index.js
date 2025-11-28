@@ -40,7 +40,9 @@ const https_1 = require("firebase-functions/v2/https");
 const scheduler_1 = require("firebase-functions/v2/scheduler");
 const admin = __importStar(require("firebase-admin"));
 const stripe_1 = __importDefault(require("stripe"));
-admin.initializeApp();
+admin.initializeApp({
+    serviceAccountId: "firebase-adminsdk-fbsvc@studio-9534743514-17d90.iam.gserviceaccount.com",
+});
 const db = admin.firestore();
 const stripe = new stripe_1.default(process.env.STRIPE_SECRET_KEY, { apiVersion: "2024-06-20" });
 const STRIPE_WEBHOOK_SECRET = process.env.STRIPE_WEBHOOK_SECRET;
@@ -92,45 +94,60 @@ exports.sendDigicode = (0, https_1.onCall)({}, async (request) => {
     }
 });
 exports.verifyDigicode = (0, https_1.onCall)({}, async (request) => {
-    const { email, code } = request.data;
-    if (!email || !code) {
-        throw new https_1.HttpsError("invalid-argument", "Email and code are required.");
-    }
-    const codeRef = db.collection("digicodes").doc(email);
-    const codeDoc = await codeRef.get();
-    if (!codeDoc.exists) {
-        throw new https_1.HttpsError("not-found", "Invalid code. Please request a new one.");
-    }
-    const data = codeDoc.data();
-    const { code: storedCode, expires } = data;
-    if (expires.toMillis() < Date.now()) {
-        await codeRef.delete();
-        throw new https_1.HttpsError("deadline-exceeded", "The code has expired.");
-    }
-    if (storedCode !== code) {
-        throw new https_1.HttpsError("unauthenticated", "Invalid code.");
-    }
-    await codeRef.delete();
+    console.log("verifyDigicode appelée – payload reçu :", JSON.stringify(request.data));
     try {
-        let user = await admin.auth().getUserByEmail(email).catch(() => null);
+        const { email, code } = request.data;
+        if (!email || !code) {
+            console.log("Missing email or code");
+            throw new https_1.HttpsError("invalid-argument", "Email and code are required.");
+        }
+        console.log("Recherche du digicode dans Firestore pour", email);
+        const codeRef = db.collection("digicodes").doc(email.toLowerCase());
+        const codeDoc = await codeRef.get();
+        if (!codeDoc.exists) {
+            console.log("Aucun document trouvé dans digicodes pour cet email");
+            throw new https_1.HttpsError("not-found", "Invalid code. Please request a new one.");
+        }
+        const data = codeDoc.data();
+        const { code: storedCode, expires } = data;
+        if (expires.toMillis() < Date.now()) {
+            console.log("Code expiré");
+            await codeRef.delete();
+            throw new https_1.HttpsError("deadline-exceeded", "The code has expired.");
+        }
+        if (storedCode !== code) {
+            console.log(`Code incorrect – reçu: ${code} | stocké: ${storedCode}`);
+            throw new https_1.HttpsError("unauthenticated", "Invalid code.");
+        }
+        await codeRef.delete();
+        console.log("Code valide – on passe à la création/utilisation user");
+        // === LA PARTIE QUI PLANTE EST ICI ===
         let uid;
-        if (user) {
+        try {
+            const user = await admin.auth().getUserByEmail(email.toLowerCase());
             uid = user.uid;
+            console.log("Utilisateur existant trouvé :", uid);
         }
-        else {
-            const newUser = await admin.auth().createUser({ email });
-            uid = newUser.uid;
-            await db.collection("users").doc(uid).set({
-                email,
-                premium: false,
-                createdAt: admin.firestore.FieldValue.serverTimestamp(),
-            }, { merge: true });
+        catch (err) {
+            if (err.code === "auth/user-not-found") {
+                console.log("Utilisateur n'existe pas → création");
+                const newUser = await admin.auth().createUser({ email });
+                uid = newUser.uid;
+                console.log("Nouvel utilisateur créé :", uid);
+            }
+            else {
+                console.error("Erreur getUserByEmail inattendue :", err);
+                throw err;
+            }
         }
+        console.log("Création du custom token pour uid", uid);
         const customToken = await admin.auth().createCustomToken(uid);
+        console.log("Custom token généré avec succès");
         return { token: customToken };
     }
     catch (error) {
-        console.error("Error creating custom token:", error);
+        console.error("ERREUR FATALE dans verifyDigicode :", error);
+        console.error("Stack :", error.stack);
         throw new https_1.HttpsError("internal", "Could not complete the sign-in process.");
     }
 });

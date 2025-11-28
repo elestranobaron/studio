@@ -31,7 +31,7 @@
       "wodburner.app"
     ]
   },
-  "functions": [
+  "functions": 
 
     {
 
@@ -39,9 +39,19 @@
 
       "codebase": "functions",
 
-      "runtime": "nodejs20"
-
+      "runtime": "nodejs20",
+      "predeploy": [
+      "npm --prefix \"$RESOURCE_DIR\" run build"
+    ],
+    "functions": {
+      "verifyDigicode": {
+        "entryPoint": "verifyDigicode"
+      },
+      "sendDigicode": {
+        "entryPoint": "sendDigicode"
+      }
+    }
     }
 
-  ]
+  
 }
