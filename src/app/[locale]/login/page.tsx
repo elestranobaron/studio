@@ -72,41 +72,46 @@ function LoginClientContent({ t }: { t: any }) {
   
   const handleVerifyCode = async (e: React.FormEvent) => {
     e.preventDefault();
+
     if (code.length !== 6) {
-      setError('The code must be 6 digits long.');
+      setError('Le code doit faire 6 chiffres');
       return;
     }
-    if (!auth) {
-        setError(t('authError'));
-        return;
-    }
+
+    // ON LIT L'ÉTAT À JOUR DIRECTEMENT DEPUIS LE SETTER
+    const emailToVerify = email.trim().toLowerCase();
+
+    console.log('EMAIL RÉELLEMENT ENVOYÉ À L\'API →', emailToVerify);
+
     setIsVerifying(true);
     setError(null);
-    console.log('EMAIL ENVOYÉ À VERIFY-CODE →', email);
+
     try {
+      if (!auth) {
+        throw new Error("Authentication service is not available.");
+      }
       const res = await fetch('/api/auth/verify-code', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, code }),
+        body: JSON.stringify({ email: emailToVerify, code }),
       });
-      
+
       const data = await res.json();
 
-      if (!res.ok) {
-        throw new Error(data.error || 'Invalid code');
-      }
+      if (!res.ok) throw new Error(data.error || 'Code invalide');
 
       await signInWithCustomToken(auth, data.token);
 
-      toast({ title: t('signInSuccessToast'), description: t('signInSuccessToastDescription') });
+      toast({ title: 'Connecté !', description: 'Bienvenue !' });
       router.push('/dashboard');
     } catch (err: any) {
       console.error(err);
-      setError(err.message || t('invalidLinkError'));
+      setError(err.message || 'Erreur de connexion');
     } finally {
       setIsVerifying(false);
     }
   };
+
 
    if (isUserLoading || (user && !user.isAnonymous)) {
         return (
