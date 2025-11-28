@@ -25,23 +25,23 @@ const analyzeWodPrompt = ai.definePrompt({
   input: {schema: AnalyzeWodInputSchema},
   output: {schema: AnalyzeWodOutputSchema},
   config: {
-    // Add safety settings to moderate community-shared content
+    // Relax safety settings to avoid blocking legitimate whiteboard photos
     safetySettings: [
         {
             category: 'HARM_CATEGORY_DANGEROUS_CONTENT',
-            threshold: 'BLOCK_MEDIUM_AND_ABOVE',
+            threshold: 'BLOCK_ONLY_HIGH',
         },
         {
             category: 'HARM_CATEGORY_HATE_SPEECH',
-            threshold: 'BLOCK_MEDIUM_AND_ABOVE',
+            threshold: 'BLOCK_ONLY_HIGH',
         },
         {
             category: 'HARM_CATEGORY_HARASSMENT',
-            threshold: 'BLOCK_MEDIUM_AND_ABOVE',
+            threshold: 'BLOCK_ONLY_HIGH',
         },
         {
             category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT',
-            threshold: 'BLOCK_MEDIUM_AND_ABOVE',
+            threshold: 'BLOCK_MEDIUM_AND_ABOVE', // Keep this one a bit stricter
         },
     ]
   },
