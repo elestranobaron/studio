@@ -164,7 +164,7 @@ function LoginClientContent({ t }: { t: any }) {
                   type="email"
                   placeholder="name@example.com"
                   value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  onChange={(e) => setEmail(e.target.value.toLowerCase().trim())}
                   required
                   disabled={isLoading}
                 />

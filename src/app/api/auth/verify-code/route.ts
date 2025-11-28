@@ -1,3 +1,4 @@
+
 // src/app/api/auth/verify-code/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import { digicodeStore } from '@/lib/digicode-store';
@@ -33,10 +34,11 @@ export async function POST(req: NextRequest) {
         console.log(`Utilisateur non trouvé pour ${normalizedEmail}. Création...`);
         userRecord = await adminAuth.createUser({
           email: normalizedEmail,
-          emailVerified: true,
+          emailVerified: true, // Auto-verify email as they proved ownership via code
         });
         
         // CRITICAL: Create the user profile in Firestore.
+        // This was the missing piece causing the crash.
         await adminDb.collection("users").doc(userRecord.uid).set({
             email: userRecord.email,
             premium: false,
