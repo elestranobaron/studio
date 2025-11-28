@@ -1,3 +1,4 @@
+
 // src/app/api/auth/send-code/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import crypto from 'crypto';
@@ -17,7 +18,7 @@ export async function POST(req: NextRequest) {
     const code = crypto.randomInt(100000, 999999).toString().padStart(6, '0');
     const expires = Date.now() + 10 * 60 * 1000;
 
-    digicodeStore.set(email.toLowerCase(), { code, expires });  // ← même Map
+    await digicodeStore.set(email.toLowerCase(), { code, expires });
 
     const sendTransacEmail = {
       sender: { name: 'WODBurner', email: 'no-reply@wodburner.app' },
@@ -27,10 +28,10 @@ export async function POST(req: NextRequest) {
     };
 
     await transactionalEmailsApi.sendTransacEmail(sendTransacEmail);
-    console.log(`Code envoyé à ${email} → ${code}`);
+    console.log(`Code sent to ${email} -> ${code}`);
     return NextResponse.json({ success: true });
   } catch (error: any) {
     console.error('Brevo error:', error.message || error);
-    return NextResponse.json({ error: 'Failed' }, { status: 500 });
+    return NextResponse.json({ error: 'Failed to send code' }, { status: 500 });
   }
 }
