@@ -138,6 +138,7 @@ function PersonalWodActions({ wod }: { wod: WOD }) {
 
         const communityWodsCollection = collection(firestore, "communityWods");
         const newCommunityDocRef = await addDoc(communityWodsCollection, communityWodData);
+        // Link the personal WOD to the community one
         await updateDoc(userWodRef, { communityWodId: newCommunityDocRef.id });
         toast({ title: t("sharedToastTitle"), description: t("sharedToastDescription") });
       }
@@ -523,7 +524,7 @@ export function WodCard({ wod, source = "personal" }: { wod: WOD; source?: "pers
 
       <CardFooter className="flex flex-col items-stretch gap-2 pt-2">
         {source === "community" && <ReactionButton initialWod={wod} />}
-        <Button asChild className=" W-full">
+        <Button asChild className="w-full">
           <Link href={href}>{t("startWod")}</Link>
         </Button>
       </CardFooter>

@@ -82,7 +82,13 @@
     "viewImageAlt": "{wodName} - Originalbild",
     "viewWodDescription": "{type} - {date}",
     "viewWodSharedBy": "Geteilt von {displayName}",
-    "startWod": "WOD starten"
+    "startWod": "WOD starten",
+    "profile": {
+      "cardio": "Cardio",
+      "lifting": "Gewichtheben",
+      "upper": "Oberkörper",
+      "lower": "Unterkörper"
+    }
   },
   "TimerPage": {
     "backToDashboard": "Zurück zum Dashboard",

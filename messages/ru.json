@@ -82,7 +82,13 @@
     "viewImageAlt": "{wodName} - Оригинальное изображение",
     "viewWodDescription": "{type} - {date}",
     "viewWodSharedBy": "Опубликовано {displayName}",
-    "startWod": "Начать WOD"
+    "startWod": "Начать WOD",
+    "profile": {
+      "cardio": "Кардио",
+      "lifting": "Тяжелая атлетика",
+      "upper": "Верх",
+      "lower": "Низ"
+    }
   },
   "TimerPage": {
     "backToDashboard": "Вернуться на панель",

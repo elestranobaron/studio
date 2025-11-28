@@ -82,7 +82,13 @@
     "viewImageAlt": "{wodName} - 原始图片",
     "viewWodDescription": "{type} - {date}",
     "viewWodSharedBy": "由{displayName}分享",
-    "startWod": "开始WOD"
+    "startWod": "开始WOD",
+    "profile": {
+      "cardio": "有氧",
+      "lifting": "举重",
+      "upper": "上身",
+      "lower": "下身"
+    }
   },
   "TimerPage": {
     "backToDashboard": "返回仪表板",

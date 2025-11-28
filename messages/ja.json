@@ -82,7 +82,13 @@
     "viewImageAlt": "{wodName} - オリジナル画像",
     "viewWodDescription": "{type} - {date}",
     "viewWodSharedBy": "{displayName}が共有",
-    "startWod": "WODを開始"
+    "startWod": "WODを開始",
+    "profile": {
+      "cardio": "カーディオ",
+      "lifting": "リフティング",
+      "upper": "上半身",
+      "lower": "下半身"
+    }
   },
   "TimerPage": {
     "backToDashboard": "ダッシュボードに戻る",
@@ -397,3 +403,5 @@
     }
   }
 }
+
+    

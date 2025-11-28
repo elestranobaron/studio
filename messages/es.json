@@ -69,7 +69,7 @@
     "unsharedToastDescription": "Tu WOD ha sido eliminado de la comunidad.",
     "shareErrorToastTitle": "Acción fallida",
     "shareErrorToastDescription": "No se pudo actualizar el estado de compartir.",
-    "deleteDialogTitle": "¿Estás absolutamente seguro?",
+    "deleteDialogTitle": "¿Estás absolutely seguro?",
     "deleteDialogDescription": "Esta acción no se puede deshacer. Esto eliminará permanentemente tu WOD{isShared, select, true { y lo eliminará de la comunidad} other {}}.",
     "deleteDialogCancel": "Cancelar",
     "deleteDialogConfirm": "Eliminar",
@@ -82,7 +82,13 @@
     "viewImageAlt": "{wodName} - Imagen original",
     "viewWodDescription": "{type} - {date}",
     "viewWodSharedBy": "Compartido por {displayName}",
-    "startWod": "Iniciar WOD"
+    "startWod": "Iniciar WOD",
+    "profile": {
+      "cardio": "Cardio",
+      "lifting": "Pesas",
+      "upper": "Superior",
+      "lower": "Inferior"
+    }
   },
   "TimerPage": {
     "backToDashboard": "Volver al Dashboard",
@@ -234,7 +240,7 @@
       "description": "Estas acciones son permanentes y no se pueden deshacer.",
       "deleteButton": "Eliminar mi cuenta",
       "deletingButton": "Eliminando...",
-      "dialogTitle": "¿Estás absolutamente seguro?",
+      "dialogTitle": "¿Estás absolutely seguro?",
       "dialogDescription": "Esta acción es irreversible. Eliminará permanentemente tu cuenta y borrará todos tus datos, incluidos todos tus WODs guardados, de nuestros servidores.",
       "dialogCancel": "Cancelar",
       "dialogConfirm": "Sí, eliminar mi cuenta",

@@ -82,7 +82,13 @@
     "viewImageAlt": "{wodName} - Imatge original",
     "viewWodDescription": "{type} - {date}",
     "viewWodSharedBy": "Compartit per {displayName}",
-    "startWod": "Inicia WOD"
+    "startWod": "Inicia WOD",
+    "profile": {
+      "cardio": "Cardio",
+      "lifting": "Halterofília",
+      "upper": "Superior",
+      "lower": "Inferior"
+    }
   },
   "TimerPage": {
     "backToDashboard": "Torna al Dashboard",
