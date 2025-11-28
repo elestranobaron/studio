@@ -449,10 +449,10 @@ export function WodCard({ wod, source = "personal" }: { wod: WOD; source?: "pers
           )}
           <DialogContent className="max-w-4xl p-2">
             <DialogHeader>
-              <DialogTitle>{t('viewImageAlt', { wodName: wod.name })}</DialogTitle>
-              <DialogDescription>
-                {t('viewWodDescription', { type: wod.type, date: formattedDate })}
-              </DialogDescription>
+                <DialogTitle>{t('viewImageAlt', { wodName: wod.name })}</DialogTitle>
+                <DialogDescription>
+                    {t('viewWodDescription', { type: wod.type, date: formattedDate })}
+                </DialogDescription>
             </DialogHeader>
             <div className="relative w-full h-auto">
               <Image
