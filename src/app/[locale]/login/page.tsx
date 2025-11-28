@@ -34,22 +34,39 @@ function LoginClientContent({ t }: { t: any }) {
 
   const handleSendCode = async (e: React.FormEvent) => {
     e.preventDefault();
+    const currentEmail = email.trim().toLowerCase();
+    if (!currentEmail || !currentEmail.includes('@')) {
+        setError('Please enter a valid email address.');
+        return;
+    }
+
     setIsLoading(true);
     setError(null);
+
     try {
-      const res = await fetch('/api/auth/send-code', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email }),
-      });
-      if (!res.ok) throw new Error('Failed to send code');
-      toast({ title: t('linkSentToast'), description: t('linkSentToastDescription') });
-      setStep('code');
+        const res = await fetch('/api/auth/send-code', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email: currentEmail }),
+        });
+
+        if (!res.ok) {
+            const data = await res.json();
+            throw new Error(data.error || 'Failed to send code.');
+        }
+        
+        setEmail(currentEmail);
+        setStep('code');
+        toast({ title: t('linkSentToast'), description: t.rich('emailSentDescription', {
+            bold: (chunks: React.ReactNode) => <strong>{chunks}</strong>,
+            email: currentEmail
+          }) });
+
     } catch (err: any) {
-      console.error(err);
-      setError(err.message || t('sendLinkError'));
+        console.error(err);
+        setError(err.message || t('sendLinkError'));
     } finally {
-      setIsLoading(false);
+        setIsLoading(false);
     }
   };
   
@@ -65,6 +82,7 @@ function LoginClientContent({ t }: { t: any }) {
     }
     setIsVerifying(true);
     setError(null);
+    console.log('EMAIL ENVOYÉ À VERIFY-CODE →', email);
     try {
       const res = await fetch('/api/auth/verify-code', {
         method: 'POST',
@@ -164,7 +182,7 @@ function LoginClientContent({ t }: { t: any }) {
                   type="email"
                   placeholder="name@example.com"
                   value={email}
-                  onChange={(e) => setEmail(e.target.value.toLowerCase().trim())}
+                  onChange={(e) => setEmail(e.target.value)}
                   required
                   disabled={isLoading}
                 />
