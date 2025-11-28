@@ -3,7 +3,7 @@
 
 import { useState, useEffect, Suspense, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import { useAuth, useUser } from '@/firebase/provider';
+import { useAuth, useUser, useFirebase } from '@/firebase/provider';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -11,6 +11,7 @@ import { useToast } from '@/components/ui/use-toast';
 import { LoaderCircle, CheckCircle, Dumbbell, Archive, LineChart, AlertTriangle } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { useTranslations } from 'next-intl';
+import { getFunctions, httpsCallable } from 'firebase/functions';
 import { signInWithCustomToken } from 'firebase/auth';
 
 function LoginClientContent({ t }: { t: any }) {
@@ -22,6 +23,7 @@ function LoginClientContent({ t }: { t: any }) {
   const [error, setError] = useState<string | null>(null);
 
   const auth = useAuth();
+  const { firestore } = useFirebase();
   const router = useRouter();
   const { toast } = useToast();
   const { user, isUserLoading } = useUser();
@@ -78,10 +80,8 @@ function LoginClientContent({ t }: { t: any }) {
       return;
     }
 
-    // ON LIT L'ÉTAT À JOUR DIRECTEMENT DEPUIS LE SETTER
     const emailToVerify = email.trim().toLowerCase();
-
-    console.log('EMAIL RÉELLEMENT ENVOYÉ À L\'API →', emailToVerify);
+    console.log('EMAIL RÉELLEMENT ENVOYÉ À LA FONCTION →', emailToVerify);
 
     setIsVerifying(true);
     setError(null);
@@ -90,23 +90,29 @@ function LoginClientContent({ t }: { t: any }) {
       if (!auth) {
         throw new Error("Authentication service is not available.");
       }
-      const res = await fetch('/api/auth/verify-code', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: emailToVerify, code }),
-      });
+      
+      const functions = getFunctions();
+      const verifyDigicode = httpsCallable(functions, 'verifyDigicode');
+      
+      const result = await verifyDigicode({ email: emailToVerify, code });
+      const data = result.data as { token?: string; error?: string };
 
-      const data = await res.json();
-
-      if (!res.ok) throw new Error(data.error || 'Code invalide');
+      if (data.error) {
+        throw new Error(data.error);
+      }
+      
+      if (!data.token) {
+        throw new Error("No token returned from function.");
+      }
 
       await signInWithCustomToken(auth, data.token);
 
       toast({ title: 'Connecté !', description: 'Bienvenue !' });
       router.push('/dashboard');
     } catch (err: any) {
-      console.error(err);
-      setError(err.message || 'Erreur de connexion');
+      console.error("Verification error:", err);
+      const message = err.message || 'An unknown error occurred.';
+      setError(message);
     } finally {
       setIsVerifying(false);
     }
@@ -187,7 +193,7 @@ function LoginClientContent({ t }: { t: any }) {
                   type="email"
                   placeholder="name@example.com"
                   value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  onChange={(e) => setEmail(e.target.value.toLowerCase().trim())}
                   required
                   disabled={isLoading}
                 />
