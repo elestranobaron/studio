@@ -21,25 +21,22 @@ export async function POST(req: NextRequest) {
     // Code is valid, delete it
     digicodeStore.delete(key);
 
-    let userRecord;
-    try {
-      userRecord = await adminAuth.getUserByEmail(email);
-    } catch (error: any) {
-      if (error.code === 'auth/user-not-found') {
-        // If user does not exist, create a new one
-        userRecord = await adminAuth.createUser({ email: email });
-        // Create user profile in Firestore
-        await adminDb.collection("users").doc(userRecord.uid).set({
-            email: email,
-            premium: false,
-            createdAt: new Date().toISOString(),
-        }, { merge: true });
-      } else {
+    // Get or create the user record.
+    const userRecord = await adminAuth.getUserByEmail(email).catch(async (error) => {
+        if (error.code === 'auth/user-not-found') {
+          const newUserRecord = await adminAuth.createUser({ email: email });
+          // Create user profile in Firestore at the same time
+          await adminDb.collection("users").doc(newUserRecord.uid).set({
+              email: email,
+              premium: false,
+              createdAt: new Date().toISOString(),
+          }, { merge: true });
+          return newUserRecord;
+        }
         // For other errors, re-throw
         throw error;
-      }
-    }
-    
+    });
+
     if (!userRecord) {
         throw new Error('Failed to get or create user record.');
     }
@@ -50,6 +47,11 @@ export async function POST(req: NextRequest) {
 
   } catch (err: any) {
     console.error('API Verify Code Error:', err);
-    return NextResponse.json({ error: err.message || 'Failed to verify code' }, { status: 500 });
+    // Return a more detailed error message to the client for debugging
+    const errorMessage = err.message || 'Failed to verify code';
+    const serverResponse = err.errorInfo ? JSON.stringify(err.errorInfo) : 'No server response available';
+    return NextResponse.json({ 
+        error: `${errorMessage}; Raw server response: "${serverResponse}"`,
+    }, { status: 500 });
   }
 }
