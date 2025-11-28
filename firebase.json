@@ -42,6 +42,11 @@
       "predeploy": [
       "npm --prefix \"$RESOURCE_DIR\" run build"
     ],
+    "env": [
+      {
+        "dotenv": "src/functions/.env"
+      }
+    ],
     "functions": {
       "verifyDigicode": {
         "entryPoint": "verifyDigicode"

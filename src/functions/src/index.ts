@@ -6,13 +6,14 @@ import { onSchedule } from "firebase-functions/v2/scheduler";
 import * as admin from "firebase-admin";
 import Stripe from "stripe";
 import type { QuerySnapshot, DocumentSnapshot } from "firebase-admin/firestore";
-
+// ─────────────────────────────────────────────────────
+// IMPORTS À METTRE À JOUR (remplace tes anciens imports https)
+import { setGlobalOptions } from "firebase-functions/v2";   // ← nouvelle localisation depuis v5
+// ─────────────────────────────────────────────────────
 admin.initializeApp();
 const db = admin.firestore();
-
-if (!process.env.STRIPE_SECRET_KEY) {
-    console.error("Stripe secret key is not set. Exiting.");
-}
+// Optionnel mais propre : tu définis la région par défaut pour toutes tes functions v2
+setGlobalOptions({ region: "us-central1" });
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, { apiVersion: "2024-06-20" });
 
 const STRIPE_WEBHOOK_SECRET = process.env.STRIPE_WEBHOOK_SECRET!;
@@ -182,36 +183,57 @@ exports.resetReactions = onSchedule("0 0 * * *", async () => {
   console.log(`Reactions reset for ${snapshot.size} users`);
 });
 
-exports.createCheckout = onCall({
-    // secrets: ["STRIPE_SECRET_KEY", "STRIPE_MONTHLY_PRICE_ID", "STRIPE_YEARLY_PRICE_ID"],
-}, async (request: any) => {
-  if (!request.auth?.uid) throw new HttpsError("unauthenticated", "Login required");
-  
-  if (!STRIPE_MONTHLY_PRICE_ID || !STRIPE_YEARLY_PRICE_ID) {
-    throw new HttpsError("internal", "Stripe price IDs are not configured.");
+exports.createCheckout = onRequest(
+  {
+    cors: true,                 // résout le problème CORS
+    memory: "256MiB",
+    timeoutSeconds: 60,
+  },
+  async (req: Request, res: Response) => {
+    try {
+      // 1. Vérification de l'auth Firebase manuellement
+      const authHeader = req.headers.authorization;
+      if (!authHeader?.startsWith("Bearer ")) {
+        res.status(401).json({ error: "Unauthenticated" });
+        return;
+      }
+
+      const token = authHeader.split("Bearer ")[1];
+      const decodedToken = await admin.auth().verifyIdToken(token);
+      const uid = decodedToken.uid;
+
+      // 2. Récupération des données envoyées depuis le front
+      const yearly = req.body.data?.yearly === true;
+      const priceId = yearly
+        ? process.env.STRIPE_YEARLY_PRICE_ID!
+        : process.env.STRIPE_MONTHLY_PRICE_ID!;
+
+      if (!priceId) {
+        res.status(500).json({ error: "Price ID manquant" });
+        return;
+      }
+
+      // 3. Création de la session Stripe
+      const session = await stripe.checkout.sessions.create({
+        payment_method_types: ["card"],
+        line_items: [{ price: priceId, quantity: 1 }],
+        mode: "subscription",
+        allow_promotion_codes: true,
+        success_url: `${process.env.NEXT_PUBLIC_APP_URL}/premium?success=true`,
+        cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/premium?cancel=true`,
+        customer_email: decodedToken.email || undefined,
+        metadata: { uid },
+        subscription_data: { metadata: { uid } },
+      });
+
+      // 4. Réponse au front
+      res.status(200).json({ url: session.url });
+    } catch (error: any) {
+      console.error("Erreur createCheckout:", error);
+      res.status(500).json({ error: error.message || "Erreur interne" });
+    }
   }
-
-  const yearly = request.data.yearly === true;
-  const priceId = yearly ? STRIPE_YEARLY_PRICE_ID : STRIPE_MONTHLY_PRICE_ID;
-  const uid = request.auth.uid;
-  const email = request.auth.token.email;
-
-  const session = await stripe.checkout.sessions.create({
-    payment_method_types: ["card"],
-    line_items: [{ price: priceId, quantity: 1 }],
-    mode: "subscription",
-    allow_promotion_codes: true,
-    success_url: `${NEXT_PUBLIC_APP_URL}/premium?success=true`,
-    cancel_url: `${NEXT_PUBLIC_APP_URL}/premium?cancel=true`,
-    customer_email: email || undefined,
-    metadata: { uid },
-    subscription_data: {
-      metadata: { uid },
-    },
-  });
-
-  return { url: session.url };
-});
+);
 
 
 import express from "express";
