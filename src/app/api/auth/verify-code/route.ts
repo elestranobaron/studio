@@ -1,4 +1,5 @@
 
+// src/app/api/auth/verify-code/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import { digicodeStore } from '@/lib/digicode-store';
 import { adminAuth, adminDb } from '@/lib/firebaseAdmin';
@@ -18,12 +19,11 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Invalid or expired code' }, { status: 400 });
     }
 
-    // Code is valid, delete it
     digicodeStore.delete(key);
 
     let userRecord: UserRecord;
     try {
-      // First, try to get the user by email
+      // First, try to get the user by email from Firebase Authentication
       userRecord = await adminAuth.getUserByEmail(email);
     } catch (error: any) {
       // If the user is not found, create a new one
