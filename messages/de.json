@@ -143,7 +143,7 @@
     "formTitle": "Anmelden / Registrieren",
     "formDescription": "Gib deine E-Mail-Adresse ein, um einen sicheren Anmeldelink zu erhalten. Kein Passwort erforderlich.",
     "emailSentTitle": "Überprüfe deine E-Mails!",
-    "emailSentDescription": "Ein Anmeldelink wurde an <bold>{{email}}</bold> gesendet. Überprüfe dein Postfach (und den Spam-Ordner).",
+    "emailSentDescription": "Ein Anmeldelink wurde an <bold>{email}</bold> gesendet. Überprüfe dein Postfach (und den Spam-Ordner).",
     "sendLinkButton": "Magic Link senden",
     "authError": "Authentifizierungsdienst ist nicht bereit.",
     "sendLinkError": "Wir konnten den Link nicht senden. Bitte versuche es erneut.",

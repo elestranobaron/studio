@@ -143,7 +143,7 @@
     "formTitle": "登录/注册",
     "formDescription": "输入您的电子邮件以接收安全的登录链接。无需密码。",
     "emailSentTitle": "请检查您的电子邮件！",
-    "emailSentDescription": "登录链接已发送至<bold>{{email}}</bold>。请检查您的收件箱（以及垃圾邮件文件夹）。",
+    "emailSentDescription": "登录链接已发送至<bold>{email}</bold>。请检查您的收件箱（以及垃圾邮件文件夹）。",
     "sendLinkButton": "发送魔术链接",
     "authError": "身份验证服务尚未准备就绪。",
     "sendLinkError": "我们无法发送链接。请重试。",

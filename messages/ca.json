@@ -143,7 +143,7 @@
     "formTitle": "Inicia sessió / Registra't",
     "formDescription": "Introdueix el teu correu electrònic per rebre un enllaç d'inici de sessió segur. No es requereix contrasenya.",
     "emailSentTitle": "Comprova el teu correu electrònic!",
-    "emailSentDescription": "S'ha enviat un enllaç d'inici de sessió a <bold>{{email}}</bold>. Revisa la teva bústia (i la carpeta de spam).",
+    "emailSentDescription": "S'ha enviat un enllaç d'inici de sessió a <bold>{email}</bold>. Revisa la teva bústia (i la carpeta de spam).",
     "sendLinkButton": "Envia enllaç màgic",
     "authError": "El servei d'autenticació no està a punt.",
     "sendLinkError": "No hem pogut enviar l'enllaç. Si us plau, torna-ho a provar.",

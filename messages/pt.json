@@ -143,7 +143,7 @@
     "formTitle": "Login / Cadastre-se",
     "formDescription": "Digite seu e-mail para receber um link de login seguro. Nenhuma senha é necessária.",
     "emailSentTitle": "Verifique seu e-mail!",
-    "emailSentDescription": "Um link de login foi enviado para <bold>{{email}}</bold>. Verifique sua caixa de entrada (e a pasta de spam, por via das dúvidas).",
+    "emailSentDescription": "Um link de login foi enviado para <bold>{email}</bold>. Verifique sua caixa de entrada (e a pasta de spam, por via das dúvidas).",
     "sendLinkButton": "Enviar Link Mágico",
     "authError": "O serviço de autenticação não está pronto.",
     "sendLinkError": "Não foi possível enviar o link. Por favor, tente novamente.",

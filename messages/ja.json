@@ -143,7 +143,7 @@
     "formTitle": "ログイン / サインアップ",
     "formDescription": "安全なサインインリンクを受け取るには、メールアドレスを入力してください。パスワードは不要です。",
     "emailSentTitle": "メールをチェックしてください！",
-    "emailSentDescription": "サインインリンクが<bold>{{email}}</bold>に送信されました。受信トレイ（と念のためスパムフォルダ）を確認してください。",
+    "emailSentDescription": "サインインリンクが<bold>{email}</bold>に送信されました。受信トレイ（と念のためスパムフォルダ）を確認してください。",
     "sendLinkButton": "マジックリンクを送信",
     "authError": "認証サービスの準備ができていません。",
     "sendLinkError": "リンクを送信できませんでした。もう一度お試しください。",

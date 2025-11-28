@@ -143,7 +143,7 @@
     "formTitle": "Login / Sign Up",
     "formDescription": "Enter your email to receive a secure one-time code. No password required.",
     "emailSentTitle": "Check your email!",
-    "emailSentDescription": "A 6-digit code has been sent to <bold>{{email}}</bold>. Check your inbox (and spam folder just in case).",
+    "emailSentDescription": "A 6-digit code has been sent to <bold>{email}</bold>. Check your inbox (and spam folder just in case).",
     "sendLinkButton": "Send Code",
     "authError": "Authentication service is not ready.",
     "sendLinkError": "We couldn't send the code. Please try again.",
