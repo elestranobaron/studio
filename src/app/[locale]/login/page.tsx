@@ -11,6 +11,7 @@ import { useToast } from '@/components/ui/use-toast';
 import { LoaderCircle, CheckCircle, Dumbbell, Archive, LineChart, AlertTriangle } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { useTranslations } from 'next-intl';
+import { signInWithCustomToken } from 'firebase/auth';
 
 function LoginClientContent({ t }: { t: any }) {
   const [email, setEmail] = useState('');
@@ -54,7 +55,14 @@ function LoginClientContent({ t }: { t: any }) {
   
   const handleVerifyCode = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (code.length !== 6) return setError('The code must be 6 digits long.');
+    if (code.length !== 6) {
+      setError('The code must be 6 digits long.');
+      return;
+    }
+    if (!auth) {
+        setError(t('authError'));
+        return;
+    }
     setIsVerifying(true);
     setError(null);
     try {
@@ -63,11 +71,16 @@ function LoginClientContent({ t }: { t: any }) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, code }),
       });
+      
+      const data = await res.json();
+
       if (!res.ok) {
-        const data = await res.json();
         throw new Error(data.error || 'Invalid code');
       }
-      // Plus besoin de Firebase → on a déjà le cookie JWT
+
+      // THE MAGIC LINE: This is what actually signs the user in on the client
+      await signInWithCustomToken(auth, data.token);
+
       toast({ title: t('signInSuccessToast'), description: t('signInSuccessToastDescription') });
       router.push('/dashboard');
     } catch (err: any) {
@@ -130,7 +143,7 @@ function LoginClientContent({ t }: { t: any }) {
           <CardHeader>
             <CardTitle>{t('formTitle')}</CardTitle>
             <CardDescription>
-              {step === 'email' ? t('formDescription') : `Enter the code sent to ${email}`}
+              {step === 'email' ? t('formDescription') : t('emailSentDescription', { email })}
             </CardDescription>
           </CardHeader>
           <CardContent>
