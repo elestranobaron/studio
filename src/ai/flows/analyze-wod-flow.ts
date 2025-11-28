@@ -74,10 +74,10 @@ Next, you MUST break the workout down into its logical sections. For **EACH** se
 Based on the **main Metcon/conditioning part** of the WOD, provide a profile analysis.
 1.  **cardio**: On a scale of 0-100, what percentage is cardio (e.g., running, rowing, burpees)?
 2.  **lifting**: On a scale of 0-100, what percentage is weightlifting (e.g., barbell, dumbbell, kettlebell)?
-    *   The sum of `cardio` and `lifting` MUST be 100.
+    *   The sum of \`cardio\` and \`lifting\` MUST be 100.
 3.  **upperBody**: On a scale of 0-100, what percentage of the work targets the upper body (e.g., pull-ups, push-ups, thrusters)?
 4.  **lowerBody**: On a scale of 0-100, what percentage of the work targets the lower body (e.g., squats, running, thrusters)?
-    *   The sum of `upperBody` and `lowerBody` MUST be 100. A movement like a thruster would contribute to both.
+    *   The sum of \`upperBody\` and \`lowerBody\` MUST be 100. A movement like a thruster would contribute to both.
 
 Analyze the following image:
 {{media url=photoDataUri}}`,
