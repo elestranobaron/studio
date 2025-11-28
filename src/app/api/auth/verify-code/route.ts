@@ -8,49 +8,61 @@ import type { UserRecord } from 'firebase-admin/auth';
 export async function POST(req: NextRequest) {
   try {
     const { email, code } = await req.json();
-    if (!email || !code) {
-      return NextResponse.json({ error: 'Email and code are required.' }, { status: 400 });
+
+    if (!email || !code || code.length !== 6) {
+      return NextResponse.json({ error: 'Données invalides' }, { status: 400 });
     }
 
-    const key = email.toLowerCase();
-    const stored = await digicodeStore.get(key);
+    const normalizedEmail = email.toLowerCase().trim();
 
-    if (!stored || Date.now() > stored.expires || stored.code !== code) {
-      return NextResponse.json({ error: 'Invalid or expired code' }, { status: 400 });
+    // 1. Vérification de TON digicode
+    const stored = await digicodeStore.get(normalizedEmail);
+    if (!stored || stored.code !== code || stored.expires < Date.now()) {
+      await digicodeStore.delete(normalizedEmail);
+      return NextResponse.json({ error: 'Code invalide ou expiré' }, { status: 400 });
     }
 
-    await digicodeStore.delete(key);
+    await digicodeStore.delete(normalizedEmail);
 
+    // 2. ON FORCE LA CRÉATION OU RÉCUPÉRATION DE L'UTILISATEUR
     let userRecord: UserRecord;
+
     try {
-      // Étape 1 : Essayer de récupérer l'utilisateur depuis Firebase Authentication
-      userRecord = await adminAuth.getUserByEmail(email);
+      userRecord = await adminAuth.getUserByEmail(normalizedEmail);
     } catch (error: any) {
-      // Étape 2 : Si l'utilisateur n'existe pas, le créer
       if (error.code === 'auth/user-not-found') {
-        console.log(`User not found for ${email}. Creating new user.`);
-        userRecord = await adminAuth.createUser({ email });
-        // Créer son profil dans Firestore en même temps
+        console.log(`Utilisateur non trouvé pour ${normalizedEmail}. Création...`);
+        userRecord = await adminAuth.createUser({
+          email: normalizedEmail,
+          emailVerified: true, // Verified by digicode process
+        });
+        
+        // **THIS IS THE CRITICAL FIX**: Create the user profile in Firestore.
         await adminDb.collection("users").doc(userRecord.uid).set({
             email: userRecord.email,
             premium: false,
             createdAt: new Date().toISOString(),
         }, { merge: true });
+
+        console.log('Nouvel utilisateur créé dans Auth et Firestore:', userRecord.uid);
       } else {
-        // Pour toute autre erreur, la renvoyer
+        // For any other Firebase error, we rethrow it.
+        console.error('Erreur Firebase (getUserByEmail):', error);
         throw error;
       }
     }
 
-    // Étape 3 : Générer le jeton personnalisé. `userRecord` est maintenant garanti d'exister.
+    // 3. Génération du custom token (maintenant userRecord.uid est GARANTI)
     const customToken = await adminAuth.createCustomToken(userRecord.uid);
+
     return NextResponse.json({ token: customToken });
 
   } catch (err: any) {
-    console.error('API Verify Code Error:', err);
-    // Retourner un message d'erreur clair au client
-    const errorMessage = err.message || 'Failed to verify code';
-    const errorCode = err.code || 'auth/internal-error';
-    return NextResponse.json({ error: `Server error during verification: ${errorMessage}`, code: errorCode }, { status: 500 });
+    console.error('verify-code fatal error:', err);
+    // Return a structured error to the client
+    return NextResponse.json(
+      { error: 'Server error during verification: ' + err.message },
+      { status: 500 }
+    );
   }
 }
