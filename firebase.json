@@ -32,7 +32,6 @@
     ]
   },
   "functions": 
-
     {
 
       "source": "src/functions",
@@ -49,6 +48,9 @@
       },
       "sendDigicode": {
         "entryPoint": "sendDigicode"
+      },
+      "createCheckout": {
+        "entryPoint": "createCheckout"
       }
     }
     }

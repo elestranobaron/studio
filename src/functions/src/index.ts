@@ -7,15 +7,19 @@ import * as admin from "firebase-admin";
 import Stripe from "stripe";
 import type { QuerySnapshot, DocumentSnapshot } from "firebase-admin/firestore";
 
-admin.initializeApp({
-  serviceAccountId: "firebase-adminsdk-fbsvc@studio-9534743514-17d90.iam.gserviceaccount.com",
-});
+admin.initializeApp();
 const db = admin.firestore();
 
+if (!process.env.STRIPE_SECRET_KEY) {
+    console.error("Stripe secret key is not set. Exiting.");
+}
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, { apiVersion: "2024-06-20" });
+
 const STRIPE_WEBHOOK_SECRET = process.env.STRIPE_WEBHOOK_SECRET!;
 const STRIPE_MONTHLY_PRICE_ID = process.env.STRIPE_MONTHLY_PRICE_ID!;
 const STRIPE_YEARLY_PRICE_ID = process.env.STRIPE_YEARLY_PRICE_ID!;
+const NEXT_PUBLIC_APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:9002';
+
 
 // --- DIGICODE AUTHENTICATION ---
 function generateDigicode() {
@@ -178,28 +182,37 @@ exports.resetReactions = onSchedule("0 0 * * *", async () => {
   console.log(`Reactions reset for ${snapshot.size} users`);
 });
 
-exports.createCheckout = onCall({}, async (request: any) => {
+exports.createCheckout = onCall({
+    // secrets: ["STRIPE_SECRET_KEY", "STRIPE_MONTHLY_PRICE_ID", "STRIPE_YEARLY_PRICE_ID"],
+}, async (request: any) => {
   if (!request.auth?.uid) throw new HttpsError("unauthenticated", "Login required");
+  
+  if (!STRIPE_MONTHLY_PRICE_ID || !STRIPE_YEARLY_PRICE_ID) {
+    throw new HttpsError("internal", "Stripe price IDs are not configured.");
+  }
 
   const yearly = request.data.yearly === true;
   const priceId = yearly ? STRIPE_YEARLY_PRICE_ID : STRIPE_MONTHLY_PRICE_ID;
+  const uid = request.auth.uid;
+  const email = request.auth.token.email;
 
   const session = await stripe.checkout.sessions.create({
     payment_method_types: ["card"],
     line_items: [{ price: priceId, quantity: 1 }],
     mode: "subscription",
     allow_promotion_codes: true,
-    success_url: "https://wodburner.app/premium?success=true",
-    cancel_url: "https://wodburner.app/premium?cancel=true",
-    customer_email: request.auth.token.email || undefined,
-    metadata: { uid: request.auth.uid },
+    success_url: `${NEXT_PUBLIC_APP_URL}/premium?success=true`,
+    cancel_url: `${NEXT_PUBLIC_APP_URL}/premium?cancel=true`,
+    customer_email: email || undefined,
+    metadata: { uid },
     subscription_data: {
-      metadata: { uid: request.auth.uid },
+      metadata: { uid },
     },
   });
 
-  return { id: session.id };
+  return { url: session.url };
 });
+
 
 import express from "express";
 import type { Request, Response } from "express";
@@ -313,7 +326,7 @@ exports.createCustomerPortal = onCall({}, async (request: any) => {
     
     const portalSession = await stripe.billingPortal.sessions.create({
         customer: customerId,
-        return_url: 'https://wodburner.app/settings',
+        return_url: `${NEXT_PUBLIC_APP_URL}/settings`,
     });
 
     return { url: portalSession.url };

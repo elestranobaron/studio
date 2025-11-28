@@ -14,6 +14,8 @@ import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { useTranslations } from 'next-intl';
+import { getFunctions, httpsCallable } from 'firebase/functions';
+
 
 function PremiumContent({ t }: { t: any }) {
   const { user, isUserLoading } = useUser();
@@ -64,25 +66,16 @@ function PremiumContent({ t }: { t: any }) {
     setIsLoading(plan);
 
     try {
-      const idToken = await auth.currentUser.getIdToken(true);
+      const functions = getFunctions();
+      const createCheckout = httpsCallable(functions, 'createCheckout');
+      
+      const { data } = await createCheckout({ yearly: plan === 'yearly' });
+      const { url } = data as { url: string };
 
-      const res = await fetch('/api/create-checkout', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${idToken}`,
-        },
-        body: JSON.stringify({ yearly: plan === 'yearly' }),
-      });
-
-      if (!res.ok) {
-        const error = await res.json();
-        throw new Error(error.details || error.error || 'Server error');
+      if (!url) {
+        throw new Error('Checkout URL not returned from function.');
       }
-
-      const { url } = await res.json(); 
-
-      // New official method 2025 -> direct redirect via session URL
+      
       window.location.href = url;
 
     } catch (error: any) {
@@ -237,5 +230,3 @@ export default function PremiumPage() {
     </div>
   );
 }
-
-    
