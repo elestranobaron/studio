@@ -1,14 +1,12 @@
-
 'use client';
-
-import { useState, useEffect, Suspense, useCallback } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth, useUser, useFirebase } from '@/firebase/provider';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/components/ui/use-toast';
-import { LoaderCircle, CheckCircle, Dumbbell, Archive, LineChart, AlertTriangle } from 'lucide-react';
+import { LoaderCircle, AlertTriangle, Dumbbell, Archive, LineChart } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { useTranslations } from 'next-intl';
 import { getFunctions, httpsCallable } from 'firebase/functions';
@@ -23,10 +21,11 @@ function LoginClientContent({ t }: { t: any }) {
   const [error, setError] = useState<string | null>(null);
 
   const auth = useAuth();
-  const { firestore } = useFirebase();
+  const { user, isUserLoading } = useUser();
   const router = useRouter();
   const { toast } = useToast();
-  const { user, isUserLoading } = useUser();
+
+  const functions = getFunctions(); // ← Important : on l'initialise une seule fois
 
   useEffect(() => {
     if (!isUserLoading && user && !user.isAnonymous) {
@@ -37,168 +36,170 @@ function LoginClientContent({ t }: { t: any }) {
   const handleSendCode = async (e: React.FormEvent) => {
     e.preventDefault();
     const currentEmail = email.trim().toLowerCase();
-    if (!currentEmail || !currentEmail.includes('@')) {
-        setError('Please enter a valid email address.');
-        return;
+    if (!currentEmail.includes('@')) {
+      setError('Please enter a valid email address.');
+      return;
     }
 
     setIsLoading(true);
     setError(null);
 
     try {
-        const res = await fetch('/api/auth/send-code', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email: currentEmail }),
-        });
+      const sendDigicode = httpsCallable(functions, 'sendDigicode');
+      await sendDigicode({ email: currentEmail });
 
-        if (!res.ok) {
-            const data = await res.json();
-            throw new Error(data.error || 'Failed to send code.');
-        }
-        
-        setEmail(currentEmail);
-        setStep('code');
-        toast({ title: t('linkSentToast'), description: t.rich('emailSentDescription', {
-            bold: (chunks: React.ReactNode) => <strong>{chunks}</strong>,
-            email: currentEmail
-          }) });
-
+      setEmail(currentEmail);
+      setStep('code');
+      toast({
+        title: t('linkSentToast') || 'Code envoyé !',
+        description: t.rich ? t.rich('emailSentDescription', {
+          bold: (chunks: React.ReactNode) => <strong>{chunks}</strong>,
+          email: currentEmail
+        }) : `Un code a été envoyé à ${currentEmail}`,
+      });
     } catch (err: any) {
-        console.error(err);
-        setError(err.message || t('sendLinkError'));
+      console.error('sendDigicode error:', err);
+      setError(err.message || 'Impossible d\'envoyer le code. Réessaie.');
     } finally {
-        setIsLoading(false);
+      setIsLoading(false);
     }
   };
-  
+
   const handleVerifyCode = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    if (code.length !== 6) {
-      setError('Le code doit faire 6 chiffres');
+    if (code.length !== 6 || !/^\d+$/.test(code)) {
+      setError('Le code doit contenir exactement 6 chiffres');
       return;
     }
-
-    const emailToVerify = email.trim().toLowerCase();
-    console.log('EMAIL RÉELLEMENT ENVOYÉ À LA FONCTION →', emailToVerify);
 
     setIsVerifying(true);
     setError(null);
 
     try {
-      if (!auth) {
-        throw new Error("Authentication service is not available.");
-      }
-      
-      const functions = getFunctions();
       const verifyDigicode = httpsCallable(functions, 'verifyDigicode');
-      
-      const result = await verifyDigicode({ email: emailToVerify, code });
-      const data = result.data as { token?: string; error?: string };
+      const result = await verifyDigicode({ email: email.trim().toLowerCase(), code });
 
-      if (data.error) {
-        throw new Error(data.error);
-      }
-      
+      const data = result.data as { token?: string };
       if (!data.token) {
-        throw new Error("No token returned from function.");
+        throw new Error('Token manquant dans la réponse');
       }
 
-      await signInWithCustomToken(auth, data.token);
+      await signInWithCustomToken(auth!, data.token);
 
-      toast({ title: 'Connecté !', description: 'Bienvenue !' });
+      toast({ title: 'Connecté !', description: 'Bienvenue sur WODBurner !' });
       router.push('/dashboard');
     } catch (err: any) {
-      console.error("Verification error:", err);
-      const message = err.message || 'An unknown error occurred.';
-      setError(message);
+      console.error('Verification error:', err);
+
+      // Gestion précise des erreurs Firebase Functions
+      let msg = 'Erreur inconnue';
+
+      if (err.code === 'not-found' || err.code === 'unauthenticated') {
+        msg = 'Code invalide. Demande un nouveau code.';
+      } else if (err.code === 'deadline-exceeded') {
+        msg = 'Code expiré. Demande un nouveau code.';
+      } else if (err.code === 'internal') {
+        msg = 'Erreur serveur. Réessaie dans quelques secondes.';
+        console.error('INTERNAL ERROR DETAILS:', err.details || err.message);
+      } else {
+        msg = err.message || 'Impossible de se connecter';
+      }
+
+      setError(msg);
+      toast({ variant: 'destructive', title: 'Erreur', description: msg });
     } finally {
       setIsVerifying(false);
     }
   };
 
-
-   if (isUserLoading || (user && !user.isAnonymous)) {
-        return (
-            <div className="flex h-screen w-full flex-col items-center justify-center gap-4">
-                <LoaderCircle className="h-12 w-12 animate-spin text-primary" />
-                <p className="text-muted-foreground">{t('verifying')}</p>
-            </div>
-        );
-    }
+  // Loading pendant que Firebase vérifie l'utilisateur
+  if (isUserLoading || (user && !user.isAnonymous)) {
+    return (
+      <div className="flex h-screen w-full flex-col items-center justify-center gap-4">
+        <LoaderCircle className="h-12 w-12 animate-spin text-primary" />
+        <p className="text-muted-foreground">{t('verifying') || 'Vérification en cours...'}</p>
+      </div>
+    );
+  }
 
   return (
     <div className="flex h-screen w-full items-center justify-center bg-background p-4">
       <div className="grid lg:grid-cols-2 max-w-4xl w-full gap-16 items-center">
+        {/* Partie gauche - features */}
         <div className="flex-col items-center lg:items-start text-center hidden lg:flex">
           <div className="text-3xl font-bold font-headline text-primary tracking-wider">
             WODBurner
           </div>
-          <h1 className="text-3xl font-bold tracking-tight font-headline md:text-4xl mt-4">{t('featureTitle')}</h1>
+          <h1 className="text-3xl font-bold tracking-tight font-headline md:text-4xl mt-4">
+            {t('featureTitle')}
+          </h1>
           <p className="text-muted-foreground mt-2">{t('featureDescription')}</p>
           <div className="space-y-4 mt-8 text-left">
+            {/* Tes 3 features avec icônes */}
             <div className="flex items-start gap-4">
-                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 text-primary">
-                    <Dumbbell className="h-5 w-5"/>
-                </div>
-                <div>
-                    <h3 className="font-semibold">{t('featureManual')}</h3>
-                    <p className="text-sm text-muted-foreground">{t('featureManualDescription')}</p>
-                </div>
-            </div>
-              <div className="flex items-start gap-4">
-                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 text-primary">
-                    <Archive className="h-5 w-5"/>
-                </div>
-                <div>
-                    <h3 className="font-semibold">{t('featureHistory')}</h3>
-                    <p className="text-sm text-muted-foreground">{t('featureHistoryDescription')}</p>
-                </div>
+              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 text-primary">
+                <Dumbbell className="h-5 w-5"/>
+              </div>
+              <div>
+                <h3 className="font-semibold">{t('featureManual')}</h3>
+                <p className="text-sm text-muted-foreground">{t('featureManualDescription')}</p>
+              </div>
             </div>
             <div className="flex items-start gap-4">
-                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 text-primary">
-                    <LineChart className="h-5 w-5"/>
-                </div>
-                <div>
-                    <h3 className="font-semibold">{t('featureTracking')}</h3>
-                    <p className="text-sm text-muted-foreground">{t('featureTrackingDescription')}</p>
-                </div>
+              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 text-primary">
+                <Archive className="h-5 w-5"/>
+              </div>
+              <div>
+                <h3 className="font-semibold">{t('featureHistory')}</h3>
+                <p className="text-sm text-muted-foreground">{t('featureHistoryDescription')}</p>
+              </div>
+            </div>
+            <div className="flex items-start gap-4">
+              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 text-primary">
+                <LineChart className="h-5 w-5"/>
+              </div>
+              <div>
+                <h3 className="font-semibold">{t('featureTracking')}</h3>
+                <p className="text-sm text-muted-foreground">{t('featureTrackingDescription')}</p>
+              </div>
             </div>
           </div>
         </div>
+
+        {/* Formulaire */}
         <Card className="w-full">
           <CardHeader>
             <CardTitle>{t('formTitle')}</CardTitle>
             <CardDescription>
-              {step === 'email' 
-                ? t('formDescription') 
-                : t.rich('emailSentDescription', {
+              {step === 'email'
+                ? t('formDescription')
+                : t.rich?.('emailSentDescription', {
                     bold: (chunks: React.ReactNode) => <strong>{chunks}</strong>,
                     email
-                  })}
+                  }) || `Code envoyé à ${email}`}
             </CardDescription>
           </CardHeader>
           <CardContent>
             {error && (
               <Alert variant="destructive" className="mb-4">
                 <AlertTriangle className="h-4 w-4" />
-                <AlertTitle>{t('confirmEmailFailedTitle')}</AlertTitle>
+                <AlertTitle>{t('confirmEmailFailedTitle') || 'Erreur'}</AlertTitle>
                 <AlertDescription>{error}</AlertDescription>
               </Alert>
             )}
+
             {step === 'email' ? (
               <form onSubmit={handleSendCode} className="space-y-4">
                 <Input
                   type="email"
                   placeholder="name@example.com"
                   value={email}
-                  onChange={(e) => setEmail(e.target.value.toLowerCase().trim())}
+                  onChange={(e) => setEmail(e.target.value)}
                   required
                   disabled={isLoading}
                 />
                 <Button type="submit" className="w-full" disabled={isLoading}>
-                  {isLoading ? <LoaderCircle className="animate-spin" /> : t('sendLinkButton')}
+                  {isLoading ? <LoaderCircle className="animate-spin mr-2" /> : t('sendLinkButton') || 'Envoyer le code'}
                 </Button>
               </form>
             ) : (
@@ -209,15 +210,16 @@ function LoginClientContent({ t }: { t: any }) {
                   pattern="[0-9]{6}"
                   placeholder="123456"
                   value={code}
-                  onChange={(e) => setCode(e.target.value)}
-                  required
+                  onChange={(e) => setCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                  maxLength={6}
+                  autoFocus
                   disabled={isVerifying}
                 />
                 <Button type="submit" className="w-full" disabled={isVerifying}>
-                  {isVerifying ? <LoaderCircle className="animate-spin" /> : t('confirmEmailSignInButton')}
+                  {isVerifying ? <LoaderCircle className="animate-spin mr-2" /> : t('confirmEmailSignInButton') || 'Se connecter'}
                 </Button>
-                 <Button variant="link" size="sm" onClick={() => setStep('email')} className="w-full">
-                    Use a different email
+                <Button variant="link" size="sm" onClick={() => { setStep('email'); setCode(''); }} className="w-full">
+                  Utiliser une autre adresse e-mail
                 </Button>
               </form>
             )}
@@ -234,7 +236,7 @@ export default function LoginPage() {
     <Suspense fallback={
       <div className="flex h-screen w-full flex-col items-center justify-center gap-4">
         <LoaderCircle className="h-12 w-12 animate-spin text-primary" />
-        <p className="text-muted-foreground">{t('verifying')}</p>
+        <p className="text-muted-foreground">Chargement...</p>
       </div>
     }>
       <LoginClientContent t={t} />
