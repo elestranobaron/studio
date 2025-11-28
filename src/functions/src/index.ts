@@ -1,29 +1,26 @@
 
 "use strict";
-import type { QuerySnapshot, DocumentSnapshot, Transaction } from "firebase-admin/firestore";
-const { onCall, onRequest, HttpsError } = require("firebase-functions/v2/https");
-const { onSchedule } = require("firebase-functions/v2/scheduler");
-const admin = require("firebase-admin");
-const Stripe = require("stripe");
-const cors = require("cors")({ origin: true });
+
+import { onCall, onRequest, HttpsError } from "firebase-functions/v2/https";
+import { onSchedule } from "firebase-functions/v2/scheduler";
+import * as admin from "firebase-admin";
+import Stripe from "stripe";
+import type { QuerySnapshot, DocumentSnapshot } from "firebase-admin/firestore";
 
 admin.initializeApp();
 const db = admin.firestore();
 
-const stripe = Stripe(process.env.STRIPE_SECRET_KEY, { apiVersion: "2024-06-20" });
-const STRIPE_WEBHOOK_SECRET = process.env.STRIPE_WEBHOOK_SECRET;
-const STRIPE_MONTHLY_PRICE_ID = process.env.STRIPE_MONTHLY_PRICE_ID;
-const STRIPE_YEARLY_PRICE_ID = process.env.STRIPE_YEARLY_PRICE_ID;
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, { apiVersion: "2024-06-20" });
+const STRIPE_WEBHOOK_SECRET = process.env.STRIPE_WEBHOOK_SECRET!;
+const STRIPE_MONTHLY_PRICE_ID = process.env.STRIPE_MONTHLY_PRICE_ID!;
+const STRIPE_YEARLY_PRICE_ID = process.env.STRIPE_YEARLY_PRICE_ID!;
 
-
-// --- NEW DIGICODE AUTHENTICATION ---
-
+// --- DIGICODE AUTHENTICATION ---
 function generateDigicode() {
-  // Generate a 6-digit code
   return Math.floor(100000 + Math.random() * 900000).toString();
 }
 
-exports.sendDigicode = onCall(async (request: any) => {
+exports.sendDigicode = onCall({}, async (request: any) => {
   const email = request.data.email;
   if (!email || typeof email !== "string") {
     throw new HttpsError("invalid-argument", "A valid email address is required.");
@@ -35,12 +32,11 @@ exports.sendDigicode = onCall(async (request: any) => {
   }
 
   const code = generateDigicode();
-  const expires = admin.firestore.Timestamp.fromMillis(Date.now() + 10 * 60 * 1000); // 10 minutes expiration
+  const expires = admin.firestore.Timestamp.fromMillis(Date.now() + 10 * 60 * 1000);
 
-  // Store the code securely in Firestore
   await db.collection("digicodes").doc(email).set({
-    code: code,
-    expires: expires,
+    code,
+    expires,
   });
 
   try {
@@ -53,7 +49,7 @@ exports.sendDigicode = onCall(async (request: any) => {
       body: JSON.stringify({
         sender: { name: "WODBurner Team", email: "noreply@wodburner.app" },
         to: [{ email }],
-        templateId: 2, // IMPORTANT: Assumes template ID 2 is for the digicode
+        templateId: 2,
         params: { DIGICODE: code },
       }),
     });
@@ -61,75 +57,72 @@ exports.sendDigicode = onCall(async (request: any) => {
     if (!brevoRes.ok) {
       const errorText = await brevoRes.text();
       console.error("Brevo API error:", errorText);
-      throw new HttpsError("internal", "Failed to send the authentication code. Please try again.");
+      throw new HttpsError("internal", "Failed to send the authentication code.");
     }
 
     return { success: true };
   } catch (error) {
     console.error("sendDigicode error:", error);
-    throw new HttpsError("internal", "An unexpected error occurred while sending the code.");
+    throw new HttpsError("internal", "An unexpected error occurred.");
   }
 });
 
+exports.verifyDigicode = onCall({}, async (request: any) => {
+  const { email, code } = request.data;
 
-exports.verifyDigicode = onCall(async (request: any) => {
-    const { email, code } = request.data;
-  
-    if (!email || !code) {
-      throw new HttpsError("invalid-argument", "Email and code are required.");
-    }
-  
-    const codeRef = db.collection("digicodes").doc(email);
-    const codeDoc = await codeRef.get();
-  
-    if (!codeDoc.exists) {
-      throw new HttpsError("not-found", "Invalid code. Please request a new one.");
-    }
-  
-    const { code: storedCode, expires } = codeDoc.data();
-  
-    if (expires.toMillis() < Date.now()) {
-      await codeRef.delete();
-      throw new HttpsError("deadline-exceeded", "The code has expired. Please request a new one.");
-    }
-  
-    if (storedCode !== code) {
-      throw new HttpsError("unauthenticated", "Invalid code. Please try again.");
-    }
-  
-    // Code is valid, delete it and create a custom auth token
+  if (!email || !code) {
+    throw new HttpsError("invalid-argument", "Email and code are required.");
+  }
+
+  const codeRef = db.collection("digicodes").doc(email);
+  const codeDoc = await codeRef.get();
+
+  if (!codeDoc.exists) {
+    throw new HttpsError("not-found", "Invalid code. Please request a new one.");
+  }
+
+  const data = codeDoc.data()!;
+  const { code: storedCode, expires } = data;
+
+  if (expires.toMillis() < Date.now()) {
     await codeRef.delete();
-  
-    try {
-      let user = await admin.auth().getUserByEmail(email).catch(() => null);
-      let uid;
-  
-      if (user) {
-        uid = user.uid;
-      } else {
-        // If user does not exist, create a new one
-        const newUser = await admin.auth().createUser({ email: email });
-        uid = newUser.uid;
-        // Optionally create user profile in Firestore here
-        await db.collection("users").doc(uid).set({
-            email: email,
-            premium: false,
-            createdAt: admin.firestore.FieldValue.serverTimestamp(),
-        }, { merge: true });
-      }
-  
-      const customToken = await admin.auth().createCustomToken(uid);
-      return { token: customToken };
-    } catch (error) {
-      console.error("Error creating custom token:", error);
-      throw new HttpsError("internal", "Could not complete the sign-in process.");
+    throw new HttpsError("deadline-exceeded", "The code has expired.");
+  }
+
+  if (storedCode !== code) {
+    throw new HttpsError("unauthenticated", "Invalid code.");
+  }
+
+  await codeRef.delete();
+
+  try {
+    let user = await admin.auth().getUserByEmail(email).catch(() => null);
+    let uid: string;
+
+    if (user) {
+      uid = user.uid;
+    } else {
+      const newUser = await admin.auth().createUser({ email });
+      uid = newUser.uid;
+      await db.collection("users").doc(uid).set({
+        email,
+        premium: false,
+        createdAt: admin.firestore.FieldValue.serverTimestamp(),
+      }, { merge: true });
     }
+
+    const customToken = await admin.auth().createCustomToken(uid);
+    return { token: customToken };
+  } catch (error) {
+    console.error("Error creating custom token:", error);
+    throw new HttpsError("internal", "Could not complete the sign-in process.");
+  }
 });
 
 
 // --- USER AND STRIPE FUNCTIONS (Unchanged but kept for context) ---
 
-exports.onUserSignIn = onCall(async (request: any) => {
+exports.onUserSignIn = onCall({}, async (request: any) => {
   if (!request.auth?.uid) return;
   const userRef = db.collection("users").doc(request.auth.uid);
   const doc = await userRef.get();
@@ -167,7 +160,7 @@ exports.resetReactions = onSchedule("0 0 * * *", async () => {
   console.log(`Reactions reset for ${snapshot.size} users`);
 });
 
-exports.createCheckout = onCall(async (request: any) => {
+exports.createCheckout = onCall({}, async (request: any) => {
   if (!request.auth?.uid) throw new HttpsError("unauthenticated", "Login required");
 
   const yearly = request.data.yearly === true;
@@ -288,7 +281,7 @@ app.post("/", async (req: Request, res: Response) => {
 
 exports.stripeWebhook = onRequest({ region: "europe-west1" }, app);
 
-exports.createCustomerPortal = onCall(async (request: any) => {
+exports.createCustomerPortal = onCall({}, async (request: any) => {
     if (!request.auth) {
         throw new HttpsError('unauthenticated', 'You must be logged in.');
     }
