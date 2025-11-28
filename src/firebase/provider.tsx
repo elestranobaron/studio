@@ -1,3 +1,4 @@
+
 // src/firebase/provider.tsx
 'use client';
 
@@ -8,18 +9,15 @@ import { getFirestore, doc, onSnapshot, Firestore } from 'firebase/firestore';
 import { FirebaseErrorListener } from '@/components/FirebaseErrorListener';
 import { firebaseConfig } from './config';
 
-// Initialize Firebase App
-const app: FirebaseApp = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
-
 export type AppUser = FirebaseAuthUser & {
   premium?: boolean;
   [key: string]: any;
 };
 
 export interface FirebaseContextState {
-  firebaseApp: FirebaseApp;
-  firestore: Firestore;
-  auth: Auth;
+  firebaseApp: FirebaseApp | null;
+  firestore: Firestore | null;
+  auth: Auth | null;
   user: AppUser | null;
   isUserLoading: boolean;
   userError: Error | null;
@@ -32,12 +30,24 @@ export const FirebaseProvider: React.FC<{ children: ReactNode }> = ({ children }
   const [isUserLoading, setIsUserLoading] = useState(true);
   const [userError, setUserError] = useState<Error | null>(null);
 
-  // Initialize services here, within the component lifecycle
-  const auth = useMemo(() => getAuth(app), []);
-  const firestore = useMemo(() => getFirestore(app), []);
+  const services = useMemo(() => {
+    const isConfigured = firebaseConfig && firebaseConfig.apiKey;
+    if (!isConfigured) {
+      console.warn("Firebase config is missing or incomplete. App will run without Firebase services.");
+      return { app: null, auth: null, firestore: null };
+    }
+    const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
+    return { app, auth: getAuth(app), firestore: getFirestore(app) };
+  }, []);
 
+  const { app, auth, firestore } = services;
 
   useEffect(() => {
+    if (!auth || !firestore) {
+        setIsUserLoading(false);
+        return;
+    }
+
     const unsubscribeAuth = onAuthStateChanged(
       auth,
       (firebaseUser) => {
@@ -90,7 +100,7 @@ export const FirebaseProvider: React.FC<{ children: ReactNode }> = ({ children }
       isUserLoading,
       userError,
     }),
-    [user, isUserLoading, userError, auth, firestore]
+    [app, firestore, auth, user, isUserLoading, userError]
   );
 
   return (
