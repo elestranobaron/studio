@@ -8,10 +8,8 @@ import { getFirestore, doc, onSnapshot, Firestore } from 'firebase/firestore';
 import { FirebaseErrorListener } from '@/components/FirebaseErrorListener';
 import { firebaseConfig } from './config';
 
-// ON INITIALISE UNE SEULE FOIS, CÔTÉ CLIENT
+// Initialize Firebase App
 const app: FirebaseApp = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
-const auth: Auth = getAuth(app);
-const firestore: Firestore = getFirestore(app);
 
 export type AppUser = FirebaseAuthUser & {
   premium?: boolean;
@@ -33,6 +31,11 @@ export const FirebaseProvider: React.FC<{ children: ReactNode }> = ({ children }
   const [user, setUser] = useState<AppUser | null>(null);
   const [isUserLoading, setIsUserLoading] = useState(true);
   const [userError, setUserError] = useState<Error | null>(null);
+
+  // Initialize services here, within the component lifecycle
+  const auth = useMemo(() => getAuth(app), []);
+  const firestore = useMemo(() => getFirestore(app), []);
+
 
   useEffect(() => {
     const unsubscribeAuth = onAuthStateChanged(
@@ -76,7 +79,7 @@ export const FirebaseProvider: React.FC<{ children: ReactNode }> = ({ children }
     );
 
     return () => unsubscribeAuth();
-  }, []); // plus de dépendances → tout est global
+  }, [auth, firestore]); 
 
   const contextValue = useMemo(
     (): FirebaseContextState => ({
@@ -87,7 +90,7 @@ export const FirebaseProvider: React.FC<{ children: ReactNode }> = ({ children }
       isUserLoading,
       userError,
     }),
-    [user, isUserLoading, userError]
+    [user, isUserLoading, userError, auth, firestore]
   );
 
   return (
