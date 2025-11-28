@@ -1,4 +1,3 @@
-
 // src/app/api/auth/verify-code/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import { digicodeStore } from '@/lib/digicode-store';
@@ -24,7 +23,7 @@ export async function POST(req: NextRequest) {
 
     await digicodeStore.delete(normalizedEmail);
 
-    // 2. ON FORCE LA CRÉATION OU RÉCUPÉRATION DE L'UTILISATEUR
+    // 2. ON FORCE LA CRÉATION OU RÉCUPÉRATION DE L'UTILISATEUR (blindé)
     let userRecord: UserRecord;
 
     try {
@@ -34,10 +33,10 @@ export async function POST(req: NextRequest) {
         console.log(`Utilisateur non trouvé pour ${normalizedEmail}. Création...`);
         userRecord = await adminAuth.createUser({
           email: normalizedEmail,
-          emailVerified: true, // Verified by digicode process
+          emailVerified: true,
         });
         
-        // **THIS IS THE CRITICAL FIX**: Create the user profile in Firestore.
+        // CRITICAL: Create the user profile in Firestore.
         await adminDb.collection("users").doc(userRecord.uid).set({
             email: userRecord.email,
             premium: false,
