@@ -336,7 +336,7 @@ function ReactionButton({ initialWod }: { initialWod: WOD }) {
         onClick={(e) => handleReaction(e, "fire")}
         disabled={isLoading}
       >
-        <span className="text-base">Fire</span>
+        <span className="text-base">🔥</span>
         <span className="text-sm font-medium tabular-nums">{wod.reactions?.fire ?? 0}</span>
       </Button>
       <Button
@@ -346,7 +346,7 @@ function ReactionButton({ initialWod }: { initialWod: WOD }) {
         onClick={(e) => handleReaction(e, "poop")}
         disabled={isLoading}
       >
-        <span className="text-base">Poop</span>
+        <span className="text-base">💩</span>
         <span className="text-sm font-medium tabular-nums">{wod.reactions?.poop ?? 0}</span>
       </Button>
       <div className="flex items-center gap-1.5 text-muted-foreground pl-2">
