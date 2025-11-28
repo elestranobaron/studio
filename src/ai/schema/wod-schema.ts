@@ -35,5 +35,10 @@ export const AnalyzeWodOutputSchema = z.object({
     description: z.array(WodDescriptionSectionSchema).describe("An array of workout sections. The AI should analyze each section to determine if it has its own timer and extract its parameters (timerType, timerDuration, etc.)."),
     duration: z.number().optional().describe("The total duration of the main workout in minutes (usually the Metcon). For EMOMs, calculate total time. For AMRAPs, use the specified time."),
     imageHint: z.string().describe("A one or two-word hint for a relevant stock photo, e.g., 'running', 'barbell', 'kettlebell', 'pull-up'."),
+    // New workout profile analysis
+    cardio: z.number().min(0).max(100).describe("On a scale of 0-100, estimate the percentage of this WOD that is cardio-focused (running, rowing, burpees, etc.)."),
+    lifting: z.number().min(0).max(100).describe("On a scale of 0-100, estimate the percentage of this WOD that is lifting-focused (barbell, kettlebell, dumbbells, etc.). The sum of cardio and lifting should be 100."),
+    upperBody: z.number().min(0).max(100).describe("On a scale of 0-100, estimate the percentage of this WOD that targets the upper body (pull-ups, push-ups, overhead press, etc.)."),
+    lowerBody: z.number().min(0).max(100).describe("On a scale of 0-100, estimate the percentage of this WOD that targets the lower body (squats, lunges, running, etc.). The sum of upperBody and lowerBody should be 100."),
 });
 export type AnalyzeWodOutput = z.infer<typeof AnalyzeWodOutputSchema>;

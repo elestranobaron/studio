@@ -28,6 +28,10 @@ import {
   Trash2,
   Pencil,
   Expand,
+  HeartPulse,
+  Weight,
+  Armchair,
+  Bike,
 } from "lucide-react";
 import { format, isValid } from "date-fns";
 import { useFirebase, useUser } from "@/firebase";
@@ -73,6 +77,7 @@ import { WodContentParser } from "./wod-content-parser";
 import { Separator } from "./ui/separator";
 import { HeroLetter } from "./hero-letter";
 import { useTranslations } from "next-intl";
+import { Progress } from "./ui/progress";
 
 function WodIcon({ type }: { type: WOD["type"] }) {
   switch (type) {
@@ -352,6 +357,53 @@ function ReactionButton({ initialWod }: { initialWod: WOD }) {
   );
 }
 
+function WodProfile({ wod }: { wod: WOD }) {
+  const t = useTranslations("WodCard.profile");
+  const cardio = wod.cardio ?? 50; // Default to 50 if undefined
+  const upperBody = wod.upperBody ?? 50;
+
+  return (
+    <div className="space-y-3 pt-2">
+      {/* Cardio vs Lifting */}
+      <div className="space-y-1">
+        <div className="flex justify-between items-center text-xs font-medium text-muted-foreground">
+          <div className="flex items-center gap-1.5">
+            <HeartPulse className="h-3.5 w-3.5 text-red-400"/>
+            <span>{t('cardio')}</span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <span>{t('lifting')}</span>
+            <Weight className="h-3.5 w-3.5 text-sky-400"/>
+          </div>
+        </div>
+        <div className="flex items-center gap-1 w-full">
+            <Progress value={cardio} className="h-2 [&>div]:bg-red-400" />
+            <Progress value={100-cardio} className="h-2 [&>div]:bg-sky-400" />
+        </div>
+      </div>
+
+      {/* Upper vs Lower */}
+       <div className="space-y-1">
+        <div className="flex justify-between items-center text-xs font-medium text-muted-foreground">
+          <div className="flex items-center gap-1.5">
+            <Armchair className="h-3.5 w-3.5 text-amber-400"/>
+            <span>{t('upper')}</span>
+          </div>
+          <div className="flex items-center gap-1.5">
+             <span>{t('lower')}</span>
+            <Bike className="h-3.5 w-3.5 text-fuchsia-400"/>
+          </div>
+        </div>
+         <div className="flex items-center gap-1 w-full">
+            <Progress value={upperBody} className="h-2 [&>div]:bg-amber-400" />
+            <Progress value={100-upperBody} className="h-2 [&>div]:bg-fuchsia-400" />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+
 export function WodCard({ wod, source = "personal" }: { wod: WOD; source?: "personal" | "community" }) {
   const t = useTranslations("WodCard");
   const date = new Date(wod.date);
@@ -363,6 +415,8 @@ export function WodCard({ wod, source = "personal" }: { wod: WOD; source?: "pers
     : [{ title: "Workout", content: wod.description || "" }];
 
   const isHeroWod = wod.userId === "system";
+  const hasProfile = wod.cardio !== undefined && wod.lifting !== undefined && wod.upperBody !== undefined && wod.lowerBody !== undefined;
+
 
   return (
     <Card className="flex flex-col overflow-hidden transition-all duration-300 ease-in-out group relative hover:shadow-2xl hover:shadow-primary/20 hover:-translate-y-1">
@@ -464,6 +518,7 @@ export function WodCard({ wod, source = "personal" }: { wod: WOD; source?: "pers
             </div>
           </DialogContent>
         </Dialog>
+         {hasProfile && <WodProfile wod={wod} />}
       </CardContent>
 
       <CardFooter className="flex flex-col items-stretch gap-2 pt-2">
@@ -475,5 +530,3 @@ export function WodCard({ wod, source = "personal" }: { wod: WOD; source?: "pers
     </Card>
   );
 }
-
-    

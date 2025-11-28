@@ -1,3 +1,4 @@
+
 'use server';
 /**
  * @fileOverview A WOD (Workout of the Day) generation AI agent.
@@ -45,6 +46,11 @@ Follow these instructions precisely:
     *   If the WOD is an AMRAP or EMOM, calculate its total duration in **minutes**. For example, an AMRAP in 20 minutes is 20. An EMOM for 10 rounds of 1 minute is 10. An EMOM for 6 rounds every 2 minutes 30 seconds is 15 (6 * 2.5).
     *   If it's "For Time" or "Tabata", leave this field empty.
 5.  **Image Hint**: Provide a one or two-word hint for finding a relevant stock photo. Examples: "running", "barbell", "kettlebell", "pull-up", "rowing". Be creative and match it to the main movement.
+6.  **Workout Profile Analysis**: Based on the main Metcon/conditioning part, provide a profile analysis.
+    *   **cardio**: On a scale of 0-100, what percentage is cardio?
+    *   **lifting**: On a scale of 0-100, what percentage is weightlifting? (Sum of cardio and lifting must be 100).
+    *   **upperBody**: On a scale of 0-100, what percentage targets the upper body?
+    *   **lowerBody**: On a scale of 0-100, what percentage targets the lower body? (Sum of upperBody and lowerBody must be 100).
 
 Generate a well-balanced and challenging workout. Be creative! Surprise me!`,
 });

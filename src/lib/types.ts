@@ -33,4 +33,9 @@ export type WOD = {
   commentCount?: number; // For community WODs
   emomInterval?: number; // Custom: Interval length in seconds for EMOM
   isPremium?: boolean; // To mark premium content
+  // New workout profile fields
+  cardio?: number; // Percentage (0-100)
+  lifting?: number; // Percentage (0-100)
+  upperBody?: number; // Percentage (0-100)
+  lowerBody?: number; // Percentage (0-100)
 };

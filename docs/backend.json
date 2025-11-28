@@ -39,6 +39,22 @@
           "type": "string",
           "description": "Date when the WOD was created, in yyyy-MM-dd format.",
           "format": "date"
+        },
+        "cardio": {
+            "type": "number",
+            "description": "Percentage (0-100) of the WOD that is cardio-focused."
+        },
+        "lifting": {
+            "type": "number",
+            "description": "Percentage (0-100) of the WOD that is lifting-focused."
+        },
+        "upperBody": {
+            "type": "number",
+            "description": "Percentage (0-100) of the WOD that targets the upper body."
+        },
+        "lowerBody": {
+            "type": "number",
+            "description": "Percentage (0-100) of the WOD that targets the lower body."
         }
       },
       "required": [
