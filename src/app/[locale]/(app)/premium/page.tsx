@@ -64,7 +64,7 @@ function PremiumContent({ t }: { t: any }) {
     setIsLoading(plan);
 
     try {
-      const idToken = await auth.currentUser.getIdToken();
+      const idToken = await auth.currentUser.getIdToken(true);
 
       const res = await fetch('/api/create-checkout', {
         method: 'POST',
@@ -239,4 +239,3 @@ export default function PremiumPage() {
 }
 
     
-
