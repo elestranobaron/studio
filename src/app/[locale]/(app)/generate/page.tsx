@@ -82,6 +82,10 @@ export default function GenerateWodPage() {
                 imageUrl: placeholderImageUrl,
                 imageHint: result.imageHint,
                 duration: result.duration,
+                cardio: result.cardio,
+                lifting: result.lifting,
+                upperBody: result.upperBody,
+                lowerBody: result.lowerBody,
             };
 
             // Before saving to state, we need to save this to Firestore to get a real ID
@@ -190,4 +194,3 @@ export default function GenerateWodPage() {
 }
 
     
-

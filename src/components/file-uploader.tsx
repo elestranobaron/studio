@@ -156,6 +156,10 @@ export function FileUploader() {
             date: new Date().toISOString(),
             imageUrl: photoDataUri,
             imageHint: analysisResult.imageHint,
+            cardio: analysisResult.cardio,
+            lifting: analysisResult.lifting,
+            upperBody: analysisResult.upperBody,
+            lowerBody: analysisResult.lowerBody
         };
 
         if (analysisResult.duration) {
