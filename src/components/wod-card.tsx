@@ -78,6 +78,7 @@ import { Separator } from "./ui/separator";
 import { HeroLetter } from "./hero-letter";
 import { useTranslations } from "next-intl";
 import { Progress } from "./ui/progress";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./ui/tooltip";
 
 function WodIcon({ type }: { type: WOD["type"] }) {
   switch (type) {
@@ -132,7 +133,7 @@ function PersonalWodActions({ wod }: { wod: WOD }) {
           date: new Date(wod.date).toISOString(),
           userId: user.uid,
           userDisplayName,
-          reactions: { fire: 0, poop: 0 },
+          reactions: { fire: 0, poop: 0, laugh: 0, cry: 0, vomit: 0 },
           commentCount: 0,
         };
 
@@ -253,109 +254,140 @@ function PersonalWodActions({ wod }: { wod: WOD }) {
   );
 }
 
-function ReactionButton({ initialWod }: { initialWod: WOD }) {
-  const t = useTranslations("WodCard");
-  const { firestore } = useFirebase();
-  const { user } = useUser();
-  const { toast } = useToast();
-  const [isLoading, setIsLoading] = useState(false);
-  const [wod, setWod] = useState(initialWod);
-  const [userReaction, setUserReaction] = useState<Reaction | null>(null);
 
-  const reactorRef = useMemo(() => {
-    if (!firestore || !user) return null;
-    return doc(firestore, `communityWods/${wod.id}/reactors/${user.uid}`);
-  }, [firestore, user, wod.id]);
+function ReactionGrid({ initialWod }: { initialWod: WOD }) {
+    const t = useTranslations("WodCard");
+    const { firestore } = useFirebase();
+    const { user } = useUser();
+    const { toast } = useToast();
+    const [wod, setWod] = useState(initialWod);
+    const [userReaction, setUserReaction] = useState<Reaction | null>(null);
 
-  if (!firestore || !user || user.isAnonymous || !reactorRef) {
-    return null;
-  }
+    const reactorRef = useMemo(() => {
+        if (!firestore || !user) return null;
+        return doc(firestore, `communityWods/${wod.id}/reactors/${user.uid}`);
+    }, [firestore, user, wod.id]);
 
-  const handleReaction = async (e: React.MouseEvent, reactionType: Reaction) => {
-    e.preventDefault();
-    e.stopPropagation();
-
-    const originalWod = { ...wod };
-    const originalReaction = userReaction;
-
-    setWod((currentWod) => {
-      const newReactions = { ...(currentWod.reactions || { fire: 0, poop: 0 }) };
-      if (userReaction === reactionType) {
-        newReactions[reactionType]--;
-        setUserReaction(null);
-      } else {
-        if (userReaction) newReactions[userReaction]--;
-        newReactions[reactionType]++;
-        setUserReaction(reactionType);
-      }
-      return { ...currentWod, reactions: newReactions };
-    });
-
-    const communityWodRef = doc(firestore, "communityWods", wod.id);
-
-    try {
-      await runTransaction(firestore, async (transaction) => {
-        const reactionDoc = await transaction.get(reactorRef);
-        const wodDoc = await transaction.get(communityWodRef);
-
-        if (!wodDoc.exists()) throw "WOD does not exist!";
-
-        const currentReactions = wodDoc.data().reactions || { fire: 0, poop: 0 };
-        const newReactions = { ...currentReactions };
-
-        if (reactionDoc.exists()) {
-          const previousReaction = reactionDoc.data().type as Reaction;
-          if (previousReaction === reactionType) {
-            newReactions[reactionType] = Math.max(0, newReactions[reactionType] - 1);
-            transaction.delete(reactorRef);
-          } else {
-            newReactions[previousReaction] = Math.max(0, newReactions[previousReaction] - 1);
-            newReactions[reactionType]++;
-            transaction.set(reactorRef, { type: reactionType });
-          }
-        } else {
-          newReactions[reactionType]++;
-          transaction.set(reactorRef, { type: reactionType });
-        }
-
-        transaction.update(communityWodRef, { reactions: newReactions });
-      });
-    } catch (error) {
-      console.error("Transaction failed: ", error);
-      toast({ variant: "destructive", title: t("reactionErrorToastTitle"), description: t("reactionErrorToastDescription") });
-      setWod(originalWod);
-      setUserReaction(originalReaction);
+    const reactionsConfig: { type: Reaction; emoji: string; tooltip: string }[] = [
+        { type: "fire", emoji: "🔥", tooltip: "Awesome!" },
+        { type: "cry", emoji: "😭", tooltip: "I cried" },
+        { type: "vomit", emoji: "🤮", tooltip: "Puked" },
+        { type: "laugh", emoji: "😂", tooltip: "Funny WOD" },
+        { type: "poop", emoji: "💩", tooltip: "That was crap" },
+    ];
+    
+    if (!firestore || !user || user.isAnonymous || !reactorRef) {
+        return null;
     }
-  };
+    
+    const handleReaction = async (e: React.MouseEvent, reactionType: Reaction) => {
+        e.preventDefault();
+        e.stopPropagation();
 
-  return (
-    <div className="flex items-center gap-1">
-      <Button
-        variant="ghost"
-        size="sm"
-        className={cn("flex items-center gap-1.5 text-muted-foreground px-2", userReaction === "fire" && "bg-primary/10 text-primary")}
-        onClick={(e) => handleReaction(e, "fire")}
-        disabled={isLoading}
-      >
-        <span className="text-base">🔥</span>
-        <span className="text-sm font-medium tabular-nums">{wod.reactions?.fire ?? 0}</span>
-      </Button>
-      <Button
-        variant="ghost"
-        size="sm"
-        className={cn("flex items-center gap-1.5 text-muted-foreground px-2", userReaction === "poop" && "bg-amber-800/20 text-amber-600")}
-        onClick={(e) => handleReaction(e, "poop")}
-        disabled={isLoading}
-      >
-        <span className="text-base">💩</span>
-        <span className="text-sm font-medium tabular-nums">{wod.reactions?.poop ?? 0}</span>
-      </Button>
-      <div className="flex items-center gap-1.5 text-muted-foreground pl-2">
-        <MessageCircle className="h-4 w-4" />
-        <span className="text-sm font-medium tabular-nums">{wod.commentCount ?? 0}</span>
-      </div>
-    </div>
-  );
+        const originalWod = { ...wod };
+        const originalReaction = userReaction;
+
+        setWod((currentWod) => {
+            const newReactions = { ...(currentWod.reactions || { fire: 0, poop: 0, laugh: 0, cry: 0, vomit: 0 }) };
+            if (userReaction === reactionType) {
+                newReactions[reactionType]--;
+                setUserReaction(null);
+            } else {
+                if (userReaction) newReactions[userReaction]--;
+                newReactions[reactionType]++;
+                setUserReaction(reactionType);
+            }
+            return { ...currentWod, reactions: newReactions };
+        });
+
+        const communityWodRef = doc(firestore, "communityWods", wod.id);
+
+        try {
+            await runTransaction(firestore, async (transaction) => {
+                const reactionDoc = await transaction.get(reactorRef);
+                const wodDoc = await transaction.get(communityWodRef);
+
+                if (!wodDoc.exists()) throw "WOD does not exist!";
+
+                const currentReactions = wodDoc.data().reactions || { fire: 0, poop: 0, laugh: 0, cry: 0, vomit: 0 };
+                const newReactions = { ...currentReactions };
+
+                if (reactionDoc.exists()) {
+                    const previousReaction = reactionDoc.data().type as Reaction;
+                    if (previousReaction === reactionType) {
+                        newReactions[reactionType] = Math.max(0, newReactions[reactionType] - 1);
+                        transaction.delete(reactorRef);
+                    } else {
+                        newReactions[previousReaction] = Math.max(0, newReactions[previousReaction] - 1);
+                        newReactions[reactionType]++;
+                        transaction.set(reactorRef, { type: reactionType });
+                    }
+                } else {
+                    newReactions[reactionType]++;
+                    transaction.set(reactorRef, { type: reactionType });
+                }
+                transaction.update(communityWodRef, { reactions: newReactions });
+            });
+        } catch (error) {
+            console.error("Transaction failed: ", error);
+            toast({ variant: "destructive", title: t("reactionErrorToastTitle"), description: t("reactionErrorToastDescription") });
+            setWod(originalWod);
+            setUserReaction(originalReaction);
+        }
+    };
+    
+    const totalReactions = Object.values(wod.reactions || {}).reduce((a, b) => a + b, 0);
+
+    return (
+        <TooltipProvider delayDuration={200}>
+            <div className="flex items-center justify-between">
+                <div className="flex -space-x-2">
+                    {reactionsConfig.map(({ type, emoji }) => {
+                        const count = wod.reactions?.[type] ?? 0;
+                        if (count > 0) {
+                            return (
+                                <Tooltip key={type}>
+                                    <TooltipTrigger>
+                                        <div className="h-6 w-6 rounded-full bg-muted border-2 border-background flex items-center justify-center text-xs">
+                                            {emoji}
+                                        </div>
+                                    </TooltipTrigger>
+                                    <TooltipContent>
+                                        <p>{count} {type}</p>
+                                    </TooltipContent>
+                                </Tooltip>
+                            )
+                        }
+                        return null;
+                    })}
+                     {totalReactions > 0 && <div className="h-6 px-2 rounded-full bg-muted border-2 border-background flex items-center justify-center text-xs font-bold tabular-nums text-muted-foreground z-10">
+                        {totalReactions}
+                    </div>}
+                </div>
+
+                <div className="flex items-center gap-1 rounded-full bg-muted p-0.5">
+                     {reactionsConfig.map(({ type, emoji, tooltip }) => (
+                         <Tooltip key={type}>
+                            <TooltipTrigger asChild>
+                                 <button
+                                     className={cn(
+                                         "h-7 w-7 rounded-full text-base flex items-center justify-center transition-all",
+                                         userReaction === type ? "bg-background scale-110 shadow" : "hover:bg-background/50"
+                                     )}
+                                     onClick={(e) => handleReaction(e, type)}
+                                 >
+                                     {emoji}
+                                 </button>
+                             </TooltipTrigger>
+                             <TooltipContent>
+                                 <p>{tooltip}</p>
+                             </TooltipContent>
+                         </Tooltip>
+                     ))}
+                </div>
+            </div>
+        </TooltipProvider>
+    );
 }
 
 function WodProfile({ wod }: { wod: WOD }) {
@@ -456,6 +488,9 @@ export function WodCard({ wod, source = "personal" }: { wod: WOD; source?: "pers
                 className="object-contain w-full h-auto rounded-t-lg"
               />
             </div>
+            <DialogDescription className="sr-only">
+                {t('viewImageAlt', {wodName: wod.name})}
+            </DialogDescription>
           </DialogContent>
         </Dialog>
       )}
@@ -516,7 +551,7 @@ export function WodCard({ wod, source = "personal" }: { wod: WOD; source?: "pers
       </CardContent>
 
       <CardFooter className="flex flex-col items-stretch gap-2 pt-2">
-        {source === "community" && <ReactionButton initialWod={wod} />}
+        {source === "community" && <ReactionGrid initialWod={wod} />}
         <Button asChild className="w-full">
           <Link href={href}>{t("startWod")}</Link>
         </Button>

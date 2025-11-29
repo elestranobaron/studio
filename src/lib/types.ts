@@ -10,7 +10,7 @@ export type WodDescriptionSection = {
   timerInterval?: number; // in seconds for EMOM
 };
 
-export type Reaction = 'fire' | 'poop';
+export type Reaction = 'fire' | 'poop' | 'laugh' | 'cry' | 'vomit';
 
 export type WOD = {
   id: string;
@@ -29,6 +29,9 @@ export type WOD = {
   reactions?: { // For community WODs
     fire: number;
     poop: number;
+    laugh: number;
+    cry: number;
+    vomit: number;
   };
   commentCount?: number; // For community WODs
   emomInterval?: number; // Custom: Interval length in seconds for EMOM

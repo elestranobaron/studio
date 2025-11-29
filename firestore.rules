@@ -11,10 +11,6 @@ service cloud.firestore {
       return request.auth.uid == userId;
     }
 
-    function getUserData() {
-      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
-    }
-
     // USERS
     match /users/{userId} {
       allow read, write: if isOwner(userId);
@@ -28,25 +24,20 @@ service cloud.firestore {
 
     // COMMUNITY WODs
     match /communityWods/{wodId} {
-      // Allow read if user is signed in OR if it's a public Hero WOD.
       allow read: if isSignedIn() || get(/databases/$(database)/documents/communityWods/$(wodId)).data.userId == 'system';
-
-      // Write rules remain unchanged: only authenticated users can modify their own content.
       allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
       allow delete: if isSignedIn() && resource.data.userId == request.auth.uid;
       allow update: if isSignedIn() && resource.data.userId == request.auth.uid;
 
       match /reactors/{reactorId} {
         allow read: if isSignedIn();
-        allow create: if isSignedIn() && isOwner(reactorId)
-                       && (getUserData().premium == true || getUserData().dailyReactions < 5);
-        allow delete: if isSignedIn() && isOwner(reactorId);
+        // Allow create/delete if user is signed in (no more premium/daily limits)
+        allow create, delete: if isSignedIn() && isOwner(reactorId);
       }
 
        match /messages/{messageId} {
           allow read: if isSignedIn();
           allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
-          // Deletion should be handled by a server-side function to enforce the 300 message limit
           allow update, delete: if false; 
       }
     }
@@ -58,5 +49,3 @@ service cloud.firestore {
     }
   }
 }
-
-    
