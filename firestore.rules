@@ -30,21 +30,21 @@ service cloud.firestore {
       // Allow updates for reaction counts
       allow update: if isSignedIn() && (
         (resource.data.userId == request.auth.uid) ||
-        (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['reactions']))
+        (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['reactions', 'commentCount']))
       );
 
       match /reactors/{reactorId} {
-        allow read, create, delete: if isSignedIn() && isOwner(reactorId);
+        allow read, create, delete: if isSignedIn() && (isOwner(reactorId) || request.auth.uid == reactorId);
       }
 
-       match /messages/{messageId} {
-          allow get, list: if isSignedIn();
-          allow create: if isSignedIn() 
-                        && request.resource.data.userId == request.auth.uid
-                        && request.resource.data.text.size() <= 280;
-          allow update: if isSignedIn()
-                        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['upvotes', 'downvotes', 'score']);
-          allow delete: if false; 
+      match /messages/{messageId} {
+        allow get, list: if isSignedIn();
+        allow create: if isSignedIn() 
+                      && request.resource.data.userId == request.auth.uid
+                      && request.resource.data.text.size() <= 280;
+        allow update: if isSignedIn()
+                      && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['upvotes', 'downvotes', 'score']);
+        allow delete: if false; 
       }
     }
 
