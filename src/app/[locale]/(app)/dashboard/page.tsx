@@ -4,14 +4,14 @@
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { WodCard } from '@/components/wod-card';
-import { LogIn, PlusCircle, Search, ScanLine, ArrowDownUp, ArrowUp, ArrowLeft } from 'lucide-react';
+import { LogIn, PlusCircle, Search, ScanLine, ArrowDownUp, ArrowUp, ArrowLeft, SlidersHorizontal, Gem, X } from 'lucide-react';
 import { SidebarTrigger, useSidebar } from '@/components/ui/sidebar';
 import { useCollection, useFirebase } from '@/firebase';
-import { collection, query, orderBy, limit } from 'firebase/firestore';
+import { collection, query, orderBy, limit, Query, where, collectionGroup } from 'firebase/firestore';
 import { Skeleton } from '@/components/ui/skeleton';
-import type { WOD } from '@/lib/types';
+import type { WOD, WodType } from '@/lib/types';
 import { useUser } from '@/firebase/provider';
-import { useMemo, useState, Suspense, useRef, useEffect, useId } from 'react';
+import { useMemo, useState, Suspense, useEffect, useId } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -23,6 +23,9 @@ import { cn } from '@/lib/utils';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useTranslations } from 'next-intl';
 import React from 'react';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Slider } from '@/components/ui/slider';
 
 
 function WodSkeleton() {
@@ -97,20 +100,29 @@ function WodList({
   );
 }
 
+const WOD_TYPES: WodType[] = ["For Time", "AMRAP", "EMOM", "Tabata", "Other"];
+
 function CommunityWodList() {
     const t = useTranslations('DashboardPage.CommunityWodList');
     const { firestore } = useFirebase();
     const { user, isUserLoading } = useUser();
     const [searchTerm, setSearchTerm] = useState('');
     const [sortBy, setSortBy] = useState<'date' | 'popularity' | 'name'>('date');
+    const [isFiltersOpen, setIsFiltersOpen] = useState(false);
+    
+    // Filter states
+    const [selectedTypes, setSelectedTypes] = useState<WodType[]>([]);
+    const [cardioRange, setCardioRange] = useState<[number, number]>([0, 100]);
+    const [bodyFocusRange, setBodyFocusRange] = useState<[number, number]>([0, 100]);
 
     const shouldFetchData = !isUserLoading && user && !user.isAnonymous;
     
-    const communityWodsCollection = useMemo(() => {
+    const communityWodsQuery = useMemo(() => {
         if (!firestore || !shouldFetchData) return null;
         
-        let q = query(collection(firestore, 'communityWods'));
+        let q: Query = collection(firestore, 'communityWods');
 
+        // Apply sorting
         switch (sortBy) {
             case 'popularity':
                 q = query(q, orderBy('reactions.fire', 'desc'));
@@ -124,30 +136,65 @@ function CommunityWodList() {
                 break;
         }
 
-        return query(q, limit(50));
+        return query(q, limit(100)); // Increased limit for better client-side filtering
     }, [firestore, shouldFetchData, sortBy]);
 
 
-    const { data: communityWods, isLoading: isCommunityWodsLoading, error } = useCollection<WOD>(communityWodsCollection);
+    const { data: communityWods, isLoading: isCommunityWodsLoading, error } = useCollection<WOD>(communityWodsQuery);
 
     const filteredWods = useMemo(() => {
         if (!communityWods) return null;
-        if (!searchTerm) return communityWods;
-
-        const lowercasedTerm = searchTerm.toLowerCase();
+        
         return communityWods.filter(wod => {
-            // Check if wod.description exists and is an array before processing
-            const descriptionString = wod.description && Array.isArray(wod.description)
-                ? wod.description.map(d => d.content).join(' ').toLowerCase()
-                : typeof wod.description === 'string' ? wod.description.toLowerCase() : '';
-            
-            return (
-                wod.name.toLowerCase().includes(lowercasedTerm) ||
-                wod.type.toLowerCase().includes(lowercasedTerm) ||
-                descriptionString.includes(lowercasedTerm)
-            );
+            // Search term filter
+            if (searchTerm) {
+                const lowercasedTerm = searchTerm.toLowerCase();
+                 const descriptionString = wod.description && Array.isArray(wod.description)
+                    ? wod.description.map(d => d.content).join(' ').toLowerCase()
+                    : typeof wod.description === 'string' ? wod.description.toLowerCase() : '';
+                
+                const matchesSearch = (
+                    wod.name.toLowerCase().includes(lowercasedTerm) ||
+                    wod.type.toLowerCase().includes(lowercasedTerm) ||
+                    descriptionString.includes(lowercasedTerm)
+                );
+                if (!matchesSearch) return false;
+            }
+
+            // Premium filters (only apply if user is premium)
+            if (user?.premium) {
+                // Type filter
+                if (selectedTypes.length > 0 && !selectedTypes.includes(wod.type)) {
+                    return false;
+                }
+                // Cardio filter
+                if (wod.cardio === undefined || wod.cardio < cardioRange[0] || wod.cardio > cardioRange[1]) {
+                    return false;
+                }
+                // Body focus filter (maps upper/lower to a single scale)
+                const bodyFocus = wod.upperBody !== undefined ? wod.upperBody : 50; // 0=Lower, 50=Balanced, 100=Upper
+                 if (bodyFocus < bodyFocusRange[0] || bodyFocus > bodyFocusRange[1]) {
+                    return false;
+                }
+            }
+
+            return true;
         });
-    }, [communityWods, searchTerm]);
+    }, [communityWods, searchTerm, user?.premium, selectedTypes, cardioRange, bodyFocusRange]);
+    
+    const activeFilterCount = useMemo(() => {
+        let count = 0;
+        if (selectedTypes.length > 0) count++;
+        if (cardioRange[0] > 0 || cardioRange[1] < 100) count++;
+        if (bodyFocusRange[0] > 0 || bodyFocusRange[1] < 100) count++;
+        return count;
+    }, [selectedTypes, cardioRange, bodyFocusRange]);
+
+    const resetFilters = () => {
+        setSelectedTypes([]);
+        setCardioRange([0, 100]);
+        setBodyFocusRange([0, 100]);
+    }
 
     if (isUserLoading) {
       return (
@@ -205,11 +252,92 @@ function CommunityWodList() {
                         onChange={(e) => setSearchTerm(e.target.value)}
                     />
                 </div>
-                <div className="flex items-center gap-2">
-                    <Label htmlFor="sort-by" className="text-sm font-medium hidden md:block">
-                        <ArrowDownUp className="h-4 w-4 inline-block mr-1 text-muted-foreground"/>
-                        {t('sortByLabel')}
-                    </Label>
+                 <div className="flex items-center gap-2">
+                    <Popover open={isFiltersOpen} onOpenChange={setIsFiltersOpen}>
+                        <PopoverTrigger asChild>
+                            <Button variant="outline" className="w-full md:w-auto relative">
+                                <SlidersHorizontal className="mr-2 h-4 w-4" />
+                                Filters
+                                {activeFilterCount > 0 && (
+                                    <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-xs text-primary-foreground">{activeFilterCount}</span>
+                                )}
+                                {!user?.premium && (
+                                     <Gem className="ml-2 h-3 w-3 text-yellow-500"/>
+                                )}
+                            </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-80" align="end">
+                            <div className="grid gap-6">
+                                <div className="space-y-2">
+                                    <div className="flex items-center justify-between">
+                                        <h4 className="font-medium text-sm leading-none">Filters</h4>
+                                        <Button variant="link" size="sm" className="h-auto p-0 text-xs" onClick={resetFilters}>Reset</Button>
+                                    </div>
+                                    {!user?.premium && (
+                                        <Card className="p-3 text-center bg-muted/50">
+                                            <p className="text-sm">Unlock advanced filters with Premium.</p>
+                                            <Button asChild size="sm" className="mt-2">
+                                                <Link href="/premium">
+                                                    <Gem className="mr-2 h-4 w-4"/> Go Premium
+                                                </Link>
+                                            </Button>
+                                        </Card>
+                                    )}
+                                </div>
+                                <div className={cn("grid gap-4", !user?.premium && "opacity-50 pointer-events-none")}>
+                                     <div>
+                                        <p className="font-medium text-xs text-muted-foreground mb-2">WOD Type</p>
+                                        <div className="grid grid-cols-3 gap-2">
+                                            {WOD_TYPES.map(type => (
+                                                <Button 
+                                                    key={type}
+                                                    variant={selectedTypes.includes(type) ? 'default' : 'outline'}
+                                                    size="sm"
+                                                    className="text-xs h-8"
+                                                    onClick={() => {
+                                                        setSelectedTypes(prev => 
+                                                            prev.includes(type) 
+                                                                ? prev.filter(t => t !== type)
+                                                                : [...prev, type]
+                                                        );
+                                                    }}
+                                                >{type}</Button>
+                                            ))}
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <p className="font-medium text-xs text-muted-foreground mb-2">Cardio vs. Lifting</p>
+                                        <Slider
+                                            value={[cardioRange[0], cardioRange[1]]}
+                                            onValueChange={([min, max]) => setCardioRange([min, max])}
+                                            min={0}
+                                            max={100}
+                                            step={10}
+                                        />
+                                         <div className="flex justify-between text-xs text-muted-foreground mt-1">
+                                            <span>Cardio</span>
+                                            <span>Lifting</span>
+                                        </div>
+                                    </div>
+                                     <div>
+                                        <p className="font-medium text-xs text-muted-foreground mb-2">Body Focus</p>
+                                        <Slider
+                                            value={[bodyFocusRange[0], bodyFocusRange[1]]}
+                                            onValueChange={([min, max]) => setBodyFocusRange([min, max])}
+                                            min={0}
+                                            max={100}
+                                            step={10}
+                                        />
+                                        <div className="flex justify-between text-xs text-muted-foreground mt-1">
+                                            <span>Lower</span>
+                                             <span>Balanced</span>
+                                            <span>Upper</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </PopoverContent>
+                    </Popover>
                     <Select value={sortBy} onValueChange={(value) => setSortBy(value as any)}>
                         <SelectTrigger className="w-full md:w-[180px]" id="sort-by">
                             <SelectValue placeholder={`${t('sortByLabel')}...`} />
@@ -225,8 +353,8 @@ function CommunityWodList() {
             <WodList
                 wods={filteredWods}
                 isLoading={isCommunityWodsLoading}
-                emptyStateTitle={searchTerm ? t('emptySearchTitle') : t('emptyCommunityTitle')}
-                emptyStateDescription={searchTerm ? t('emptySearchDescription') : ""}
+                emptyStateTitle={searchTerm || activeFilterCount > 0 ? t('emptySearchTitle') : t('emptyCommunityTitle')}
+                emptyStateDescription={searchTerm || activeFilterCount > 0 ? t('emptySearchDescription') : ""}
                 source="community"
             />
         </div>
@@ -389,4 +517,5 @@ export default function DashboardPage() {
     
 
     
+
 
