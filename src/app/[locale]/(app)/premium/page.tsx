@@ -62,23 +62,41 @@ function PremiumContent({ t }: { t: any }) {
       router.push('/login');
       return;
     }
-
+  
     setIsLoading(plan);
-
+  
     try {
-      const functions = getFunctions();
-      const createCheckout = httpsCallable(functions, 'createCheckout');
-      
-      const { data } = await createCheckout({ yearly: plan === 'yearly' });
-      const { url } = data as { url: string };
-
-      if (!url) {
-        throw new Error('Checkout URL not returned from function.');
+      // 1. On récupère le token Firebase manuellement
+      const token = await auth.currentUser.getIdToken();
+  
+      // 2. Appel direct à la fonction HTTPS (plus de httpsCallable)
+      const response = await fetch(
+        "https://us-central1-studio-9534743514-17d90.cloudfunctions.net/createCheckout",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            data: { yearly: plan === 'yearly' },
+          }),
+        }
+      );
+  
+      const result = await response.json();
+  
+      if (!response.ok) {
+        throw new Error(result.error || "Erreur lors de la création du checkout");
       }
-      
-      window.location.href = url;
-
+  
+      if (!result.url) {
+        throw new Error("Aucune URL de checkout reçue");
+      }
+  
+      window.location.href = result.url;
     } catch (error: any) {
+      console.error("Erreur checkout:", error);
       toast({
         title: t('toasts.paymentErrorTitle'),
         description: error.message || t('toasts.paymentErrorDescription'),
