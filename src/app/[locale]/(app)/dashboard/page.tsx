@@ -166,22 +166,15 @@ function CommunityWodList() {
                     return false;
                 }
                 const isCardioFilterActive = cardioRange[0] > 0 || cardioRange[1] < 100;
-                if (wod.cardio === undefined && isCardioFilterActive) {
-                    return false;
-                }
-                if (wod.cardio !== undefined && (wod.cardio < cardioRange[0] || wod.cardio > cardioRange[1])) {
-                    return false;
+                if (isCardioFilterActive) {
+                    if (wod.cardio === undefined) return false;
+                    if (wod.cardio < cardioRange[0] || wod.cardio > cardioRange[1]) return false;
                 }
 
                 const isBodyFocusFilterActive = bodyFocusRange[0] > 0 || bodyFocusRange[1] < 100;
-                if (wod.upperBody === undefined && isBodyFocusFilterActive) {
-                     return false;
-                }
-                if (wod.upperBody !== undefined) {
-                    const bodyFocusValue = wod.upperBody;
-                    if (bodyFocusValue < bodyFocusRange[0] || bodyFocusValue > bodyFocusRange[1]) {
-                        return false;
-                    }
+                if (isBodyFocusFilterActive) {
+                    if (wod.upperBody === undefined) return false;
+                    if (wod.upperBody < bodyFocusRange[0] || wod.upperBody > bodyFocusRange[1]) return false;
                 }
             }
 
@@ -315,8 +308,8 @@ function CommunityWodList() {
                                     <div>
                                         <p className="font-medium text-xs text-muted-foreground mb-2">Cardio vs. Lifting</p>
                                         <Slider
-                                            value={[cardioRange[0], cardioRange[1]]}
-                                            onValueChange={([min, max]) => setCardioRange([min, max])}
+                                            value={cardioRange}
+                                            onValueChange={(value) => setCardioRange(value as [number, number])}
                                             min={0}
                                             max={100}
                                             step={10}
@@ -329,8 +322,8 @@ function CommunityWodList() {
                                      <div>
                                         <p className="font-medium text-xs text-muted-foreground mb-2">Body Focus</p>
                                         <Slider
-                                            value={[bodyFocusRange[0], bodyFocusRange[1]]}
-                                            onValueChange={([min, max]) => setBodyFocusRange([min, max])}
+                                            value={bodyFocusRange}
+                                            onValueChange={(value) => setBodyFocusRange(value as [number, number])}
                                             min={0}
                                             max={100}
                                             step={10}
@@ -378,13 +371,14 @@ function DashboardContent({ t }: { t: (key: string) => string }) {
   const baseId = useId();
 
   useEffect(() => {
-    // Check for new user flag from login
-    const isNewUser = sessionStorage.getItem('isNewUser') === 'true';
     const tabParam = searchParams.get('tab');
+    const isNewUser = sessionStorage.getItem('isNewUser') === 'true';
 
     if (isNewUser) {
         setDefaultTab('community');
-        sessionStorage.removeItem('isNewUser'); // Clean up the flag
+        // Use a clean URL replacement that works on the client
+        window.history.replaceState(null, '', '/dashboard');
+        sessionStorage.removeItem('isNewUser');
     } else if (tabParam === 'community') {
         setDefaultTab('community');
     } else {

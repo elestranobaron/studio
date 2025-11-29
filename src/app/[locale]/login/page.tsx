@@ -1,7 +1,7 @@
 
 'use client';
 import { useState, useEffect, Suspense } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth, useUser } from '@/firebase/provider';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -32,7 +32,7 @@ function LoginClientContent({ t }: { t: any }) {
     if (!isUserLoading && user && !user.isAnonymous) {
       const isNewUser = sessionStorage.getItem('isNewUser') === 'true';
       if(isNewUser){
-        router.push('/dashboard?new=true');
+        router.push('/dashboard?tab=community');
       } else {
         router.push('/dashboard');
       }
@@ -237,6 +237,19 @@ function LoginClientContent({ t }: { t: any }) {
 
 export default function LoginPage() {
   const t = useTranslations('LoginPage');
+  const searchParams = useSearchParams();
+  const router = useRouter();
+
+  // Handle the new user parameter for redirection
+  useEffect(() => {
+    const isNewUser = searchParams.get('new') === 'true';
+    if (isNewUser) {
+        sessionStorage.setItem('isNewUser', 'true');
+        // Clean the URL
+        window.history.replaceState(null, '', '/login');
+    }
+  }, [searchParams, router]);
+
   return (
     <Suspense fallback={
       <div className="flex h-screen w-full flex-col items-center justify-center gap-4">
