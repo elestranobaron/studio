@@ -34,9 +34,7 @@ service cloud.firestore {
       );
 
       match /reactors/{reactorId} {
-        allow read: if isSignedIn();
-        // Allow create/delete if user is signed in (no more premium/daily limits)
-        allow create, delete: if isSignedIn() && isOwner(reactorId);
+        allow read, create, delete: if isSignedIn() && isOwner(reactorId);
       }
 
        match /messages/{messageId} {
