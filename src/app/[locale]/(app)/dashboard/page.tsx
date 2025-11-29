@@ -167,14 +167,25 @@ function CommunityWodList() {
                 if (selectedTypes.length > 0 && !selectedTypes.includes(wod.type)) {
                     return false;
                 }
-                // Cardio filter
-                if (wod.cardio === undefined || wod.cardio < cardioRange[0] || wod.cardio > cardioRange[1]) {
+                 // Cardio filter: only apply if the slider has been moved from its default state OR if the WOD has the data
+                const isCardioFilterActive = cardioRange[0] > 0 || cardioRange[1] < 100;
+                if (wod.cardio === undefined && isCardioFilterActive) {
+                    return false; // Hide WODs without data only if filter is active
+                }
+                if (wod.cardio !== undefined && (wod.cardio < cardioRange[0] || wod.cardio > cardioRange[1])) {
                     return false;
                 }
-                // Body focus filter (maps upper/lower to a single scale)
-                const bodyFocus = wod.upperBody !== undefined ? wod.upperBody : 50; // 0=Lower, 50=Balanced, 100=Upper
-                 if (bodyFocus < bodyFocusRange[0] || bodyFocus > bodyFocusRange[1]) {
-                    return false;
+
+                // Body focus filter (maps upper/lower to a single scale where 0 is full lower, 100 is full upper)
+                const isBodyFocusFilterActive = bodyFocusRange[0] > 0 || bodyFocusRange[1] < 100;
+                if (wod.upperBody === undefined && isBodyFocusFilterActive) {
+                    return false; // Hide WODs without data only if filter is active
+                }
+                if (wod.upperBody !== undefined) {
+                    const bodyFocusValue = wod.upperBody; // 0=Lower, 50=Balanced, 100=Upper
+                    if (bodyFocusValue < bodyFocusRange[0] || bodyFocusValue > bodyFocusRange[1]) {
+                        return false;
+                    }
                 }
             }
 
@@ -519,3 +530,8 @@ export default function DashboardPage() {
     
 
 
+
+
+    
+
+    
