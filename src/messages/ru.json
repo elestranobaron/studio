@@ -1,0 +1,405 @@
+
+{
+  "UserNav": {
+    "signIn": "Войти",
+    "signOut": "Выйти",
+    "loading": "Загрузка...",
+    "anonymousUser": "Анонимный пользователь",
+    "temporaryProfile": "Временный профиль",
+    "settingsTooltip": "Настройки"
+  },
+  "MainNav": {
+    "dashboard": "Панель",
+    "scanWod": "Сканировать WOD",
+    "generateWod": "Создать WOD",
+    "heroWods": "Hero WODs",
+    "timers": "Таймеры",
+    "goPremium": "Стать Premium",
+    "hallOfFame": "Зал славы"
+  },
+  "DashboardPage": {
+    "title": "Панель",
+    "scanNewWod": "Сканировать новый WOD",
+    "tabs": {
+      "personal": "Мои WOD",
+      "community": "Сообщество"
+    },
+    "PersonalWodList": {
+      "emptyTitle": "Здесь нет WOD.",
+      "emptyDescription": "Отсканируйте свой первый WOD, чтобы начать!"
+    },
+    "CommunityWodList": {
+      "joinTitle": "Присоединяйтесь к сообществу!",
+      "joinDescription": "Создайте бесплатную учетную запись, чтобы просматривать, делиться и вдохновляться WOD от всего сообщества.",
+      "joinButton": "Зарегистрироваться / Войти",
+      "errorTitle": "Произошла ошибка",
+      "errorDescription": "Не удалось загрузить WOD сообщества. Пожалуйста, попробуйте позже.",
+      "searchInputPlaceholder": "Поиск по WOD сообщества...",
+      "sortByLabel": "Сортировать по",
+      "sort": {
+        "recent": "Самые новые",
+        "popular": "Самые популярные",
+        "alphabetical": "По алфавиту (А-Я)"
+      },
+      "emptySearchTitle": "Нет WOD, соответствующих вашему поиску.",
+      "emptySearchDescription": "Попробуйте другой поисковый запрос.",
+      "emptyCommunityTitle": "Будьте первым, кто поделится!"
+    },
+    "ScrollTop": {
+      "label": "Прокрутить вверх"
+    }
+  },
+  "WelcomeEmptyState": {
+    "title": "Добро пожаловать в WODBurner!",
+    "subtitle": "Запишите свой первый WOD за 3 секунды:",
+    "scanButton": "Отсканировать WOD с фотографии",
+    "generateButton": "Создать случайный WOD",
+    "heroButton": "Попробовать Hero WOD",
+    "communityLink": "Или исследуйте <communityLink>сообщество</communityLink>, чтобы увидеть, что сегодня сжигают другие."
+  },
+  "WodCard": {
+    "optionsAlt": "Опции WOD",
+    "share": "Поделиться",
+    "unshare": "Отменить публикацию",
+    "edit": "Редактировать",
+    "delete": "Удалить",
+    "sharedToastTitle": "WOD опубликован!",
+    "sharedToastDescription": "Ваш WOD теперь виден сообществу.",
+    "unsharedToastTitle": "WOD больше не опубликован",
+    "unsharedToastDescription": "Ваш WOD был удален из сообщества.",
+    "shareErrorToastTitle": "Действие не удалось",
+    "shareErrorToastDescription": "Не удалось обновить статус публикации.",
+    "deleteDialogTitle": "Вы абсолютно уверены?",
+    "deleteDialogDescription": "Это действие нельзя отменить. Это навсегда удалит ваш WOD{isShared, select, true { и удалит его из сообщества} other {}}.",
+    "deleteDialogCancel": "Отмена",
+    "deleteDialogConfirm": "Удалить",
+    "deleteToastTitle": "WOD удален",
+    "deleteToastDescription": "Ваш WOD был успешно удален.",
+    "deleteErrorToastTitle": "Ошибка удаления",
+    "deleteErrorToastDescription": "Не удалось удалить WOD.",
+    "reactionErrorToastTitle": "Ой!",
+    "reactionErrorToastDescription": "Не удалось сохранить вашу реакцию.",
+    "viewImageAlt": "{wodName} - Оригинальное изображение",
+    "viewWodDescription": "{type} - {date}",
+    "viewWodSharedBy": "Опубликовано {displayName}",
+    "startWod": "Начать WOD",
+    "profile": {
+      "cardio": "Кардио",
+      "lifting": "Тяжелая атлетика",
+      "upper": "Верх",
+      "lower": "Низ"
+    }
+  },
+  "TimerPage": {
+    "backToDashboard": "Вернуться на панель",
+    "viewWod": "Просмотр WOD",
+    "fullWodLabel": "Полный WOD: {wodName}",
+    "startSection": "Начать",
+    "accessRestricted": {
+      "title": "Доступ ограничен",
+      "description": "Пожалуйста, зарегистрируйтесь или войдите, чтобы просматривать WOD сообщества и использовать таймер.",
+      "button": "Зарегистрироваться / Войти"
+    }
+  },
+  "FileUploader": {
+    "dragAndDropPrompt": "Перетащите изображение вашего WOD или нажмите, чтобы выбрать",
+    "dragActivePrompt": "Отпустите изображение здесь...",
+    "fileTypes": "PNG, JPG или GIF (макс. 5 МБ)",
+    "analyzingTitle": "Анализ WOD...",
+    "analyzingDescription": "ИИ разогревается. Это может занять некоторое время.",
+    "analysisFailedTitle": "Анализ не удался",
+    "analysisFailedDescription": "Изображение WOD не удалось проанализировать. Пожалуйста, попробуйте снова.",
+    "duplicateDialogTitle": "Обнаружен дубликат WOD",
+    "duplicateDialogDescription": "Эта тренировка кажется идентичной уже сохраненному WOD.",
+    "duplicateDialogSavedOn": "Сохранено {date}",
+    "duplicateDialogQuestion": "Все равно сохранить новый?",
+    "duplicateDialogCancel": "Отмена",
+    "duplicateDialogConfirm": "Все равно сохранить",
+    "saveFailedTitle": "Ошибка сохранения",
+    "saveFailedDescription": "Произошла ошибка при сохранении WOD.",
+    "wodSavedTitle": "WOD сохранен!",
+    "wodSavedDescription": "Ваш новый WOD добавлен на вашу панель.",
+    "authErrorTitle": "Не удалось сохранить",
+    "authErrorDescription": "Службы аутентификации недоступны.",
+    "wodPreviewAlt": "Предпросмотр WOD",
+    "analyzeButton": "Анализировать WOD",
+    "analysisResultTitle": "Результат анализа",
+    "wodNamePlaceholder": "Название WOD",
+    "wodTypePlaceholder": "Тип WOD",
+    "durationPlaceholder": "Длительность (минуты)",
+    "shareCheckbox": "Поделиться с сообществом",
+    "shareAnonymousHelp": "Зарегистрируйтесь, чтобы делиться своими WOD с сообществом.",
+    "saveWodButton": "Сохранить WOD",
+    "savingButton": "Сохранение..."
+  },
+  "LoginPage": {
+    "verifying": "Проверка...",
+    "confirmEmailTitle": "Подтвердите email",
+    "confirmEmailDescription": "Чтобы завершить вход на этом устройстве, пожалуйста, укажите адрес электронной почты, на который вы получили ссылку.",
+    "confirmEmailFailedTitle": "Ошибка входа",
+    "confirmEmailSignInButton": "Войти",
+    "featureTitle": "Перейдите на следующий уровень.",
+    "featureDescription": "Создайте бесплатную учетную запись, чтобы разблокировать все функции и больше никогда не терять WOD.",
+    "featureManual": "Ручное создание",
+    "featureManualDescription": "Добавляйте свои собственные WOD без необходимости фото.",
+    "featureHistory": "Полная история",
+    "featureHistoryDescription": "Сохраняйте и находите все свои тренировки в любое время.",
+    "featureTracking": "Отслеживание производительности (скоро!)",
+    "featureTrackingDescription": "Анализируйте свой прогресс и визуализируйте свою производительность.",
+    "formTitle": "Вход / Регистрация",
+    "formDescription": "Введите свой email, чтобы получить безопасную ссылку для входа. Пароль не требуется.",
+    "emailSentTitle": "Проверьте свою почту!",
+    "emailSentDescription": "Ссылка для входа отправлена на <bold>{email}</bold>. Проверьте свою почту (и папку со спамом).",
+    "sendLinkButton": "Отправить волшебную ссылку",
+    "authError": "Служба аутентификации не готова.",
+    "sendLinkError": "Не удалось отправить ссылку. Пожалуйста, попробуйте снова.",
+    "linkSentToast": "Ссылка отправлена!",
+    "linkSentToastDescription": "Проверьте свою почту на наличие ссылки для входа. Если вы ее не видите, проверьте папку со спамом.",
+    "signInSuccessToast": "Вход выполнен успешно!",
+    "signInSuccessToastDescription": "Вы вошли в систему.",
+    "genericError": "Произошла ошибка. Пожалуйста, попробуйте снова.",
+    "invalidLinkError": "Ссылка для входа недействительна, истекла или email указан неверно. Пожалуйста, запросите новую."
+  },
+  "PremiumPage": {
+    "title": "Premium",
+    "alreadyPremium": {
+      "title": "ВЫ PREMIUM!",
+      "subtitle": "Значок поддержки активирован",
+      "description": "Спасибо за поддержку WODBurner ❤️",
+      "communityButton": "Посмотреть сообщество",
+      "dashboardButton": "Панель"
+    },
+    "headerTitle": "Раскройте свой полный потенциал",
+    "headerDescription": "Станьте участником WODBurner Premium, чтобы получить неограниченный доступ ко всем функциям и поддержать развитие приложения.",
+    "offer": "ПОЖИЗНЕННОЕ ПРЕДЛОЖЕНИЕ ДЛЯ ПЕРВЫХ 300 УЧАСТНИКОВ!",
+    "monthly": "Ежемесячно",
+    "yearly": "Ежегодно",
+    "discount": "-20%",
+    "freePlan": {
+      "title": "Бесплатно",
+      "description": "Для нерегулярного отслеживания",
+      "price": "0₽",
+      "perMonth": "/месяц",
+      "currentPlan": "Текущий план"
+    },
+    "premiumPlan": {
+      "title": "Premium",
+      "description": "Для преданных атлетов",
+      "priceMonthly": "149₽",
+      "priceYearly": "1490₽",
+      "perMonth": "/месяц",
+      "perYear": "/год",
+      "billedAnnually": "Оплата ежегодно",
+      "goPremium": "Стать Premium →",
+      "loading": "Загрузка..."
+    },
+    "features": {
+      "scans": "Неограниченное сканирование WOD",
+      "scansFree": "3 в месяц",
+      "reactions": "Неограниченные реакции сообщества",
+      "reactionsFree": "5 в день",
+      "comments": "Публикация комментариев",
+      "commentsFree": "Только чтение",
+      "favorites": "Неограниченное количество избранных WOD",
+      "favoritesFree": "Макс. 10",
+      "customs": "Неограниченное количество пользовательских WOD",
+      "customsFree": "Макс. 3",
+      "search": "Расширенные фильтры поиска",
+      "badge": "Эксклюзивный значок поддержки",
+      "unlimited": "Неограниченно",
+      "notIncluded": "Не включено"
+    },
+    "toasts": {
+      "welcomeTitle": "Добро пожаловать в WODBurner Premium!",
+      "welcomeDescription": "Ваш значок поддержки теперь активен.",
+      "cancelTitle": "Оплата отменена",
+      "cancelDescription": "Вы можете попробовать снова, когда будете готовы.",
+      "loginRequiredTitle": "Требуется вход",
+      "loginRequiredDescription": "Создайте учетную запись, чтобы перейти на Premium.",
+      "paymentErrorTitle": "Ошибка оплаты",
+      "paymentErrorDescription": "Не удалось инициировать оформление заказа."
+    }
+  },
+  "SettingsPage": {
+    "title": "Настройки",
+    "profile": {
+      "title": "Профиль",
+      "description": "Информация о вашей учетной записи.",
+      "loading": "Загрузка профиля...",
+      "email": "Email: {email}",
+      "emailNotSpecified": "Не указан",
+      "accountType": "Тип учетной записи: {type}",
+      "typeAnonymous": "Анонимный (временный)",
+      "typePremium": "Premium",
+      "typeStandard": "Стандартный",
+      "manageSubscription": "Управлять моей подпиской",
+      "userNotFound": "Пользователь не найден."
+    },
+    "dangerZone": {
+      "title": "Опасная зона",
+      "description": "Эти действия являются постоянными и не могут быть отменены.",
+      "deleteButton": "Удалить мою учетную запись",
+      "deletingButton": "Удаление...",
+      "dialogTitle": "Вы абсолютно уверены?",
+      "dialogDescription": "Это действие необратимо. Оно навсегда удалит вашу учетную запись и сотрет все ваши данные, включая все сохраненные WOD, с наших серверов.",
+      "dialogCancel": "Отмена",
+      "dialogConfirm": "Да, удалить мою учетную запись",
+      "helpText": "Если вы удалите свою учетную запись, все ваши данные будут потеряны навсегда."
+    },
+    "toasts": {
+      "deleteError": "Не удалось удалить учетную запись. Пользователь или службы Firebase недоступны.",
+      "deleteSuccessTitle": "Учетная запись удалена",
+      "deleteSuccessDescription": "Ваша учетная запись и все ваши данные были успешно удалены.",
+      "deleteFailedTitle": "Ошибка удаления",
+      "deleteFailedDescription": "Произошла ошибка. Пожалуйста, попробуйте снова.",
+      "deleteFailedRecentLogin": "Эта операция чувствительна и требует недавней аутентификации. Пожалуйста, войдите снова, прежде чем повторить попытку.",
+      "portalError": "Не удалось открыть управление подпиской."
+    }
+  },
+  "ScanPage": {
+    "title": "Сканировать WOD",
+    "manualButton": "Добавить вручную"
+  },
+  "NewWodPage": {
+    "title": "Создать WOD вручную",
+    "cardTitle": "Детали тренировки",
+    "namePlaceholder": "Название WOD (например, Fran)",
+    "typePlaceholder": "Тип WOD",
+    "durationPlaceholder": "Длительность (минуты)",
+    "imageHintPlaceholder": "Подсказка для изображения (например, штанга)",
+    "descriptionPlaceholder": "Описание WOD...",
+    "saveButton": "Сохранить WOD",
+    "savingButton": "Сохранение...",
+    "backLink": "Назад к сканированию",
+    "duplicateDialog": {
+      "title": "Обнаружен дубликат WOD",
+      "description": "Эта тренировка кажется идентичной уже сохраненному WOD.",
+      "savedOn": "Сохранено {date}",
+      "question": "Все равно сохранить новый?",
+      "cancel": "Отмена",
+      "confirm": "Все равно сохранить"
+    },
+    "toasts": {
+      "saveSuccessTitle": "WOD сохранен!",
+      "saveSuccessDescription": "Ваш новый WOD добавлен на вашу панель.",
+      "saveFailedTitle": "Ошибка сохранения",
+      "saveFailedDescription": "Произошла ошибка при сохранении WOD."
+    }
+  },
+  "EditWodPage": {
+    "title": "Редактировать WOD",
+    "cardTitle": "Детали тренировки",
+    "saveButton": "Сохранить изменения",
+    "savingButton": "Сохранение изменений...",
+    "backLink": "Вернуться на панель",
+    "toasts": {
+      "updateSuccessTitle": "WOD обновлен!",
+      "updateSuccessDescription": "Ваши изменения сохранены.",
+      "updateFailedTitle": "Ошибка обновления",
+      "updateFailedDescription": "Произошла ошибка при сохранении ваших изменений."
+    }
+  },
+  "GenericTimerPage": {
+    "backLink": "Назад к таймерам",
+    "startButton": "Запустить таймер",
+    "forTime": {
+      "title": "На время",
+      "description": "Простой секундомер для замера времени вашей тренировки. Можно установить лимит времени.",
+      "timeCapLabel": "Лимит времени (минуты, необязательно)",
+      "timeCapPlaceholder": "например, 20"
+    },
+    "amrap": {
+      "title": "Таймер AMRAP",
+      "description": "Установите продолжительность и посмотрите, сколько раундов или повторений вы сможете выполнить.",
+      "durationLabel": "Продолжительность (минуты)"
+    },
+    "emom": {
+      "title": "Таймер EMOM",
+      "description": "Каждую минуту в минуту. Установите интервал и количество раундов.",
+      "roundsLabel": "Количество раундов",
+      "intervalLabel": "Длина интервала",
+      "intervalMinutes": "мин",
+      "intervalSeconds": "сек"
+    },
+    "tabata": {
+      "title": "Таймер Табата",
+      "description": "Высокоинтенсивные интервалы: 20с работы, 10с отдыха. Настройте количество раундов.",
+      "roundsLabel": "Раунды"
+    }
+  },
+  "TimersPage": {
+    "title": "Умные таймеры",
+    "forTime": "На время",
+    "forTimeDescription": "Простой секундомер для замера времени вашей тренировки.",
+    "amrap": "AMRAP",
+    "amrapDescription": "Как можно больше раундов/повторений за установленное время.",
+    "emom": "EMOM",
+    "emomDescription": "Каждую минуту в минуту, в течение установленного количества минут.",
+    "tabata": "Табата",
+    "tabataDescription": "Высокоинтенсивные интервалы: 20с работы, 10с отдыха.",
+    "footer": "Или выберите WOD на панели, чтобы запустить предварительно настроенный таймер."
+  },
+  "HeroWodsPage": {
+    "title": "Hero WODs",
+    "description": "WOD «Герои» — это специальные тренировки в CrossFit, посвященные мужчинам и женщинам, отдавшим свои жизни при исполнении служебного долга. Это возможность поразмыслить и почтить их жертву.",
+    "premiumUpsell": {
+      "title": "Откройте полный арсенал",
+      "description": "Перейдите на Premium, чтобы получить доступ к полной библиотеке из более чем {totalWodCount}+ WOD Героев и Бенчмарков, включая {premiumWodCount} эксклюзивных тренировок.",
+      "button": "Стать Premium"
+    }
+  },
+  "HallOfFamePage": {
+    "title": "Зал славы",
+    "cardTitle": "Первые 300 OG",
+    "cardDescription": "Бесплатно на всю жизнь. Постоянное место для наших самых ранних сторонников.",
+    "spotsRemaining": "Осталось всего {spotsLeft} мест!",
+    "spotsFull": "Список теперь закрыт навсегда.",
+    "claimSpotButton": "Занять свое место сейчас",
+    "emptyList": "Будьте первым, кто займет место!"
+  },
+  "TimerClient": {
+    "workoutComplete": "Тренировка завершена!",
+    "totalTime": "Общее время",
+    "timeCompleted": "Завершенное время",
+    "goAgain": "Еще раз",
+    "shareResult": "Поделиться результатом",
+    "shareModal": {
+      "title": "Результат WOD: {wodName}",
+      "description": "Ваше итоговое время было {finalTime}. Эта карточка готова к отправке.",
+      "finalTimeLabel": "ИТОГОВОЕ ВРЕМЯ",
+      "screenshotReady": "Готово к скриншоту!"
+    },
+    "timeCap": "Лимит времени: {duration}:00",
+    "pause": "Пауза",
+    "start": "Старт",
+    "reset": "Сброс",
+    "finish": "Завершить",
+    "round": "Раунд {current} / {total}",
+    "totalTimeElapsed": "Всего: {time}"
+  },
+  "GenerateWodPage": {
+    "title": "Генератор WOD с ИИ",
+    "cardTitle": "WODBot 3000",
+    "cardDescription": "Чувствуете себя без вдохновения? Позвольте нашему ИИ-тренеру создать для вас уникальную и сложную тренировку.",
+    "generateButton": "Создать новый WOD",
+    "generatingButton": "Создание...",
+    "freePlanAlert": {
+      "title": "Бесплатный план",
+      "description": "У вас ограниченное количество ежедневных генераций. {link} для неограниченного доступа.",
+      "link": "Стать Premium"
+    },
+    "premiumPlanMessage": "Неограниченные генерации включены.",
+    "generatingState": {
+      "title": "Создание вашего WOD...",
+      "description": "ИИ-тренер разогревается. Это может занять некоторое время."
+    },
+    "errorAlert": {
+      "title": "Ошибка генерации",
+      "description": "ИИ-тренер отдыхает. Пожалуйста, попробуйте через некоторое время."
+    },
+    "result": {
+      "title": "Ваш сгенерированный WOD",
+      "savedMessage": "Этот WOD был автоматически сохранен на вашей панели."
+    }
+  }
+}

@@ -447,20 +447,13 @@ export function WodCard({ wod, source = "personal" }: { wod: WOD; source?: "pers
               {source === "personal" && <PersonalWodActions wod={wod} />}
             </div>
           )}
-          <DialogContent className="max-w-4xl p-2">
-            <DialogHeader>
-                <DialogTitle>{t('viewImageAlt', { wodName: wod.name })}</DialogTitle>
-                <DialogDescription>
-                    {t('viewWodDescription', { type: wod.type, date: formattedDate })}
-                </DialogDescription>
-            </DialogHeader>
-            <div className="relative w-full h-auto">
+          <DialogContent className="max-w-4xl p-0">
+            <div className="relative w-full aspect-[3/2]">
               <Image
                 src={wod.imageUrl!}
-                alt={wod.name}
-                width={1200}
-                height={800}
-                className="object-contain w-full h-auto max-h-[80vh] rounded-md"
+                alt={t('viewImageAlt', {wodName: wod.name})}
+                fill
+                className="object-contain w-full h-auto rounded-t-lg"
               />
             </div>
           </DialogContent>
