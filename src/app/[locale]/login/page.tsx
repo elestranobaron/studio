@@ -13,7 +13,8 @@ import { useTranslations } from 'next-intl';
 import { getFunctions, httpsCallable } from 'firebase/functions';
 import { signInWithCustomToken } from 'firebase/auth';
 
-function LoginClientContent({ t }: { t: any }) {
+function LoginClientContent() {
+  const t = useTranslations('LoginPage');
   const [email, setEmail] = useState('');
   const [code, setCode] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -24,9 +25,20 @@ function LoginClientContent({ t }: { t: any }) {
   const auth = useAuth();
   const { user, isUserLoading } = useUser();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { toast } = useToast();
 
   const functions = getFunctions();
+
+  useEffect(() => {
+    // Handle the new user parameter for redirection
+    const isNewUser = searchParams.get('new') === 'true';
+    if (isNewUser) {
+        sessionStorage.setItem('isNewUser', 'true');
+        // Clean the URL
+        window.history.replaceState(null, '', '/login');
+    }
+  }, [searchParams]);
 
   useEffect(() => {
     if (!isUserLoading && user && !user.isAnonymous) {
@@ -236,20 +248,6 @@ function LoginClientContent({ t }: { t: any }) {
 }
 
 export default function LoginPage() {
-  const t = useTranslations('LoginPage');
-  const searchParams = useSearchParams();
-  const router = useRouter();
-
-  // Handle the new user parameter for redirection
-  useEffect(() => {
-    const isNewUser = searchParams.get('new') === 'true';
-    if (isNewUser) {
-        sessionStorage.setItem('isNewUser', 'true');
-        // Clean the URL
-        window.history.replaceState(null, '', '/login');
-    }
-  }, [searchParams, router]);
-
   return (
     <Suspense fallback={
       <div className="flex h-screen w-full flex-col items-center justify-center gap-4">
@@ -257,7 +255,7 @@ export default function LoginPage() {
         <p className="text-muted-foreground">Chargement...</p>
       </div>
     }>
-      <LoginClientContent t={t} />
+      <LoginClientContent />
     </Suspense>
   );
 }
