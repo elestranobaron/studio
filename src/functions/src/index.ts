@@ -229,29 +229,33 @@ app.post("/", async (req, res) => {
   ) {
     const obj = event.data.object as any;
     let uid = obj.metadata?.uid;
+    let email = (obj.customer_details?.email || obj.customer_email || "").toLowerCase().trim();
 
+    if (!uid && email) {
+        try {
+            const userRecord = await admin.auth().getUserByEmail(email);
+            uid = userRecord.uid;
+        } catch (error) {
+            console.error(`Could not find user by email ${email} for Stripe event ${event.id}`);
+        }
+    }
+    
     if (!uid && obj.customer) {
         const customer = await stripe.customers.retrieve(obj.customer as string);
-        uid = (customer as Stripe.Customer).metadata.uid;
+        if(customer.deleted) {
+          // do nothing
+        } else {
+          uid = customer.metadata.uid;
+          if (!email && customer.email) {
+            email = customer.email;
+          }
+        }
     }
     
     if (!uid && obj.subscription) {
        const subscription = await stripe.subscriptions.retrieve(obj.subscription as string);
        uid = subscription.metadata.uid;
     }
-
-    if (!uid && (obj.customer_details?.email || obj.customer_email)) {
-      const email = (obj.customer_details?.email || obj.customer_email || "").toLowerCase().trim();
-      if(email) {
-          try {
-             const userRecord = await admin.auth().getUserByEmail(email);
-             uid = userRecord.uid;
-          } catch (error) {
-              console.error(`Could not find user by email ${email} for Stripe event ${event.id}`);
-          }
-      }
-    }
-
 
     if (uid) {
         const userRef = db.collection("users").doc(uid);
@@ -260,13 +264,14 @@ app.post("/", async (req, res) => {
         try {
              await db.runTransaction(async (transaction) => {
                 const userSnap = await transaction.get(userRef);
+                const isAlreadyPremium = userSnap.exists && userSnap.data()?.premium;
                 
                 const updateData: any = {
                     premium: true,
                     stripeCustomerId: customerId,
                 };
                 
-                if (!userSnap.exists() || !userSnap.data()?.premium) {
+                if (!isAlreadyPremium) {
                     updateData.premiumSince = admin.firestore.FieldValue.serverTimestamp();
                 }
 
@@ -294,6 +299,31 @@ app.post("/", async (req, res) => {
                                 joinedAt: admin.firestore.FieldValue.serverTimestamp()
                             });
                         }
+                    }
+                }
+
+                // Send welcome email only if they are becoming premium for the first time
+                if (!isAlreadyPremium && email && process.env.BREVO_API_KEY) {
+                    try {
+                        const brevoRes = await fetch("https://api.sendinblue.com/v3/smtp/email", {
+                            method: "POST",
+                            headers: {
+                                "api-key": process.env.BREVO_API_KEY,
+                                "Content-Type": "application/json",
+                            },
+                            body: JSON.stringify({
+                                sender: { name: "WODBurner Team", email: "noreply@wodburner.app" },
+                                to: [{ email }],
+                                templateId: 4, // Premium Welcome Template
+                            }),
+                        });
+                        if (!brevoRes.ok) {
+                           console.error(`Brevo API error for premium welcome email to ${email}:`, await brevoRes.text());
+                        } else {
+                           console.log(`Premium welcome email sent to ${email}`);
+                        }
+                    } catch (emailError) {
+                        console.error(`Failed to send premium welcome email to ${email}:`, emailError);
                     }
                 }
             });
