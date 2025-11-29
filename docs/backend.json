@@ -1,3 +1,4 @@
+
 {
   "entities": {
     "Wod": {
@@ -133,7 +134,7 @@
       "properties": {
         "text": {
           "type": "string",
-          "description": "The content of the chat message."
+          "description": "The content of the chat message (max 280 chars)."
         },
         "userId": {
           "type": "string",
@@ -147,9 +148,33 @@
           "type": "string",
           "format": "date-time",
           "description": "The server timestamp when the message was created."
+        },
+        "parentId": {
+          "type": ["string", "null"],
+          "description": "The ID of the parent message for threading. Null for top-level comments."
+        },
+        "upvotes": {
+          "type": "number",
+          "description": "Count of upvotes.",
+          "default": 0
+        },
+        "downvotes": {
+          "type": "number",
+          "description": "Count of downvotes.",
+          "default": 0
+        },
+        "score": {
+            "type": "number",
+            "description": "Calculated score (upvotes - downvotes) for sorting.",
+            "default": 0
+        },
+        "replyCount": {
+          "type": "number",
+          "description": "Number of direct replies to this message.",
+          "default": 0
         }
       },
-      "required": ["text", "userId", "userDisplayName", "timestamp"]
+      "required": ["text", "userId", "userDisplayName", "timestamp", "score"]
     }
   },
   "auth": {

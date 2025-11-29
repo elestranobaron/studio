@@ -79,6 +79,7 @@ import { HeroLetter } from "./hero-letter";
 import { useTranslations } from "next-intl";
 import { Progress } from "./ui/progress";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./ui/tooltip";
+import { CommunityChat } from "./community-chat";
 
 function WodIcon({ type }: { type: WOD["type"] }) {
   switch (type) {
@@ -442,6 +443,7 @@ export function WodCard({ wod, source = "personal" }: { wod: WOD; source?: "pers
   const date = new Date(wod.date);
   const formattedDate = isValid(date) ? format(date, "PPP") : wod.date;
   const href = source === "community" ? `/community-timer/${wod.id}` : `/timer/${wod.id}`;
+  const [chatOpen, setChatOpen] = useState(false);
 
   const descriptionSections = Array.isArray(wod.description)
     ? wod.description
@@ -551,7 +553,26 @@ export function WodCard({ wod, source = "personal" }: { wod: WOD; source?: "pers
       </CardContent>
 
       <CardFooter className="flex flex-col items-stretch gap-2 pt-2">
-        {source === "community" && <ReactionGrid initialWod={wod} />}
+        {source === "community" && (
+            <div className="flex items-center justify-between gap-2">
+                <ReactionGrid initialWod={wod} />
+                <Dialog open={chatOpen} onOpenChange={setChatOpen}>
+                    <DialogTrigger asChild>
+                        <Button variant="ghost" size="sm" className="text-muted-foreground">
+                            <MessageCircle className="mr-2 h-4 w-4" />
+                            {wod.commentCount || 0}
+                        </Button>
+                    </DialogTrigger>
+                    <DialogContent className="max-w-2xl h-[90vh] flex flex-col">
+                        <DialogHeader>
+                            <DialogTitle>{wod.name}</DialogTitle>
+                             <DialogDescription>Community Chat</DialogDescription>
+                        </DialogHeader>
+                        <CommunityChat wodId={wod.id} />
+                    </DialogContent>
+                </Dialog>
+            </div>
+        )}
         <Button asChild className="w-full">
           <Link href={href}>{t("startWod")}</Link>
         </Button>
