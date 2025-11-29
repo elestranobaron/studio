@@ -172,7 +172,7 @@ function CommunityWodList() {
                 }
 
                 const isBodyFocusFilterActive = bodyFocusRange[0] > 0 || bodyFocusRange[1] < 100;
-                if (isBodyFocusFilterActive) {
+                 if (isBodyFocusFilterActive) {
                     if (wod.upperBody === undefined) return false;
                     if (wod.upperBody < bodyFocusRange[0] || wod.upperBody > bodyFocusRange[1]) return false;
                 }
@@ -313,6 +313,7 @@ function CommunityWodList() {
                                             min={0}
                                             max={100}
                                             step={10}
+                                            minStepsBetweenThumbs={0}
                                         />
                                          <div className="flex justify-between text-xs text-muted-foreground mt-1">
                                             <span>Cardio</span>
@@ -327,6 +328,7 @@ function CommunityWodList() {
                                             min={0}
                                             max={100}
                                             step={10}
+                                            minStepsBetweenThumbs={0}
                                         />
                                         <div className="flex justify-between text-xs text-muted-foreground mt-1">
                                             <span>Lower</span>
@@ -421,7 +423,7 @@ function DashboardContent({ t }: { t: (key: string) => string }) {
   const showPersonalLoadingState = isUserLoading || (user && !user.isAnonymous && isUserWodsLoading);
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full overflow-x-hidden">
       <header className="flex items-center justify-between p-4 border-b md:p-6">
         <div className="flex items-center gap-2 md:hidden">
             <Button variant="ghost" size="icon" onClick={() => router.back()}>
