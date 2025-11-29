@@ -1,7 +1,8 @@
+
 'use client';
 import { useState, useEffect, Suspense } from 'react';
 import { useRouter } from 'next/navigation';
-import { useAuth, useUser, useFirebase } from '@/firebase/provider';
+import { useAuth, useUser } from '@/firebase/provider';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -25,11 +26,16 @@ function LoginClientContent({ t }: { t: any }) {
   const router = useRouter();
   const { toast } = useToast();
 
-  const functions = getFunctions(); // ← Important : on l'initialise une seule fois
+  const functions = getFunctions();
 
   useEffect(() => {
     if (!isUserLoading && user && !user.isAnonymous) {
-      router.push('/dashboard');
+      const isNewUser = sessionStorage.getItem('isNewUser') === 'true';
+      if(isNewUser){
+        router.push('/dashboard?new=true');
+      } else {
+        router.push('/dashboard');
+      }
     }
   }, [user, isUserLoading, router]);
 
@@ -79,19 +85,22 @@ function LoginClientContent({ t }: { t: any }) {
       const verifyDigicode = httpsCallable(functions, 'verifyDigicode');
       const result = await verifyDigicode({ email: email.trim().toLowerCase(), code });
 
-      const data = result.data as { token?: string };
+      const data = result.data as { token?: string, isNewUser?: boolean };
       if (!data.token) {
         throw new Error('Token manquant dans la réponse');
+      }
+      
+      if(data.isNewUser){
+          sessionStorage.setItem('isNewUser', 'true');
       }
 
       await signInWithCustomToken(auth!, data.token);
 
       toast({ title: 'Connecté !', description: 'Bienvenue sur WODBurner !' });
-      router.push('/dashboard');
+      // The useEffect will handle the redirection
     } catch (err: any) {
       console.error('Verification error:', err);
 
-      // Gestion précise des erreurs Firebase Functions
       let msg = 'Erreur inconnue';
 
       if (err.code === 'not-found' || err.code === 'unauthenticated') {
@@ -112,7 +121,6 @@ function LoginClientContent({ t }: { t: any }) {
     }
   };
 
-  // Loading pendant que Firebase vérifie l'utilisateur
   if (isUserLoading || (user && !user.isAnonymous)) {
     return (
       <div className="flex h-screen w-full flex-col items-center justify-center gap-4">
@@ -125,7 +133,6 @@ function LoginClientContent({ t }: { t: any }) {
   return (
     <div className="flex h-screen w-full items-center justify-center bg-background p-4">
       <div className="grid lg:grid-cols-2 max-w-4xl w-full gap-16 items-center">
-        {/* Partie gauche - features */}
         <div className="flex-col items-center lg:items-start text-center hidden lg:flex">
           <div className="text-3xl font-bold font-headline text-primary tracking-wider">
             WODBurner
@@ -135,7 +142,6 @@ function LoginClientContent({ t }: { t: any }) {
           </h1>
           <p className="text-muted-foreground mt-2">{t('featureDescription')}</p>
           <div className="space-y-4 mt-8 text-left">
-            {/* Tes 3 features avec icônes */}
             <div className="flex items-start gap-4">
               <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 text-primary">
                 <Dumbbell className="h-5 w-5"/>
@@ -166,7 +172,6 @@ function LoginClientContent({ t }: { t: any }) {
           </div>
         </div>
 
-        {/* Formulaire */}
         <Card className="w-full">
           <CardHeader>
             <CardTitle>{t('formTitle')}</CardTitle>

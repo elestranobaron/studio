@@ -4,10 +4,10 @@
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { WodCard } from '@/components/wod-card';
-import { LogIn, PlusCircle, Search, ScanLine, ArrowDownUp, ArrowUp, ArrowLeft, SlidersHorizontal, Gem, X } from 'lucide-react';
+import { LogIn, PlusCircle, Search, ScanLine, ArrowUp, ArrowLeft, SlidersHorizontal, Gem, X } from 'lucide-react';
 import { SidebarTrigger, useSidebar } from '@/components/ui/sidebar';
 import { useCollection, useFirebase } from '@/firebase';
-import { collection, query, orderBy, limit, Query, where, collectionGroup } from 'firebase/firestore';
+import { collection, query, orderBy, limit, Query } from 'firebase/firestore';
 import { Skeleton } from '@/components/ui/skeleton';
 import type { WOD, WodType } from '@/lib/types';
 import { useUser } from '@/firebase/provider';
@@ -18,13 +18,11 @@ import { Input } from '@/components/ui/input';
 import { WelcomeEmptyState } from '@/components/welcome-empty-state';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useTranslations } from 'next-intl';
 import React from 'react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Checkbox } from '@/components/ui/checkbox';
 import { Slider } from '@/components/ui/slider';
 
 
@@ -167,22 +165,20 @@ function CommunityWodList() {
                 if (selectedTypes.length > 0 && !selectedTypes.includes(wod.type)) {
                     return false;
                 }
-                 // Cardio filter: only apply if the slider has been moved from its default state OR if the WOD has the data
                 const isCardioFilterActive = cardioRange[0] > 0 || cardioRange[1] < 100;
                 if (wod.cardio === undefined && isCardioFilterActive) {
-                    return false; // Hide WODs without data only if filter is active
+                    return false;
                 }
                 if (wod.cardio !== undefined && (wod.cardio < cardioRange[0] || wod.cardio > cardioRange[1])) {
                     return false;
                 }
 
-                // Body focus filter (maps upper/lower to a single scale where 0 is full lower, 100 is full upper)
                 const isBodyFocusFilterActive = bodyFocusRange[0] > 0 || bodyFocusRange[1] < 100;
                 if (wod.upperBody === undefined && isBodyFocusFilterActive) {
-                    return false; // Hide WODs without data only if filter is active
+                     return false;
                 }
                 if (wod.upperBody !== undefined) {
-                    const bodyFocusValue = wod.upperBody; // 0=Lower, 50=Balanced, 100=Upper
+                    const bodyFocusValue = wod.upperBody;
                     if (bodyFocusValue < bodyFocusRange[0] || bodyFocusValue > bodyFocusRange[1]) {
                         return false;
                     }
@@ -375,14 +371,26 @@ function CommunityWodList() {
 function DashboardContent({ t }: { t: (key: string) => string }) {
   const searchParams = useSearchParams();
   const router = useRouter();
-  const defaultTab = searchParams.get('tab') === 'community' ? 'community' : 'personal';
   
+  const [defaultTab, setDefaultTab] = useState('personal');
   const [showScrollTop, setShowScrollTop] = useState(false);
   const { toggleSidebar } = useSidebar();
   const baseId = useId();
 
-
   useEffect(() => {
+    // Check for new user flag from login
+    const isNewUser = sessionStorage.getItem('isNewUser') === 'true';
+    const tabParam = searchParams.get('tab');
+
+    if (isNewUser) {
+        setDefaultTab('community');
+        sessionStorage.removeItem('isNewUser'); // Clean up the flag
+    } else if (tabParam === 'community') {
+        setDefaultTab('community');
+    } else {
+        setDefaultTab('personal');
+    }
+
     const handleScroll = () => {
       const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
       setShowScrollTop(scrollTop > 200);
@@ -395,8 +403,7 @@ function DashboardContent({ t }: { t: (key: string) => string }) {
     return () => {
       window.removeEventListener('scroll', handleScroll);
     };
-  }, []);
-
+  }, [searchParams]);
 
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -447,7 +454,7 @@ function DashboardContent({ t }: { t: (key: string) => string }) {
       </header>
       <div className="flex-1 flex flex-col min-h-0">
         <main className="flex-1 overflow-y-auto" id="dashboard-main-content">
-          <Tabs defaultValue={defaultTab} className="w-full" id={baseId}>
+          <Tabs value={defaultTab} onValueChange={setDefaultTab} className="w-full" id={baseId}>
             <div className="p-4 md:p-6 border-b">
               <TabsList className="grid w-full grid-cols-2 md:w-auto">
                 <TabsTrigger value="personal">{t('tabs.personal')}</TabsTrigger>

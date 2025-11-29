@@ -6,15 +6,12 @@ import { onSchedule } from "firebase-functions/v2/scheduler";
 import * as admin from "firebase-admin";
 import Stripe from "stripe";
 import type { QuerySnapshot, DocumentSnapshot } from "firebase-admin/firestore";
-// ─────────────────────────────────────────────────────
-// IMPORTS À METTRE À JOUR (remplace tes anciens imports https)
-import { setGlobalOptions } from "firebase-functions/v2";   // ← nouvelle localisation depuis v5
-// ─────────────────────────────────────────────────────
+import { setGlobalOptions } from "firebase-functions/v2";
+
 admin.initializeApp();
 const db = admin.firestore();
-// Optionnel mais propre : tu définis la région par défaut pour toutes tes functions v2
+
 setGlobalOptions({ region: "us-central1" });
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, { apiVersion: "2024-06-20" });
 
 const STRIPE_WEBHOOK_SECRET = process.env.STRIPE_WEBHOOK_SECRET!;
 const STRIPE_MONTHLY_PRICE_ID = process.env.STRIPE_MONTHLY_PRICE_ID!;
@@ -22,7 +19,6 @@ const STRIPE_YEARLY_PRICE_ID = process.env.STRIPE_YEARLY_PRICE_ID!;
 const NEXT_PUBLIC_APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:9002';
 
 
-// --- DIGICODE AUTHENTICATION ---
 function generateDigicode() {
   return Math.floor(100000 + Math.random() * 900000).toString();
 }
@@ -75,22 +71,17 @@ exports.sendDigicode = onCall({}, async (request: any) => {
 });
 
 exports.verifyDigicode = onCall({}, async (request: any) => {
-  console.log("verifyDigicode appelée – payload reçu :", JSON.stringify(request.data));
-
   try {
     const { email, code } = request.data;
 
     if (!email || !code) {
-      console.log("Missing email or code");
       throw new HttpsError("invalid-argument", "Email and code are required.");
     }
 
-    console.log("Recherche du digicode dans Firestore pour", email);
     const codeRef = db.collection("digicodes").doc(email.toLowerCase());
     const codeDoc = await codeRef.get();
 
     if (!codeDoc.exists) {
-      console.log("Aucun document trouvé dans digicodes pour cet email");
       throw new HttpsError("not-found", "Invalid code. Please request a new one.");
     }
 
@@ -98,100 +89,59 @@ exports.verifyDigicode = onCall({}, async (request: any) => {
     const { code: storedCode, expires } = data;
 
     if (expires.toMillis() < Date.now()) {
-      console.log("Code expiré");
       await codeRef.delete();
       throw new HttpsError("deadline-exceeded", "The code has expired.");
     }
 
     if (storedCode !== code) {
-      console.log(`Code incorrect – reçu: ${code} | stocké: ${storedCode}`);
       throw new HttpsError("unauthenticated", "Invalid code.");
     }
 
     await codeRef.delete();
-    console.log("Code valide – on passe à la création/utilisation user");
 
-    // === LA PARTIE QUI PLANTE EST ICI ===
     let uid: string;
+    let isNewUser = false;
     try {
       const user = await admin.auth().getUserByEmail(email.toLowerCase());
       uid = user.uid;
-      console.log("Utilisateur existant trouvé :", uid);
     } catch (err: any) {
       if (err.code === "auth/user-not-found") {
-        console.log("Utilisateur n'existe pas → création");
         const newUser = await admin.auth().createUser({ email });
         uid = newUser.uid;
-        console.log("Nouvel utilisateur créé :", uid);
+        isNewUser = true;
       } else {
-        console.error("Erreur getUserByEmail inattendue :", err);
         throw err;
       }
     }
 
-    console.log("Création du custom token pour uid", uid);
     const customToken = await admin.auth().createCustomToken(uid);
-    console.log("Custom token généré avec succès");
-
-    return { token: customToken };
+    
+    return { token: customToken, isNewUser };
 
   } catch (error: any) {
     console.error("ERREUR FATALE dans verifyDigicode :", error);
     console.error("Stack :", error.stack);
+    if (error instanceof HttpsError) {
+        throw error;
+    }
     throw new HttpsError("internal", "Could not complete the sign-in process.");
   }
 });
 
 
-// --- USER AND STRIPE FUNCTIONS (Unchanged but kept for context) ---
-
-exports.onUserSignIn = onCall({}, async (request: any) => {
-  if (!request.auth?.uid) return;
-  const userRef = db.collection("users").doc(request.auth.uid);
-  const doc = await userRef.get();
-  if (!doc.exists) {
-    await userRef.set({
-      premium: false,
-      createdAt: admin.firestore.FieldValue.serverTimestamp(),
-      email: request.auth.token.email || null,
-    });
-  }
-  return { success: true };
-});
-
-exports.resetOCR = onSchedule("0 0 1 * *", async () => {
-  const snapshot: QuerySnapshot = await db.collection("users").get();
-  const batch = db.batch();
-
-  snapshot.docs.forEach((doc: DocumentSnapshot) => {
-    batch.update(doc.ref, { ocrCount: 0 });
-  });
-
-  await batch.commit();
-  console.log(`OCR reset for ${snapshot.size} users`);
-});
-
-exports.resetReactions = onSchedule("0 0 * * *", async () => {
-  const snapshot: QuerySnapshot = await db.collection("users").get();
-  const batch = db.batch();
-
-  snapshot.docs.forEach((doc: DocumentSnapshot) => {
-    batch.update(doc.ref, { dailyReactions: 0 });
-  });
-
-  await batch.commit();
-  console.log(`Reactions reset for ${snapshot.size} users`);
-});
-
 exports.createCheckout = onRequest(
   {
-    cors: true,                 // résout le problème CORS
+    cors: true,
     memory: "256MiB",
     timeoutSeconds: 60,
   },
-  async (req: Request, res: Response) => {
+  async (req, res) => {
     try {
-      // 1. Vérification de l'auth Firebase manuellement
+      if (!process.env.STRIPE_SECRET_KEY) {
+          throw new Error('Stripe secret key is not set');
+      }
+      const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, { apiVersion: "2024-06-20" });
+
       const authHeader = req.headers.authorization;
       if (!authHeader?.startsWith("Bearer ")) {
         res.status(401).json({ error: "Unauthenticated" });
@@ -202,31 +152,26 @@ exports.createCheckout = onRequest(
       const decodedToken = await admin.auth().verifyIdToken(token);
       const uid = decodedToken.uid;
 
-      // 2. Récupération des données envoyées depuis le front
       const yearly = req.body.data?.yearly === true;
-      const priceId = yearly
-        ? process.env.STRIPE_YEARLY_PRICE_ID!
-        : process.env.STRIPE_MONTHLY_PRICE_ID!;
+      const priceId = yearly ? STRIPE_YEARLY_PRICE_ID : STRIPE_MONTHLY_PRICE_ID;
 
       if (!priceId) {
         res.status(500).json({ error: "Price ID manquant" });
         return;
       }
 
-      // 3. Création de la session Stripe
       const session = await stripe.checkout.sessions.create({
         payment_method_types: ["card"],
         line_items: [{ price: priceId, quantity: 1 }],
         mode: "subscription",
         allow_promotion_codes: true,
-        success_url: `${process.env.NEXT_PUBLIC_APP_URL}/premium?success=true`,
-        cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/premium?cancel=true`,
+        success_url: `${NEXT_PUBLIC_APP_URL}/premium?success=true`,
+        cancel_url: `${NEXT_PUBLIC_APP_URL}/premium?cancel=true`,
         customer_email: decodedToken.email || undefined,
         metadata: { uid },
         subscription_data: { metadata: { uid } },
       });
 
-      // 4. Réponse au front
       res.status(200).json({ url: session.url });
     } catch (error: any) {
       console.error("Erreur createCheckout:", error);
@@ -237,7 +182,6 @@ exports.createCheckout = onRequest(
 
 
 import express from "express";
-import type { Request, Response } from "express";
 
 interface StripeRequest extends Request {
   rawBody: string;
@@ -253,7 +197,13 @@ app.use(
   })
 );
 
-app.post("/", async (req: Request, res: Response) => {
+app.post("/", async (req, res) => {
+  if (!process.env.STRIPE_SECRET_KEY) {
+    console.error("Stripe secret key is not set for webhook.");
+    return res.status(500).send("Server configuration error.");
+  }
+  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, { apiVersion: "2024-06-20" });
+
   const typedReq = req as StripeRequest;
   const sig = req.headers["stripe-signature"] as string;
 
@@ -275,66 +225,96 @@ app.post("/", async (req: Request, res: Response) => {
   }
 
   if (
-    ["checkout.session.completed", "customer.subscription.created", "invoice.paid"].includes(
-      event.type
-    )
+    ["checkout.session.completed", "customer.subscription.created", "invoice.paid"].includes(event.type)
   ) {
     const obj = event.data.object as any;
-
     let uid = obj.metadata?.uid;
-    const email = (obj.customer_details?.email || obj.customer_email || "").toLowerCase().trim();
 
-    if (!uid && email) {
-      const snap = await db.collection("users").where("email", "==", email).limit(1).get();
-      if (!snap.empty) uid = snap.docs[0].id;
+    if (!uid && obj.customer) {
+        const customer = await stripe.customers.retrieve(obj.customer as string);
+        uid = (customer as Stripe.Customer).metadata.uid;
     }
+    
+    if (!uid && obj.subscription) {
+       const subscription = await stripe.subscriptions.retrieve(obj.subscription as string);
+       uid = subscription.metadata.uid;
+    }
+
+    if (!uid && (obj.customer_details?.email || obj.customer_email)) {
+      const email = (obj.customer_details?.email || obj.customer_email || "").toLowerCase().trim();
+      if(email) {
+          try {
+             const userRecord = await admin.auth().getUserByEmail(email);
+             uid = userRecord.uid;
+          } catch (error) {
+              console.error(`Could not find user by email ${email} for Stripe event ${event.id}`);
+          }
+      }
+    }
+
 
     if (uid) {
         const userRef = db.collection("users").doc(uid);
-        const priceId = obj.items?.data?.[0]?.price?.id || obj.plan?.id || obj.subscription?.default_price || "unknown";
+        const customerId = obj.customer;
 
-        await db.runTransaction(async (transaction: any) => {
-          const userSnap = await transaction.get(userRef);
-          const userData = userSnap.data();
-        
-          transaction.set(userRef, {
-            premium: true,
-            premiumSince: admin.firestore.FieldValue.serverTimestamp(),
-            priceId: priceId,
-          }, { merge: true });
-        
-          if (priceId === STRIPE_YEARLY_PRICE_ID && !userData?.isOg) {
-            const hallOfFameRef = db.collection("hallOfFame");
-            const ogQuery = await hallOfFameRef.get();
-            const ogCount = ogQuery.size;
-        
-            if (ogCount < 300) {
-              const rank = ogCount + 1;
-              const authUser = await admin.auth().getUser(uid);
-              const displayName = authUser.email?.split('@')[0] || `user${rank}`;
-        
-              const ogDocRef = hallOfFameRef.doc(uid);
-              transaction.set(ogDocRef, {
-                uid,
-                displayName,
-                rank,
-                joinedAt: admin.firestore.FieldValue.serverTimestamp()
-              });
-              transaction.update(userRef, { isOg: true });
-            }
-          }
-        });
+        try {
+             await db.runTransaction(async (transaction) => {
+                const userSnap = await transaction.get(userRef);
+                
+                const updateData: any = {
+                    premium: true,
+                    stripeCustomerId: customerId,
+                };
+                
+                if (!userSnap.exists() || !userSnap.data()?.premium) {
+                    updateData.premiumSince = admin.firestore.FieldValue.serverTimestamp();
+                }
 
-        console.log(`PREMIUM ACTIVÉ pour ${uid} – ${event.type}`);
+                transaction.set(userRef, updateData, { merge: true });
+
+                const yearlyPriceId = STRIPE_YEARLY_PRICE_ID;
+                const isYearly = obj.items?.data?.[0]?.price?.id === yearlyPriceId || obj.plan?.id === yearlyPriceId;
+                
+                if (isYearly) {
+                    const hallOfFameRef = db.collection("hallOfFame");
+                    const ogQuery = await hallOfFameRef.get();
+                    const ogCount = ogQuery.size;
+
+                    if (ogCount < 300) {
+                        const ogDocRef = hallOfFameRef.doc(uid);
+                        const ogDoc = await transaction.get(ogDocRef);
+                        if (!ogDoc.exists) {
+                            const rank = ogCount + 1;
+                            const authUser = await admin.auth().getUser(uid);
+                            const displayName = authUser.email?.split('@')[0] || `user${rank}`;
+                            transaction.set(ogDocRef, {
+                                uid,
+                                displayName,
+                                rank,
+                                joinedAt: admin.firestore.FieldValue.serverTimestamp()
+                            });
+                        }
+                    }
+                }
+            });
+            console.log(`PREMIUM ACTIVÉ pour ${uid} – ${event.type}`);
+        } catch(error) {
+            console.error(`Transaction failed for user ${uid}:`, error);
+        }
     }
   }
 
   res.status(200).send("ok");
 });
 
-exports.stripeWebhook = onRequest({ region: "europe-west1" }, app);
+exports.stripeWebhook = onRequest({ region: "us-central1" }, app);
 
 exports.createCustomerPortal = onCall({}, async (request: any) => {
+    if (!process.env.STRIPE_SECRET_KEY) {
+      throw new HttpsError('internal', 'Stripe secret key is not set.');
+    }
+    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, { apiVersion: "2024-06-20" });
+
     if (!request.auth) {
         throw new HttpsError('unauthenticated', 'You must be logged in.');
     }
