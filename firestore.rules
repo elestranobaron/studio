@@ -24,15 +24,17 @@ service cloud.firestore {
 
     // COMMUNITY WODs
     match /communityWods/{wodId} {
-      allow read: if isSignedIn() || get(/databases/$(database)/documents/communityWods/$(wodId)).data.userId == 'system';
+      // Use "get" instead of "read" to only allow fetching single documents, not listing the whole collection.
+      allow get: if isSignedIn() || get(/databases/$(database)/documents/communityWods/$(wodId)).data.userId == 'system';
       allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
       allow delete: if isSignedIn() && resource.data.userId == request.auth.uid;
-      // Allow updates for reaction counts
+      // Allow updates for reaction counts or by the owner
       allow update: if isSignedIn() && (
         (resource.data.userId == request.auth.uid) ||
         (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['reactions', 'commentCount']))
       );
 
+      // MESSAGES (must come before other subcollections)
       match /messages/{messageId} {
         allow get, list: if isSignedIn();
         allow create: if isSignedIn() 
@@ -43,6 +45,7 @@ service cloud.firestore {
         allow delete: if false; 
       }
 
+      // REACTORS
       match /reactors/{reactorId} {
         allow read, create, delete: if isSignedIn() && request.auth.uid == reactorId;
       }
