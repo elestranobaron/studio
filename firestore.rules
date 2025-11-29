@@ -33,10 +33,6 @@ service cloud.firestore {
         (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['reactions', 'commentCount']))
       );
 
-      match /reactors/{reactorId} {
-        allow read, create, delete: if isSignedIn() && (isOwner(reactorId) || request.auth.uid == reactorId);
-      }
-
       match /messages/{messageId} {
         allow get, list: if isSignedIn();
         allow create: if isSignedIn() 
@@ -45,6 +41,10 @@ service cloud.firestore {
         allow update: if isSignedIn()
                       && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['upvotes', 'downvotes', 'score']);
         allow delete: if false; 
+      }
+
+      match /reactors/{reactorId} {
+        allow read, create, delete: if isSignedIn() && request.auth.uid == reactorId;
       }
     }
 
