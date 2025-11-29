@@ -40,7 +40,7 @@ service cloud.firestore {
       }
 
        match /messages/{messageId} {
-          allow read: if isSignedIn();
+          allow get, list: if isSignedIn();
           allow create: if isSignedIn() 
                         && request.resource.data.userId == request.auth.uid
                         && request.resource.data.text.size() <= 280;
