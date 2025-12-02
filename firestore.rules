@@ -24,7 +24,6 @@ service cloud.firestore {
 
     // COMMUNITY WODs
     match /communityWods/{wodId} {
-      // Allow list and get for signed-in users to see the community feed
       allow get, list: if isSignedIn();
       allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
       allow delete: if isSignedIn() && resource.data.userId == request.auth.uid;
@@ -34,9 +33,14 @@ service cloud.firestore {
         (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['reactions', 'commentCount']))
       );
 
-      // MESSAGES (must come before other subcollections)
+      // Rule for listing the collection
+      match /messages {
+        allow list, get: if isSignedIn();
+      }
+
+      // Rules for individual documents
       match /messages/{messageId} {
-        allow get, list: if isSignedIn();
+        allow get: if isSignedIn();
         allow create: if isSignedIn() 
                       && request.resource.data.userId == request.auth.uid
                       && request.resource.data.text.size() <= 280;
