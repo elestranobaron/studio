@@ -1,4 +1,3 @@
-
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
@@ -6,59 +5,52 @@ service cloud.firestore {
     function isSignedIn() {
       return request.auth != null;
     }
-
     function isOwner(userId) {
       return request.auth.uid == userId;
     }
 
-    // USERS
     match /users/{userId} {
       allow read, write: if isOwner(userId);
       allow create: if isSignedIn() && request.auth.uid == userId;
     }
 
-    // WODs PERSONNELS
     match /users/{userId}/wods/{wodId} {
       allow read, write: if isSignedIn() && isOwner(userId);
     }
 
-    // COMMUNITY WODs
     match /communityWods/{wodId} {
       allow get, list: if isSignedIn();
       allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
       allow delete: if isSignedIn() && resource.data.userId == request.auth.uid;
-      // Allow updates for reaction counts or by the owner
       allow update: if isSignedIn() && (
-        (resource.data.userId == request.auth.uid) ||
-        (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['reactions', 'commentCount']))
+        resource.data.userId == request.auth.uid ||
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['reactions', 'commentCount'])
       );
 
-      // Rule for listing the collection
+      // Rule for the COLLECTION (list + get on the entire collection)
       match /messages {
         allow list, get: if isSignedIn();
       }
 
-      // Rules for individual documents
+      // Rule for individual DOCUMENTS (only get/create/update/delete)
       match /messages/{messageId} {
         allow get: if isSignedIn();
-        allow create: if isSignedIn() 
+        allow create: if isSignedIn()
                       && request.resource.data.userId == request.auth.uid
                       && request.resource.data.text.size() <= 280;
         allow update: if isSignedIn()
                       && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['upvotes', 'downvotes', 'score']);
-        allow delete: if false; 
+        allow delete: if false;
       }
 
-      // REACTORS
       match /reactors/{reactorId} {
         allow read, create, delete: if isSignedIn() && request.auth.uid == reactorId;
       }
     }
 
-    // HALL OF FAME
     match /hallOfFame/{userId} {
-      allow read: if true; // Publicly readable
-      allow write: if false; // Only backend can write
+      allow read: if true;
+      allow write: if false;
     }
   }
 }
