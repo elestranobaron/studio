@@ -118,7 +118,7 @@ export default function CommunityTimerPage() {
   const wod = isHeroWod ? heroWod : firestoreWod;
   const isLoading = isUserLoading || (isFirestoreWodLoading && !isHeroWod);
   
-  if (isLoading || !wod) {
+  if (isLoading || (isUserLoading && !isHeroWod)) {
     return <TimerPageSkeleton />;
   }
 
@@ -152,8 +152,11 @@ export default function CommunityTimerPage() {
       )
   }
 
-  if (!wod && !isLoading) {
-    notFound();
+  if (!wod) {
+    if (!isLoading) {
+      notFound();
+    }
+    return <TimerPageSkeleton />;
   }
 
   const descriptionSections = Array.isArray(wod?.description)
