@@ -413,10 +413,10 @@ function DashboardContent({ t }: { t: (key: string) => string }) {
   const { user, isUserLoading } = useUser();
 
   const userWodsCollection = useMemo(() => {
-    // Only create query if user is fully loaded, authenticated, and not anonymous
-    if (!firestore || isUserLoading || !user || user.isAnonymous) return null;
+    // Stricter check: only create query if we have a definite, non-anonymous user UID.
+    if (!firestore || !user?.uid || user.isAnonymous) return null;
     return query(collection(firestore, 'users', user.uid, 'wods'), orderBy('date', 'desc'));
-  }, [firestore, user, isUserLoading]);
+  }, [firestore, user?.uid, user?.isAnonymous]);
 
   const { data: userWods, isLoading: isUserWodsLoading } = useCollection<WOD>(userWodsCollection);
 
@@ -538,3 +538,4 @@ export default function DashboardPage() {
     
 
     
+
