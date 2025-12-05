@@ -29,13 +29,25 @@ service cloud.firestore {
 
       // Rules for the 'messages' subcollection
       match /messages/{messageId} {
-        allow list, get: if isSignedIn();
+        // Allow reading single documents
+        allow get: if isSignedIn();
+        
+        // Allow creating documents
         allow create: if isSignedIn()
                       && request.resource.data.userId == request.auth.uid
                       && request.resource.data.text.size() <= 280;
+                      
+        // Allow updating only specific fields for voting
         allow update: if isSignedIn()
                       && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['upvotes', 'downvotes', 'score']);
-        allow delete: if false; // Disallow deletion for now
+                      
+        // Disallow deletion for now
+        allow delete: if false;
+      }
+      
+      // Separate rule to allow listing the entire collection
+      match /messages {
+          allow list: if isSignedIn();
       }
 
       match /reactors/{reactorId} {
