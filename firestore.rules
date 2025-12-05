@@ -27,20 +27,15 @@ service cloud.firestore {
         request.resource.data.diff(resource.data).affectedKeys().hasOnly(['reactions', 'commentCount'])
       );
 
-      // Rule for the COLLECTION (list + get on the entire collection)
-      match /messages {
-        allow list, get: if isSignedIn();
-      }
-
-      // Rule for individual DOCUMENTS (only get/create/update/delete)
+      // Rules for the 'messages' subcollection
       match /messages/{messageId} {
-        allow get: if isSignedIn();
+        allow list, get: if isSignedIn();
         allow create: if isSignedIn()
                       && request.resource.data.userId == request.auth.uid
                       && request.resource.data.text.size() <= 280;
         allow update: if isSignedIn()
                       && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['upvotes', 'downvotes', 'score']);
-        allow delete: if false;
+        allow delete: if false; // Disallow deletion for now
       }
 
       match /reactors/{reactorId} {
