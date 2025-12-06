@@ -44,7 +44,7 @@ service cloud.firestore {
         allow delete: if false;
       }
       
-      // Separate rule to allow listing the entire collection
+      // Separate rule to allow listing the entire collection.
       // This is the key fix.
       match /messages {
           allow list: if isSignedIn();
