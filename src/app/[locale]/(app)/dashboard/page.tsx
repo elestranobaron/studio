@@ -11,7 +11,7 @@ import { collection, query, orderBy, limit, Query } from 'firebase/firestore';
 import { Skeleton } from '@/components/ui/skeleton';
 import type { WOD, WodType } from '@/lib/types';
 import { useUser } from '@/firebase/provider';
-import { useMemo, useState, Suspense, useEffect, useId } from 'react';
+import { useMemo, useState, Suspense, useEffect } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -370,9 +370,11 @@ function DashboardContent({ t }: { t: (key: string) => string }) {
   const [defaultTab, setDefaultTab] = useState('personal');
   const [showScrollTop, setShowScrollTop] = useState(false);
   const { toggleSidebar } = useSidebar();
-  const baseId = useId();
+  const [isClient, setIsClient] = useState(false); // Fix for hydration error
 
   useEffect(() => {
+    setIsClient(true); // Component has mounted on the client
+
     const tabParam = searchParams.get('tab');
     const isNewUser = sessionStorage.getItem('isNewUser') === 'true';
 
@@ -450,27 +452,29 @@ function DashboardContent({ t }: { t: (key: string) => string }) {
       </header>
       <div className="flex-1 flex flex-col min-h-0">
         <main className="flex-1 overflow-y-auto" id="dashboard-main-content">
-          <Tabs value={defaultTab} onValueChange={setDefaultTab} className="w-full" id={baseId}>
-            <div className="p-4 md:p-6 border-b">
-              <TabsList className="grid w-full grid-cols-2 md:w-auto">
-                <TabsTrigger value="personal">{t('tabs.personal')}</TabsTrigger>
-                <TabsTrigger value="community">{t('tabs.community')}</TabsTrigger>
-              </TabsList>
-            </div>
-            <TabsContent value="personal" className="p-4 md:p-6">
-              <WodList 
-                  wods={userWods} 
-                  isLoading={!!showPersonalLoadingState}
-                  emptyStateTitle={t('PersonalWodList.emptyTitle')}
-                  emptyStateDescription={t('PersonalWodList.emptyDescription')}
-                  showAddButton={true}
-                  source="personal"
-              />
-            </TabsContent>
-            <TabsContent value="community" className="p-4 md:p-6">
-              <CommunityWodList />
-            </TabsContent>
-          </Tabs>
+          {isClient && (
+            <Tabs value={defaultTab} onValueChange={setDefaultTab} className="w-full">
+              <div className="p-4 md:p-6 border-b">
+                <TabsList className="grid w-full grid-cols-2 md:w-auto">
+                  <TabsTrigger value="personal">{t('tabs.personal')}</TabsTrigger>
+                  <TabsTrigger value="community">{t('tabs.community')}</TabsTrigger>
+                </TabsList>
+              </div>
+              <TabsContent value="personal" className="p-4 md:p-6">
+                <WodList 
+                    wods={userWods} 
+                    isLoading={!!showPersonalLoadingState}
+                    emptyStateTitle={t('PersonalWodList.emptyTitle')}
+                    emptyStateDescription={t('PersonalWodList.emptyDescription')}
+                    showAddButton={true}
+                    source="personal"
+                />
+              </TabsContent>
+              <TabsContent value="community" className="p-4 md:p-6">
+                <CommunityWodList />
+              </TabsContent>
+            </Tabs>
+          )}
         </main>
       </div>
       
@@ -538,4 +542,5 @@ export default function DashboardPage() {
     
 
     
+
 
