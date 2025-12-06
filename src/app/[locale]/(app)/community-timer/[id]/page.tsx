@@ -174,6 +174,10 @@ export default function CommunityTimerPage() {
       setActiveWod(wod);
       setIsSheetOpen(false);
   }
+  
+  const backLinkHref = isHeroWod ? "/hero-wods" : "/dashboard?tab=community";
+  const backLinkText = isHeroWod ? "Back to Hero WODs" : t('backToDashboard');
+
 
   return activeWod ? (
     <div className="relative flex flex-col items-center justify-center h-screen bg-background p-4 overflow-hidden">
@@ -193,8 +197,8 @@ export default function CommunityTimerPage() {
       
         <div className="absolute top-4 left-4 z-20">
             <Button asChild variant="outline" className="bg-background/50 backdrop-blur-sm">
-            <Link href="/dashboard">
-                <ArrowLeft className="mr-2 h-4 w-4" /> {t('backToDashboard')}
+            <Link href={backLinkHref}>
+                <ArrowLeft className="mr-2 h-4 w-4" /> {backLinkText}
             </Link>
             </Button>
         </div>

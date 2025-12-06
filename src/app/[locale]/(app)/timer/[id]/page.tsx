@@ -125,7 +125,7 @@ export default function TimerPage() {
       
         <div className="absolute top-4 left-4 z-20">
             <Button asChild variant="outline" className="bg-background/50 backdrop-blur-sm">
-            <Link href="/dashboard">
+            <Link href="/dashboard?tab=personal">
                 <ArrowLeft className="mr-2 h-4 w-4" /> {t('backToDashboard')}
             </Link>
             </Button>
