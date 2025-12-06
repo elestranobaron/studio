@@ -3,7 +3,7 @@
 
 import { useState, useMemo } from 'react';
 import { useCollection, useUser, useFirebase } from '@/firebase';
-import { collection, query, where, orderBy, doc, writeBatch, serverTimestamp, runTransaction } from 'firebase/firestore';
+import { collection, query, where, orderBy, doc, writeBatch, serverTimestamp, runTransaction, increment } from 'firebase/firestore';
 import type { Message } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
@@ -34,7 +34,7 @@ function Comment({ message, onReply, onVote, userVote }: { message: MessageWithR
             <div className="flex-1 space-y-1">
                 <div className="flex items-center gap-2 text-xs">
                     <span className="font-semibold">{message.userDisplayName}</span>
-                    <span className="text-muted-foreground">· {formatDistanceToNow(new Date(message.timestamp), { addSuffix: true, locale: fr })}</span>
+                    <span className="text-muted-foreground">· {message.timestamp ? formatDistanceToNow(new Date(message.timestamp), { addSuffix: true, locale: fr }) : '...'}</span>
                 </div>
                 <p className="text-sm whitespace-pre-wrap">{message.text}</p>
                 <div className="flex items-center gap-4 text-xs text-muted-foreground">
@@ -107,28 +107,28 @@ export function CommunityChat({ wodId }: { wodId: string }) {
             const messageCol = collection(firestore, `communityWods/${wodId}/messages`);
             const messageRef = doc(messageCol);
 
-            batch.set(messageRef, {
+            const messageData: any = {
                 text: newMessage,
                 userId: user.uid,
                 userDisplayName: user.email?.split('@')[0] || 'Anonymous',
                 timestamp: serverTimestamp(),
-                parentId: replyingTo,
-                upvotes: 0,
-                downvotes: 0,
                 score: 0,
-                replyCount: 0,
-            });
+            };
 
             if (replyingTo) {
+                messageData.parentId = replyingTo;
                 const parentRef = doc(messageCol, replyingTo);
-                 batch.update(parentRef, { replyCount: (messages?.find(m => m.id === replyingTo)?.replyCount || 0) + 1 });
+                batch.update(parentRef, { replyCount: increment(1) });
             }
+
+            batch.set(messageRef, messageData);
 
             await batch.commit();
             setNewMessage('');
             setReplyingTo(null);
 
         } catch (error) {
+            console.error("Error posting message:", error);
             toast({ variant: 'destructive', title: "Erreur", description: "Impossible de poster le message." });
         } finally {
             setIsPosting(false);
