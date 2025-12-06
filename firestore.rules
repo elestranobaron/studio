@@ -29,10 +29,9 @@ service cloud.firestore {
 
       // Rules for the 'messages' subcollection
       match /messages/{messageId} {
-        // Allow reading single documents
+        // Allow reading single documents and creating them
         allow get: if isSignedIn();
-        
-        // Allow creating documents
+                      
         allow create: if isSignedIn()
                       && request.resource.data.userId == request.auth.uid
                       && request.resource.data.text.size() <= 280;
@@ -46,6 +45,7 @@ service cloud.firestore {
       }
       
       // Separate rule to allow listing the entire collection
+      // This is the key fix.
       match /messages {
           allow list: if isSignedIn();
       }
