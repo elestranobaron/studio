@@ -482,6 +482,10 @@ export function WodCard({ wod, source = "personal" }: { wod: WOD; source?: "pers
             </div>
           )}
           <DialogContent className="max-w-4xl p-0">
+             <DialogHeader className="sr-only">
+                <DialogTitle>{t('viewImageAlt', { wodName: wod.name })}</DialogTitle>
+                <DialogDescription>Full view of the WOD image.</DialogDescription>
+            </DialogHeader>
             <div className="relative w-full aspect-[3/2]">
               <Image
                 src={wod.imageUrl!}
@@ -490,9 +494,6 @@ export function WodCard({ wod, source = "personal" }: { wod: WOD; source?: "pers
                 className="object-contain w-full h-auto rounded-t-lg"
               />
             </div>
-            <DialogDescription className="sr-only">
-                {t('viewImageAlt', {wodName: wod.name})}
-            </DialogDescription>
           </DialogContent>
         </Dialog>
       )}
@@ -580,3 +581,5 @@ export function WodCard({ wod, source = "personal" }: { wod: WOD; source?: "pers
     </Card>
   );
 }
+
+    
