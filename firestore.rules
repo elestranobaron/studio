@@ -27,27 +27,20 @@ service cloud.firestore {
         request.resource.data.diff(resource.data).affectedKeys().hasOnly(['reactions', 'commentCount'])
       );
 
-      // Rules for the 'messages' subcollection
+      // === MESSAGES SUBCOLLECTION – CORRECTED AND FUNCTIONAL ===
       match /messages/{messageId} {
-        // Allow reading single documents and creating them
-        allow get: if isSignedIn();
-                      
+        allow get, list: if isSignedIn();
         allow create: if isSignedIn()
                       && request.resource.data.userId == request.auth.uid
-                      && request.resource.data.text.size() <= 280;
-                      
-        // Allow updating only specific fields for voting
+                      && request.resource.data.text.size() <= 280
+                      && request.resource.data.keys().hasAll(['text', 'userId', 'userDisplayName', 'timestamp', 'score'])
+                      && request.resource.data.keys().hasOnly(['text', 'userId', 'userDisplayName', 'timestamp', 'score', 'parentId']);
+
         allow update: if isSignedIn()
-                      && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['upvotes', 'downvotes', 'score']);
-                      
-        // Disallow deletion for now
+                      && request.resource.data.diff(resource.data).affectedKeys()
+                         .hasOnly(['upvotes', 'downvotes', 'score', 'replyCount']);
+
         allow delete: if false;
-      }
-      
-      // Separate rule to allow listing the entire collection.
-      // This is the key fix.
-      match /messages {
-          allow list: if isSignedIn();
       }
 
       match /reactors/{reactorId} {
