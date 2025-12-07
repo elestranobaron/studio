@@ -35,7 +35,7 @@ import {
 } from "lucide-react";
 import { format, isValid } from "date-fns";
 import { useFirebase, useUser } from "@/firebase";
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import {
   doc,
   collection,
@@ -43,7 +43,6 @@ import {
   deleteDoc,
   updateDoc,
   writeBatch,
-  runTransaction,
 } from "firebase/firestore";
 import { useToast } from "@/components/ui/use-toast";
 import { cn } from "@/lib/utils";
@@ -255,191 +254,9 @@ function PersonalWodActions({ wod }: { wod: WOD }) {
   );
 }
 
-
-function ReactionGrid({ initialWod }: { initialWod: WOD }) {
-    const t = useTranslations("WodCard");
-    const { firestore } = useFirebase();
-    const { user } = useUser();
-    const { toast } = useToast();
-    const [wod, setWod] = useState(initialWod);
-    const [userReaction, setUserReaction] = useState<Reaction | null>(null);
-
-    const reactorRef = useMemo(() => {
-        if (!firestore || !user) return null;
-        return doc(firestore, `communityWods/${wod.id}/reactors/${user.uid}`);
-    }, [firestore, user, wod.id]);
-
-    const reactionsConfig: { type: Reaction; emoji: string; tooltip: string }[] = [
-        { type: "fire", emoji: "🔥", tooltip: "Awesome!" },
-        { type: "cry", emoji: "😭", tooltip: "I cried" },
-        { type: "vomit", emoji: "🤮", tooltip: "Puked" },
-        { type: "laugh", emoji: "😂", tooltip: "Funny WOD" },
-        { type: "poop", emoji: "💩", tooltip: "That was crap" },
-    ];
-    
-    if (!firestore || !user || user.isAnonymous || !reactorRef) {
-        return null;
-    }
-    
-    const handleReaction = async (e: React.MouseEvent, reactionType: Reaction) => {
-        e.preventDefault();
-        e.stopPropagation();
-
-        const originalWod = { ...wod };
-        const originalReaction = userReaction;
-
-        setWod((currentWod) => {
-            const newReactions = { ...(currentWod.reactions || { fire: 0, poop: 0, laugh: 0, cry: 0, vomit: 0 }) };
-            if (userReaction === reactionType) {
-                newReactions[reactionType]--;
-                setUserReaction(null);
-            } else {
-                if (userReaction) newReactions[userReaction]--;
-                newReactions[reactionType]++;
-                setUserReaction(reactionType);
-            }
-            return { ...currentWod, reactions: newReactions };
-        });
-
-        const communityWodRef = doc(firestore, "communityWods", wod.id);
-
-        try {
-            await runTransaction(firestore, async (transaction) => {
-                const reactionDoc = await transaction.get(reactorRef);
-                const wodDoc = await transaction.get(communityWodRef);
-
-                if (!wodDoc.exists()) throw "WOD does not exist!";
-
-                const currentReactions = wodDoc.data().reactions || { fire: 0, poop: 0, laugh: 0, cry: 0, vomit: 0 };
-                const newReactions = { ...currentReactions };
-
-                if (reactionDoc.exists()) {
-                    const previousReaction = reactionDoc.data().type as Reaction;
-                    if (previousReaction === reactionType) {
-                        newReactions[reactionType] = Math.max(0, newReactions[reactionType] - 1);
-                        transaction.delete(reactorRef);
-                    } else {
-                        newReactions[previousReaction] = Math.max(0, newReactions[previousReaction] - 1);
-                        newReactions[reactionType]++;
-                        transaction.set(reactorRef, { type: reactionType });
-                    }
-                } else {
-                    newReactions[reactionType]++;
-                    transaction.set(reactorRef, { type: reactionType });
-                }
-                transaction.update(communityWodRef, { reactions: newReactions });
-            });
-        } catch (error) {
-            console.error("Transaction failed: ", error);
-            toast({ variant: "destructive", title: t("reactionErrorToastTitle"), description: t("reactionErrorToastDescription") });
-            setWod(originalWod);
-            setUserReaction(originalReaction);
-        }
-    };
-    
-    const totalReactions = Object.values(wod.reactions || {}).reduce((a, b) => a + b, 0);
-
-    return (
-        <TooltipProvider delayDuration={200}>
-            <div className="flex items-center justify-between">
-                <div className="flex -space-x-2">
-                    {reactionsConfig.map(({ type, emoji }) => {
-                        const count = wod.reactions?.[type] ?? 0;
-                        if (count > 0) {
-                            return (
-                                <Tooltip key={type}>
-                                    <TooltipTrigger>
-                                        <div className="h-6 w-6 rounded-full bg-muted border-2 border-background flex items-center justify-center text-xs">
-                                            {emoji}
-                                        </div>
-                                    </TooltipTrigger>
-                                    <TooltipContent>
-                                        <p>{count} {type}</p>
-                                    </TooltipContent>
-                                </Tooltip>
-                            )
-                        }
-                        return null;
-                    })}
-                     {totalReactions > 0 && <div className="h-6 px-2 rounded-full bg-muted border-2 border-background flex items-center justify-center text-xs font-bold tabular-nums text-muted-foreground z-10">
-                        {totalReactions}
-                    </div>}
-                </div>
-
-                <div className="flex items-center gap-1 rounded-full bg-muted p-0.5">
-                     {reactionsConfig.map(({ type, emoji, tooltip }) => (
-                         <Tooltip key={type}>
-                            <TooltipTrigger asChild>
-                                 <button
-                                     className={cn(
-                                         "h-7 w-7 rounded-full text-base flex items-center justify-center transition-all",
-                                         userReaction === type ? "bg-background scale-110 shadow" : "hover:bg-background/50"
-                                     )}
-                                     onClick={(e) => handleReaction(e, type)}
-                                 >
-                                     {emoji}
-                                 </button>
-                             </TooltipTrigger>
-                             <TooltipContent>
-                                 <p>{tooltip}</p>
-                             </TooltipContent>
-                         </Tooltip>
-                     ))}
-                </div>
-            </div>
-        </TooltipProvider>
-    );
-}
-
-function WodProfile({ wod }: { wod: WOD }) {
-  const t = useTranslations("WodCard.profile");
-  const cardio = wod.cardio ?? 50; // Default to 50 if undefined
-  const upperBody = wod.upperBody ?? 50;
-
-  return (
-    <div className="space-y-3 pt-2">
-      {/* Cardio vs Lifting */}
-      <div className="space-y-1">
-        <div className="flex justify-between items-center text-xs font-medium text-muted-foreground">
-          <div className="flex items-center gap-1.5">
-            <HeartPulse className="h-3.5 w-3.5 text-red-400"/>
-            <span>{t('cardio')}</span>
-          </div>
-          <div className="flex items-center gap-1.5">
-            <span>{t('lifting')}</span>
-            <Weight className="h-3.5 w-3.5 text-sky-400"/>
-          </div>
-        </div>
-        <div className="flex items-center gap-1 w-full">
-            <Progress value={cardio} className="h-2 [&>div]:bg-red-400" />
-            <Progress value={100-cardio} className="h-2 [&>div]:bg-sky-400" />
-        </div>
-      </div>
-
-      {/* Upper vs Lower */}
-       <div className="space-y-1">
-        <div className="flex justify-between items-center text-xs font-medium text-muted-foreground">
-          <div className="flex items-center gap-1.5">
-            <Armchair className="h-3.5 w-3.5 text-amber-400"/>
-            <span>{t('upper')}</span>
-          </div>
-          <div className="flex items-center gap-1.5">
-             <span>{t('lower')}</span>
-            <Bike className="h-3.5 w-3.5 text-fuchsia-400"/>
-          </div>
-        </div>
-         <div className="flex items-center gap-1 w-full">
-            <Progress value={upperBody} className="h-2 [&>div]:bg-amber-400" />
-            <Progress value={100-upperBody} className="h-2 [&>div]:bg-fuchsia-400" />
-        </div>
-      </div>
-    </div>
-  );
-}
-
-
 export function WodCard({ wod, source = "personal" }: { wod: WOD; source?: "personal" | "community" }) {
   const t = useTranslations("WodCard");
+  const { user } = useUser();
   const date = new Date(wod.date);
   const formattedDate = isValid(date) ? format(date, "PPP") : wod.date;
   const href = source === "community" ? `/community-timer/${wod.id}` : `/timer/${wod.id}`;
@@ -550,11 +367,11 @@ export function WodCard({ wod, source = "personal" }: { wod: WOD; source?: "pers
             </div>
           </DialogContent>
         </Dialog>
-         {hasProfile && <WodProfile wod={wod} />}
+        {hasProfile && <WodProfile wod={wod} />}
       </CardContent>
 
       <CardFooter className="flex flex-col items-stretch gap-2 pt-2">
-        {source === "community" && (
+        {source === "community" && user && !user.isAnonymous && (
             <div className="flex items-center justify-between gap-2">
                 <ReactionGrid initialWod={wod} />
                 <Dialog open={chatOpen} onOpenChange={setChatOpen}>
@@ -582,4 +399,48 @@ export function WodCard({ wod, source = "personal" }: { wod: WOD; source?: "pers
   );
 }
 
-    
+function WodProfile({ wod }: { wod: WOD }) {
+  const t = useTranslations("WodCard.profile");
+  const cardio = wod.cardio ?? 50; // Default to 50 if undefined
+  const upperBody = wod.upperBody ?? 50;
+
+  return (
+    <div className="space-y-3 pt-2">
+      {/* Cardio vs Lifting */}
+      <div className="space-y-1">
+        <div className="flex justify-between items-center text-xs font-medium text-muted-foreground">
+          <div className="flex items-center gap-1.5">
+            <HeartPulse className="h-3.5 w-3.5 text-red-400"/>
+            <span>{t('cardio')}</span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <span>{t('lifting')}</span>
+            <Weight className="h-3.5 w-3.5 text-sky-400"/>
+          </div>
+        </div>
+        <div className="flex items-center gap-1 w-full">
+            <Progress value={cardio} className="h-2 [&>div]:bg-red-400" />
+            <Progress value={100-cardio} className="h-2 [&>div]:bg-sky-400" />
+        </div>
+      </div>
+
+      {/* Upper vs Lower */}
+       <div className="space-y-1">
+        <div className="flex justify-between items-center text-xs font-medium text-muted-foreground">
+          <div className="flex items-center gap-1.5">
+            <Armchair className="h-3.5 w-3.5 text-amber-400"/>
+            <span>{t('upper')}</span>
+          </div>
+          <div className="flex items-center gap-1.5">
+             <span>{t('lower')}</span>
+            <Bike className="h-3.5 w-3.5 text-fuchsia-400"/>
+          </div>
+        </div>
+         <div className="flex items-center gap-1 w-full">
+            <Progress value={upperBody} className="h-2 [&>div]:bg-amber-400" />
+            <Progress value={100-upperBody} className="h-2 [&>div]:bg-fuchsia-400" />
+        </div>
+      </div>
+    </div>
+  );
+}
