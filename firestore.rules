@@ -27,7 +27,7 @@ service cloud.firestore {
         request.resource.data.diff(resource.data).affectedKeys().hasOnly(['reactions', 'commentCount'])
       );
 
-      // === MESSAGES SUBCOLLECTION – CORRECTED AND FUNCTIONAL ===
+      // === MESSAGES SUBCOLLECTION – CORRIGÉ ET FONCTIONNEL ===
       match /messages/{messageId} {
         allow get, list: if isSignedIn();
         allow create: if isSignedIn()
