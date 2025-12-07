@@ -29,17 +29,23 @@ service cloud.firestore {
 
       // === MESSAGES SUBCOLLECTION – CORRIGÉ ET FONCTIONNEL ===
       match /messages/{messageId} {
+        // Autorise la lecture d'un document individuel ET le listage de la collection
         allow get, list: if isSignedIn();
+        
+        // Autorise la création si l'utilisateur est connecté, est le propriétaire,
+        // et que les données envoyées sont valides.
         allow create: if isSignedIn()
                       && request.resource.data.userId == request.auth.uid
                       && request.resource.data.text.size() <= 280
                       && request.resource.data.keys().hasAll(['text', 'userId', 'userDisplayName', 'timestamp', 'score'])
                       && request.resource.data.keys().hasOnly(['text', 'userId', 'userDisplayName', 'timestamp', 'score', 'parentId']);
 
+        // Autorise la mise à jour uniquement pour les votes et le compteur de réponses
         allow update: if isSignedIn()
                       && request.resource.data.diff(resource.data).affectedKeys()
                          .hasOnly(['upvotes', 'downvotes', 'score', 'replyCount']);
 
+        // Interdit la suppression
         allow delete: if false;
       }
 
