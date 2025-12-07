@@ -78,7 +78,7 @@ import { HeroLetter } from "./hero-letter";
 import { useTranslations } from "next-intl";
 import { Progress } from "./ui/progress";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./ui/tooltip";
-import { CommunityChat } from "./community-chat";
+import { CommunityChat, ReactionGrid } from "./community-chat";
 
 function WodIcon({ type }: { type: WOD["type"] }) {
   switch (type) {
@@ -297,7 +297,7 @@ export function WodCard({ wod, source = "personal" }: { wod: WOD; source?: "pers
              </div>
           </DialogTrigger>
           <DialogContent className="max-w-4xl p-0">
-             <DialogHeader className="sr-only">
+            <DialogHeader className="sr-only">
                 <DialogTitle>{t('viewImageAlt', { wodName: wod.name })}</DialogTitle>
                 <DialogDescription>Full view of the WOD image.</DialogDescription>
             </DialogHeader>

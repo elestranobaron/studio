@@ -64,7 +64,7 @@ function Comment({ message, onReply, onVote, userVote }: { message: MessageWithR
     );
 }
 
-function ReactionGrid({ initialWod }: { initialWod: any }) {
+export function ReactionGrid({ initialWod }: { initialWod: any }) {
     const { firestore, user } = useFirebase();
     const { toast } = useToast();
     const [wod, setWod] = useState(initialWod);
