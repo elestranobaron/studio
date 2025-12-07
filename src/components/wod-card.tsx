@@ -276,28 +276,26 @@ export function WodCard({ wod, source = "personal" }: { wod: WOD; source?: "pers
         <HeroLetter letter={wod.name.charAt(0)} className="h-48 w-full" />
       ) : (
         <Dialog>
-          {wod.imageUrl && (
-            <div className="relative h-48 w-full overflow-hidden">
-              <DialogTrigger asChild>
+          <DialogTrigger asChild>
+             <div className="relative h-48 w-full overflow-hidden">
                 <div className="absolute inset-0 group/image cursor-pointer">
-                  <Image
-                    src={wod.imageUrl}
-                    alt={wod.name}
-                    fill
-                    className="object-cover transition-transform duration-300 group-hover/image:scale-105"
-                    data-ai-hint={wod.imageHint}
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-                  <div className="absolute inset-0 bg-black/20 opacity-0 group-hover/image:opacity-100 transition-opacity flex items-center justify-center">
-                    <div className="p-2 rounded-full bg-black/50 text-white">
-                      <Expand className="h-6 w-6" />
+                    <Image
+                        src={wod.imageUrl}
+                        alt={wod.name}
+                        fill
+                        className="object-cover transition-transform duration-300 group-hover/image:scale-105"
+                        data-ai-hint={wod.imageHint}
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                    <div className="absolute inset-0 bg-black/20 opacity-0 group-hover/image:opacity-100 transition-opacity flex items-center justify-center">
+                        <div className="p-2 rounded-full bg-black/50 text-white">
+                        <Expand className="h-6 w-6" />
+                        </div>
                     </div>
-                  </div>
                 </div>
-              </DialogTrigger>
-              {source === "personal" && <PersonalWodActions wod={wod} />}
-            </div>
-          )}
+                {source === "personal" && <PersonalWodActions wod={wod} />}
+             </div>
+          </DialogTrigger>
           <DialogContent className="max-w-4xl p-0">
              <DialogHeader className="sr-only">
                 <DialogTitle>{t('viewImageAlt', { wodName: wod.name })}</DialogTitle>
@@ -339,57 +337,57 @@ export function WodCard({ wod, source = "personal" }: { wod: WOD; source?: "pers
 
       <CardContent className="flex-grow py-2">
         <Dialog>
-          <DialogTrigger asChild>
-            <p className="line-clamp-3 text-sm text-muted-foreground whitespace-pre-wrap transition-colors cursor-pointer hover:text-foreground">
-              {descriptionSections.map((s) => s.content).join("\n")}
-            </p>
-          </DialogTrigger>
-          <DialogContent className="max-w-2xl">
-            <DialogHeader>
-              <DialogTitle className="font-headline text-primary text-2xl">{wod.name}</DialogTitle>
-              <DialogDescription>
-                {t("viewWodDescription", { type: wod.type, date: formattedDate })}
-                {wod.userDisplayName && (
-                  <span className="block mt-1">
-                    {t("viewWodSharedBy", { displayName: wod.userDisplayName })}
-                  </span>
-                )}
-              </DialogDescription>
-            </DialogHeader>
-            <div className="py-4 space-y-6 max-h-[70vh] overflow-y-auto pr-4">
-              {descriptionSections.map((section, index) => (
-                <div key={index}>
-                  <h4 className="font-headline text-lg text-foreground mb-2">{section.title}</h4>
-                  <WodContentParser content={section.content} />
-                  {index < descriptionSections.length - 1 && <Separator className="mt-6" />}
+            <DialogTrigger asChild>
+                <p className="line-clamp-3 text-sm text-muted-foreground whitespace-pre-wrap transition-colors cursor-pointer hover:text-foreground">
+                {descriptionSections.map((s) => s.content).join("\n")}
+                </p>
+            </DialogTrigger>
+            <DialogContent className="max-w-2xl">
+                <DialogHeader>
+                    <DialogTitle className="font-headline text-primary text-2xl">{wod.name}</DialogTitle>
+                    <DialogDescription>
+                        {t("viewWodDescription", { type: wod.type, date: formattedDate })}
+                        {wod.userDisplayName && (
+                        <span className="block mt-1">
+                            {t("viewWodSharedBy", { displayName: wod.userDisplayName })}
+                        </span>
+                        )}
+                    </DialogDescription>
+                </DialogHeader>
+                <div className="py-4 space-y-6 max-h-[70vh] overflow-y-auto pr-4">
+                {descriptionSections.map((section, index) => (
+                    <div key={index}>
+                    <h4 className="font-headline text-lg text-foreground mb-2">{section.title}</h4>
+                    <WodContentParser content={section.content} />
+                    {index < descriptionSections.length - 1 && <Separator className="mt-6" />}
+                    </div>
+                ))}
                 </div>
-              ))}
-            </div>
-          </DialogContent>
+            </DialogContent>
         </Dialog>
         {hasProfile && <WodProfile wod={wod} />}
       </CardContent>
 
       <CardFooter className="flex flex-col items-stretch gap-2 pt-2">
-        {source === "community" && user && !user.isAnonymous && (
-            <div className="flex items-center justify-between gap-2">
-                <ReactionGrid initialWod={wod} />
-                <Dialog open={chatOpen} onOpenChange={setChatOpen}>
+        {source === "community" && (
+            <Dialog open={chatOpen} onOpenChange={setChatOpen}>
+                <div className="flex items-center justify-between gap-2">
+                    <ReactionGrid initialWod={wod} />
                     <DialogTrigger asChild>
                         <Button variant="ghost" size="sm" className="text-muted-foreground">
                             <MessageCircle className="mr-2 h-4 w-4" />
                             {wod.commentCount || 0}
                         </Button>
                     </DialogTrigger>
-                    <DialogContent className="max-w-2xl h-[90vh] flex flex-col">
-                        <DialogHeader>
-                            <DialogTitle>{wod.name}</DialogTitle>
-                             <DialogDescription>Community Chat</DialogDescription>
-                        </DialogHeader>
-                        <CommunityChat wodId={wod.id} />
-                    </DialogContent>
-                </Dialog>
-            </div>
+                </div>
+                <DialogContent className="max-w-2xl h-[90vh] flex flex-col">
+                    <DialogHeader>
+                        <DialogTitle>{wod.name}</DialogTitle>
+                        <DialogDescription>Community Chat</DialogDescription>
+                    </DialogHeader>
+                    <CommunityChat wodId={wod.id} />
+                </DialogContent>
+            </Dialog>
         )}
         <Button asChild className="w-full">
           <Link href={href}>{t("startWod")}</Link>

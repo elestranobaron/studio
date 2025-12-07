@@ -71,7 +71,7 @@ function ReactionGrid({ initialWod }: { initialWod: any }) {
     const [userReaction, setUserReaction] = useState<Reaction | null>(null);
 
     const reactorRef = useMemo(() => {
-        if (!firestore || !user || user.isAnonymous) return null;
+        if (!firestore || !user) return null;
         return doc(firestore, `communityWods/${wod.id}/reactors/${user.uid}`);
     }, [firestore, user, wod.id]);
 
@@ -93,7 +93,7 @@ function ReactionGrid({ initialWod }: { initialWod: any }) {
         { type: "poop", emoji: "💩", tooltip: "That was crap" },
     ];
     
-    if (!firestore || !user || user.isAnonymous) {
+    if (!firestore || !user) {
         return null;
     }
     
@@ -228,7 +228,7 @@ export function CommunityChat({ wodId }: { wodId: string }) {
 
 
     const handlePostMessage = async () => {
-        if (!firestore || !user || user.isAnonymous || !newMessage.trim()) return;
+        if (!firestore || !user || !newMessage.trim()) return;
         setIsPosting(true);
         try {
             const batch = writeBatch(firestore);
@@ -264,7 +264,7 @@ export function CommunityChat({ wodId }: { wodId: string }) {
     };
     
     const handleVote = async (messageId: string, vote: 'up' | 'down') => {
-        if (!firestore || !user || user.isAnonymous) return;
+        if (!firestore || !user) return;
         
         const messageRef = doc(firestore, `communityWods/${wodId}/messages`, messageId);
         
@@ -283,7 +283,7 @@ export function CommunityChat({ wodId }: { wodId: string }) {
         }
     };
 
-    if (!user || user.isAnonymous) {
+    if (!user) {
         return <div className="text-center text-muted-foreground p-8">Connectez-vous pour rejoindre la discussion.</div>
     }
 
