@@ -44,9 +44,10 @@ service cloud.firestore {
         allow delete: if false;
       }
 
+      // === REACTORS SUBCOLLECTION - CORRECTED ===
       match /reactors/{reactorId} {
         allow get: if isSignedIn();
-        allow create, delete: if isSignedIn() && request.auth.uid == reactorId;
+        allow create, update, delete: if isSignedIn() && request.auth.uid == reactorId;
       }
     }
 
