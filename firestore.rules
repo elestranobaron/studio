@@ -1,23 +1,19 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-
     function isSignedIn() {
       return request.auth != null;
     }
     function isOwner(userId) {
       return request.auth.uid == userId;
     }
-
     match /users/{userId} {
       allow read, write: if isOwner(userId);
       allow create: if isSignedIn() && request.auth.uid == userId;
     }
-
     match /users/{userId}/wods/{wodId} {
       allow read, write: if isSignedIn() && isOwner(userId);
     }
-
     match /communityWods/{wodId} {
       allow get, list: if isSignedIn();
       allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
@@ -26,31 +22,25 @@ service cloud.firestore {
         resource.data.userId == request.auth.uid ||
         request.resource.data.diff(resource.data).affectedKeys().hasOnly(['reactions', 'commentCount'])
       );
-
       // === MESSAGES SUBCOLLECTION - CORRIGÉ ET FONCTIONNEL ===
       match /messages/{messageId} {
-        allow read: if true; // Règle temporaire pour débloquer le SSR
-        
+        allow read: if isSignedIn(); 
+       
         allow create: if isSignedIn()
                       && request.resource.data.userId == request.auth.uid
-                      && request.resource.data.text.size() <= 280
-                      && request.resource.data.keys().hasAll(['text', 'userId', 'userDisplayName', 'timestamp', 'score'])
-                      && request.resource.data.keys().hasOnly(['text', 'userId', 'userDisplayName', 'timestamp', 'score', 'parentId']);
+                      && request.resource.data.text.size() <= 280;
 
         allow update: if isSignedIn()
                       && request.resource.data.diff(resource.data).affectedKeys()
                          .hasOnly(['upvotes', 'downvotes', 'score', 'replyCount']);
-
         allow delete: if false;
       }
-
       // === REACTORS SUBCOLLECTION - CORRIGÉ ===
       match /reactors/{reactorId} {
         allow get: if isSignedIn();
         allow create, update, delete: if isSignedIn() && request.auth.uid == reactorId;
       }
     }
-
     match /hallOfFame/{userId} {
       allow read: if true;
       allow write: if false;
