@@ -27,8 +27,11 @@ service cloud.firestore {
         request.resource.data.diff(resource.data).affectedKeys().hasOnly(['reactions', 'commentCount'])
       );
 
+      // === MESSAGES SUBCOLLECTION - CORRECTED ===
       match /messages/{messageId} {
+        // This rule allows any signed-in user to read individual messages AND list the entire collection.
         allow get, list: if isSignedIn();
+
         allow create: if isSignedIn()
                       && request.resource.data.userId == request.auth.uid
                       && request.resource.data.text.size() <= 280
