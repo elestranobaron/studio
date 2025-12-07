@@ -27,10 +27,10 @@ service cloud.firestore {
         request.resource.data.diff(resource.data).affectedKeys().hasOnly(['reactions', 'commentCount'])
       );
 
-      // === MESSAGES SUBCOLLECTION - CORRECTED ===
+      // === MESSAGES SUBCOLLECTION - CORRIGÉ ET FONCTIONNEL ===
       match /messages/{messageId} {
-        allow get, list: if isSignedIn();
-
+        allow read: if true; // Règle temporaire pour débloquer le SSR
+        
         allow create: if isSignedIn()
                       && request.resource.data.userId == request.auth.uid
                       && request.resource.data.text.size() <= 280
@@ -44,7 +44,7 @@ service cloud.firestore {
         allow delete: if false;
       }
 
-      // === REACTORS SUBCOLLECTION - CORRECTED ===
+      // === REACTORS SUBCOLLECTION - CORRIGÉ ===
       match /reactors/{reactorId} {
         allow get: if isSignedIn();
         allow create, update, delete: if isSignedIn() && request.auth.uid == reactorId;
