@@ -29,7 +29,6 @@ service cloud.firestore {
 
       // === MESSAGES SUBCOLLECTION - CORRECTED ===
       match /messages/{messageId} {
-        // This rule allows any signed-in user to read individual messages AND list the entire collection.
         allow get, list: if isSignedIn();
 
         allow create: if isSignedIn()
@@ -46,7 +45,8 @@ service cloud.firestore {
       }
 
       match /reactors/{reactorId} {
-        allow read, create, delete: if isSignedIn() && request.auth.uid == reactorId;
+        allow get: if isSignedIn();
+        allow create, delete: if isSignedIn() && request.auth.uid == reactorId;
       }
     }
 
