@@ -1,3 +1,4 @@
+
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
@@ -21,13 +22,15 @@ service cloud.firestore {
 
     // === COMMUNITY WODS ===
     match /communityWods/{wodId} {
-      // Autorise la liste des documents communityWods (pour SSR)
+      // Allow anyone to list the community WODs
       allow list: if true;
-      // Autorise la lecture d'un document communityWod (pour les utilisateurs connectés)
+      // Allow signed-in users to read individual WODs
       allow get: if isSignedIn();
-      // Autorise la création, suppression, mise à jour (selon tes critères)
+      // Allow creation if the user is the owner
       allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
+      // Allow deletion only by the owner
       allow delete: if isSignedIn() && resource.data.userId == request.auth.uid;
+      // Allow updates by the owner, or for reactions/comments by anyone signed in
       allow update: if isSignedIn() && (
         resource.data.userId == request.auth.uid ||
         request.resource.data.diff(resource.data).affectedKeys().hasOnly(['reactions', 'commentCount'])
@@ -38,23 +41,20 @@ service cloud.firestore {
         allow get: if isSignedIn();
         allow create, update, delete: if isSignedIn() && request.auth.uid == reactorId;
       }
-    }
-
-    // === MESSAGES COLLECTION ===
-    // Autorise la liste des messages (pour tout le monde, y compris SSR)
-    match /communityWods/{wodId}/messages {
-      allow list: if true;
-    }
-    // Autorise la lecture, création, mise à jour, suppression des messages individuels
-    match /communityWods/{wodId}/messages/{messageId} {
-      allow get: if true; // Lecture publique
-      allow create: if isSignedIn()
-                    && request.resource.data.userId == request.auth.uid
-                    && request.resource.data.text.size() <= 280;
-      allow update: if isSignedIn()
-                    && request.resource.data.diff(resource.data).affectedKeys()
-                       .hasOnly(['upvotes', 'downvotes', 'score', 'replyCount']);
-      allow delete: if false; // Interdit la suppression
+      
+      // === MESSAGES SUBCOLLECTION ===
+      match /messages/{messageId} {
+        // Allow anyone to read/list messages
+        allow read: if true; 
+        
+        allow create: if isSignedIn()
+                      && request.resource.data.userId == request.auth.uid
+                      && request.resource.data.text.size() <= 280;
+        allow update: if isSignedIn()
+                      && request.resource.data.diff(resource.data).affectedKeys()
+                         .hasOnly(['upvotes', 'downvotes', 'score', 'replyCount']);
+        allow delete: if false; // Deletion is not allowed
+      }
     }
 
     // === HALL OF FAME ===
