@@ -25,8 +25,10 @@ service cloud.firestore {
       
       // === MESSAGES SUBCOLLECTION - CORRECTED ===
       match /messages/{messageId} {
-        // Allow reading messages for anyone. This is a temporary measure to fix the permission issue.
-        allow read: if true;
+        // Autorise la lecture de la liste des messages pour tout le monde.
+        // C'est une mesure temporaire pour résoudre le problème de permission.
+        allow list: if true;
+        allow get: if true;
        
         allow create: if isSignedIn()
                       && request.resource.data.userId == request.auth.uid
