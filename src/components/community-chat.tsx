@@ -3,12 +3,12 @@
 
 import { useState, useMemo, useEffect } from 'react';
 import { useCollection, useUser, useFirebase } from '@/firebase';
-import { collection, query, where, orderBy, doc, writeBatch, serverTimestamp, runTransaction, increment, getDoc } from 'firebase/firestore';
-import type { Message, Reaction } from '@/lib/types';
+import { collection, query, orderBy, doc, writeBatch, serverTimestamp, runTransaction, increment, getDoc } from 'firebase/firestore';
+import type { Message, Reaction, WOD } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { ArrowUp, ArrowDown, MessageSquare, CornerDownRight, Send, LoaderCircle } from 'lucide-react';
+import { ArrowUp, ArrowDown, MessageSquare, Send, LoaderCircle } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
@@ -64,7 +64,7 @@ function Comment({ message, onReply, onVote, userVote }: { message: MessageWithR
     );
 }
 
-export function ReactionGrid({ initialWod }: { initialWod: any }) {
+export function ReactionGrid({ initialWod }: { initialWod: WOD }) {
     const { firestore, user } = useFirebase();
     const { toast } = useToast();
     const [wod, setWod] = useState(initialWod);
@@ -235,16 +235,19 @@ export function CommunityChat({ wodId }: { wodId: string }) {
             const messageCol = collection(firestore, `communityWods/${wodId}/messages`);
             const messageRef = doc(messageCol);
 
-            const messageData: any = {
+            const messageData: Omit<Message, 'id'> = {
                 text: newMessage,
                 userId: user.uid,
                 userDisplayName: user.email?.split('@')[0] || 'Anonymous',
-                timestamp: serverTimestamp(),
+                timestamp: serverTimestamp() as any, // Firestore will convert this
                 score: 0,
+                upvotes: 0,
+                downvotes: 0,
+                replyCount: 0,
+                parentId: replyingTo || null,
             };
 
             if (replyingTo) {
-                messageData.parentId = replyingTo;
                 const parentRef = doc(messageCol, replyingTo);
                 batch.update(parentRef, { replyCount: increment(1) });
             }
@@ -293,7 +296,7 @@ export function CommunityChat({ wodId }: { wodId: string }) {
                 <div className="px-6 space-y-6">
                     {isLoading && <div className="flex justify-center p-8"><LoaderCircle className="animate-spin" /></div>}
                     {threadedMessages.length === 0 && !isLoading && <p className="text-center text-muted-foreground p-8">Sois le premier à commenter !</p>}
-                    {threadedMessages.map(message => (
+                    {threadedMessages.map((message: MessageWithReplies) => (
                         <Comment key={message.id} message={message} onReply={setReplyingTo} onVote={handleVote} />
                     ))}
                 </div>

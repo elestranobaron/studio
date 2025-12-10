@@ -12,6 +12,19 @@ export type WodDescriptionSection = {
 
 export type Reaction = 'fire' | 'poop' | 'laugh' | 'cry' | 'vomit';
 
+export type Message = {
+  id: string;
+  text: string;
+  userId: string;
+  userDisplayName: string;
+  timestamp: string; // Should be a Firestore Timestamp, but string for simplicity with serverTimestamp
+  parentId?: string | null;
+  upvotes: number;
+  downvotes: number;
+  score: number;
+  replyCount: number;
+};
+
 export type WOD = {
   id: string;
   name: string;
