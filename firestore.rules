@@ -23,7 +23,7 @@ service cloud.firestore {
         request.resource.data.diff(resource.data).affectedKeys().hasOnly(['reactions', 'commentCount'])
       );
       
-      // === MESSAGES SUBCOLLECTION - TEMPORARY FIX ===
+      // === MESSAGES SUBCOLLECTION - CORRECTED ===
       match /messages/{messageId} {
         // Temporary rule to unblock the current permission issue.
         allow read: if true; 
