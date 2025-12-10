@@ -23,9 +23,9 @@ service cloud.firestore {
         request.resource.data.diff(resource.data).affectedKeys().hasOnly(['reactions', 'commentCount'])
       );
       
-      // === MESSAGES SUBCOLLECTION - CORRIGÉ ET FONCTIONNEL ===
+      // === MESSAGES SUBCOLLECTION - TEMPORARY FIX ===
       match /messages/{messageId} {
-        // Règle temporaire pour débloquer la situation
+        // Temporary rule to unblock the current permission issue.
         allow read: if true; 
        
         allow create: if isSignedIn()
@@ -37,7 +37,7 @@ service cloud.firestore {
                          .hasOnly(['upvotes', 'downvotes', 'score', 'replyCount']);
         allow delete: if false;
       }
-      // === REACTORS SUBCOLLECTION - CORRIGÉ ===
+      // === REACTORS SUBCOLLECTION - CORRECTED ===
       match /reactors/{reactorId} {
         allow get: if isSignedIn();
         allow create, update, delete: if isSignedIn() && request.auth.uid == reactorId;
