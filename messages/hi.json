@@ -1,0 +1,405 @@
+
+{
+  "UserNav": {
+    "signIn": "साइन इन करें",
+    "signOut": "साइन आउट करें",
+    "loading": "लोड हो रहा है...",
+    "anonymousUser": "अनाम उपयोगकर्ता",
+    "temporaryProfile": "अस्थायी प्रोफ़ाइल",
+    "settingsTooltip": "सेटिंग्स"
+  },
+  "MainNav": {
+    "dashboard": "डैशबोर्ड",
+    "scanWod": "WOD स्कैन करें",
+    "generateWod": "WOD जेनरेट करें",
+    "heroWods": "हीरो WODs",
+    "timers": "टाइमर",
+    "goPremium": "प्रीमियम पर जाएं",
+    "hallOfFame": "हॉल ऑफ फेम"
+  },
+  "DashboardPage": {
+    "title": "डैशबोर्ड",
+    "scanNewWod": "नया WOD स्कैन करें",
+    "tabs": {
+      "personal": "मेरे WODs",
+      "community": "समुदाय"
+    },
+    "PersonalWodList": {
+      "emptyTitle": "यहां कोई WOD नहीं मिला।",
+      "emptyDescription": "शुरू करने के लिए अपना पहला WOD स्कैन करें!"
+    },
+    "CommunityWodList": {
+      "joinTitle": "समुदाय में शामिल हों!",
+      "joinDescription": "पूरे समुदाय से WOD देखने, साझा करने और प्रेरित होने के लिए एक निःशुल्क खाता बनाएं।",
+      "joinButton": "साइन अप / लॉग इन करें",
+      "errorTitle": "एक त्रुटि हुई",
+      "errorDescription": "समुदाय WODs लोड नहीं किए जा सके। कृपया बाद में पुनः प्रयास करें।",
+      "searchInputPlaceholder": "समुदाय WODs खोजें...",
+      "sortByLabel": "इसके अनुसार क्रमबद्ध करें",
+      "sort": {
+        "recent": "सबसे हाल का",
+        "popular": "सबसे लोकप्रिय",
+        "alphabetical": "वर्णानुक्रम (A-Z)"
+      },
+      "emptySearchTitle": "कोई WOD आपकी खोज से मेल नहीं खाता।",
+      "emptySearchDescription": "एक अलग खोज शब्द का प्रयास करें।",
+      "emptyCommunityTitle": "साझा करने वाले पहले व्यक्ति बनें!"
+    },
+    "ScrollTop": {
+      "label": "शीर्ष पर स्क्रॉल करें"
+    }
+  },
+  "WelcomeEmptyState": {
+    "title": "WODBurner में आपका स्वागत है!",
+    "subtitle": "3 सेकंड में अपना पहला WOD लॉग करें:",
+    "scanButton": "एक तस्वीर से WOD स्कैन करें",
+    "generateButton": "एक यादृच्छिक WOD उत्पन्न करें",
+    "heroButton": "एक हीरो WOD आज़माएँ",
+    "communityLink": "या, आज दूसरे क्या जला रहे हैं, यह देखने के लिए <communityLink>समुदाय</communityLink> का अन्वेषण करें।"
+  },
+  "WodCard": {
+    "optionsAlt": "WOD विकल्प",
+    "share": "साझा करें",
+    "unshare": "साझा करना बंद करें",
+    "edit": "संपादित करें",
+    "delete": "हटाएं",
+    "sharedToastTitle": "WOD साझा किया गया!",
+    "sharedToastDescription": "आपका WOD अब समुदाय के लिए दृश्यमान है।",
+    "unsharedToastTitle": "WOD साझा नहीं किया गया",
+    "unsharedToastDescription": "आपका WOD समुदाय से हटा दिया गया है।",
+    "shareErrorToastTitle": "कार्रवाई विफल",
+    "shareErrorToastDescription": "साझा स्थिति को अपडेट नहीं किया जा सका।",
+    "deleteDialogTitle": "क्या आप पूरी तरह से निश्चित हैं?",
+    "deleteDialogDescription": "इस कार्रवाई को पूर्ववत नहीं किया जा सकता है। यह आपके WOD को स्थायी रूप से हटा देगा{isShared, select, true { और इसे समुदाय से हटा देगा} other {}}।",
+    "deleteDialogCancel": "रद्द करें",
+    "deleteDialogConfirm": "हटाएं",
+    "deleteToastTitle": "WOD हटा दिया गया",
+    "deleteToastDescription": "आपका WOD सफलतापूर्वक हटा दिया गया है।",
+    "deleteErrorToastTitle": "हटाना विफल",
+    "deleteErrorToastDescription": "WOD को हटाया नहीं जा सका।",
+    "reactionErrorToastTitle": "उफ़!",
+    "reactionErrorToastDescription": "आपकी प्रतिक्रिया सहेजी नहीं जा सकी।",
+    "viewImageAlt": "{wodName} - मूल छवि",
+    "viewWodDescription": "{type} - {date}",
+    "viewWodSharedBy": "{displayName} द्वारा साझा किया गया",
+    "startWod": "WOD शुरू करें",
+    "profile": {
+      "cardio": "कार्डियो",
+      "lifting": "भारोत्तोलन",
+      "upper": "ऊपरी",
+      "lower": "निचला"
+    }
+  },
+  "TimerPage": {
+    "backToDashboard": "डैशबोर्ड पर वापस जाएं",
+    "viewWod": "WOD देखें",
+    "fullWodLabel": "पूर्ण WOD: {wodName}",
+    "startSection": "प्रारंभ करें",
+    "accessRestricted": {
+      "title": "पहुँच प्रतिबंधित",
+      "description": "कृपया समुदाय WOD देखने और टाइमर का उपयोग करने के लिए साइन अप करें या लॉग इन करें।",
+      "button": "साइन अप / लॉग इन करें"
+    }
+  },
+  "FileUploader": {
+    "dragAndDropPrompt": "अपनी WOD छवि को खींचें और छोड़ें, या चुनने के लिए क्लिक करें",
+    "dragActivePrompt": "छवि को यहाँ छोड़ें...",
+    "fileTypes": "PNG, JPG, या GIF (अधिकतम 5MB)",
+    "analyzingTitle": "WOD का विश्लेषण किया जा रहा है...",
+    "analyzingDescription": "AI गर्म हो रहा है। इसमें कुछ समय लग सकता है।",
+    "analysisFailedTitle": "विश्लेषण विफल",
+    "analysisFailedDescription": "WOD छवि का विश्लेषण नहीं किया जा सका। कृपया पुनः प्रयास करें।",
+    "duplicateDialogTitle": "डुप्लिकेट WOD का पता चला",
+    "duplicateDialogDescription": "यह कसरत आपके द्वारा पहले से सहेजे गए WOD के समान प्रतीत होती है।",
+    "duplicateDialogSavedOn": "{date} को सहेजा गया",
+    "duplicateDialogQuestion": "क्या आप वैसे भी इस नए को सहेजना चाहते हैं?",
+    "duplicateDialogCancel": "रद्द करें",
+    "duplicateDialogConfirm": "वैसे भी सहेजें",
+    "saveFailedTitle": "सहेजना विफल",
+    "saveFailedDescription": "WOD सहेजते समय एक त्रुटि हुई।",
+    "wodSavedTitle": "WOD सहेजा गया!",
+    "wodSavedDescription": "आपका नया WOD आपके डैशबोर्ड में जोड़ दिया गया है।",
+    "authErrorTitle": "सहेजा नहीं जा सका",
+    "authErrorDescription": "प्रमाणीकरण सेवाएं उपलब्ध नहीं हैं।",
+    "wodPreviewAlt": "WOD पूर्वावलोकन",
+    "analyzeButton": "WOD का विश्लेषण करें",
+    "analysisResultTitle": "विश्लेषण परिणाम",
+    "wodNamePlaceholder": "WOD का नाम",
+    "wodTypePlaceholder": "WOD का प्रकार",
+    "durationPlaceholder": "अवधि (मिनट)",
+    "shareCheckbox": "समुदाय के साथ साझा करें",
+    "shareAnonymousHelp": "अपने WODs को समुदाय के साथ साझा करने के लिए एक खाते के लिए साइन अप करें।",
+    "saveWodButton": "WOD सहेजें",
+    "savingButton": "सहेजा जा रहा है..."
+  },
+  "LoginPage": {
+    "verifying": "सत्यापित किया जा रहा है...",
+    "confirmEmailTitle": "अपनी पहचान की पुष्टि करें",
+    "confirmEmailDescription": "हमने आपके ईमेल पते पर जो 6-अंकीय कोड भेजा है, उसे दर्ज करें।",
+    "confirmEmailFailedTitle": "लॉगिन विफल",
+    "confirmEmailSignInButton": "सत्यापित करें और साइन इन करें",
+    "featureTitle": "इसे अगले स्तर पर ले जाएं।",
+    "featureDescription": "सभी सुविधाओं को अनलॉक करने के लिए एक निःशुल्क खाता बनाएं और फिर कभी WOD न खोएं।",
+    "featureManual": "मैनुअल निर्माण",
+    "featureManualDescription": "फोटो की आवश्यकता के बिना अपने स्वयं के WOD जोड़ें।",
+    "featureHistory": "पूर्ण इतिहास",
+    "featureHistoryDescription": "किसी भी समय अपने सभी वर्कआउट सहेजें और खोजें।",
+    "featureTracking": "प्रदर्शन ट्रैकिंग (जल्द ही!)",
+    "featureTrackingDescription": "अपनी प्रगति का विश्लेषण करें और अपने प्रदर्शन की कल्पना करें।",
+    "formTitle": "लॉगिन / साइन अप",
+    "formDescription": "एक सुरक्षित वन-टाइम कोड प्राप्त करने के लिए अपना ईमेल दर्ज करें। कोई पासवर्ड आवश्यक नहीं है।",
+    "emailSentTitle": "अपना ईमेल जांचें!",
+    "emailSentDescription": "एक 6-अंकीय कोड <bold>{email}</bold> पर भेजा गया है। अपना इनबॉक्स जांचें (और स्पैम फ़ोल्डर भी)।",
+    "sendLinkButton": "कोड भेजें",
+    "authError": "प्रमाणीकरण सेवा तैयार नहीं है।",
+    "sendLinkError": "हम कोड नहीं भेज सके। कृपया पुनः प्रयास करें।",
+    "linkSentToast": "कोड भेजा गया!",
+    "linkSentToastDescription": "6-अंकीय कोड के लिए अपना इनबॉक्स जांचें। यदि आप इसे नहीं देखते हैं, तो कृपया अपना स्पैम फ़ोल्डर जांचें।",
+    "signInSuccessToast": "लॉगिन सफल!",
+    "signInSuccessToastDescription": "आप अब साइन इन हैं।",
+    "genericError": "एक त्रुटि हुई। कृपया पुनः प्रयास करें।",
+    "invalidLinkError": "कोड अमान्य है या समाप्त हो गया है। कृपया एक नया अनुरोध करें।"
+  },
+  "PremiumPage": {
+    "title": "प्रीमियम",
+    "alreadyPremium": {
+      "title": "आप प्रीमियम हैं!",
+      "subtitle": "समर्थक बैज सक्रिय",
+      "description": "WODBurner का समर्थन करने के लिए धन्यवाद ❤️",
+      "communityButton": "समुदाय देखें",
+      "dashboardButton": "डैशबोर्ड"
+    },
+    "headerTitle": "अपनी पूरी क्षमता को उजागर करें",
+    "headerDescription": "सभी सुविधाओं तक असीमित पहुँच प्राप्त करने और ऐप के विकास का समर्थन करने के लिए WODBurner प्रीमियम सदस्य बनें।",
+    "offer": "पहले 300 सदस्यों के लिए आजीवन लॉन्च ऑफर!",
+    "monthly": "मासिक",
+    "yearly": "वार्षिक",
+    "discount": "-20%",
+    "freePlan": {
+      "title": "निःशुल्क",
+      "description": "कभी-कभार ट्रैकिंग के लिए",
+      "price": "₹0",
+      "perMonth": "/माह",
+      "currentPlan": "वर्तमान योजना"
+    },
+    "premiumPlan": {
+      "title": "प्रीमियम",
+      "description": "समर्पित एथलीटों के लिए",
+      "priceMonthly": "₹150",
+      "priceYearly": "₹1500",
+      "perMonth": "/माह",
+      "perYear": "/वर्ष",
+      "billedAnnually": "वार्षिक रूप से बिल किया गया",
+      "goPremium": "प्रीमियम पर जाएं →",
+      "loading": "लोड हो रहा है..."
+    },
+    "features": {
+      "scans": "असीमित WOD स्कैन",
+      "scansFree": "प्रति माह 3",
+      "reactions": "असीमित समुदाय प्रतिक्रियाएं",
+      "reactionsFree": "प्रति दिन 5",
+      "comments": "टिप्पणियाँ पोस्ट करें",
+      "commentsFree": "केवल पढ़ने के लिए",
+      "favorites": "असीमित पसंदीदा WODs",
+      "favoritesFree": "अधिकतम 10",
+      "customs": "असीमित कस्टम WODs",
+      "customsFree": "अधिकतम 3",
+      "search": "उन्नत खोज फ़िल्टर",
+      "badge": "विशेष समर्थक बैज",
+      "unlimited": "असीमित",
+      "notIncluded": "शामिल नहीं"
+    },
+    "toasts": {
+      "welcomeTitle": "WODBurner प्रीमियम में आपका स्वागत है!",
+      "welcomeDescription": "आपका समर्थक बैज अब सक्रिय है।",
+      "cancelTitle": "भुगतान रद्द",
+      "cancelDescription": "जब आप तैयार हों तब आप पुनः प्रयास कर सकते हैं।",
+      "loginRequiredTitle": "लॉगिन आवश्यक",
+      "loginRequiredDescription": "प्रीमियम में अपग्रेड करने के लिए एक खाता बनाएँ।",
+      "paymentErrorTitle": "भुगतान त्रुटि",
+      "paymentErrorDescription": "चेकआउट शुरू नहीं किया जा सका।"
+    }
+  },
+  "SettingsPage": {
+    "title": "सेटिंग्स",
+    "profile": {
+      "title": "प्रोफ़ाइल",
+      "description": "आपके खाते के बारे में जानकारी।",
+      "loading": "प्रोफ़ाइल लोड हो रही है...",
+      "email": "ईमेल: {email}",
+      "emailNotSpecified": "निर्दिष्ट नहीं है",
+      "accountType": "खाता प्रकार: {type}",
+      "typeAnonymous": "अनाम (अस्थायी)",
+      "typePremium": "प्रीमियम",
+      "typeStandard": "मानक",
+      "manageSubscription": "मेरी सदस्यता प्रबंधित करें",
+      "userNotFound": "उपयोगकर्ता नहीं मिला।"
+    },
+    "dangerZone": {
+      "title": "खतरे का क्षेत्र",
+      "description": "ये क्रियाएं स्थायी हैं और इन्हें पूर्ववत नहीं किया जा सकता है।",
+      "deleteButton": "मेरा खाता हटाएं",
+      "deletingButton": "हटाया जा रहा है...",
+      "dialogTitle": "क्या आप पूरी तरह से निश्चित हैं?",
+      "dialogDescription": "यह क्रिया अपरिवर्तनीय है। यह आपके खाते को स्थायी रूप से हटा देगा और हमारे सर्वर से आपके सभी डेटा, जिसमें आपके सभी सहेजे गए WOD शामिल हैं, को मिटा देगा।",
+      "dialogCancel": "रद्द करें",
+      "dialogConfirm": "हाँ, मेरा खाता हटाएं",
+      "helpText": "यदि आप अपना खाता हटाते हैं, तो आपका सारा डेटा हमेशा के लिए खो जाएगा।"
+    },
+    "toasts": {
+      "deleteError": "खाता नहीं हटाया जा सका। उपयोगकर्ता या फायरबेस सेवाएं उपलब्ध नहीं हैं।",
+      "deleteSuccessTitle": "खाता हटा दिया गया",
+      "deleteSuccessDescription": "आपका खाता और आपका सारा डेटा सफलतापूर्वक हटा दिया गया है।",
+      "deleteFailedTitle": "हटाना विफल",
+      "deleteFailedDescription": "एक त्रुटि हुई। कृपया पुनः प्रयास करें।",
+      "deleteFailedRecentLogin": "यह ऑपरेशन संवेदनशील है और हाल ही में प्रमाणीकरण की आवश्यकता है। पुनः प्रयास करने से पहले कृपया फिर से साइन इन करें।",
+      "portalError": "सदस्यता प्रबंधन नहीं खोला जा सका।"
+    }
+  },
+  "ScanPage": {
+    "title": "WOD स्कैन करें",
+    "manualButton": "मैन्युअल रूप से जोड़ें"
+  },
+  "NewWodPage": {
+    "title": "WOD मैन्युअल रूप से बनाएं",
+    "cardTitle": "वर्कआउट विवरण",
+    "namePlaceholder": "WOD का नाम (जैसे, Fran)",
+    "typePlaceholder": "WOD का प्रकार",
+    "durationPlaceholder": "अवधि (मिनट)",
+    "imageHintPlaceholder": "छवि संकेत (जैसे, बारबेल)",
+    "descriptionPlaceholder": "WOD विवरण...",
+    "saveButton": "WOD सहेजें",
+    "savingButton": "सहेजा जा रहा है...",
+    "backLink": "स्कैन पर वापस जाएं",
+    "duplicateDialog": {
+      "title": "डुप्लिकेट WOD का पता चला",
+      "description": "यह कसरत आपके द्वारा पहले से सहेजे गए WOD के समान प्रतीत होती है।",
+      "savedOn": "{date} को सहेजा गया",
+      "question": "क्या आप वैसे भी इस नए को सहेजना चाहते हैं?",
+      "cancel": "रद्द करें",
+      "confirm": "वैसे भी सहेजें"
+    },
+    "toasts": {
+      "saveSuccessTitle": "WOD सहेजा गया!",
+      "saveSuccessDescription": "आपका नया WOD आपके डैशबोर्ड में जोड़ दिया गया है।",
+      "saveFailedTitle": "सहेजना विफल",
+      "saveFailedDescription": "WOD सहेजते समय एक त्रुटि हुई।"
+    }
+  },
+  "EditWodPage": {
+    "title": "WOD संपादित करें",
+    "cardTitle": "वर्कआउट विवरण",
+    "saveButton": "परिवर्तन सहेजें",
+    "savingButton": "परिवर्तन सहेजे जा रहे हैं...",
+    "backLink": "डैशबोर्ड पर वापस जाएं",
+    "toasts": {
+      "updateSuccessTitle": "WOD अपडेट किया गया!",
+      "updateSuccessDescription": "आपके परिवर्तन सहेजे गए हैं।",
+      "updateFailedTitle": "अपडेट विफल",
+      "updateFailedDescription": "आपके परिवर्तन सहेजते समय एक त्रुटि हुई।"
+    }
+  },
+  "GenericTimerPage": {
+    "backLink": "टाइमर पर वापस जाएं",
+    "startButton": "टाइमर शुरू करें",
+    "forTime": {
+      "title": "समय के लिए",
+      "description": "अपने वर्कआउट को समय देने के लिए एक साधारण स्टॉपवॉच। वैकल्पिक रूप से एक समय सीमा निर्धारित करें।",
+      "timeCapLabel": "समय सीमा (मिनट, वैकल्पिक)",
+      "timeCapPlaceholder": "जैसे, 20"
+    },
+    "amrap": {
+      "title": "AMRAP टाइमर",
+      "description": "एक अवधि निर्धारित करें और देखें कि आप कितने राउंड या प्रतिनिधि पूरी कर सकते हैं।",
+      "durationLabel": "अवधि (मिनट)"
+    },
+    "emom": {
+      "title": "EMOM टाइमर",
+      "description": "हर मिनट पर मिनट। अंतराल और राउंड की संख्या निर्धारित करें।",
+      "roundsLabel": "राउंड की संख्या",
+      "intervalLabel": "अंतराल की लंबाई",
+      "intervalMinutes": "मिनट",
+      "intervalSeconds": "सेकंड"
+    },
+    "tabata": {
+      "title": "Tabata टाइमर",
+      "description": "20 सेकंड काम, 10 सेकंड आराम के उच्च-तीव्रता वाले अंतराल। राउंड को अनुकूलित करें।",
+      "roundsLabel": "राउंड"
+    }
+  },
+  "TimersPage": {
+    "title": "स्मार्ट टाइमर",
+    "forTime": "समय के लिए",
+    "forTimeDescription": "अपने वर्कआउट को समय देने के लिए एक साधारण स्टॉपवॉच।",
+    "amrap": "AMRAP",
+    "amrapDescription": "एक निर्धारित समय में जितने संभव हो उतने राउंड/प्रतिनिधि।",
+    "emom": "EMOM",
+    "emomDescription": "एक निर्धारित संख्या में मिनटों के लिए, हर मिनट पर मिनट।",
+    "tabata": "Tabata",
+    "tabataDescription": "20 सेकंड काम, 10 सेकंड आराम के उच्च-तीव्रता वाले अंतराल।",
+    "footer": "या, एक पूर्व-कॉन्फ़िगर टाइमर लॉन्च करने के लिए डैशबोर्ड से एक WOD चुनें।"
+  },
+  "HeroWodsPage": {
+    "title": "हीरो WODs",
+    "description": "\"हीरो\" WODs क्रॉसफिट में विशेष वर्कआउट हैं जो उन पुरुषों और महिलाओं को समर्पित हैं जिन्होंने कर्तव्य की पंक्ति में अपनी जान दे दी। यह उनके बलिदान पर विचार करने और उनका सम्मान करने का एक अवसर है।",
+    "premiumUpsell": {
+      "title": "पूर्ण शस्त्रागार अनलॉक करें",
+      "description": "{premiumWodCount} विशेष वर्कआउट सहित {totalWodCount}+ से अधिक हीरो और बेंचमार्क WODs की पूरी लाइब्रेरी तक पहुँचने के लिए प्रीमियम पर जाएँ।",
+      "button": "प्रीमियम पर जाएं"
+    }
+  },
+  "HallOfFamePage": {
+    "title": "हॉल ऑफ फेम",
+    "cardTitle": "पहले 300 OG",
+    "cardDescription": "जीवन भर के लिए निःशुल्क। हमारे शुरुआती समर्थकों के लिए एक स्थायी स्थान।",
+    "spotsRemaining": "केवल {spotsLeft} स्थान शेष!",
+    "spotsFull": "सूची अब हमेशा के लिए बंद है।",
+    "claimSpotButton": "अभी अपना स्थान दावा करें",
+    "emptyList": "स्थान का दावा करने वाले पहले व्यक्ति बनें!"
+  },
+  "TimerClient": {
+    "workoutComplete": "वर्कआउट पूरा!",
+    "totalTime": "कुल समय",
+    "timeCompleted": "पूरा हुआ समय",
+    "goAgain": "फिर से करें",
+    "shareResult": "परिणाम साझा करें",
+    "shareModal": {
+      "title": "WOD परिणाम: {wodName}",
+      "description": "आपका अंतिम समय {finalTime} था। यह कार्ड साझा करने के लिए तैयार है।",
+      "finalTimeLabel": "अंतिम समय",
+      "screenshotReady": "स्क्रीनशॉट के लिए तैयार!"
+    },
+    "timeCap": "समय सीमा: {duration}:00",
+    "pause": "रोकें",
+    "start": "शुरू करें",
+    "reset": "रीसेट करें",
+    "finish": "समाप्त करें",
+    "round": "राउंड {current} / {total}",
+    "totalTimeElapsed": "कुल: {time}"
+  },
+  "GenerateWodPage": {
+    "title": "AI WOD जेनरेटर",
+    "cardTitle": "WODBot 3000",
+    "cardDescription": "प्रेरणाहीन महसूस कर रहे हैं? हमारे AI कोच को आपके लिए एक अनूठा और चुनौतीपूर्ण वर्कआउट बनाने दें।",
+    "generateButton": "एक नया WOD उत्पन्न करें",
+    "generatingButton": "उत्पन्न हो रहा है...",
+    "freePlanAlert": {
+      "title": "निःशुल्क योजना",
+      "description": "आपके पास दैनिक पीढ़ियों की एक सीमित संख्या है। असीमित पहुँच के लिए {link}।",
+      "link": "प्रीमियम पर जाएं"
+    },
+    "premiumPlanMessage": "असीमित पीढ़ियां सक्षम।",
+    "generatingState": {
+      "title": "आपका WOD उत्पन्न हो रहा है...",
+      "description": "AI कोच गर्म हो रहा है। इसमें कुछ समय लग सकता है।"
+    },
+    "errorAlert": {
+      "title": "उत्पन्न करने में विफल",
+      "description": "AI कोच आराम कर रहा है। कृपया कुछ क्षण बाद पुनः प्रयास करें।"
+    },
+    "result": {
+      "title": "आपका उत्पन्न WOD",
+      "savedMessage": "यह WOD स्वचालित रूप से आपके डैशबोर्ड में सहेजा गया है।"
+    }
+  }
+}

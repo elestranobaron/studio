@@ -1,0 +1,405 @@
+
+{
+  "UserNav": {
+    "signIn": "تسجيل الدخول",
+    "signOut": "تسجيل الخروج",
+    "loading": "جار التحميل...",
+    "anonymousUser": "مستخدم مجهول",
+    "temporaryProfile": "ملف شخصي مؤقت",
+    "settingsTooltip": "الإعدادات"
+  },
+  "MainNav": {
+    "dashboard": "لوحة التحكم",
+    "scanWod": "مسح WOD",
+    "generateWod": "إنشاء WOD",
+    "heroWods": "Hero WODs",
+    "timers": "المؤقتات",
+    "goPremium": "الترقية إلى بريميوم",
+    "hallOfFame": "قاعة المشاهير"
+  },
+  "DashboardPage": {
+    "title": "لوحة التحكم",
+    "scanNewWod": "مسح WOD جديد",
+    "tabs": {
+      "personal": "تمارين WOD الخاصة بي",
+      "community": "المجتمع"
+    },
+    "PersonalWodList": {
+      "emptyTitle": "لم يتم العثور على تمارين WOD هنا.",
+      "emptyDescription": "امسح أول تمرين WOD لك للبدء!"
+    },
+    "CommunityWodList": {
+      "joinTitle": "انضم إلى المجتمع!",
+      "joinDescription": "أنشئ حسابًا مجانيًا لعرض ومشاركة تمارين WOD من المجتمع بأكمله والحصول على الإلهام.",
+      "joinButton": "تسجيل / تسجيل الدخول",
+      "errorTitle": "حدث خطأ",
+      "errorDescription": "تعذر تحميل تمارين WOD الخاصة بالمجتمع. يرجى المحاولة مرة أخرى لاحقًا.",
+      "searchInputPlaceholder": "ابحث في تمارين WOD المجتمعية...",
+      "sortByLabel": "فرز حسب",
+      "sort": {
+        "recent": "الأحدث",
+        "popular": "الأكثر شهرة",
+        "alphabetical": "أبجدي (أ-ي)"
+      },
+      "emptySearchTitle": "لا توجد تمارين WOD تطابق بحثك.",
+      "emptySearchDescription": "جرّب مصطلح بحث مختلف.",
+      "emptyCommunityTitle": "كن أول من يشارك واحدًا!"
+    },
+    "ScrollTop": {
+      "label": "التمرير إلى الأعلى"
+    }
+  },
+  "WelcomeEmptyState": {
+    "title": "مرحبًا بك في WODBurner!",
+    "subtitle": "سجل أول تمرين WOD لك في 3 ثوانٍ:",
+    "scanButton": "مسح WOD من صورة",
+    "generateButton": "إنشاء WOD عشوائي",
+    "heroButton": "جرّب Hero WOD",
+    "communityLink": "أو استكشف <communityLink>المجتمع</communityLink> لترى ما يحرقه الآخرون اليوم."
+  },
+  "WodCard": {
+    "optionsAlt": "خيارات WOD",
+    "share": "مشاركة",
+    "unshare": "إلغاء المشاركة",
+    "edit": "تعديل",
+    "delete": "حذف",
+    "sharedToastTitle": "تمت مشاركة WOD!",
+    "sharedToastDescription": "تمرين WOD الخاص بك مرئي الآن للمجتمع.",
+    "unsharedToastTitle": "تم إلغاء مشاركة WOD",
+    "unsharedToastDescription": "تمت إزالة تمرين WOD الخاص بك من المجتمع.",
+    "shareErrorToastTitle": "فشل الإجراء",
+    "shareErrorToastDescription": "تعذر تحديث حالة المشاركة.",
+    "deleteDialogTitle": "هل أنت متأكد تمامًا؟",
+    "deleteDialogDescription": "لا يمكن التراجع عن هذا الإجراء. سيؤدي هذا إلى حذف تمرين WOD الخاص بك بشكل دائم{isShared, select, true { وإزالته من المجتمع} other {}}.",
+    "deleteDialogCancel": "إلغاء",
+    "deleteDialogConfirm": "حذف",
+    "deleteToastTitle": "تم حذف WOD",
+    "deleteToastDescription": "تمت إزالة تمرين WOD الخاص بك بنجاح.",
+    "deleteErrorToastTitle": "فشل الحذف",
+    "deleteErrorToastDescription": "تعذر حذف تمرين WOD.",
+    "reactionErrorToastTitle": "عفوًا!",
+    "reactionErrorToastDescription": "تعذر حفظ رد فعلك.",
+    "viewImageAlt": "{wodName} - الصورة الأصلية",
+    "viewWodDescription": "{type} - {date}",
+    "viewWodSharedBy": "تمت مشاركته بواسطة {displayName}",
+    "startWod": "ابدأ WOD",
+    "profile": {
+      "cardio": "كارديو",
+      "lifting": "رفع أثقال",
+      "upper": "علوي",
+      "lower": "سفلي"
+    }
+  },
+  "TimerPage": {
+    "backToDashboard": "العودة إلى لوحة التحكم",
+    "viewWod": "عرض WOD",
+    "fullWodLabel": "WOD كامل: {wodName}",
+    "startSection": "ابدأ",
+    "accessRestricted": {
+      "title": "الوصول مقيد",
+      "description": "يرجى التسجيل أو تسجيل الدخول لعرض تمارين WOD المجتمعية واستخدام المؤقت.",
+      "button": "تسجيل / تسجيل الدخول"
+    }
+  },
+  "FileUploader": {
+    "dragAndDropPrompt": "اسحب وأفلت صورة WOD الخاصة بك، أو انقر للاختيار",
+    "dragActivePrompt": "أفلت الصورة هنا...",
+    "fileTypes": "PNG، JPG، أو GIF (بحد أقصى 5 ميجابايت)",
+    "analyzingTitle": "جارٍ تحليل WOD...",
+    "analyzingDescription": "الذكاء الاصطناعي يقوم بالإحماء. قد يستغرق هذا بعض الوقت.",
+    "analysisFailedTitle": "فشل التحليل",
+    "analysisFailedDescription": "تعذر تحليل صورة WOD. يرجى المحاولة مرة أخرى.",
+    "duplicateDialogTitle": "تم اكتشاف WOD مكرر",
+    "duplicateDialogDescription": "يبدو هذا التمرين مطابقًا لتمرين WOD قمت بحفظه بالفعل.",
+    "duplicateDialogSavedOn": "تم الحفظ في {date}",
+    "duplicateDialogQuestion": "هل تريد حفظ هذا التمرين الجديد على أي حال؟",
+    "duplicateDialogCancel": "إلغاء",
+    "duplicateDialogConfirm": "حفظ على أي حال",
+    "saveFailedTitle": "فشل الحفظ",
+    "saveFailedDescription": "حدث خطأ أثناء حفظ تمرين WOD.",
+    "wodSavedTitle": "تم حفظ WOD!",
+    "wodSavedDescription": "تمت إضافة تمرين WOD الجديد إلى لوحة التحكم الخاصة بك.",
+    "authErrorTitle": "تعذر الحفظ",
+    "authErrorDescription": "خدمات المصادقة غير متوفرة.",
+    "wodPreviewAlt": "معاينة WOD",
+    "analyzeButton": "تحليل WOD",
+    "analysisResultTitle": "نتيجة التحليل",
+    "wodNamePlaceholder": "اسم WOD",
+    "wodTypePlaceholder": "نوع WOD",
+    "durationPlaceholder": "المدة (بالدقائق)",
+    "shareCheckbox": "مشاركة مع المجتمع",
+    "shareAnonymousHelp": "سجل للحصول على حساب لمشاركة تمارين WOD الخاصة بك مع المجتمع.",
+    "saveWodButton": "حفظ WOD",
+    "savingButton": "جارٍ الحفظ..."
+  },
+  "LoginPage": {
+    "verifying": "جارٍ التحقق...",
+    "confirmEmailTitle": "تأكيد هويتك",
+    "confirmEmailDescription": "أدخل الرمز المكون من 6 أرقام الذي أرسلناه إلى عنوان بريدك الإلكتروني.",
+    "confirmEmailFailedTitle": "فشل تسجيل الدخول",
+    "confirmEmailSignInButton": "تحقق وسجل الدخول",
+    "featureTitle": "انتقل إلى المستوى التالي.",
+    "featureDescription": "أنشئ حسابًا مجانيًا لفتح جميع الميزات وعدم فقدان أي تمرين WOD مرة أخرى.",
+    "featureManual": "إنشاء يدوي",
+    "featureManualDescription": "أضف تمارين WOD الخاصة بك دون الحاجة إلى صورة.",
+    "featureHistory": "سجل كامل",
+    "featureHistoryDescription": "احفظ وابحث عن جميع تمارينك في أي وقت.",
+    "featureTracking": "تتبع الأداء (قريبًا!)",
+    "featureTrackingDescription": "حلل تقدمك وتصور أدائك.",
+    "formTitle": "تسجيل الدخول / التسجيل",
+    "formDescription": "أدخل بريدك الإلكتروني لتلقي رمز آمن لمرة واحدة. لا يلزم إدخال كلمة مرور.",
+    "emailSentTitle": "تحقق من بريدك الإلكتروني!",
+    "emailSentDescription": "تم إرسال رمز مكون من 6 أرقام إلى <bold>{email}</bold>. تحقق من صندوق الوارد الخاص بك (ومجلد البريد العشوائي للتأكد).",
+    "sendLinkButton": "إرسال الرمز",
+    "authError": "خدمة المصادقة غير جاهزة.",
+    "sendLinkError": "لم نتمكن من إرسال الرمز. يرجى المحاولة مرة أخرى.",
+    "linkSentToast": "تم إرسال الرمز!",
+    "linkSentToastDescription": "تحقق من صندوق الوارد الخاص بك للحصول على رمز مكون من 6 أرقام. إذا لم تره، يرجى التحقق من مجلد البريد العشوائي.",
+    "signInSuccessToast": "تم تسجيل الدخول بنجاح!",
+    "signInSuccessToastDescription": "لقد قمت بتسجيل الدخول الآن.",
+    "genericError": "حدث خطأ. يرجى المحاولة مرة أخرى.",
+    "invalidLinkError": "الرمز غير صالح أو انتهت صلاحيته. يرجى طلب رمز جديد."
+  },
+  "PremiumPage": {
+    "title": "بريميوم",
+    "alreadyPremium": {
+      "title": "أنت بريميوم!",
+      "subtitle": "تم تفعيل شارة الداعم",
+      "description": "شكرًا لدعمك WODBurner ❤️",
+      "communityButton": "عرض المجتمع",
+      "dashboardButton": "لوحة التحكم"
+    },
+    "headerTitle": "أطلق العنان لإمكاناتك الكاملة",
+    "headerDescription": "كن عضوًا في WODBurner Premium للحصول على وصول غير محدود إلى جميع الميزات ودعم تطوير التطبيق.",
+    "offer": "عرض إطلاق مدى الحياة لأول 300 عضو!",
+    "monthly": "شهريًا",
+    "yearly": "سنويًا",
+    "discount": "-20٪",
+    "freePlan": {
+      "title": "مجاني",
+      "description": "للتتبع العرضي",
+      "price": "0 دولار",
+      "perMonth": "/ شهر",
+      "currentPlan": "الخطة الحالية"
+    },
+    "premiumPlan": {
+      "title": "بريميوم",
+      "description": "للرياضيين المتفانين",
+      "priceMonthly": "1.99 دولار",
+      "priceYearly": "19.99 دولارًا",
+      "perMonth": "/ شهر",
+      "perYear": "/ سنة",
+      "billedAnnually": "تتم الفوترة سنويًا",
+      "goPremium": "الترقية إلى بريميوم ←",
+      "loading": "جار التحميل..."
+    },
+    "features": {
+      "scans": "مسح WOD غير محدود",
+      "scansFree": "3 في الشهر",
+      "reactions": "ردود فعل مجتمعية غير محدودة",
+      "reactionsFree": "5 في اليوم",
+      "comments": "نشر التعليقات",
+      "commentsFree": "للقراءة فقط",
+      "favorites": "تمارين WOD مفضلة غير محدودة",
+      "favoritesFree": "10 كحد أقصى",
+      "customs": "تمارين WOD مخصصة غير محدودة",
+      "customsFree": "3 كحد أقصى",
+      "search": "مرشحات بحث متقدمة",
+      "badge": "شارة داعم حصرية",
+      "unlimited": "غير محدود",
+      "notIncluded": "غير مدرج"
+    },
+    "toasts": {
+      "welcomeTitle": "مرحبًا بك في WODBurner Premium!",
+      "welcomeDescription": "شارة الداعم الخاصة بك نشطة الآن.",
+      "cancelTitle": "تم إلغاء الدفع",
+      "cancelDescription": "يمكنك المحاولة مرة أخرى عندما تكون جاهزًا.",
+      "loginRequiredTitle": "تسجيل الدخول مطلوب",
+      "loginRequiredDescription": "أنشئ حسابًا للترقية إلى Premium.",
+      "paymentErrorTitle": "خطأ في الدفع",
+      "paymentErrorDescription": "تعذر بدء عملية الدفع."
+    }
+  },
+  "SettingsPage": {
+    "title": "الإعدادات",
+    "profile": {
+      "title": "الملف الشخصي",
+      "description": "معلومات حول حسابك.",
+      "loading": "جارٍ تحميل الملف الشخصي...",
+      "email": "البريد الإلكتروني: {email}",
+      "emailNotSpecified": "غير محدد",
+      "accountType": "نوع الحساب: {type}",
+      "typeAnonymous": "مجهول (مؤقت)",
+      "typePremium": "بريميوم",
+      "typeStandard": "قياسي",
+      "manageSubscription": "إدارة اشتراكي",
+      "userNotFound": "لم يتم العثور على المستخدم."
+    },
+    "dangerZone": {
+      "title": "منطقة الخطر",
+      "description": "هذه الإجراءات دائمة ولا يمكن التراجع عنها.",
+      "deleteButton": "حذف حسابي",
+      "deletingButton": "جارٍ الحذف...",
+      "dialogTitle": "هل أنت متأكد تمامًا؟",
+      "dialogDescription": "هذا الإجراء لا رجعة فيه. سيؤدي إلى حذف حسابك بشكل دائم ومحو جميع بياناتك، بما في ذلك جميع تمارين WOD المحفوظة، من خوادمنا.",
+      "dialogCancel": "إلغاء",
+      "dialogConfirm": "نعم، احذف حسابي",
+      "helpText": "إذا قمت بحذف حسابك، فسيتم فقد جميع بياناتك إلى الأبد."
+    },
+    "toasts": {
+      "deleteError": "تعذر حذف الحساب. المستخدم أو خدمات Firebase غير متوفرة.",
+      "deleteSuccessTitle": "تم حذف الحساب",
+      "deleteSuccessDescription": "تم حذف حسابك وجميع بياناتك بنجاح.",
+      "deleteFailedTitle": "فشل الحذف",
+      "deleteFailedDescription": "حدث خطأ. يرجى المحاولة مرة أخرى.",
+      "deleteFailedRecentLogin": "هذه العملية حساسة وتتطلب مصادقة حديثة. يرجى تسجيل الدخول مرة أخرى قبل إعادة المحاولة.",
+      "portalError": "تعذر فتح إدارة الاشتراك."
+    }
+  },
+  "ScanPage": {
+    "title": "مسح WOD",
+    "manualButton": "إضافة يدويًا"
+  },
+  "NewWodPage": {
+    "title": "إنشاء WOD يدويًا",
+    "cardTitle": "تفاصيل التمرين",
+    "namePlaceholder": "اسم WOD (على سبيل المثال، Fran)",
+    "typePlaceholder": "نوع WOD",
+    "durationPlaceholder": "المدة (بالدقائق)",
+    "imageHintPlaceholder": "تلميح صورة (على سبيل المثال، قضيب رفع الأثقال)",
+    "descriptionPlaceholder": "وصف WOD...",
+    "saveButton": "حفظ WOD",
+    "savingButton": "جارٍ الحفظ...",
+    "backLink": "العودة إلى المسح",
+    "duplicateDialog": {
+      "title": "تم اكتشاف WOD مكرر",
+      "description": "يبدو هذا التمرين مطابقًا لتمرين WOD قمت بحفظه بالفعل.",
+      "savedOn": "تم الحفظ في {date}",
+      "question": "هل تريد حفظ هذا التمرين الجديد على أي حال؟",
+      "cancel": "إلغاء",
+      "confirm": "حفظ على أي حال"
+    },
+    "toasts": {
+      "saveSuccessTitle": "تم حفظ WOD!",
+      "saveSuccessDescription": "تمت إضافة تمرين WOD الجديد إلى لوحة التحكم الخاصة بك.",
+      "saveFailedTitle": "فشل الحفظ",
+      "saveFailedDescription": "حدث خطأ أثناء حفظ تمرين WOD."
+    }
+  },
+  "EditWodPage": {
+    "title": "تعديل WOD",
+    "cardTitle": "تفاصيل التمرين",
+    "saveButton": "حفظ التغييرات",
+    "savingButton": "جارٍ حفظ التغييرات...",
+    "backLink": "العودة إلى لوحة التحكم",
+    "toasts": {
+      "updateSuccessTitle": "تم تحديث WOD!",
+      "updateSuccessDescription": "تم حفظ تغييراتك.",
+      "updateFailedTitle": "فشل التحديث",
+      "updateFailedDescription": "حدث خطأ أثناء حفظ تغييراتك."
+    }
+  },
+  "GenericTimerPage": {
+    "backLink": "العودة إلى المؤقتات",
+    "startButton": "بدء المؤقت",
+    "forTime": {
+      "title": "للوقت",
+      "description": "ساعة توقيت بسيطة لتحديد وقت تمرينك. يمكنك اختياريًا تعيين حد زمني.",
+      "timeCapLabel": "الحد الزمني (بالدقائق، اختياري)",
+      "timeCapPlaceholder": "على سبيل المثال، 20"
+    },
+    "amrap": {
+      "title": "مؤقت AMRAP",
+      "description": "حدد مدة وشاهد عدد الجولات أو التكرارات التي يمكنك إكمالها.",
+      "durationLabel": "المدة (بالدقائق)"
+    },
+    "emom": {
+      "title": "مؤقت EMOM",
+      "description": "كل دقيقة على رأس الدقيقة. حدد الفاصل الزمني وعدد الجولات.",
+      "roundsLabel": "عدد الجولات",
+      "intervalLabel": "طول الفاصل الزمني",
+      "intervalMinutes": "دقيقة",
+      "intervalSeconds": "ثانية"
+    },
+    "tabata": {
+      "title": "مؤقت Tabata",
+      "description": "فترات عالية الكثافة من 20 ثانية عمل، 10 ثوانٍ راحة. خصص الجولات.",
+      "roundsLabel": "الجولات"
+    }
+  },
+  "TimersPage": {
+    "title": "المؤقتات الذكية",
+    "forTime": "للوقت",
+    "forTimeDescription": "ساعة توقيت بسيطة لتحديد وقت تمرينك.",
+    "amrap": "AMRAP",
+    "amrapDescription": "أكبر عدد ممكن من الجولات/التكرارات في وقت محدد.",
+    "emom": "EMOM",
+    "emomDescription": "كل دقيقة على رأس الدقيقة، لعدد محدد من الدقائق.",
+    "tabata": "Tabata",
+    "tabataDescription": "فترات عالية الكثافة من 20 ثانية عمل، 10 ثوانٍ راحة.",
+    "footer": "أو حدد تمرين WOD من لوحة التحكم لتشغيل مؤقت تم تكوينه مسبقًا."
+  },
+  "HeroWodsPage": {
+    "title": "Hero WODs",
+    "description": "\"Hero\" WODs هي تمارين خاصة في CrossFit مخصصة للرجال والنساء الذين ضحوا بحياتهم في أداء واجبهم. إنها فرصة للتفكير وتكريم تضحياتهم.",
+    "premiumUpsell": {
+      "title": "افتح الترسانة الكاملة",
+      "description": "انتقل إلى Premium للوصول إلى المكتبة الكاملة التي تضم أكثر من {totalWodCount}+ من تمارين Hero و Benchmark WODs، بما في ذلك {premiumWodCount} تمرينًا حصريًا.",
+      "button": "الترقية إلى بريميوم"
+    }
+  },
+  "HallOfFamePage": {
+    "title": "قاعة المشاهير",
+    "cardTitle": "أول 300 من الرواد",
+    "cardDescription": "مجاني مدى الحياة. مكان دائم لأوائل الداعمين لنا.",
+    "spotsRemaining": "لم يتبق سوى {spotsLeft} مكانًا!",
+    "spotsFull": "القائمة مغلقة الآن إلى الأبد.",
+    "claimSpotButton": "احجز مكانك الآن",
+    "emptyList": "كن أول من يحجز مكانًا!"
+  },
+  "TimerClient": {
+    "workoutComplete": "اكتمل التمرين!",
+    "totalTime": "الوقت الإجمالي",
+    "timeCompleted": "الوقت المكتمل",
+    "goAgain": "مرة أخرى",
+    "shareResult": "مشاركة النتيجة",
+    "shareModal": {
+      "title": "نتيجة WOD: {wodName}",
+      "description": "كان وقتك النهائي {finalTime}. هذه البطاقة جاهزة للمشاركة.",
+      "finalTimeLabel": "الوقت النهائي",
+      "screenshotReady": "جاهز للقطة شاشة!"
+    },
+    "timeCap": "الحد الزمني: {duration}:00",
+    "pause": "إيقاف مؤقت",
+    "start": "بدء",
+    "reset": "إعادة تعيين",
+    "finish": "إنهاء",
+    "round": "الجولة {current} / {total}",
+    "totalTimeElapsed": "الإجمالي: {time}"
+  },
+  "GenerateWodPage": {
+    "title": "مولد WOD بالذكاء الاصطناعي",
+    "cardTitle": "WODBot 3000",
+    "cardDescription": "هل تشعر بعدم الإلهام؟ دع مدربنا الذكي يولد لك تمرينًا فريدًا ومليئًا بالتحديات.",
+    "generateButton": "إنشاء WOD جديد",
+    "generatingButton": "جارٍ الإنشاء...",
+    "freePlanAlert": {
+      "title": "الخطة المجانية",
+      "description": "لديك عدد محدود من الإنشاءات اليومية. {link} للوصول غير المحدود.",
+      "link": "الترقية إلى بريميوم"
+    },
+    "premiumPlanMessage": "تم تمكين الإنشاءات غير المحدودة.",
+    "generatingState": {
+      "title": "جارٍ إنشاء WOD الخاص بك...",
+      "description": "المدرب الذكي يقوم بالإحماء. قد يستغرق هذا بعض الوقت.",
+      "errorAlert": {
+        "title": "فشل الإنشاء",
+        "description": "المدرب الذكي يستريح. يرجى المحاولة مرة أخرى بعد قليل."
+      },
+      "result": {
+        "title": "WOD الذي تم إنشاؤه",
+        "savedMessage": "تم حفظ هذا WOD تلقائيًا في لوحة التحكم الخاصة بك."
+      }
+    }
+  }
+}

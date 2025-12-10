@@ -1,0 +1,405 @@
+
+{
+  "UserNav": {
+    "signIn": "로그인",
+    "signOut": "로그아웃",
+    "loading": "로드 중...",
+    "anonymousUser": "익명 사용자",
+    "temporaryProfile": "임시 프로필",
+    "settingsTooltip": "설정"
+  },
+  "MainNav": {
+    "dashboard": "대시보드",
+    "scanWod": "WOD 스캔",
+    "generateWod": "WOD 생성",
+    "heroWods": "히어로 WOD",
+    "timers": "타이머",
+    "goPremium": "프리미엄으로 이동",
+    "hallOfFame": "명예의 전당"
+  },
+  "DashboardPage": {
+    "title": "대시보드",
+    "scanNewWod": "새 WOD 스캔",
+    "tabs": {
+      "personal": "내 WOD",
+      "community": "커뮤니티"
+    },
+    "PersonalWodList": {
+      "emptyTitle": "여기에 WOD가 없습니다.",
+      "emptyDescription": "시작하려면 첫 번째 WOD를 스캔하세요!"
+    },
+    "CommunityWodList": {
+      "joinTitle": "커뮤니티에 가입하세요!",
+      "joinDescription": "무료 계정을 만들어 전체 커뮤니티의 WOD를 보고, 공유하고, 영감을 얻으세요.",
+      "joinButton": "가입 / 로그인",
+      "errorTitle": "오류가 발생했습니다.",
+      "errorDescription": "커뮤니티 WOD를 로드할 수 없습니다. 나중에 다시 시도해 주세요.",
+      "searchInputPlaceholder": "커뮤니티 WOD 검색...",
+      "sortByLabel": "정렬 기준",
+      "sort": {
+        "recent": "최신순",
+        "popular": "인기순",
+        "alphabetical": "알파벳순 (A-Z)"
+      },
+      "emptySearchTitle": "검색과 일치하는 WOD가 없습니다.",
+      "emptySearchDescription": "다른 검색어를 시도해 보세요.",
+      "emptyCommunityTitle": "가장 먼저 공유해 보세요!"
+    },
+    "ScrollTop": {
+      "label": "맨 위로 스크롤"
+    }
+  },
+  "WelcomeEmptyState": {
+    "title": "WODBurner에 오신 것을 환영합니다!",
+    "subtitle": "3초 만에 첫 WOD를 기록하세요:",
+    "scanButton": "사진에서 WOD 스캔",
+    "generateButton": "무작위 WOD 생성",
+    "heroButton": "히어로 WOD 시도",
+    "communityLink": "또는 오늘 다른 사람들이 무엇을 태우고 있는지 보려면 <communityLink>커뮤니티</communityLink>를 탐색하세요."
+  },
+  "WodCard": {
+    "optionsAlt": "WOD 옵션",
+    "share": "공유",
+    "unshare": "공유 취소",
+    "edit": "편집",
+    "delete": "삭제",
+    "sharedToastTitle": "WOD가 공유되었습니다!",
+    "sharedToastDescription": "이제 커뮤니티에서 귀하의 WOD를 볼 수 있습니다.",
+    "unsharedToastTitle": "WOD 공유 취소됨",
+    "unsharedToastDescription": "커뮤니티에서 귀하의 WOD가 제거되었습니다.",
+    "shareErrorToastTitle": "작업 실패",
+    "shareErrorToastDescription": "공유 상태를 업데이트할 수 없습니다.",
+    "deleteDialogTitle": "정말 확실합니까?",
+    "deleteDialogDescription": "이 작업은 취소할 수 없습니다. 이렇게 하면 귀하의 WOD가 영구적으로 삭제됩니다{isShared, select, true { 그리고 커뮤니티에서 제거됩니다} other {}}.",
+    "deleteDialogCancel": "취소",
+    "deleteDialogConfirm": "삭제",
+    "deleteToastTitle": "WOD 삭제됨",
+    "deleteToastDescription": "귀하의 WOD가 성공적으로 제거되었습니다.",
+    "deleteErrorToastTitle": "삭제 실패",
+    "deleteErrorToastDescription": "WOD를 삭제할 수 없습니다.",
+    "reactionErrorToastTitle": "죄송합니다!",
+    "reactionErrorToastDescription": "귀하의 반응을 저장할 수 없습니다.",
+    "viewImageAlt": "{wodName} - 원본 이미지",
+    "viewWodDescription": "{type} - {date}",
+    "viewWodSharedBy": "{displayName}님이 공유함",
+    "startWod": "WOD 시작",
+    "profile": {
+      "cardio": "유산소",
+      "lifting": "역도",
+      "upper": "상체",
+      "lower": "하체"
+    }
+  },
+  "TimerPage": {
+    "backToDashboard": "대시보드로 돌아가기",
+    "viewWod": "WOD 보기",
+    "fullWodLabel": "전체 WOD: {wodName}",
+    "startSection": "시작",
+    "accessRestricted": {
+      "title": "접근 제한",
+      "description": "커뮤니티 WOD를 보고 타이머를 사용하려면 가입하거나 로그인하세요.",
+      "button": "가입 / 로그인"
+    }
+  },
+  "FileUploader": {
+    "dragAndDropPrompt": "WOD 이미지를 끌어다 놓거나 클릭하여 선택",
+    "dragActivePrompt": "여기에 이미지 놓기...",
+    "fileTypes": "PNG, JPG 또는 GIF(최대 5MB)",
+    "analyzingTitle": "WOD 분석 중...",
+    "analyzingDescription": "AI가 워밍업 중입니다. 잠시만 기다려 주세요.",
+    "analysisFailedTitle": "분석 실패",
+    "analysisFailedDescription": "WOD 이미지를 분석할 수 없습니다. 다시 시도해 주세요.",
+    "duplicateDialogTitle": "중복 WOD 감지됨",
+    "duplicateDialogDescription": "이 운동은 이미 저장한 WOD와 동일한 것 같습니다.",
+    "duplicateDialogSavedOn": "{date}에 저장됨",
+    "duplicateDialogQuestion": "그래도 이 새 항목을 저장하시겠습니까?",
+    "duplicateDialogCancel": "취소",
+    "duplicateDialogConfirm": "그래도 저장",
+    "saveFailedTitle": "저장 실패",
+    "saveFailedDescription": "WOD를 저장하는 동안 오류가 발생했습니다.",
+    "wodSavedTitle": "WOD 저장됨!",
+    "wodSavedDescription": "새 WOD가 대시보드에 추가되었습니다.",
+    "authErrorTitle": "저장할 수 없음",
+    "authErrorDescription": "인증 서비스를 사용할 수 없습니다.",
+    "wodPreviewAlt": "WOD 미리보기",
+    "analyzeButton": "WOD 분석",
+    "analysisResultTitle": "분석 결과",
+    "wodNamePlaceholder": "WOD 이름",
+    "wodTypePlaceholder": "WOD 유형",
+    "durationPlaceholder": "기간(분)",
+    "shareCheckbox": "커뮤니티와 공유",
+    "shareAnonymousHelp": "WOD를 커뮤니티와 공유하려면 계정에 가입하세요.",
+    "saveWodButton": "WOD 저장",
+    "savingButton": "저장 중..."
+  },
+  "LoginPage": {
+    "verifying": "확인 중...",
+    "confirmEmailTitle": "본인 확인",
+    "confirmEmailDescription": "이메일 주소로 보낸 6자리 코드를 입력하세요.",
+    "confirmEmailFailedTitle": "로그인 실패",
+    "confirmEmailSignInButton": "확인 및 로그인",
+    "featureTitle": "한 단계 더 나아가세요.",
+    "featureDescription": "모든 기능을 잠금 해제하고 다시는 WOD를 잃지 않으려면 무료 계정을 만드세요.",
+    "featureManual": "수동 생성",
+    "featureManualDescription": "사진 없이 나만의 WOD를 추가하세요.",
+    "featureHistory": "전체 기록",
+    "featureHistoryDescription": "언제든지 모든 운동을 저장하고 찾으세요.",
+    "featureTracking": "성과 추적(곧 출시!)",
+    "featureTrackingDescription": "진행 상황을 분석하고 성과를 시각화하세요.",
+    "formTitle": "로그인 / 가입",
+    "formDescription": "안전한 일회용 코드를 받으려면 이메일을 입력하세요. 비밀번호는 필요하지 않습니다.",
+    "emailSentTitle": "이메일을 확인하세요!",
+    "emailSentDescription": "6자리 코드가 <bold>{email}</bold>로 전송되었습니다. 받은 편지함(그리고 만일을 대비해 스팸 폴더)을 확인하세요.",
+    "sendLinkButton": "코드 보내기",
+    "authError": "인증 서비스가 준비되지 않았습니다.",
+    "sendLinkError": "코드를 보낼 수 없습니다. 다시 시도해 주세요.",
+    "linkSentToast": "코드가 전송되었습니다!",
+    "linkSentToastDescription": "받은 편지함에서 6자리 코드를 확인하세요. 보이지 않으면 스팸 폴더를 확인해 주세요.",
+    "signInSuccessToast": "로그인 성공!",
+    "signInSuccessToastDescription": "이제 로그인되었습니다.",
+    "genericError": "오류가 발생했습니다. 다시 시도해 주세요.",
+    "invalidLinkError": "코드가 유효하지 않거나 만료되었습니다. 새 코드를 요청하세요."
+  },
+  "PremiumPage": {
+    "title": "프리미엄",
+    "alreadyPremium": {
+      "title": "프리미엄입니다!",
+      "subtitle": "서포터 배지 활성화됨",
+      "description": "WODBurner를 지원해 주셔서 감사합니다 ❤️",
+      "communityButton": "커뮤니티 보기",
+      "dashboardButton": "대시보드"
+    },
+    "headerTitle": "잠재력을 최대한 발휘하세요",
+    "headerDescription": "WODBurner 프리미엄 회원이 되어 모든 기능에 무제한으로 액세스하고 앱 개발을 지원하세요.",
+    "offer": "선착순 300명을 위한 평생 출시 혜택!",
+    "monthly": "월간",
+    "yearly": "연간",
+    "discount": "-20%",
+    "freePlan": {
+      "title": "무료",
+      "description": "가끔 추적하는 경우",
+      "price": "₩0",
+      "perMonth": "/월",
+      "currentPlan": "현재 요금제"
+    },
+    "premiumPlan": {
+      "title": "프리미엄",
+      "description": "헌신적인 운동선수를 위해",
+      "priceMonthly": "₩2,500",
+      "priceYearly": "₩25,000",
+      "perMonth": "/월",
+      "perYear": "/년",
+      "billedAnnually": "매년 청구",
+      "goPremium": "프리미엄으로 이동 →",
+      "loading": "로드 중..."
+    },
+    "features": {
+      "scans": "무제한 WOD 스캔",
+      "scansFree": "월 3회",
+      "reactions": "무제한 커뮤니티 반응",
+      "reactionsFree": "일 5회",
+      "comments": "댓글 게시",
+      "commentsFree": "읽기 전용",
+      "favorites": "무제한 즐겨찾기 WOD",
+      "favoritesFree": "최대 10개",
+      "customs": "무제한 맞춤형 WOD",
+      "customsFree": "최대 3개",
+      "search": "고급 검색 필터",
+      "badge": "독점 서포터 배지",
+      "unlimited": "무제한",
+      "notIncluded": "포함되지 않음"
+    },
+    "toasts": {
+      "welcomeTitle": "WODBurner 프리미엄에 오신 것을 환영합니다!",
+      "welcomeDescription": "이제 서포터 배지가 활성화되었습니다.",
+      "cancelTitle": "결제 취소됨",
+      "cancelDescription": "준비가 되면 다시 시도할 수 있습니다.",
+      "loginRequiredTitle": "로그인 필요",
+      "loginRequiredDescription": "프리미엄으로 업그레이드하려면 계정을 만드세요.",
+      "paymentErrorTitle": "결제 오류",
+      "paymentErrorDescription": "결제를 시작할 수 없습니다."
+    }
+  },
+  "SettingsPage": {
+    "title": "설정",
+    "profile": {
+      "title": "프로필",
+      "description": "계정에 대한 정보입니다.",
+      "loading": "프로필 로드 중...",
+      "email": "이메일: {email}",
+      "emailNotSpecified": "지정되지 않음",
+      "accountType": "계정 유형: {type}",
+      "typeAnonymous": "익명(임시)",
+      "typePremium": "프리미엄",
+      "typeStandard": "표준",
+      "manageSubscription": "내 구독 관리",
+      "userNotFound": "사용자를 찾을 수 없습니다."
+    },
+    "dangerZone": {
+      "title": "위험 구역",
+      "description": "이러한 작업은 영구적이며 취소할 수 없습니다.",
+      "deleteButton": "내 계정 삭제",
+      "deletingButton": "삭제 중...",
+      "dialogTitle": "정말 확실합니까?",
+      "dialogDescription": "이 작업은 되돌릴 수 없습니다. 귀하의 계정을 영구적으로 삭제하고 저장된 모든 WOD를 포함한 모든 데이터를 서버에서 지웁니다.",
+      "dialogCancel": "취소",
+      "dialogConfirm": "예, 내 계정을 삭제합니다.",
+      "helpText": "계정을 삭제하면 모든 데이터가 영원히 손실됩니다."
+    },
+    "toasts": {
+      "deleteError": "계정을 삭제할 수 없습니다. 사용자 또는 Firebase 서비스를 사용할 수 없습니다.",
+      "deleteSuccessTitle": "계정 삭제됨",
+      "deleteSuccessDescription": "귀하의 계정과 모든 데이터가 성공적으로 삭제되었습니다.",
+      "deleteFailedTitle": "삭제 실패",
+      "deleteFailedDescription": "오류가 발생했습니다. 다시 시도해 주세요.",
+      "deleteFailedRecentLogin": "이 작업은 민감하며 최근 인증이 필요합니다. 다시 시도하기 전에 다시 로그인하세요.",
+      "portalError": "구독 관리를 열 수 없습니다."
+    }
+  },
+  "ScanPage": {
+    "title": "WOD 스캔",
+    "manualButton": "수동으로 추가"
+  },
+  "NewWodPage": {
+    "title": "수동으로 WOD 만들기",
+    "cardTitle": "운동 세부 정보",
+    "namePlaceholder": "WOD 이름(예: Fran)",
+    "typePlaceholder": "WOD 유형",
+    "durationPlaceholder": "기간(분)",
+    "imageHintPlaceholder": "이미지 힌트(예: 바벨)",
+    "descriptionPlaceholder": "WOD 설명...",
+    "saveButton": "WOD 저장",
+    "savingButton": "저장 중...",
+    "backLink": "스캔으로 돌아가기",
+    "duplicateDialog": {
+      "title": "중복 WOD 감지됨",
+      "description": "이 운동은 이미 저장한 WOD와 동일한 것 같습니다.",
+      "savedOn": "{date}에 저장됨",
+      "question": "그래도 이 새 항목을 저장하시겠습니까?",
+      "cancel": "취소",
+      "confirm": "그래도 저장"
+    },
+    "toasts": {
+      "saveSuccessTitle": "WOD 저장됨!",
+      "saveSuccessDescription": "새 WOD가 대시보드에 추가되었습니다.",
+      "saveFailedTitle": "저장 실패",
+      "saveFailedDescription": "WOD를 저장하는 동안 오류가 발생했습니다."
+    }
+  },
+  "EditWodPage": {
+    "title": "WOD 편집",
+    "cardTitle": "운동 세부 정보",
+    "saveButton": "변경 사항 저장",
+    "savingButton": "변경 사항 저장 중...",
+    "backLink": "대시보드로 돌아가기",
+    "toasts": {
+      "updateSuccessTitle": "WOD 업데이트됨!",
+      "updateSuccessDescription": "변경 사항이 저장되었습니다.",
+      "updateFailedTitle": "업데이트 실패",
+      "updateFailedDescription": "변경 사항을 저장하는 동안 오류가 발생했습니다."
+    }
+  },
+  "GenericTimerPage": {
+    "backLink": "타이머로 돌아가기",
+    "startButton": "타이머 시작",
+    "forTime": {
+      "title": "시간 측정",
+      "description": "운동 시간을 측정하는 간단한 스톱워치입니다. 선택적으로 시간 제한을 설정합니다.",
+      "timeCapLabel": "시간 제한(분, 선택 사항)",
+      "timeCapPlaceholder": "예: 20"
+    },
+    "amrap": {
+      "title": "AMRAP 타이머",
+      "description": "기간을 설정하고 몇 라운드 또는 반복을 완료할 수 있는지 확인합니다.",
+      "durationLabel": "기간(분)"
+    },
+    "emom": {
+      "title": "EMOM 타이머",
+      "description": "매 분마다. 간격과 라운드 수를 설정합니다.",
+      "roundsLabel": "라운드 수",
+      "intervalLabel": "간격 길이",
+      "intervalMinutes": "분",
+      "intervalSeconds": "초"
+    },
+    "tabata": {
+      "title": "타바타 타이머",
+      "description": "20초 운동, 10초 휴식의 고강도 인터벌. 라운드를 사용자 지정합니다.",
+      "roundsLabel": "라운드"
+    }
+  },
+  "TimersPage": {
+    "title": "스마트 타이머",
+    "forTime": "시간 측정",
+    "forTimeDescription": "운동 시간을 측정하는 간단한 스톱워치입니다.",
+    "amrap": "AMRAP",
+    "amrapDescription": "설정된 시간 내에 가능한 한 많은 라운드/반복.",
+    "emom": "EMOM",
+    "emomDescription": "설정된 분 동안 매 분마다.",
+    "tabata": "타바타",
+    "tabataDescription": "20초 운동, 10초 휴식의 고강도 인터벌.",
+    "footer": "또는 사전 구성된 타이머를 시작하려면 대시보드에서 WOD를 선택하세요."
+  },
+  "HeroWodsPage": {
+    "title": "히어로 WOD",
+    "description": "\"히어로\" WOD는 임무 수행 중 목숨을 바친 남녀에게 헌정된 크로스핏의 특별한 운동입니다. 그들의 희생을 되돌아보고 존경할 기회입니다.",
+    "premiumUpsell": {
+      "title": "전체 무기고 잠금 해제",
+      "description": "{premiumWodCount}개의 독점 운동을 포함하여 {totalWodCount}+개 이상의 히어로 및 벤치마크 WOD의 전체 라이브러리에 액세스하려면 프리미엄으로 이동하세요.",
+      "button": "프리미엄으로 이동"
+    }
+  },
+  "HallOfFamePage": {
+    "title": "명예의 전당",
+    "cardTitle": "선착순 300명의 OG",
+    "cardDescription": "평생 무료. 초기 서포터를 위한 영구적인 자리입니다.",
+    "spotsRemaining": "남은 자리가 {spotsLeft}개뿐입니다!",
+    "spotsFull": "이제 목록이 영원히 마감되었습니다.",
+    "claimSpotButton": "지금 자리 확보하기",
+    "emptyList": "가장 먼저 자리를 확보하세요!"
+  },
+  "TimerClient": {
+    "workoutComplete": "운동 완료!",
+    "totalTime": "총 시간",
+    "timeCompleted": "완료 시간",
+    "goAgain": "다시 하기",
+    "shareResult": "결과 공유",
+    "shareModal": {
+      "title": "WOD 결과: {wodName}",
+      "description": "최종 시간은 {finalTime}입니다. 이 카드를 공유할 준비가 되었습니다.",
+      "finalTimeLabel": "최종 시간",
+      "screenshotReady": "스크린샷 준비 완료!"
+    },
+    "timeCap": "시간 제한: {duration}:00",
+    "pause": "일시 중지",
+    "start": "시작",
+    "reset": "재설정",
+    "finish": "종료",
+    "round": "라운드 {current} / {total}",
+    "totalTimeElapsed": "총: {time}"
+  },
+  "GenerateWodPage": {
+    "title": "AI WOD 생성기",
+    "cardTitle": "WODBot 3000",
+    "cardDescription": "영감이 없으신가요? AI 코치가 독특하고 도전적인 운동을 생성해 드립니다.",
+    "generateButton": "새 WOD 생성",
+    "generatingButton": "생성 중...",
+    "freePlanAlert": {
+      "title": "무료 요금제",
+      "description": "일일 생성 횟수가 제한되어 있습니다. 무제한 액세스를 위해 {link}하세요.",
+      "link": "프리미엄으로 이동"
+    },
+    "premiumPlanMessage": "무제한 생성 활성화됨.",
+    "generatingState": {
+      "title": "WOD 생성 중...",
+      "description": "AI 코치가 워밍업 중입니다. 잠시만 기다려 주세요."
+    },
+    "errorAlert": {
+      "title": "생성 실패",
+      "description": "AI 코치가 휴식 중입니다. 잠시 후 다시 시도해 주세요."
+    },
+    "result": {
+      "title": "생성된 WOD",
+      "savedMessage": "이 WOD는 대시보드에 자동으로 저장되었습니다."
+    }
+  }
+}

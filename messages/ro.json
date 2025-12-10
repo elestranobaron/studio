@@ -1,0 +1,405 @@
+
+{
+  "UserNav": {
+    "signIn": "Autentificare",
+    "signOut": "Deconectare",
+    "loading": "Se încarcă...",
+    "anonymousUser": "Utilizator anonim",
+    "temporaryProfile": "Profil temporar",
+    "settingsTooltip": "Setări"
+  },
+  "MainNav": {
+    "dashboard": "Panou de bord",
+    "scanWod": "Scanează WOD",
+    "generateWod": "Generează WOD",
+    "heroWods": "WOD-uri Erou",
+    "timers": "Cronometre",
+    "goPremium": "Treci la Premium",
+    "hallOfFame": "Hall of Fame"
+  },
+  "DashboardPage": {
+    "title": "Panou de bord",
+    "scanNewWod": "Scanează un WOD nou",
+    "tabs": {
+      "personal": "WOD-urile mele",
+      "community": "Comunitate"
+    },
+    "PersonalWodList": {
+      "emptyTitle": "Nu s-au găsit WOD-uri aici.",
+      "emptyDescription": "Scanează primul tău WOD pentru a începe!"
+    },
+    "CommunityWodList": {
+      "joinTitle": "Alătură-te comunității!",
+      "joinDescription": "Creează un cont gratuit pentru a vizualiza, partaja și a te inspira din WOD-urile întregii comunități.",
+      "joinButton": "Înregistrează-te / Autentifică-te",
+      "errorTitle": "A apărut o eroare",
+      "errorDescription": "Nu s-au putut încărca WOD-urile comunității. Te rugăm să încerci din nou mai târziu.",
+      "searchInputPlaceholder": "Caută WOD-uri în comunitate...",
+      "sortByLabel": "Sortează după",
+      "sort": {
+        "recent": "Cele mai recente",
+        "popular": "Cele mai populare",
+        "alphabetical": "Alfabetic (A-Z)"
+      },
+      "emptySearchTitle": "Niciun WOD nu corespunde căutării tale.",
+      "emptySearchDescription": "Încearcă un alt termen de căutare.",
+      "emptyCommunityTitle": "Fii primul care distribuie unul!"
+    },
+    "ScrollTop": {
+      "label": "Derulează în sus"
+    }
+  },
+  "WelcomeEmptyState": {
+    "title": "Bun venit la WODBurner!",
+    "subtitle": "Înregistrează-ți primul WOD în 3 secunde:",
+    "scanButton": "Scanează un WOD dintr-o fotografie",
+    "generateButton": "Generează un WOD aleatoriu",
+    "heroButton": "Încearcă un WOD Erou",
+    "communityLink": "Sau explorează <communityLink>comunitatea</communityLink> pentru a vedea ce ard alții astăzi."
+  },
+  "WodCard": {
+    "optionsAlt": "Opțiuni WOD",
+    "share": "Partajează",
+    "unshare": "Nu mai partaja",
+    "edit": "Editează",
+    "delete": "Șterge",
+    "sharedToastTitle": "WOD partajat!",
+    "sharedToastDescription": "WOD-ul tău este acum vizibil pentru comunitate.",
+    "unsharedToastTitle": "WOD nu mai este partajat",
+    "unsharedToastDescription": "WOD-ul tău a fost eliminat din comunitate.",
+    "shareErrorToastTitle": "Acțiune eșuată",
+    "shareErrorToastDescription": "Nu s-a putut actualiza starea de partajare.",
+    "deleteDialogTitle": "Ești absolut sigur?",
+    "deleteDialogDescription": "Această acțiune nu poate fi anulată. Acest lucru va șterge permanent WOD-ul tău{isShared, select, true { și îl va elimina din comunitate} other {}}.",
+    "deleteDialogCancel": "Anulează",
+    "deleteDialogConfirm": "Șterge",
+    "deleteToastTitle": "WOD șters",
+    "deleteToastDescription": "WOD-ul tău a fost eliminat cu succes.",
+    "deleteErrorToastTitle": "Ștergere eșuată",
+    "deleteErrorToastDescription": "Nu s-a putut șterge WOD-ul.",
+    "reactionErrorToastTitle": "Hopa!",
+    "reactionErrorToastDescription": "Nu s-a putut salva reacția ta.",
+    "viewImageAlt": "{wodName} - Imagine originală",
+    "viewWodDescription": "{type} - {date}",
+    "viewWodSharedBy": "Distribuit de {displayName}",
+    "startWod": "Începe WOD",
+    "profile": {
+      "cardio": "Cardio",
+      "lifting": "Haltere",
+      "upper": "Superior",
+      "lower": "Inferior"
+    }
+  },
+  "TimerPage": {
+    "backToDashboard": "Înapoi la Panoul de bord",
+    "viewWod": "Vezi WOD",
+    "fullWodLabel": "WOD complet: {wodName}",
+    "startSection": "Start",
+    "accessRestricted": {
+      "title": "Acces restricționat",
+      "description": "Te rugăm să te înregistrezi sau să te autentifici pentru a vizualiza WOD-urile comunității și a folosi cronometrul.",
+      "button": "Înregistrează-te / Autentifică-te"
+    }
+  },
+  "FileUploader": {
+    "dragAndDropPrompt": "Trage și plasează imaginea WOD-ului tău sau fă clic pentru a selecta",
+    "dragActivePrompt": "Plasează imaginea aici...",
+    "fileTypes": "PNG, JPG sau GIF (max 5MB)",
+    "analyzingTitle": "Se analizează WOD-ul...",
+    "analyzingDescription": "AI-ul se încălzește. Acest lucru ar putea dura un moment.",
+    "analysisFailedTitle": "Analiză eșuată",
+    "analysisFailedDescription": "Imaginea WOD-ului nu a putut fi analizată. Te rugăm să încerci din nou.",
+    "duplicateDialogTitle": "WOD duplicat detectat",
+    "duplicateDialogDescription": "Acest antrenament pare identic cu un WOD pe care l-ai salvat deja.",
+    "duplicateDialogSavedOn": "Salvat la {date}",
+    "duplicateDialogQuestion": "Dorești să-l salvezi oricum pe acesta nou?",
+    "duplicateDialogCancel": "Anulează",
+    "duplicateDialogConfirm": "Salvează oricum",
+    "saveFailedTitle": "Salvare eșuată",
+    "saveFailedDescription": "A apărut o eroare la salvarea WOD-ului.",
+    "wodSavedTitle": "WOD salvat!",
+    "wodSavedDescription": "Noul tău WOD a fost adăugat în panoul tău de bord.",
+    "authErrorTitle": "Nu s-a putut salva",
+    "authErrorDescription": "Serviciile de autentificare nu sunt disponibile.",
+    "wodPreviewAlt": "Previzualizare WOD",
+    "analyzeButton": "Analizează WOD",
+    "analysisResultTitle": "Rezultatul analizei",
+    "wodNamePlaceholder": "Nume WOD",
+    "wodTypePlaceholder": "Tip WOD",
+    "durationPlaceholder": "Durată (minute)",
+    "shareCheckbox": "Partajează cu Comunitatea",
+    "shareAnonymousHelp": "Înscrie-te pentru un cont pentru a-ți partaja WOD-urile cu comunitatea.",
+    "saveWodButton": "Salvează WOD",
+    "savingButton": "Se salvează..."
+  },
+  "LoginPage": {
+    "verifying": "Se verifică...",
+    "confirmEmailTitle": "Confirmă-ți identitatea",
+    "confirmEmailDescription": "Introdu codul de 6 cifre pe care l-am trimis la adresa ta de e-mail.",
+    "confirmEmailFailedTitle": "Autentificare eșuată",
+    "confirmEmailSignInButton": "Verifică și Autentifică-te",
+    "featureTitle": "Treci la nivelul următor.",
+    "featureDescription": "Creează un cont gratuit pentru a debloca toate funcțiile și a nu mai pierde niciodată un WOD.",
+    "featureManual": "Creare manuală",
+    "featureManualDescription": "Adaugă propriile WOD-uri fără a avea nevoie de o fotografie.",
+    "featureHistory": "Istoric complet",
+    "featureHistoryDescription": "Salvează și găsește toate antrenamentele tale oricând.",
+    "featureTracking": "Urmărirea performanței (În curând!)",
+    "featureTrackingDescription": "Analizează-ți progresul și vizualizează-ți performanța.",
+    "formTitle": "Autentificare / Înregistrare",
+    "formDescription": "Introdu e-mailul pentru a primi un cod unic securizat. Nu este necesară parola.",
+    "emailSentTitle": "Verifică-ți e-mailul!",
+    "emailSentDescription": "Un cod de 6 cifre a fost trimis la <bold>{email}</bold>. Verifică-ți inbox-ul (și folderul de spam, pentru orice eventualitate).",
+    "sendLinkButton": "Trimite codul",
+    "authError": "Serviciul de autentificare nu este gata.",
+    "sendLinkError": "Nu am putut trimite codul. Te rugăm să încerci din nou.",
+    "linkSentToast": "Cod trimis!",
+    "linkSentToastDescription": "Verifică-ți inbox-ul pentru un cod de 6 cifre. Dacă nu îl vezi, te rugăm să verifici folderul de spam.",
+    "signInSuccessToast": "Autentificare reușită!",
+    "signInSuccessToastDescription": "Acum ești autentificat.",
+    "genericError": "A apărut o eroare. Te rugăm să încerci din nou.",
+    "invalidLinkError": "Codul este invalid sau a expirat. Te rugăm să soliciți unul nou."
+  },
+  "PremiumPage": {
+    "title": "Premium",
+    "alreadyPremium": {
+      "title": "EȘTI PREMIUM!",
+      "subtitle": "Insignă de susținător activată",
+      "description": "Mulțumim pentru susținerea WODBurner ❤️",
+      "communityButton": "Vezi comunitatea",
+      "dashboardButton": "Panou de bord"
+    },
+    "headerTitle": "Eliberează-ți potențialul maxim",
+    "headerDescription": "Devino membru WODBurner Premium pentru a obține acces nelimitat la toate funcțiile și a susține dezvoltarea aplicației.",
+    "offer": "OFERTĂ DE LANSARE PE VIAȚĂ pentru primii 300 de membri!",
+    "monthly": "Lunar",
+    "yearly": "Anual",
+    "discount": "-20%",
+    "freePlan": {
+      "title": "Gratuit",
+      "description": "Pentru urmărire ocazională",
+      "price": "0 RON",
+      "perMonth": "/lună",
+      "currentPlan": "Planul curent"
+    },
+    "premiumPlan": {
+      "title": "Premium",
+      "description": "Pentru sportivi dedicați",
+      "priceMonthly": "9,99 RON",
+      "priceYearly": "99,99 RON",
+      "perMonth": "/lună",
+      "perYear": "/an",
+      "billedAnnually": "Facturat anual",
+      "goPremium": "Treci la Premium →",
+      "loading": "Se încarcă..."
+    },
+    "features": {
+      "scans": "Scanări WOD nelimitate",
+      "scansFree": "3 pe lună",
+      "reactions": "Reacții comunitare nelimitate",
+      "reactionsFree": "5 pe zi",
+      "comments": "Postează comentarii",
+      "commentsFree": "Doar citire",
+      "favorites": "WOD-uri favorite nelimitate",
+      "favoritesFree": "Max 10",
+      "customs": "WOD-uri personalizate nelimitate",
+      "customsFree": "Max 3",
+      "search": "Filtre de căutare avansate",
+      "badge": "Insignă exclusivă de susținător",
+      "unlimited": "Nelimitat",
+      "notIncluded": "Neinclus"
+    },
+    "toasts": {
+      "welcomeTitle": "Bun venit la WODBurner Premium!",
+      "welcomeDescription": "Insigna ta de susținător este acum activă.",
+      "cancelTitle": "Plată anulată",
+      "cancelDescription": "Poți încerca din nou oricând ești pregătit.",
+      "loginRequiredTitle": "Autentificare necesară",
+      "loginRequiredDescription": "Creează un cont pentru a face upgrade la Premium.",
+      "paymentErrorTitle": "Eroare de plată",
+      "paymentErrorDescription": "Nu s-a putut iniția checkout-ul."
+    }
+  },
+  "SettingsPage": {
+    "title": "Setări",
+    "profile": {
+      "title": "Profil",
+      "description": "Informații despre contul tău.",
+      "loading": "Se încarcă profilul...",
+      "email": "E-mail: {email}",
+      "emailNotSpecified": "Nespecificat",
+      "accountType": "Tip cont: {type}",
+      "typeAnonymous": "Anonim (Temporar)",
+      "typePremium": "Premium",
+      "typeStandard": "Standard",
+      "manageSubscription": "Gestionează-mi abonamentul",
+      "userNotFound": "Utilizator negăsit."
+    },
+    "dangerZone": {
+      "title": "Zonă de pericol",
+      "description": "Aceste acțiuni sunt permanente și nu pot fi anulate.",
+      "deleteButton": "Șterge-mi contul",
+      "deletingButton": "Se șterge...",
+      "dialogTitle": "Ești absolut sigur?",
+      "dialogDescription": "Această acțiune este ireversibilă. Va șterge permanent contul tău și va șterge toate datele tale, inclusiv toate WOD-urile salvate, de pe serverele noastre.",
+      "dialogCancel": "Anulează",
+      "dialogConfirm": "Da, șterge-mi contul",
+      "helpText": "Dacă îți ștergi contul, toate datele tale vor fi pierdute pentru totdeauna."
+    },
+    "toasts": {
+      "deleteError": "Nu s-a putut șterge contul. Utilizatorul sau serviciile Firebase nu sunt disponibile.",
+      "deleteSuccessTitle": "Cont șters",
+      "deleteSuccessDescription": "Contul tău și toate datele tale au fost șterse cu succes.",
+      "deleteFailedTitle": "Ștergere eșuată",
+      "deleteFailedDescription": "A apărut o eroare. Te rugăm să încerci din nou.",
+      "deleteFailedRecentLogin": "Această operațiune este sensibilă și necesită autentificare recentă. Te rugăm să te autentifici din nou înainte de a reîncerca.",
+      "portalError": "Nu s-a putut deschide gestionarea abonamentului."
+    }
+  },
+  "ScanPage": {
+    "title": "Scanează WOD",
+    "manualButton": "Adaugă manual"
+  },
+  "NewWodPage": {
+    "title": "Creează WOD manual",
+    "cardTitle": "Detalii antrenament",
+    "namePlaceholder": "Nume WOD (ex: Fran)",
+    "typePlaceholder": "Tip WOD",
+    "durationPlaceholder": "Durată (minute)",
+    "imageHintPlaceholder": "Indiciu imagine (ex: bară)",
+    "descriptionPlaceholder": "Descriere WOD...",
+    "saveButton": "Salvează WOD",
+    "savingButton": "Se salvează...",
+    "backLink": "Înapoi la Scanare",
+    "duplicateDialog": {
+      "title": "WOD duplicat detectat",
+      "description": "Acest antrenament pare identic cu un WOD pe care l-ai salvat deja.",
+      "savedOn": "Salvat la {date}",
+      "question": "Dorești să-l salvezi oricum pe acesta nou?",
+      "cancel": "Anulează",
+      "confirm": "Salvează oricum"
+    },
+    "toasts": {
+      "saveSuccessTitle": "WOD salvat!",
+      "saveSuccessDescription": "Noul tău WOD a fost adăugat în panoul tău de bord.",
+      "saveFailedTitle": "Salvare eșuată",
+      "saveFailedDescription": "A apărut o eroare la salvarea WOD-ului."
+    }
+  },
+  "EditWodPage": {
+    "title": "Editează WOD",
+    "cardTitle": "Detalii antrenament",
+    "saveButton": "Salvează modificările",
+    "savingButton": "Se salvează modificările...",
+    "backLink": "Înapoi la Panoul de bord",
+    "toasts": {
+      "updateSuccessTitle": "WOD actualizat!",
+      "updateSuccessDescription": "Modificările tale au fost salvate.",
+      "updateFailedTitle": "Actualizare eșuată",
+      "updateFailedDescription": "A apărut o eroare la salvarea modificărilor tale."
+    }
+  },
+  "GenericTimerPage": {
+    "backLink": "Înapoi la Cronometre",
+    "startButton": "Pornește cronometrul",
+    "forTime": {
+      "title": "For Time",
+      "description": "Un cronometru simplu pentru a-ți cronometra antrenamentul. Setează opțional o limită de timp.",
+      "timeCapLabel": "Limită de timp (minute, opțional)",
+      "timeCapPlaceholder": "ex: 20"
+    },
+    "amrap": {
+      "title": "Cronometru AMRAP",
+      "description": "Setează o durată și vezi câte runde sau repetări poți finaliza.",
+      "durationLabel": "Durată (minute)"
+    },
+    "emom": {
+      "title": "Cronometru EMOM",
+      "description": "La fiecare minut. Setează intervalul și numărul de runde.",
+      "roundsLabel": "Număr de runde",
+      "intervalLabel": "Lungime interval",
+      "intervalMinutes": "min",
+      "intervalSeconds": "sec"
+    },
+    "tabata": {
+      "title": "Cronometru Tabata",
+      "description": "Intervale de înaltă intensitate de 20s de lucru, 10s de odihnă. Personalizează rundele.",
+      "roundsLabel": "Runde"
+    }
+  },
+  "TimersPage": {
+    "title": "Cronometre inteligente",
+    "forTime": "For Time",
+    "forTimeDescription": "Un cronometru simplu pentru a-ți cronometra antrenamentul.",
+    "amrap": "AMRAP",
+    "amrapDescription": "Cât mai multe runde/repetări posibil într-un timp stabilit.",
+    "emom": "EMOM",
+    "emomDescription": "La fiecare minut, pentru un număr stabilit de minute.",
+    "tabata": "Tabata",
+    "tabataDescription": "Intervale de înaltă intensitate de 20s de lucru, 10s de odihnă.",
+    "footer": "Sau selectează un WOD din panoul de bord pentru a lansa un cronometru pre-configurat."
+  },
+  "HeroWodsPage": {
+    "title": "WOD-uri Erou",
+    "description": "WOD-urile \"Erou\" sunt antrenamente speciale în CrossFit dedicate bărbaților și femeilor care și-au dat viața la datorie. Sunt o oportunitate de a reflecta și a onora sacrificiul lor.",
+    "premiumUpsell": {
+      "title": "Deblochează arsenalul complet",
+      "description": "Treci la Premium pentru a accesa biblioteca completă de peste {totalWodCount}+ WOD-uri Erou și Benchmark, inclusiv {premiumWodCount} antrenamente exclusive.",
+      "button": "Treci la Premium"
+    }
+  },
+  "HallOfFamePage": {
+    "title": "Hall of Fame",
+    "cardTitle": "Primii 300 de OG",
+    "cardDescription": "Gratuit pe viață. Un loc permanent pentru primii noștri susținători.",
+    "spotsRemaining": "Au mai rămas doar {spotsLeft} locuri!",
+    "spotsFull": "Lista este acum închisă pentru totdeauna.",
+    "claimSpotButton": "Revendică-ți locul acum",
+    "emptyList": "Fii primul care revendică un loc!"
+  },
+  "TimerClient": {
+    "workoutComplete": "Antrenament finalizat!",
+    "totalTime": "Timp total",
+    "timeCompleted": "Timp finalizat",
+    "goAgain": "Încă o dată",
+    "shareResult": "Partajează rezultatul",
+    "shareModal": {
+      "title": "Rezultat WOD: {wodName}",
+      "description": "Timpul tău final a fost {finalTime}. Acest card este gata de partajat.",
+      "finalTimeLabel": "TIMP FINAL",
+      "screenshotReady": "Gata pentru captură de ecran!"
+    },
+    "timeCap": "Limită de timp: {duration}:00",
+    "pause": "Pauză",
+    "start": "Start",
+    "reset": "Resetare",
+    "finish": "Finalizează",
+    "round": "Runda {current} / {total}",
+    "totalTimeElapsed": "Total: {time}"
+  },
+  "GenerateWodPage": {
+    "title": "Generator de WOD cu AI",
+    "cardTitle": "WODBot 3000",
+    "cardDescription": "Te simți neispirat? Lasă antrenorul nostru AI să genereze un antrenament unic și provocator pentru tine.",
+    "generateButton": "Generează un WOD nou",
+    "generatingButton": "Se generează...",
+    "freePlanAlert": {
+      "title": "Plan gratuit",
+      "description": "Ai un număr limitat de generări zilnice. {link} pentru acces nelimitat.",
+      "link": "Treci la Premium"
+    },
+    "premiumPlanMessage": "Generări nelimitate activate.",
+    "generatingState": {
+      "title": "Se generează WOD-ul tău...",
+      "description": "Antrenorul AI se încălzește. Acest lucru ar putea dura un moment."
+    },
+    "errorAlert": {
+      "title": "Generare eșuată",
+      "description": "Antrenorul AI se odihnește. Te rugăm să încerci din nou într-un moment."
+    },
+    "result": {
+      "title": "WOD-ul tău generat",
+      "savedMessage": "Acest WOD a fost salvat automat în panoul tău de bord."
+    }
+  }
+}
