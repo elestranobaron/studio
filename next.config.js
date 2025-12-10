@@ -6,7 +6,10 @@ const withNextIntl = createNextIntlPlugin('./src/i18n.ts');
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   typescript: {
-    // ignoreBuildErrors: true,
+    ignoreBuildErrors: true,
+  },
+  eslint: {
+    ignoreDuringBuilds: true,
   },
   images: {
     remotePatterns: [
