@@ -5,7 +5,6 @@ import { FirebaseProvider } from "@/firebase/provider";
 import { Toaster } from "@/components/ui/toaster";
 import '../globals.css';
 
-// The list of locales is now defined directly here to avoid import issues.
 const locales = ['en', 'fr', 'es', 'de', 'it', 'ca', 'pt', 'ru', 'ja', 'zh', 'pl', 'nl', 'ar', 'hi', 'ko', 'ro'];
 
 type Props = {
@@ -18,7 +17,6 @@ export function generateStaticParams() {
 }
 
 export default async function LocaleLayout({children, params: {locale}}: Props) {
-  // Receive messages
   const messages = await getMessages();
  
   return (
