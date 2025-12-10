@@ -24,8 +24,8 @@ service cloud.firestore {
     match /communityWods/{wodId} {
       // Allow anyone to list the community WODs
       allow list: if true;
-      // Allow signed-in users to read individual WODs
-      allow get: if isSignedIn();
+      // Allow anyone to read individual WODs
+      allow get: if true;
       // Allow creation if the user is the owner
       allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
       // Allow deletion only by the owner
