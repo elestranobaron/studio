@@ -15,7 +15,7 @@ service cloud.firestore {
       allow read, write: if isSignedIn() && isOwner(userId);
     }
     match /communityWods/{wodId} {
-      // Allow list for everyone to support SSR, but get requires sign-in.
+      // Allow list for everyone to support SSR, and get for signed-in users.
       allow list: if true;
       allow get: if isSignedIn();
 
@@ -26,26 +26,28 @@ service cloud.firestore {
         request.resource.data.diff(resource.data).affectedKeys().hasOnly(['reactions', 'commentCount'])
       );
       
-      // === MESSAGES SUBCOLLECTION ===
-      match /messages/{messageId} {
-        // Reading messages is public.
-        allow get, list: if true;
-       
-        allow create: if isSignedIn()
-                      && request.resource.data.userId == request.auth.uid
-                      && request.resource.data.text.size() <= 280;
-
-        allow update: if isSignedIn()
-                      && request.resource.data.diff(resource.data).affectedKeys()
-                         .hasOnly(['upvotes', 'downvotes', 'score', 'replyCount']);
-        allow delete: if false;
-      }
-      // === REACTORS SUBCOLLECTION ===
+      // === REACTORS SUBCOLLECTION (IMBRICATION CONSERVÉE CAR ACCEPÉE) ===
       match /reactors/{reactorId} {
         allow get: if isSignedIn();
         allow create, update, delete: if isSignedIn() && request.auth.uid == reactorId;
       }
     }
+    
+    // === MESSAGES SUBCOLLECTION (NON IMBRIQUÉE) ===
+    match /communityWods/{wodId}/messages/{messageId} {
+      // Reading messages is public.
+      allow get, list: if true;
+     
+      allow create: if isSignedIn()
+                    && request.resource.data.userId == request.auth.uid
+                    && request.resource.data.text.size() <= 280;
+
+      allow update: if isSignedIn()
+                    && request.resource.data.diff(resource.data).affectedKeys()
+                       .hasOnly(['upvotes', 'downvotes', 'score', 'replyCount']);
+      allow delete: if false; // Users can't delete messages
+    }
+    
     match /hallOfFame/{userId} {
       allow read: if true;
       allow write: if false;
