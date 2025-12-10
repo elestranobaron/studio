@@ -1,5 +1,3 @@
-/// <reference types="react" />
-
 'use client';
 
 import React from 'react';
@@ -132,8 +130,8 @@ export function WodContentParser({ content }: { content: string }) {
     }
   };
 
-  const blocks: (JSX.Element | null)[][] = [];
-  let currentBlock: (JSX.Element | null)[] = [];
+  const blocks: (React.JSX.Element | null)[][] = [];
+  let currentBlock: (React.JSX.Element | null)[] = [];
 
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i];
