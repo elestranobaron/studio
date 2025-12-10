@@ -3,7 +3,7 @@ import {getMessages} from 'next-intl/server';
 import {ReactNode} from 'react';
 import { FirebaseProvider } from "@/firebase/provider";
 import { Toaster } from "@/components/ui/toaster";
-import '../globals.css';
+import '@/app/globals.css';
 
 const locales = ['en', 'fr', 'es', 'de', 'it', 'ca', 'pt', 'ru', 'ja', 'zh', 'pl', 'nl', 'ar', 'hi', 'ko', 'ro'];
 
