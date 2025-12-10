@@ -7,54 +7,57 @@ service cloud.firestore {
     function isOwner(userId) {
       return request.auth.uid == userId;
     }
+
+    // === USERS ===
     match /users/{userId} {
       allow read, write: if isOwner(userId);
       allow create: if isSignedIn() && request.auth.uid == userId;
     }
+
+    // === USER WODS ===
     match /users/{userId}/wods/{wodId} {
       allow read, write: if isSignedIn() && isOwner(userId);
     }
-    match /communityWods/{wodId} {
-      // Allow listing the collection for everyone to support SSR on the dashboard.
-      // Allow getting a single document for signed-in users.
-      allow list: if true;
-      allow get: if isSignedIn();
 
+    // === COMMUNITY WODS ===
+    match /communityWods/{wodId} {
+      // Autorise la liste des documents communityWods (pour SSR)
+      allow list: if true;
+      // Autorise la lecture d'un document communityWod (pour les utilisateurs connectés)
+      allow get: if isSignedIn();
+      // Autorise la création, suppression, mise à jour (selon tes critères)
       allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
       allow delete: if isSignedIn() && resource.data.userId == request.auth.uid;
       allow update: if isSignedIn() && (
         resource.data.userId == request.auth.uid ||
         request.resource.data.diff(resource.data).affectedKeys().hasOnly(['reactions', 'commentCount'])
       );
-      
+
       // === REACTORS SUBCOLLECTION ===
       match /reactors/{reactorId} {
         allow get: if isSignedIn();
         allow create, update, delete: if isSignedIn() && request.auth.uid == reactorId;
       }
     }
-    
-    // === MESSAGES COLLECTION GROUP RULE - NON-NESTED ===
-    // This rule allows listing messages across all communityWods for public view (SSR)
-    match /communityWods/{wodId}/messages {
-        allow list: if true;
-    }
 
-    // This rule governs individual message documents
+    // === MESSAGES COLLECTION ===
+    // Autorise la liste des messages (pour tout le monde, y compris SSR)
+    match /communityWods/{wodId}/messages {
+      allow list: if true;
+    }
+    // Autorise la lecture, création, mise à jour, suppression des messages individuels
     match /communityWods/{wodId}/messages/{messageId} {
-      // Reading individual messages is public.
-      allow get: if true;
-     
+      allow get: if true; // Lecture publique
       allow create: if isSignedIn()
                     && request.resource.data.userId == request.auth.uid
                     && request.resource.data.text.size() <= 280;
-
       allow update: if isSignedIn()
                     && request.resource.data.diff(resource.data).affectedKeys()
                        .hasOnly(['upvotes', 'downvotes', 'score', 'replyCount']);
-      allow delete: if false; // Users can't delete messages
+      allow delete: if false; // Interdit la suppression
     }
-    
+
+    // === HALL OF FAME ===
     match /hallOfFame/{userId} {
       allow read: if true;
       allow write: if false;

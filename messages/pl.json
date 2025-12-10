@@ -1,0 +1,405 @@
+
+{
+  "UserNav": {
+    "signIn": "Zaloguj się",
+    "signOut": "Wyloguj się",
+    "loading": "Ładowanie...",
+    "anonymousUser": "Użytkownik anonimowy",
+    "temporaryProfile": "Profil tymczasowy",
+    "settingsTooltip": "Ustawienia"
+  },
+  "MainNav": {
+    "dashboard": "Pulpit",
+    "scanWod": "Skanuj WOD",
+    "generateWod": "Generuj WOD",
+    "heroWods": "Hero WODs",
+    "timers": "Timery",
+    "goPremium": "Przejdź na Premium",
+    "hallOfFame": "Galeria Sław"
+  },
+  "DashboardPage": {
+    "title": "Pulpit",
+    "scanNewWod": "Skanuj nowy WOD",
+    "tabs": {
+      "personal": "Moje WOD-y",
+      "community": "Społeczność"
+    },
+    "PersonalWodList": {
+      "emptyTitle": "Nie znaleziono tu żadnych WOD-ów.",
+      "emptyDescription": "Zeskanuj swój pierwszy WOD, aby zacząć!"
+    },
+    "CommunityWodList": {
+      "joinTitle": "Dołącz do społeczności!",
+      "joinDescription": "Utwórz darmowe konto, aby przeglądać, udostępniać i czerpać inspirację z WOD-ów całej społeczności.",
+      "joinButton": "Zarejestruj się / Zaloguj się",
+      "errorTitle": "Wystąpił błąd",
+      "errorDescription": "Nie udało się załadować WOD-ów społeczności. Spróbuj ponownie później.",
+      "searchInputPlaceholder": "Szukaj WOD-ów społeczności...",
+      "sortByLabel": "Sortuj według",
+      "sort": {
+        "recent": "Najnowsze",
+        "popular": "Najpopularniejsze",
+        "alphabetical": "Alfabetycznie (A-Z)"
+      },
+      "emptySearchTitle": "Żadne WOD-y nie pasują do Twojego wyszukiwania.",
+      "emptySearchDescription": "Spróbuj innego hasła.",
+      "emptyCommunityTitle": "Bądź pierwszym, który się podzieli!"
+    },
+    "ScrollTop": {
+      "label": "Przewiń do góry"
+    }
+  },
+  "WelcomeEmptyState": {
+    "title": "Witaj w WODBurner!",
+    "subtitle": "Zaloguj swój pierwszy WOD w 3 sekundy:",
+    "scanButton": "Zeskanuj WOD ze zdjęcia",
+    "generateButton": "Wygeneruj losowy WOD",
+    "heroButton": "Wypróbuj Hero WOD",
+    "communityLink": "Lub, zbadaj <communityLink>społeczność</communityLink>, aby zobaczyć, co inni dziś spalają."
+  },
+  "WodCard": {
+    "optionsAlt": "Opcje WOD",
+    "share": "Udostępnij",
+    "unshare": "Przestań udostępniać",
+    "edit": "Edytuj",
+    "delete": "Usuń",
+    "sharedToastTitle": "WOD udostępniony!",
+    "sharedToastDescription": "Twój WOD jest teraz widoczny dla społeczności.",
+    "unsharedToastTitle": "WOD nie jest już udostępniany",
+    "unsharedToastDescription": "Twój WOD został usunięty ze społeczności.",
+    "shareErrorToastTitle": "Akcja nie powiodła się",
+    "shareErrorToastDescription": "Nie udało się zaktualizować statusu udostępniania.",
+    "deleteDialogTitle": "Czy jesteś absolutnie pewien?",
+    "deleteDialogDescription": "Tej akcji nie można cofnąć. Spowoduje to trwałe usunięcie Twojego WOD{isShared, select, true { i usunięcie go ze społeczności} other {}}.",
+    "deleteDialogCancel": "Anuluj",
+    "deleteDialogConfirm": "Usuń",
+    "deleteToastTitle": "WOD usunięty",
+    "deleteToastDescription": "Twój WOD został pomyślnie usunięty.",
+    "deleteErrorToastTitle": "Usunięcie nie powiodło się",
+    "deleteErrorToastDescription": "Nie udało się usunąć WOD.",
+    "reactionErrorToastTitle": "Ups!",
+    "reactionErrorToastDescription": "Nie udało się zapisać Twojej reakcji.",
+    "viewImageAlt": "{wodName} - Oryginalny obraz",
+    "viewWodDescription": "{type} - {date}",
+    "viewWodSharedBy": "Udostępnione przez {displayName}",
+    "startWod": "Rozpocznij WOD",
+    "profile": {
+      "cardio": "Kardio",
+      "lifting": "Podnoszenie ciężarów",
+      "upper": "Górna część",
+      "lower": "Dolna część"
+    }
+  },
+  "TimerPage": {
+    "backToDashboard": "Powrót do pulpitu",
+    "viewWod": "Zobacz WOD",
+    "fullWodLabel": "Pełny WOD: {wodName}",
+    "startSection": "Start",
+    "accessRestricted": {
+      "title": "Dostęp ograniczony",
+      "description": "Zarejestruj się lub zaloguj, aby przeglądać WOD-y społeczności i korzystać z timera.",
+      "button": "Zarejestruj się / Zaloguj się"
+    }
+  },
+  "FileUploader": {
+    "dragAndDropPrompt": "Przeciągnij i upuść obraz WOD lub kliknij, aby wybrać",
+    "dragActivePrompt": "Upuść obraz tutaj...",
+    "fileTypes": "PNG, JPG lub GIF (maks. 5 MB)",
+    "analyzingTitle": "Analizowanie WOD...",
+    "analyzingDescription": "AI się rozgrzewa. To może zająć chwilę.",
+    "analysisFailedTitle": "Analiza nie powiodła się",
+    "analysisFailedDescription": "Nie można przeanalizować obrazu WOD. Spróbuj ponownie.",
+    "duplicateDialogTitle": "Wykryto zduplikowany WOD",
+    "duplicateDialogDescription": "Ten trening wydaje się identyczny z WOD, który już zapisałeś.",
+    "duplicateDialogSavedOn": "Zapisano {date}",
+    "duplicateDialogQuestion": "Czy mimo to chcesz zapisać ten nowy?",
+    "duplicateDialogCancel": "Anuluj",
+    "duplicateDialogConfirm": "Zapisz mimo to",
+    "saveFailedTitle": "Zapis nie powiódł się",
+    "saveFailedDescription": "Wystąpił błąd podczas zapisywania WOD.",
+    "wodSavedTitle": "WOD zapisany!",
+    "wodSavedDescription": "Twój nowy WOD został dodany do pulpitu.",
+    "authErrorTitle": "Nie można zapisać",
+    "authErrorDescription": "Usługi uwierzytelniania nie są dostępne.",
+    "wodPreviewAlt": "Podgląd WOD",
+    "analyzeButton": "Analizuj WOD",
+    "analysisResultTitle": "Wynik analizy",
+    "wodNamePlaceholder": "Nazwa WOD",
+    "wodTypePlaceholder": "Typ WOD",
+    "durationPlaceholder": "Czas trwania (minuty)",
+    "shareCheckbox": "Udostępnij społeczności",
+    "shareAnonymousHelp": "Zarejestruj się, aby udostępniać swoje WOD-y społeczności.",
+    "saveWodButton": "Zapisz WOD",
+    "savingButton": "Zapisywanie..."
+  },
+  "LoginPage": {
+    "verifying": "Weryfikowanie...",
+    "confirmEmailTitle": "Potwierdź swoją tożsamość",
+    "confirmEmailDescription": "Wprowadź 6-cyfrowy kod, który wysłaliśmy na Twój adres e-mail.",
+    "confirmEmailFailedTitle": "Logowanie nie powiodło się",
+    "confirmEmailSignInButton": "Zweryfikuj i zaloguj się",
+    "featureTitle": "Przejdź на kolejny poziom.",
+    "featureDescription": "Utwórz darmowe konto, aby odblokować wszystkie funkcje i nigdy więcej nie stracić WOD.",
+    "featureManual": "Ręczne tworzenie",
+    "featureManualDescription": "Dodawaj własne WOD-y bez potrzeby zdjęcia.",
+    "featureHistory": "Pełna historia",
+    "featureHistoryDescription": "Zapisuj i znajduj wszystkie swoje treningi w dowolnym momencie.",
+    "featureTracking": "Śledzenie wydajności (wkrótce!)",
+    "featureTrackingDescription": "Analizuj swoje postępy i wizualizuj swoją wydajność.",
+    "formTitle": "Zaloguj się / Zarejestruj się",
+    "formDescription": "Wprowadź swój adres e-mail, aby otrzymać bezpieczny kod jednorazowy. Hasło nie jest wymagane.",
+    "emailSentTitle": "Sprawdź swoją skrzynkę e-mail!",
+    "emailSentDescription": "6-cyfrowy kod został wysłany na <bold>{email}</bold>. Sprawdź swoją skrzynkę odbiorczą (i na wszelki wypadek folder ze spamem).",
+    "sendLinkButton": "Wyślij kod",
+    "authError": "Usługa uwierzytelniania nie jest gotowa.",
+    "sendLinkError": "Nie mogliśmy wysłać kodu. Spróbuj ponownie.",
+    "linkSentToast": "Kod wysłany!",
+    "linkSentToastDescription": "Sprawdź swoją skrzynkę odbiorczą w poszukiwaniu 6-cyfrowego kodu. Jeśli go nie widzisz, sprawdź folder ze spamem.",
+    "signInSuccessToast": "Logowanie udane!",
+    "signInSuccessToastDescription": "Jesteś teraz zalogowany.",
+    "genericError": "Wystąpił błąd. Spróbuj ponownie.",
+    "invalidLinkError": "Kod jest nieprawidłowy lub wygasł. Poproś o nowy."
+  },
+  "PremiumPage": {
+    "title": "Premium",
+    "alreadyPremium": {
+      "title": "JESTEŚ PREMIUM!",
+      "subtitle": "Aktywowano odznakę wspierającego",
+      "description": "Dziękujemy za wspieranie WODBurner ❤️",
+      "communityButton": "Zobacz społeczność",
+      "dashboardButton": "Pulpit"
+    },
+    "headerTitle": "Uwolnij swój pełny potencjał",
+    "headerDescription": "Zostań członkiem WODBurner Premium, aby uzyskać nieograniczony dostęp do wszystkich funkcji i wspierać rozwój aplikacji.",
+    "offer": "DOŻYWOTNIA OFERTA STARTOWA dla pierwszych 300 członków!",
+    "monthly": "Miesięcznie",
+    "yearly": "Rocznie",
+    "discount": "-20%",
+    "freePlan": {
+      "title": "Darmowy",
+      "description": "Do okazjonalnego śledzenia",
+      "price": "0 zł",
+      "perMonth": "/miesiąc",
+      "currentPlan": "Obecny plan"
+    },
+    "premiumPlan": {
+      "title": "Premium",
+      "description": "Dla oddanych sportowców",
+      "priceMonthly": "9,99 zł",
+      "priceYearly": "99,99 zł",
+      "perMonth": "/miesiąc",
+      "perYear": "/rok",
+      "billedAnnually": "Roczna opłata",
+      "goPremium": "Przejdź na Premium →",
+      "loading": "Ładowanie..."
+    },
+    "features": {
+      "scans": "Nieograniczone skany WOD",
+      "scansFree": "3 na miesiąc",
+      "reactions": "Nieograniczone reakcje społeczności",
+      "reactionsFree": "5 dziennie",
+      "comments": "Publikuj komentarze",
+      "commentsFree": "Tylko do odczytu",
+      "favorites": "Nieograniczona liczba ulubionych WOD-ów",
+      "favoritesFree": "Maks. 10",
+      "customs": "Nieograniczona liczba niestandardowych WOD-ów",
+      "customsFree": "Maks. 3",
+      "search": "Zaawansowane filtry wyszukiwania",
+      "badge": "Ekskluzywna odznaka wspierającego",
+      "unlimited": "Nieograniczone",
+      "notIncluded": "Nieuwzględnione"
+    },
+    "toasts": {
+      "welcomeTitle": "Witaj w WODBurner Premium!",
+      "welcomeDescription": "Twoja odznaka wspierającego jest teraz aktywna.",
+      "cancelTitle": "Płatność anulowana",
+      "cancelDescription": "Możesz spróbować ponownie, gdy będziesz gotowy.",
+      "loginRequiredTitle": "Wymagane logowanie",
+      "loginRequiredDescription": "Utwórz konto, aby przejść na Premium.",
+      "paymentErrorTitle": "Błąd płatności",
+      "paymentErrorDescription": "Nie można było zainicjować płatności."
+    }
+  },
+  "SettingsPage": {
+    "title": "Ustawienia",
+    "profile": {
+      "title": "Profil",
+      "description": "Informacje o Twoim koncie.",
+      "loading": "Ładowanie profilu...",
+      "email": "E-mail: {email}",
+      "emailNotSpecified": "Nie podano",
+      "accountType": "Typ konta: {type}",
+      "typeAnonymous": "Anonimowe (tymczasowe)",
+      "typePremium": "Premium",
+      "typeStandard": "Standardowe",
+      "manageSubscription": "Zarządzaj moją subskrypcją",
+      "userNotFound": "Nie znaleziono użytkownika."
+    },
+    "dangerZone": {
+      "title": "Strefa zagrożenia",
+      "description": "Te działania są trwałe i nie można ich cofnąć.",
+      "deleteButton": "Usuń moje konto",
+      "deletingButton": "Usuwanie...",
+      "dialogTitle": "Czy jesteś absolutnie pewien?",
+      "dialogDescription": "Tej akcji nie można cofnąć. Spowoduje to trwałe usunięcie Twojego konta i wymazanie wszystkich Twoich danych, w tym wszystkich zapisanych WOD-ów, z naszych serwerów.",
+      "dialogCancel": "Anuluj",
+      "dialogConfirm": "Tak, usuń moje konto",
+      "helpText": "Jeśli usuniesz swoje konto, wszystkie Twoje dane zostaną utracone na zawsze."
+    },
+    "toasts": {
+      "deleteError": "Nie można usunąć konta. Użytkownik lub usługi Firebase nie są dostępne.",
+      "deleteSuccessTitle": "Konto usunięte",
+      "deleteSuccessDescription": "Twoje konto i wszystkie Twoje dane zostały pomyślnie usunięte.",
+      "deleteFailedTitle": "Usunięcie nie powiodło się",
+      "deleteFailedDescription": "Wystąpił błąd. Spróbuj ponownie.",
+      "deleteFailedRecentLogin": "Ta operacja jest poufna i wymaga niedawnego uwierzytelnienia. Zaloguj się ponownie przed ponowną próbą.",
+      "portalError": "Nie można otworzyć zarządzania subskrypcją."
+    }
+  },
+  "ScanPage": {
+    "title": "Skanuj WOD",
+    "manualButton": "Dodaj ręcznie"
+  },
+  "NewWodPage": {
+    "title": "Utwórz WOD ręcznie",
+    "cardTitle": "Szczegóły treningu",
+    "namePlaceholder": "Nazwa WOD (np. Fran)",
+    "typePlaceholder": "Typ WOD",
+    "durationPlaceholder": "Czas trwania (minuty)",
+    "imageHintPlaceholder": "Wskazówka obrazu (np. sztanga)",
+    "descriptionPlaceholder": "Opis WOD...",
+    "saveButton": "Zapisz WOD",
+    "savingButton": "Zapisywanie...",
+    "backLink": "Powrót do skanowania",
+    "duplicateDialog": {
+      "title": "Wykryto zduplikowany WOD",
+      "description": "Ten trening wydaje się identyczny z WOD, który już zapisałeś.",
+      "savedOn": "Zapisano {date}",
+      "question": "Czy mimo to chcesz zapisać ten nowy?",
+      "cancel": "Anuluj",
+      "confirm": "Zapisz mimo to"
+    },
+    "toasts": {
+      "saveSuccessTitle": "WOD zapisany!",
+      "saveSuccessDescription": "Twój nowy WOD został dodany do pulpitu.",
+      "saveFailedTitle": "Zapis nie powiódł się",
+      "saveFailedDescription": "Wystąpił błąd podczas zapisywania WOD."
+    }
+  },
+  "EditWodPage": {
+    "title": "Edytuj WOD",
+    "cardTitle": "Szczegóły treningu",
+    "saveButton": "Zapisz zmiany",
+    "savingButton": "Zapisywanie zmian...",
+    "backLink": "Powrót do pulpitu",
+    "toasts": {
+      "updateSuccessTitle": "WOD zaktualizowany!",
+      "updateSuccessDescription": "Twoje zmiany zostały zapisane.",
+      "updateFailedTitle": "Aktualizacja nie powiodła się",
+      "updateFailedDescription": "Wystąpił błąd podczas zapisywania zmian."
+    }
+  },
+  "GenericTimerPage": {
+    "backLink": "Powrót do timerów",
+    "startButton": "Uruchom timer",
+    "forTime": {
+      "title": "Na czas",
+      "description": "Prosty stoper do mierzenia czasu treningu. Opcjonalnie ustaw limit czasu.",
+      "timeCapLabel": "Limit czasu (minuty, opcjonalnie)",
+      "timeCapPlaceholder": "np. 20"
+    },
+    "amrap": {
+      "title": "Timer AMRAP",
+      "description": "Ustaw czas trwania i zobacz, ile rund lub powtórzeń uda Ci się wykonać.",
+      "durationLabel": "Czas trwania (minuty)"
+    },
+    "emom": {
+      "title": "Timer EMOM",
+      "description": "Każda minuta na minutę. Ustaw interwał i liczbę rund.",
+      "roundsLabel": "Liczba rund",
+      "intervalLabel": "Długość interwału",
+      "intervalMinutes": "min",
+      "intervalSeconds": "sek"
+    },
+    "tabata": {
+      "title": "Timer Tabata",
+      "description": "Interwały o wysokiej intensywności: 20 s pracy, 10 s odpoczynku. Dostosuj rundy.",
+      "roundsLabel": "Rundy"
+    }
+  },
+  "TimersPage": {
+    "title": "Inteligentne timery",
+    "forTime": "Na czas",
+    "forTimeDescription": "Prosty stoper do mierzenia czasu treningu.",
+    "amrap": "AMRAP",
+    "amrapDescription": "Jak najwięcej rund/powtórzeń w określonym czasie.",
+    "emom": "EMOM",
+    "emomDescription": "Każda minuta na minutę, przez określoną liczbę minut.",
+    "tabata": "Tabata",
+    "tabataDescription": "Interwały o wysokiej intensywności: 20 s pracy, 10 s odpoczynku.",
+    "footer": "Lub wybierz WOD z pulpitu, aby uruchomić wstępnie skonfigurowany timer."
+  },
+  "HeroWodsPage": {
+    "title": "Hero WODs",
+    "description": "„Hero” WOD-y to specjalne treningi w CrossFit poświęcone mężczyznom i kobietom, którzy oddali życie na służbie. Są okazją do refleksji i uhonorowania ich ofiary.",
+    "premiumUpsell": {
+      "title": "Odblokuj pełny arsenał",
+      "description": "Przejdź na Premium, aby uzyskać dostęp do pełnej biblioteki ponad {totalWodCount}+ WOD-ów Hero i Benchmark, w tym {premiumWodCount} ekskluzywnych treningów.",
+      "button": "Przejdź na Premium"
+    }
+  },
+  "HallOfFamePage": {
+    "title": "Galeria Sław",
+    "cardTitle": "Pierwszych 300 OG",
+    "cardDescription": "Darmowe na całe życie. Stałe miejsce для naszych najwcześniejszych zwolenników.",
+    "spotsRemaining": "Pozostało tylko {spotsLeft} miejsc!",
+    "spotsFull": "Lista jest teraz zamknięta na zawsze.",
+    "claimSpotButton": "Zarezerwuj swoje miejsce teraz",
+    "emptyList": "Bądź pierwszym, który zarezerwuje miejsce!"
+  },
+  "TimerClient": {
+    "workoutComplete": "Trening ukończony!",
+    "totalTime": "Całkowity czas",
+    "timeCompleted": "Czas ukończenia",
+    "goAgain": "Jeszcze raz",
+    "shareResult": "Udostępnij wynik",
+    "shareModal": {
+      "title": "Wynik WOD: {wodName}",
+      "description": "Twój ostateczny czas to {finalTime}. Ta karta jest gotowa do udostępnienia.",
+      "finalTimeLabel": "CZAS KOŃCOWY",
+      "screenshotReady": "Gotowe do zrzutu ekranu!"
+    },
+    "timeCap": "Limit czasu: {duration}:00",
+    "pause": "Pauza",
+    "start": "Start",
+    "reset": "Reset",
+    "finish": "Zakończ",
+    "round": "Runda {current} / {total}",
+    "totalTimeElapsed": "Łącznie: {time}"
+  },
+  "GenerateWodPage": {
+    "title": "Generator WOD AI",
+    "cardTitle": "WODBot 3000",
+    "cardDescription": "Czujesz brak inspiracji? Pozwól naszemu trenerowi AI wygenerować dla Ciebie unikalny i wymagający trening.",
+    "generateButton": "Wygeneruj nowy WOD",
+    "generatingButton": "Generowanie...",
+    "freePlanAlert": {
+      "title": "Plan darmowy",
+      "description": "Masz ograniczoną liczbę codziennych generacji. {link}, aby uzyskać nieograniczony dostęp.",
+      "link": "Przejdź na Premium"
+    },
+    "premiumPlanMessage": "Włączono nieograniczone generacje.",
+    "generatingState": {
+      "title": "Generowanie Twojego WOD...",
+      "description": "Trener AI się rozgrzewa. To może zająć chwilę."
+    },
+    "errorAlert": {
+      "title": "Generowanie nie powiodło się",
+      "description": "Trener AI odpoczywa. Spróbuj ponownie za chwilę."
+    },
+    "result": {
+      "title": "Twój wygenerowany WOD",
+      "savedMessage": "Ten WOD został automatycznie zapisany na Twoim pulpicie."
+    }
+  }
+}
