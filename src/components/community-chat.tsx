@@ -1,3 +1,4 @@
+/// <reference types="react" />
 
 'use client';
 
@@ -54,7 +55,7 @@ function Comment({ message, onReply, onVote, userVote }: { message: MessageWithR
 
                 {message.replies && message.replies.length > 0 && (
                     <div className="pt-2 space-y-4">
-                        {message.replies.map(reply => (
+                        {message.replies.map((reply: MessageWithReplies) => (
                             <Comment key={reply.id} message={reply} onReply={onReply} onVote={onVote} userVote={userVote} />
                         ))}
                     </div>
@@ -106,7 +107,7 @@ export function ReactionGrid({ initialWod }: { initialWod: WOD }) {
         const originalWod = { ...wod };
         const originalReaction = userReaction;
 
-        setWod((currentWod:any) => {
+        setWod((currentWod: WOD) => {
             const newReactions = { ...(currentWod.reactions || { fire: 0, poop: 0, laugh: 0, cry: 0, vomit: 0 }) };
             if (userReaction === reactionType) {
                 newReactions[reactionType]--;
