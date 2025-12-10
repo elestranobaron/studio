@@ -33,10 +33,16 @@ service cloud.firestore {
       }
     }
     
-    // === MESSAGES SUBCOLLECTION (NON IMBRIQUÉE) ===
+    // === MESSAGES COLLECTION GROUP RULE - NON-NESTED ===
+    // This rule allows listing messages across all communityWods for public view
+    match /communityWods/{wodId}/messages {
+        allow list: if true;
+    }
+
+    // This rule governs individual message documents
     match /communityWods/{wodId}/messages/{messageId} {
-      // Reading messages is public.
-      allow get, list: if true;
+      // Reading individual messages is public.
+      allow get: if true;
      
       allow create: if isSignedIn()
                     && request.resource.data.userId == request.auth.uid
