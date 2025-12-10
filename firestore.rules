@@ -15,11 +15,9 @@ service cloud.firestore {
       allow read, write: if isSignedIn() && isOwner(userId);
     }
     match /communityWods/{wodId} {
-      // Allow list for signed-in users, but allow get for everyone.
-      // This allows the unauthenticated Next.js server to "traverse" the parent
-      // document to then read the messages subcollection.
-      allow list: if isSignedIn();
-      allow get: if true;
+      // Allow list for everyone to support SSR, but get requires sign-in.
+      allow list: if true;
+      allow get: if isSignedIn();
 
       allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
       allow delete: if isSignedIn() && resource.data.userId == request.auth.uid;
@@ -30,8 +28,8 @@ service cloud.firestore {
       
       // === MESSAGES SUBCOLLECTION ===
       match /messages/{messageId} {
-        // Read is allowed for everyone because the parent rule is now permissive.
-        allow list, get: if true;
+        // Reading messages is public.
+        allow get, list: if true;
        
         allow create: if isSignedIn()
                       && request.resource.data.userId == request.auth.uid
