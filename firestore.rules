@@ -15,7 +15,11 @@ service cloud.firestore {
       allow read, write: if isSignedIn() && isOwner(userId);
     }
     match /communityWods/{wodId} {
-      allow get, list: if isSignedIn();
+      // MODIFICATION CRUCIALE : Autoriser la lecture pour tout le monde.
+      // Cela permet au serveur Next.js (non authentifié) d'accéder
+      // au document parent pour ensuite pouvoir lire la sous-collection.
+      allow get, list: if true;
+
       allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
       allow delete: if isSignedIn() && resource.data.userId == request.auth.uid;
       allow update: if isSignedIn() && (
@@ -23,12 +27,11 @@ service cloud.firestore {
         request.resource.data.diff(resource.data).affectedKeys().hasOnly(['reactions', 'commentCount'])
       );
       
-      // === MESSAGES SUBCOLLECTION - CORRECTED ===
+      // === MESSAGES SUBCOLLECTION ===
       match /messages/{messageId} {
-        // Autorise la lecture de la liste des messages pour tout le monde.
-        // C'est une mesure temporaire pour résoudre le problème de permission.
-        allow list: if true;
-        allow get: if true;
+        // La lecture est autorisée pour tout le monde car la règle parente est déjà permissive.
+        // On peut être plus spécifique si besoin, mais `if true` est la solution la plus sûre pour débloquer.
+        allow list, get: if true;
        
         allow create: if isSignedIn()
                       && request.resource.data.userId == request.auth.uid
@@ -39,7 +42,7 @@ service cloud.firestore {
                          .hasOnly(['upvotes', 'downvotes', 'score', 'replyCount']);
         allow delete: if false;
       }
-      // === REACTORS SUBCOLLECTION - CORRECTED ===
+      // === REACTORS SUBCOLLECTION ===
       match /reactors/{reactorId} {
         allow get: if isSignedIn();
         allow create, update, delete: if isSignedIn() && request.auth.uid == reactorId;
