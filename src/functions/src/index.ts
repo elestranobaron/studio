@@ -7,6 +7,7 @@ import * as admin from "firebase-admin";
 import Stripe from "stripe";
 import type { QuerySnapshot, DocumentSnapshot } from "firebase-admin/firestore";
 import { setGlobalOptions } from "firebase-functions/v2";
+import express from "express";
 
 admin.initializeApp();
 const db = admin.firestore();
@@ -18,6 +19,14 @@ const STRIPE_MONTHLY_PRICE_ID = process.env.STRIPE_MONTHLY_PRICE_ID!;
 const STRIPE_YEARLY_PRICE_ID = process.env.STRIPE_YEARLY_PRICE_ID!;
 const NEXT_PUBLIC_APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:9002';
 
+// Extend the Express Request type to include our custom property
+declare global {
+  namespace Express {
+    interface Request {
+      rawBody: string;
+    }
+  }
+}
 
 function generateDigicode() {
   return Math.floor(100000 + Math.random() * 900000).toString();
@@ -180,19 +189,12 @@ exports.createCheckout = onRequest(
   }
 );
 
-
-import express from "express";
-
-interface StripeRequest extends Request {
-  rawBody: string;
-}
-
 const app = express();
 
 app.use(
   express.json({
-    verify: (req: any, _res: any, buf: Buffer) => {
-      (req as StripeRequest).rawBody = buf.toString();
+    verify: (req, _res, buf) => {
+      req.rawBody = buf.toString();
     },
   })
 );
@@ -204,10 +206,9 @@ app.post("/", async (req, res) => {
   }
   const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, { apiVersion: "2024-06-20" });
 
-  const typedReq = req as StripeRequest;
   const sig = req.headers["stripe-signature"] as string;
 
-  if (!typedReq.rawBody) {
+  if (!req.rawBody) {
     console.error("rawBody manquant");
     return res.status(400).send("No raw body");
   }
@@ -215,7 +216,7 @@ app.post("/", async (req, res) => {
   let event;
   try {
     event = stripe.webhooks.constructEvent(
-      typedReq.rawBody,
+      req.rawBody,
       sig,
       STRIPE_WEBHOOK_SECRET
     );
