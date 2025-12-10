@@ -1,11 +1,11 @@
-import {NextIntlClientProvider, useMessages} from 'next-intl';
+import {NextIntlClientProvider} from 'next-intl';
+import {getMessages, setRequestLocale} from 'next-intl/server';
+import {routing} from '@/i18n/routing';
+import {notFound} from 'next/navigation';
 import {ReactNode} from 'react';
 import { FirebaseProvider } from "@/firebase/provider";
 import { Toaster } from "@/components/ui/toaster";
 import '../globals.css';
-
-// The list of locales is now defined directly here to avoid import issues.
-const locales = ['en', 'fr', 'es', 'de', 'it', 'ca', 'pt', 'ru', 'ja', 'zh', 'pl', 'nl', 'ar', 'hi', 'ko', 'ro'];
 
 type Props = {
   children: ReactNode;
@@ -13,12 +13,18 @@ type Props = {
 };
 
 export function generateStaticParams() {
-  return locales.map((locale) => ({locale}));
+  return routing.locales.map((locale) => ({locale}));
 }
 
-export default function LocaleLayout({children, params: {locale}}: Props) {
-  // Receive messages provided in `i18n.ts`
-  const messages = useMessages();
+export default async function LocaleLayout({children, params: {locale}}: Props) {
+  // Validate that the incoming `locale` parameter is valid
+  if (!routing.locales.includes(locale as any)) notFound();
+ 
+  // Enable static rendering
+  setRequestLocale(locale);
+ 
+  // Receive messages
+  const messages = await getMessages();
  
   return (
     <html lang={locale} className="dark">

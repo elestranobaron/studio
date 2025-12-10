@@ -1,13 +1,9 @@
-
 import createMiddleware from 'next-intl/middleware';
- 
-export default createMiddleware({
-  locales: ['en', 'fr', 'es', 'de', 'it', 'ca', 'pt', 'ru', 'ja', 'zh', 'pl', 'nl', 'ar', 'hi', 'ko', 'ro'],
-  defaultLocale: 'en',
-  localePrefix: 'as-needed'
-});
- 
+import {routing} from './i18n/routing';
+
+export default createMiddleware(routing);
+
 export const config = {
-  // Match only internationalized pathnames
-  matcher: ['/((?!api|_next/static|_next/image|favicon.ico).*)']
+  // Matcher ignoring `/_next/` and `/api/` and assets
+  matcher: ['/((?!api|_next/static|_next/image|.*\\.(?:svg|png|jpg|jpeg|gif|webp|mp4|webm|xml|ico)$).*)']
 };
