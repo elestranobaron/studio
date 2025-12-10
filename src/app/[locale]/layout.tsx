@@ -3,7 +3,9 @@ import {ReactNode} from 'react';
 import { FirebaseProvider } from "@/firebase/provider";
 import { Toaster } from "@/components/ui/toaster";
 import '../globals.css';
-import { routing } from '@/i18n/routing';
+
+// The list of locales is now defined directly here to avoid import issues.
+const locales = ['en', 'fr', 'es', 'de', 'it', 'ca', 'pt', 'ru', 'ja', 'zh', 'pl', 'nl', 'ar', 'hi', 'ko', 'ro'];
 
 type Props = {
   children: ReactNode;
@@ -11,7 +13,7 @@ type Props = {
 };
 
 export function generateStaticParams() {
-  return routing.locales.map((locale) => ({locale}));
+  return locales.map((locale) => ({locale}));
 }
 
 export default function LocaleLayout({children, params: {locale}}: Props) {
