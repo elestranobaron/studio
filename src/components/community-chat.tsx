@@ -218,7 +218,10 @@ export function CommunityChat({ wodId }: { wodId: string }) {
 
         messages.forEach(msg => {
             if (msg.parentId && messageMap.has(msg.parentId)) {
-                messageMap.get(msg.parentId)!.replies!.push(messageMap.get(msg.id)!);
+                const parent = messageMap.get(msg.parentId);
+                if(parent) {
+                  parent.replies = parent.replies ? [...parent.replies, messageMap.get(msg.id)!] : [messageMap.get(msg.id)!];
+                }
             } else {
                 rootMessages.push(messageMap.get(msg.id)!);
             }

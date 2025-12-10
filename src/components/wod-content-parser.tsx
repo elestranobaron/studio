@@ -163,14 +163,14 @@ export function WodContentParser({ content }: { content: string }) {
       {blocks.map((block, index) => {
         if (block.length === 0 || block.every(item => item === null)) return null;
         
-        const blockProps = block[0]?.props;
+        const blockProps = block[0]?.props as any;
         const lineType = blockProps?.line?.type;
 
         const isExerciseBlock = block.some(item => {
-            const itemLineType = item?.props?.line?.type;
+            const itemLineType = (item?.props as any)?.line?.type;
             return itemLineType === 'exercise' || itemLineType === 'note';
         });
-        const hasHeader = block.some(item => item?.props?.line?.type === 'rounds_header');
+        const hasHeader = block.some(item => (item?.props as any)?.line?.type === 'rounds_header');
 
         if (isExerciseBlock && !hasHeader) {
              return (
