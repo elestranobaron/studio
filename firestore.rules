@@ -44,8 +44,8 @@ service cloud.firestore {
       
       // === MESSAGES SUBCOLLECTION ===
       match /messages/{messageId} {
-        // Allow anyone to read/list messages
-        allow read: if true; 
+        // Allow signed-in users to read/list messages
+        allow read: if isSignedIn(); 
         
         allow create: if isSignedIn()
                       && request.resource.data.userId == request.auth.uid
