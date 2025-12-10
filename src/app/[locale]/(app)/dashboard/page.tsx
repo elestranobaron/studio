@@ -11,7 +11,7 @@ import { collection, query, orderBy, limit, Query } from 'firebase/firestore';
 import { Skeleton } from '@/components/ui/skeleton';
 import type { WOD, WodType } from '@/lib/types';
 import { useUser } from '@/firebase/provider';
-import { useMemo, useState, Suspense, useEffect } from 'react';
+import { useMemo, useState, Suspense, useEffect, startTransition } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -367,27 +367,29 @@ function DashboardContent({ t }: { t: (key: string) => string }) {
   const searchParams = useSearchParams();
   const router = useRouter();
   
-  const [defaultTab, setDefaultTab] = useState('personal');
+  const [activeTab, setActiveTab] = useState('personal');
+  const [isClient, setIsClient] = useState(false);
   const [showScrollTop, setShowScrollTop] = useState(false);
   const { toggleSidebar } = useSidebar();
-  const [isClient, setIsClient] = useState(false); // Fix for hydration error
-
+  
   useEffect(() => {
-    setIsClient(true); // Component has mounted on the client
-
+    // This effect runs only on the client, preventing hydration mismatch.
+    setIsClient(true);
+    
     const tabParam = searchParams.get('tab');
     const isNewUser = sessionStorage.getItem('isNewUser') === 'true';
 
+    let initialTab = 'personal';
     if (isNewUser) {
-        setDefaultTab('community');
-        // Use a clean URL replacement that works on the client
-        window.history.replaceState(null, '', '/dashboard');
+        initialTab = 'community';
         sessionStorage.removeItem('isNewUser');
+        // Clean URL without causing a re-render that might conflict.
+        window.history.replaceState(null, '', '/dashboard');
     } else if (tabParam === 'community') {
-        setDefaultTab('community');
-    } else {
-        setDefaultTab('personal');
+        initialTab = 'community';
     }
+    
+    setActiveTab(initialTab);
 
     const handleScroll = () => {
       const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
@@ -415,7 +417,6 @@ function DashboardContent({ t }: { t: (key: string) => string }) {
   const { user, isUserLoading } = useUser();
 
   const userWodsCollection = useMemo(() => {
-    // Stricter check: only create query if we have a definite, non-anonymous user UID.
     if (!firestore || !user?.uid || user.isAnonymous) return null;
     return query(collection(firestore, 'users', user.uid, 'wods'), orderBy('date', 'desc'));
   }, [firestore, user?.uid, user?.isAnonymous]);
@@ -423,6 +424,12 @@ function DashboardContent({ t }: { t: (key: string) => string }) {
   const { data: userWods, isLoading: isUserWodsLoading } = useCollection<WOD>(userWodsCollection);
 
   const showPersonalLoadingState = isUserLoading || (user && !user.isAnonymous && isUserWodsLoading);
+
+  const handleTabChange = (value: string) => {
+    startTransition(() => {
+        setActiveTab(value);
+    });
+  };
 
   return (
     <div className="flex flex-col h-full overflow-x-hidden">
@@ -452,8 +459,8 @@ function DashboardContent({ t }: { t: (key: string) => string }) {
       </header>
       <div className="flex-1 flex flex-col min-h-0">
         <main className="flex-1 overflow-y-auto" id="dashboard-main-content">
-          {isClient && (
-            <Tabs value={defaultTab} onValueChange={setDefaultTab} className="w-full">
+          {isClient ? (
+            <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
               <div className="p-4 md:p-6 border-b">
                 <TabsList className="grid w-full grid-cols-2 md:w-auto">
                   <TabsTrigger value="personal">{t('tabs.personal')}</TabsTrigger>
@@ -474,6 +481,14 @@ function DashboardContent({ t }: { t: (key: string) => string }) {
                 <CommunityWodList />
               </TabsContent>
             </Tabs>
+          ) : (
+            // Render a skeleton or a safe default on the server
+            <div className="p-4 md:p-6">
+              <Skeleton className="h-10 w-48 mb-4" />
+              <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                <WodSkeleton />
+              </div>
+            </div>
           )}
         </main>
       </div>
@@ -533,14 +548,3 @@ export default function DashboardPage() {
     
 
     
-
-    
-
-
-
-
-    
-
-    
-
-
