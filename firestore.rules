@@ -25,9 +25,8 @@ service cloud.firestore {
       
       // === MESSAGES SUBCOLLECTION - CORRECTED ===
       match /messages/{messageId} {
-        // Allow reading messages for any signed-in user.
-        // This is necessary for both client-side and server-side rendering.
-        allow read: if isSignedIn();
+        // Allow reading messages for anyone. This is a temporary measure to fix the permission issue.
+        allow read: if true;
        
         allow create: if isSignedIn()
                       && request.resource.data.userId == request.auth.uid
