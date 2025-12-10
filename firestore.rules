@@ -15,9 +15,9 @@ service cloud.firestore {
       allow read, write: if isSignedIn() && isOwner(userId);
     }
     match /communityWods/{wodId} {
-      // MODIFICATION CRUCIALE : Autoriser la lecture pour tout le monde.
-      // Cela permet au serveur Next.js (non authentifié) d'accéder
-      // au document parent pour ensuite pouvoir lire la sous-collection.
+      // CRITICAL CHANGE: Allow read access for everyone.
+      // This allows the unauthenticated Next.js server to "traverse" the parent
+      // document to then read the messages subcollection.
       allow get, list: if true;
 
       allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
@@ -29,8 +29,7 @@ service cloud.firestore {
       
       // === MESSAGES SUBCOLLECTION ===
       match /messages/{messageId} {
-        // La lecture est autorisée pour tout le monde car la règle parente est déjà permissive.
-        // On peut être plus spécifique si besoin, mais `if true` est la solution la plus sûre pour débloquer.
+        // Read is allowed for everyone because the parent rule is now permissive.
         allow list, get: if true;
        
         allow create: if isSignedIn()
