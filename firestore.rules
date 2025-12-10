@@ -15,7 +15,8 @@ service cloud.firestore {
       allow read, write: if isSignedIn() && isOwner(userId);
     }
     match /communityWods/{wodId} {
-      // Allow list for everyone to support SSR, and get for signed-in users.
+      // Allow listing the collection for everyone to support SSR on the dashboard.
+      // Allow getting a single document for signed-in users.
       allow list: if true;
       allow get: if isSignedIn();
 
@@ -26,7 +27,7 @@ service cloud.firestore {
         request.resource.data.diff(resource.data).affectedKeys().hasOnly(['reactions', 'commentCount'])
       );
       
-      // === REACTORS SUBCOLLECTION (IMBRICATION CONSERVÉE CAR ACCEPÉE) ===
+      // === REACTORS SUBCOLLECTION ===
       match /reactors/{reactorId} {
         allow get: if isSignedIn();
         allow create, update, delete: if isSignedIn() && request.auth.uid == reactorId;
@@ -34,7 +35,7 @@ service cloud.firestore {
     }
     
     // === MESSAGES COLLECTION GROUP RULE - NON-NESTED ===
-    // This rule allows listing messages across all communityWods for public view
+    // This rule allows listing messages across all communityWods for public view (SSR)
     match /communityWods/{wodId}/messages {
         allow list: if true;
     }
