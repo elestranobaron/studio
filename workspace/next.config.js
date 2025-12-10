@@ -6,7 +6,7 @@ const withNextIntl = createNextIntlPlugin('./src/i18n.ts');
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   typescript: {
-    // ignoreBuildErrors: true, // This line is removed
+    // ignoreBuildErrors: true,
   },
   eslint: {
     ignoreDuringBuilds: true,
