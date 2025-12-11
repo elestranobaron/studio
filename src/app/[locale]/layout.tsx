@@ -1,5 +1,5 @@
 import {NextIntlClientProvider} from 'next-intl';
-import {getMessages} from 'next-intl/server';
+import {getMessages, setRequestLocale} from 'next-intl/server';
 import {ReactNode} from 'react';
 import { FirebaseProvider } from "@/firebase/provider";
 import { Toaster } from "@/components/ui/toaster";
@@ -17,7 +17,10 @@ export function generateStaticParams() {
 }
 
 export default async function LocaleLayout({children, params: {locale}}: Props) {
-  const messages = await getMessages({locale});
+  // Enable static rendering
+  setRequestLocale(locale);
+
+  const messages = await getMessages();
  
   return (
     <html lang={locale} className="dark">

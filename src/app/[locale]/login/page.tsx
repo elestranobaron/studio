@@ -247,7 +247,10 @@ function LoginClientContent() {
   );
 }
 
-export default function LoginPage() {
+export default function LoginPage({params: {locale}}: {params: {locale: string}}) {
+  // Enable static rendering
+  // setRequestLocale(locale); // This would be needed if we used translations here directly. But the logic is in the client component.
+
   return (
     <Suspense fallback={
       <div className="flex h-screen w-full flex-col items-center justify-center gap-4">
