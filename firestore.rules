@@ -22,10 +22,10 @@ service cloud.firestore {
 
     // === COMMUNITY WODS ===
     match /communityWods/{wodId} {
-      // Allow anyone to list the community WODs
-      allow list: if true;
-      // Allow anyone to read individual WODs
+      // Allow anyone to read community WODs, but not list the whole collection
       allow get: if true;
+      allow list: if isSignedIn();
+      
       // Allow creation if the user is the owner
       allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
       // Allow deletion only by the owner
@@ -45,7 +45,7 @@ service cloud.firestore {
       // === MESSAGES SUBCOLLECTION ===
       match /messages/{messageId} {
         // Allow signed-in users to read/list messages
-        allow read: if isSignedIn(); 
+        allow read: if true;
         
         allow create: if isSignedIn()
                       && request.resource.data.userId == request.auth.uid
