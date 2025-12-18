@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useEffect, Suspense } from 'react';
+import { useState, useEffect, Suspense, useCallback } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Check, LoaderCircle, PartyPopper, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -121,6 +121,14 @@ function PremiumContent({ t }: { t: any }) {
     }
   };
 
+  const onTurnstileSuccess = useCallback((token: string) => {
+    setTurnstileToken(token);
+  }, []);
+
+  const onTurnstileExpire = useCallback(() => {
+    setTurnstileToken(null);
+  }, []);
+
   if (user?.premium) {
     return (
       <div className="flex-1 flex items-center justify-center p-6">
@@ -220,7 +228,7 @@ function PremiumContent({ t }: { t: any }) {
             </CardContent>
             <CardFooter className="flex-col gap-4">
                <div className="flex justify-center">
-                    <Turnstile onSuccess={setTurnstileToken} onExpire={() => setTurnstileToken(null)} />
+                    <Turnstile onSuccess={onTurnstileSuccess} onExpire={onTurnstileExpire} />
                </div>
               <Button
                 size="lg"
