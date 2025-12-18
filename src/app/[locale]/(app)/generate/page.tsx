@@ -1,6 +1,7 @@
+
 'use client';
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { useUser, useFirebase } from "@/firebase";
 import { useRouter } from 'next/navigation';
 import { doc, collection, setDoc } from "firebase/firestore";
@@ -16,6 +17,8 @@ import { Gem, Zap, AlertTriangle, Info, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { useTranslations } from "next-intl";
+import Turnstile from "@/components/turnstile";
+import { getFunctions, httpsCallable } from "firebase/functions";
 
 
 function GeneratingState() {
@@ -45,6 +48,8 @@ export default function GenerateWodPage() {
     const [isLoading, setIsLoading] = useState(false);
     const [generatedWod, setGeneratedWod] = useState<WOD | null>(null);
     const [error, setError] = useState<string | null>(null);
+    const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+
 
     const { user, isUserLoading } = useUser();
     const { firestore } = useFirebase();
@@ -58,16 +63,29 @@ export default function GenerateWodPage() {
         setGeneratedWod(null);
         setError(null);
         
-        // This check is simplified. A real app would need a more robust check,
-        // especially for anonymous users, but for now, we let it proceed.
         if (!firestore) {
             toast({ variant: 'destructive', title: "Service not available" });
             setIsLoading(false);
             return;
         }
 
+        if (!turnstileToken) {
+            toast({
+                variant: "destructive",
+                title: "Vérification requise",
+                description: "Veuillez patienter que la vérification anti-robot soit terminée."
+            });
+            setIsLoading(false);
+            return;
+        }
+
         try {
-            const result = await generateWod({});
+            const functions = getFunctions();
+            const generateWodFn = httpsCallable(functions, 'generateWod');
+            const response = await generateWodFn({ turnstileToken });
+            const result = response.data as any;
+
+
             const tempId = doc(collection(firestore, 'temp')).id; // Just for a unique ID on the client
             const placeholderImageUrl = `https://picsum.photos/seed/${tempId}/600/400`;
 
@@ -87,9 +105,6 @@ export default function GenerateWodPage() {
                 lowerBody: result.lowerBody,
             };
 
-            // Before saving to state, we need to save this to Firestore to get a real ID
-            // This is a temporary solution for demonstration purposes.
-            // A better flow would be to save it when the user decides to start the timer.
             const userWodCollection = collection(firestore, `users/${user?.uid || 'anonymous'}/wods`);
             const newWodRef = doc(userWodCollection);
             
@@ -101,11 +116,24 @@ export default function GenerateWodPage() {
         } catch (e: any) {
             console.error("WOD Generation Error:", e);
             setError(t('errorAlert.description'));
+             toast({
+                variant: "destructive",
+                title: t('errorAlert.title'),
+                description: e.message || t('errorAlert.description'),
+            });
         } finally {
             setIsLoading(false);
         }
     };
     
+    const onTurnstileSuccess = useCallback((token: string) => {
+        setTurnstileToken(token);
+    }, []);
+
+    const onTurnstileExpire = useCallback(() => {
+        setTurnstileToken(null);
+    }, []);
+
     return (
         <div className="flex flex-col h-full">
             <header className="flex items-center justify-between p-4 border-b md:p-6">
@@ -141,12 +169,15 @@ export default function GenerateWodPage() {
                         <CardContent className="flex flex-col items-center gap-4">
                             <Button 
                                 onClick={handleGenerate} 
-                                disabled={isLoading || isUserLoading}
+                                disabled={isLoading || isUserLoading || !turnstileToken}
                                 size="lg"
                                 className="w-full"
                             >
                                 {isLoading ? t('generatingButton') : t('generateButton')}
                             </Button>
+                            <div className="flex justify-center">
+                                <Turnstile onSuccess={onTurnstileSuccess} onExpire={onTurnstileExpire} />
+                            </div>
                             {isUserLoading && <Skeleton className="h-6 w-48" />}
                              {!isUserLoading && (!user || user.isAnonymous) && (
                                 <Alert variant="default" className="border-blue-500/50 text-blue-500">

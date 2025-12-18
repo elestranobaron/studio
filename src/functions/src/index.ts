@@ -8,15 +8,13 @@ import Stripe from "stripe";
 import type { QuerySnapshot, DocumentSnapshot } from "firebase-admin/firestore";
 import { setGlobalOptions } from "firebase-functions/v2";
 import express from "express";
+import { generateWod } from './ai/generate-wod-flow';
 
 admin.initializeApp();
 const db = admin.firestore();
 
 setGlobalOptions({ region: "us-central1" });
 
-// This is a workaround for a bug in the Firebase Functions emulator
-// that prevents process.env from being populated.
-// It will be removed once the bug is fixed.
 if (process.env.NODE_ENV !== "production") {
     require("dotenv").config({ path: "./.env" });
 }
@@ -37,15 +35,51 @@ declare global {
   }
 }
 
+async function validateTurnstile(token: string, ip: string | undefined): Promise<boolean> {
+    if (!TURNSTILE_SECRET_KEY) {
+        console.error('TURNSTILE_SECRET_KEY is not set. Skipping validation.');
+        return process.env.NODE_ENV !== 'production';
+    }
+
+    const formData = new FormData();
+    formData.append('secret', TURNSTILE_SECRET_KEY);
+    formData.append('response', token);
+    if (ip) {
+        formData.append('remoteip', ip);
+    }
+    
+    const response = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
+        method: 'POST',
+        body: formData,
+    });
+    
+    const outcome = await response.json();
+    if (!outcome.success) {
+      console.warn('Turnstile validation failed:', outcome['error-codes']);
+    }
+    return outcome.success;
+}
+
+
 function generateDigicode() {
   return Math.floor(100000 + Math.random() * 900000).toString();
 }
 
 exports.sendDigicode = onCall({}, async (request: any) => {
-  const email = request.data.email;
+  const { email, turnstileToken } = request.data;
   if (!email || typeof email !== "string") {
     throw new HttpsError("invalid-argument", "A valid email address is required.");
   }
+  
+  if (!turnstileToken) {
+    throw new HttpsError("invalid-argument", "Captcha token is missing.");
+  }
+  
+  const isTurnstileValid = await validateTurnstile(turnstileToken, request.rawRequest.ip);
+  if (!isTurnstileValid) {
+      throw new HttpsError("unauthenticated", "Captcha validation failed.");
+  }
+
 
   if (!process.env.BREVO_API_KEY) {
     console.error("Brevo API key is not configured.");
@@ -87,6 +121,28 @@ exports.sendDigicode = onCall({}, async (request: any) => {
     throw new HttpsError("internal", "An unexpected error occurred.");
   }
 });
+
+exports.generateWod = onCall({}, async (request: any) => {
+    const { turnstileToken } = request.data;
+
+    if (!turnstileToken) {
+        throw new HttpsError("invalid-argument", "Captcha token is missing.");
+    }
+
+    const isTurnstileValid = await validateTurnstile(turnstileToken, request.rawRequest.ip);
+    if (!isTurnstileValid) {
+        throw new HttpsError("unauthenticated", "Captcha validation failed.");
+    }
+
+    try {
+        const result = await generateWod({});
+        return result;
+    } catch (e: any) {
+        console.error("WOD Generation Flow Error:", e);
+        throw new HttpsError("internal", "Failed to generate WOD.");
+    }
+});
+
 
 exports.verifyDigicode = onCall({}, async (request: any) => {
   try {
@@ -146,30 +202,6 @@ exports.verifyDigicode = onCall({}, async (request: any) => {
   }
 });
 
-async function validateTurnstile(token: string, ip: string | undefined): Promise<boolean> {
-    if (!TURNSTILE_SECRET_KEY) {
-        console.error('TURNSTILE_SECRET_KEY is not set. Skipping validation.');
-        // In a real production environment, you might want to fail this check.
-        // For development, we can allow it to pass.
-        return process.env.NODE_ENV !== 'production';
-    }
-
-    const formData = new FormData();
-    formData.append('secret', TURNSTILE_SECRET_KEY);
-    formData.append('response', token);
-    if (ip) {
-        formData.append('remoteip', ip);
-    }
-    
-    const response = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
-        method: 'POST',
-        body: formData,
-    });
-    
-    const outcome = await response.json();
-    return outcome.success;
-}
-
 exports.createCheckout = onRequest(
   {
     cors: true,
@@ -206,6 +238,13 @@ exports.createCheckout = onRequest(
       const token = authHeader.split("Bearer ")[1];
       const decodedToken = await admin.auth().verifyIdToken(token);
       const uid = decodedToken.uid;
+      
+      const userDoc = await db.collection("users").doc(uid).get();
+      if (userDoc.data()?.premium === true) {
+          res.status(400).json({ error: "User is already premium." });
+          return;
+      }
+
 
       const priceId = yearly === true ? STRIPE_YEARLY_PRICE_ID : STRIPE_MONTHLY_PRICE_ID;
 
@@ -288,16 +327,24 @@ app.post("/", async (req, res) => {
     }
     
     if (!uid && customerId) {
-        const customer = await stripe.customers.retrieve(customerId);
-        if(!customer.deleted) {
-          uid = customer.metadata.uid;
+        try {
+            const customer = await stripe.customers.retrieve(customerId);
+            if(!customer.deleted) {
+              uid = customer.metadata.uid;
+            }
+        } catch(e) {
+            console.error(`Could not retrieve customer ${customerId}`);
         }
     }
     
     if (!uid && obj.subscription) {
-       const subscription = await stripe.subscriptions.retrieve(obj.subscription as string);
-       uid = subscription.metadata.uid;
-       if (!customerId) customerId = subscription.customer as string;
+       try {
+           const subscription = await stripe.subscriptions.retrieve(obj.subscription as string);
+           uid = subscription.metadata.uid;
+           if (!customerId) customerId = subscription.customer as string;
+       } catch(e) {
+            console.error(`Could not retrieve subscription ${obj.subscription}`);
+       }
     }
 
     if (uid) {
@@ -345,7 +392,6 @@ app.post("/", async (req, res) => {
                     }
                 }
 
-                // Send welcome email only if they are becoming premium for the first time
                 if (!isAlreadyPremium && email && process.env.BREVO_API_KEY) {
                     try {
                         const brevoRes = await fetch("https://api.brevo.com/v3/smtp/email", {
@@ -357,7 +403,7 @@ app.post("/", async (req, res) => {
                             body: JSON.stringify({
                                 sender: { name: "WODBurner Team", email: "noreply@wodburner.app" },
                                 to: [{ email }],
-                                templateId: 4, // Premium Welcome Template
+                                templateId: 4, 
                             }),
                         });
                         if (!brevoRes.ok) {

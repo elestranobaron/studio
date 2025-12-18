@@ -1,6 +1,6 @@
 
 'use client';
-import { useState, useEffect, Suspense } from 'react';
+import { useState, useEffect, Suspense, useCallback } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth, useUser } from '@/firebase/provider';
 import { Button } from '@/components/ui/button';
@@ -12,6 +12,7 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { useTranslations } from 'next-intl';
 import { getFunctions, httpsCallable } from 'firebase/functions';
 import { signInWithCustomToken } from 'firebase/auth';
+import Turnstile from '@/components/turnstile';
 
 function LoginClientContent() {
   const t = useTranslations('LoginPage');
@@ -21,6 +22,7 @@ function LoginClientContent() {
   const [isVerifying, setIsVerifying] = useState(false);
   const [step, setStep] = useState<'email' | 'code'>('email');
   const [error, setError] = useState<string | null>(null);
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
 
   const auth = useAuth();
   const { user, isUserLoading } = useUser();
@@ -31,11 +33,9 @@ function LoginClientContent() {
   const functions = getFunctions();
 
   useEffect(() => {
-    // Handle the new user parameter for redirection
     const isNewUser = searchParams.get('new') === 'true';
     if (isNewUser) {
         sessionStorage.setItem('isNewUser', 'true');
-        // Clean the URL
         window.history.replaceState(null, '', '/login');
     }
   }, [searchParams]);
@@ -59,12 +59,17 @@ function LoginClientContent() {
       return;
     }
 
+    if (!turnstileToken) {
+        setError("Captcha validation is required.");
+        return;
+    }
+
     setIsLoading(true);
     setError(null);
 
     try {
       const sendDigicode = httpsCallable(functions, 'sendDigicode');
-      await sendDigicode({ email: currentEmail });
+      await sendDigicode({ email: currentEmail, turnstileToken });
 
       setEmail(currentEmail);
       setStep('code');
@@ -109,29 +114,23 @@ function LoginClientContent() {
       await signInWithCustomToken(auth!, data.token);
 
       toast({ title: 'Connecté !', description: 'Bienvenue sur WODBurner !' });
-      // The useEffect will handle the redirection
     } catch (err: any) {
       console.error('Verification error:', err);
-
-      let msg = 'Erreur inconnue';
-
-      if (err.code === 'not-found' || err.code === 'unauthenticated') {
-        msg = 'Code invalide. Demande un nouveau code.';
-      } else if (err.code === 'deadline-exceeded') {
-        msg = 'Code expiré. Demande un nouveau code.';
-      } else if (err.code === 'internal') {
-        msg = 'Erreur serveur. Réessaie dans quelques secondes.';
-        console.error('INTERNAL ERROR DETAILS:', err.details || err.message);
-      } else {
-        msg = err.message || 'Impossible de se connecter';
-      }
-
+      let msg = err.message || 'Impossible de se connecter';
       setError(msg);
       toast({ variant: 'destructive', title: 'Erreur', description: msg });
     } finally {
       setIsVerifying(false);
     }
   };
+
+  const onTurnstileSuccess = useCallback((token: string) => {
+    setTurnstileToken(token);
+  }, []);
+
+  const onTurnstileExpire = useCallback(() => {
+    setTurnstileToken(null);
+  }, []);
 
   if (isUserLoading || (user && !user.isAnonymous)) {
     return (
@@ -215,7 +214,10 @@ function LoginClientContent() {
                   required
                   disabled={isLoading}
                 />
-                <Button type="submit" className="w-full" disabled={isLoading}>
+                <div className="flex justify-center">
+                    <Turnstile onSuccess={onTurnstileSuccess} onExpire={onTurnstileExpire} />
+                </div>
+                <Button type="submit" className="w-full" disabled={isLoading || !turnstileToken}>
                   {isLoading ? <LoaderCircle className="animate-spin mr-2" /> : t('sendLinkButton') || 'Envoyer le code'}
                 </Button>
               </form>
@@ -248,9 +250,6 @@ function LoginClientContent() {
 }
 
 export default function LoginPage({params: {locale}}: {params: {locale: string}}) {
-  // Enable static rendering
-  // setRequestLocale(locale); // This would be needed if we used translations here directly. But the logic is in the client component.
-
   return (
     <Suspense fallback={
       <div className="flex h-screen w-full flex-col items-center justify-center gap-4">
