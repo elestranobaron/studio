@@ -14,12 +14,20 @@ const db = admin.firestore();
 
 setGlobalOptions({ region: "us-central1" });
 
+// This is a workaround for a bug in the Firebase Functions emulator
+// that prevents process.env from being populated.
+// It will be removed once the bug is fixed.
+if (process.env.NODE_ENV !== "production") {
+    require("dotenv").config({ path: "./.env" });
+}
+
+
 const STRIPE_WEBHOOK_SECRET = process.env.STRIPE_WEBHOOK_SECRET!;
 const STRIPE_MONTHLY_PRICE_ID = process.env.STRIPE_MONTHLY_PRICE_ID!;
 const STRIPE_YEARLY_PRICE_ID = process.env.STRIPE_YEARLY_PRICE_ID!;
 const NEXT_PUBLIC_APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:9002';
 
-// Extend the Express Request type to include our custom property
+
 declare global {
   namespace Express {
     interface Request {
@@ -52,7 +60,7 @@ exports.sendDigicode = onCall({}, async (request: any) => {
   });
 
   try {
-    const brevoRes = await fetch("https://api.sendinblue.com/v3/smtp/email", {
+    const brevoRes = await fetch("https://api.brevo.com/v3/smtp/email", {
       method: "POST",
       headers: {
         "api-key": process.env.BREVO_API_KEY,
@@ -231,6 +239,7 @@ app.post("/", async (req, res) => {
     const obj = event.data.object as any;
     let uid = obj.metadata?.uid;
     let email = (obj.customer_details?.email || obj.customer_email || "").toLowerCase().trim();
+    let customerId = obj.customer;
 
     if (!uid && email) {
         try {
@@ -241,26 +250,21 @@ app.post("/", async (req, res) => {
         }
     }
     
-    if (!uid && obj.customer) {
-        const customer = await stripe.customers.retrieve(obj.customer as string);
-        if(customer.deleted) {
-          // do nothing
-        } else {
+    if (!uid && customerId) {
+        const customer = await stripe.customers.retrieve(customerId);
+        if(!customer.deleted) {
           uid = customer.metadata.uid;
-          if (!email && customer.email) {
-            email = customer.email;
-          }
         }
     }
     
     if (!uid && obj.subscription) {
        const subscription = await stripe.subscriptions.retrieve(obj.subscription as string);
        uid = subscription.metadata.uid;
+       if (!customerId) customerId = subscription.customer;
     }
 
     if (uid) {
         const userRef = db.collection("users").doc(uid);
-        const customerId = obj.customer;
 
         try {
              await db.runTransaction(async (transaction) => {
@@ -279,7 +283,8 @@ app.post("/", async (req, res) => {
                 transaction.set(userRef, updateData, { merge: true });
 
                 const yearlyPriceId = STRIPE_YEARLY_PRICE_ID;
-                const isYearly = obj.items?.data?.[0]?.price?.id === yearlyPriceId || obj.plan?.id === yearlyPriceId;
+                const lineItems = obj.line_items || obj.items;
+                const isYearly = lineItems?.data?.[0]?.price?.id === yearlyPriceId || obj.plan?.id === yearlyPriceId;
                 
                 if (isYearly) {
                     const hallOfFameRef = db.collection("hallOfFame");
@@ -306,7 +311,7 @@ app.post("/", async (req, res) => {
                 // Send welcome email only if they are becoming premium for the first time
                 if (!isAlreadyPremium && email && process.env.BREVO_API_KEY) {
                     try {
-                        const brevoRes = await fetch("https://api.sendinblue.com/v3/smtp/email", {
+                        const brevoRes = await fetch("https://api.brevo.com/v3/smtp/email", {
                             method: "POST",
                             headers: {
                                 "api-key": process.env.BREVO_API_KEY,
