@@ -88,6 +88,10 @@
             "description": "True if the user has an active premium subscription.",
             "default": false
           },
+          "stripeCustomerId": {
+            "type": "string",
+            "description": "The user's Stripe customer ID."
+          },
           "ocrCount": {
             "type": "number",
             "description": "The number of OCR scans performed this month.",
