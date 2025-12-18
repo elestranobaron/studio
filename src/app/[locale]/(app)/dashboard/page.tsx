@@ -417,12 +417,13 @@ function DashboardContent({ t }: { t: (key: string) => string }) {
   const { user, isUserLoading } = useUser();
 
   const userWodsCollection = useMemo(() => {
-    // Only create the query if the user is fully loaded and authenticated.
-    if (firestore && user && !user.isAnonymous) {
+    // This check is critical. We must ensure we have a valid, non-anonymous user UID.
+    if (firestore && user?.uid && !user.isAnonymous) {
       return query(collection(firestore, 'users', user.uid, 'wods'), orderBy('date', 'desc'));
     }
-    return null; // Return null if user is not ready, which pauses the useCollection hook.
-  }, [firestore, user]);
+    return null;
+  }, [firestore, user?.uid, user?.isAnonymous]);
+
 
   const { data: userWods, isLoading: isUserWodsLoading } = useCollection<WOD>(userWodsCollection);
 
