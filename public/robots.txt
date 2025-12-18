@@ -1,0 +1,13 @@
+User-agent: *
+Disallow: /dashboard
+Disallow: /settings
+Disallow: /scan
+Disallow: /generate
+Disallow: /timers/
+Disallow: /timer/
+Disallow: /community-timer/
+Disallow: /premium
+Disallow: /wod/
+Disallow: /login
+
+Sitemap: https://wodburner.app/sitemap.xml
