@@ -43,11 +43,10 @@ service cloud.firestore {
       }
       
       // === MESSAGES SUBCOLLECTION ===
+      // This rule allows anyone to read the list of messages.
       match /messages/{messageId} {
         // Allow anyone to read individual messages
         allow get: if true;
-        // Allow anyone to list the messages collection
-        allow list: if true;
         
         allow create: if isSignedIn()
                       && request.resource.data.userId == request.auth.uid
@@ -57,6 +56,9 @@ service cloud.firestore {
                          .hasOnly(['upvotes', 'downvotes', 'score', 'replyCount']);
         allow delete: if false; // Deletion is not allowed
       }
+
+      // This is the correct way to allow listing the subcollection
+      allow list: /databases/$(database)/documents/communityWods/$(wodId)/messages;
     }
 
     // === HALL OF FAME ===
