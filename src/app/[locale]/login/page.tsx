@@ -249,8 +249,7 @@ function LoginClientContent() {
   );
 }
 
-export default function LoginPage({ params }: { params: { locale: string } }) {
-  const { locale } = params;
+export default function LoginPage() {
   return (
     <Suspense fallback={
       <div className="flex h-screen w-full flex-col items-center justify-center gap-4">
