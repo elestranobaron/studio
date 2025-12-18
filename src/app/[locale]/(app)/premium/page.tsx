@@ -15,6 +15,7 @@ import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { useTranslations } from 'next-intl';
 import { getFunctions, httpsCallable } from 'firebase/functions';
+import Turnstile from '@/components/turnstile';
 
 
 function PremiumContent({ t }: { t: any }) {
@@ -27,6 +28,7 @@ function PremiumContent({ t }: { t: any }) {
   const cancel = searchParams.get('cancel') === 'true';
   const [isLoading, setIsLoading] = useState<null | 'monthly' | 'yearly'>(null);
   const [isYearly, setIsYearly] = useState(true);
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
 
   const features = [
     { text: t('features.scans'), free: t('features.scansFree'), premium: true },
@@ -63,6 +65,15 @@ function PremiumContent({ t }: { t: any }) {
       return;
     }
   
+    if (!turnstileToken) {
+        toast({
+            variant: "destructive",
+            title: "Vérification requise",
+            description: "Veuillez patienter que la vérification anti-robot soit terminée."
+        });
+        return;
+    }
+    
     setIsLoading(plan);
   
     try {
@@ -79,7 +90,10 @@ function PremiumContent({ t }: { t: any }) {
             Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({
-            data: { yearly: plan === 'yearly' },
+            data: { 
+                yearly: plan === 'yearly',
+                turnstileToken: turnstileToken,
+            },
           }),
         }
       );
@@ -204,11 +218,14 @@ function PremiumContent({ t }: { t: any }) {
                 ))}
               </ul>
             </CardContent>
-            <CardFooter>
+            <CardFooter className="flex-col gap-4">
+               <div className="flex justify-center">
+                    <Turnstile onSuccess={setTurnstileToken} onExpire={() => setTurnstileToken(null)} />
+               </div>
               <Button
                 size="lg"
                 onClick={() => handleCheckout(isYearly ? 'yearly' : 'monthly')}
-                disabled={!!isLoading || isUserLoading}
+                disabled={!!isLoading || isUserLoading || !turnstileToken}
                 className="w-full text-xl py-8"
               >
                 {isLoading ? <> <LoaderCircle className="animate-spin mr-3" /> {t('premiumPlan.loading')}</> : t('premiumPlan.goPremium')}

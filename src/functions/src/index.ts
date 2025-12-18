@@ -25,6 +25,7 @@ if (process.env.NODE_ENV !== "production") {
 const STRIPE_WEBHOOK_SECRET = process.env.STRIPE_WEBHOOK_SECRET!;
 const STRIPE_MONTHLY_PRICE_ID = process.env.STRIPE_MONTHLY_PRICE_ID!;
 const STRIPE_YEARLY_PRICE_ID = process.env.STRIPE_YEARLY_PRICE_ID!;
+const TURNSTILE_SECRET_KEY = process.env.TURNSTILE_SECRET_KEY!;
 const NEXT_PUBLIC_APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:9002';
 
 
@@ -145,6 +146,29 @@ exports.verifyDigicode = onCall({}, async (request: any) => {
   }
 });
 
+async function validateTurnstile(token: string, ip: string | undefined): Promise<boolean> {
+    if (!TURNSTILE_SECRET_KEY) {
+        console.error('TURNSTILE_SECRET_KEY is not set. Skipping validation.');
+        // In a real production environment, you might want to fail this check.
+        // For development, we can allow it to pass.
+        return process.env.NODE_ENV !== 'production';
+    }
+
+    const formData = new FormData();
+    formData.append('secret', TURNSTILE_SECRET_KEY);
+    formData.append('response', token);
+    if (ip) {
+        formData.append('remoteip', ip);
+    }
+    
+    const response = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
+        method: 'POST',
+        body: formData,
+    });
+    
+    const outcome = await response.json();
+    return outcome.success;
+}
 
 exports.createCheckout = onRequest(
   {
@@ -154,23 +178,36 @@ exports.createCheckout = onRequest(
   },
   async (req, res) => {
     try {
-      if (!process.env.STRIPE_SECRET_KEY) {
-          throw new Error('Stripe secret key is not set');
-      }
-      const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, { apiVersion: "2024-06-20" });
-
       const authHeader = req.headers.authorization;
       if (!authHeader?.startsWith("Bearer ")) {
         res.status(401).json({ error: "Unauthenticated" });
         return;
       }
 
+      const { yearly, turnstileToken } = req.body.data || {};
+      const userIp = req.headers['x-forwarded-for'] as string | undefined;
+
+      if (!turnstileToken) {
+          res.status(400).json({ error: "Captcha token is missing." });
+          return;
+      }
+      
+      const isTurnstileValid = await validateTurnstile(turnstileToken, userIp);
+      if (!isTurnstileValid) {
+          res.status(403).json({ error: "Captcha validation failed." });
+          return;
+      }
+
+      if (!process.env.STRIPE_SECRET_KEY) {
+          throw new Error('Stripe secret key is not set');
+      }
+      const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, { apiVersion: "2024-06-20" });
+
       const token = authHeader.split("Bearer ")[1];
       const decodedToken = await admin.auth().verifyIdToken(token);
       const uid = decodedToken.uid;
 
-      const yearly = req.body.data?.yearly === true;
-      const priceId = yearly ? STRIPE_YEARLY_PRICE_ID : STRIPE_MONTHLY_PRICE_ID;
+      const priceId = yearly === true ? STRIPE_YEARLY_PRICE_ID : STRIPE_MONTHLY_PRICE_ID;
 
       if (!priceId) {
         res.status(500).json({ error: "Price ID manquant" });
@@ -260,7 +297,7 @@ app.post("/", async (req, res) => {
     if (!uid && obj.subscription) {
        const subscription = await stripe.subscriptions.retrieve(obj.subscription as string);
        uid = subscription.metadata.uid;
-       if (!customerId) customerId = subscription.customer;
+       if (!customerId) customerId = subscription.customer as string;
     }
 
     if (uid) {
