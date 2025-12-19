@@ -1,4 +1,6 @@
 
+import type { Timestamp } from 'firebase/firestore';
+
 export type WodType = "For Time" | "AMRAP" | "EMOM" | "Tabata" | "Other";
 
 export type WodDescriptionSection = {
@@ -17,7 +19,7 @@ export type Message = {
   text: string;
   userId: string;
   userDisplayName: string;
-  timestamp: string; // Should be a Firestore Timestamp, but string for simplicity with serverTimestamp
+  timestamp: Timestamp | string; // Allow string for legacy/server values, but prefer Timestamp
   parentId?: string | null;
   upvotes: number;
   downvotes: number;

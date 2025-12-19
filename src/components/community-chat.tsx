@@ -3,7 +3,7 @@
 
 import { useState, useMemo, useEffect } from 'react';
 import { useCollection, useUser, useFirebase } from '@/firebase';
-import { collection, query, orderBy, doc, writeBatch, serverTimestamp, runTransaction, increment, getDoc } from 'firebase/firestore';
+import { collection, query, orderBy, doc, writeBatch, serverTimestamp, runTransaction, increment, getDoc, Timestamp } from 'firebase/firestore';
 import type { Message, Reaction, WOD } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
@@ -24,6 +24,20 @@ function Comment({ message, onReply, onVote, userVote }: { message: MessageWithR
         setIsReplying(!isReplying);
         if (!isReplying) onReply(message.id);
     }
+
+    const getFormattedTimestamp = () => {
+        if (!message.timestamp) return '...';
+        // Check if timestamp is a Firestore Timestamp object, otherwise it might be a pending serverTimestamp
+        if (typeof message.timestamp === 'object' && 'toDate' in message.timestamp) {
+            return formatDistanceToNow((message.timestamp as Timestamp).toDate(), { addSuffix: true, locale: fr });
+        }
+        // Fallback for string timestamps (from older data or different sources)
+        const date = new Date(message.timestamp as string);
+        if (!isNaN(date.getTime())) {
+            return formatDistanceToNow(date, { addSuffix: true, locale: fr });
+        }
+        return "à l'instant";
+    }
     
     return (
         <div className="flex items-start gap-3">
@@ -33,7 +47,7 @@ function Comment({ message, onReply, onVote, userVote }: { message: MessageWithR
             <div className="flex-1 space-y-1">
                 <div className="flex items-center gap-2 text-xs">
                     <span className="font-semibold">{message.userDisplayName}</span>
-                    <span className="text-muted-foreground">· {message.timestamp ? formatDistanceToNow(new Date(message.timestamp), { addSuffix: true, locale: fr }) : '...'}</span>
+                    <span className="text-muted-foreground">· {getFormattedTimestamp()}</span>
                 </div>
                 <p className="text-sm whitespace-pre-wrap">{message.text}</p>
                 <div className="flex items-center gap-4 text-xs text-muted-foreground">
