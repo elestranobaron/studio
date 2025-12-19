@@ -3,7 +3,7 @@
 
 import { useState, useMemo, useEffect } from 'react';
 import { useCollection, useUser, useFirebase } from '@/firebase';
-import { collection, query, orderBy, doc, writeBatch, serverTimestamp, runTransaction, increment, getDoc, Timestamp } from 'firebase/firestore';
+import { collection, query, orderBy, doc, writeBatch, serverTimestamp, runTransaction, increment, getDoc, Timestamp, updateDoc } from 'firebase/firestore';
 import type { Message, Reaction, WOD } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
@@ -249,6 +249,7 @@ export function CommunityChat({ wodId }: { wodId: string }) {
         setIsPosting(true);
         try {
             const batch = writeBatch(firestore);
+            const wodRef = doc(firestore, `communityWods/${wodId}`);
             const messageCol = collection(firestore, `communityWods/${wodId}/messages`);
             const messageRef = doc(messageCol);
 
@@ -263,13 +264,16 @@ export function CommunityChat({ wodId }: { wodId: string }) {
                 replyCount: 0,
                 parentId: replyingTo || null,
             };
+            
+            batch.set(messageRef, messageData);
+            batch.update(wodRef, { commentCount: increment(1) });
+
 
             if (replyingTo) {
                 const parentRef = doc(messageCol, replyingTo);
                 batch.update(parentRef, { replyCount: increment(1) });
             }
 
-            batch.set(messageRef, messageData);
 
             await batch.commit();
             setNewMessage('');
@@ -352,3 +356,4 @@ export function CommunityChat({ wodId }: { wodId: string }) {
         </div>
     );
 }
+

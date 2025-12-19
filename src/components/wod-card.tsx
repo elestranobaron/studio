@@ -43,6 +43,7 @@ import {
   deleteDoc,
   updateDoc,
   writeBatch,
+  increment
 } from "firebase/firestore";
 import { useToast } from "@/components/ui/use-toast";
 import { cn } from "@/lib/utils";
@@ -127,7 +128,7 @@ function PersonalWodActions({ wod }: { wod: WOD }) {
         await batch.commit();
         toast({ title: t("unsharedToastTitle"), description: t("unsharedToastDescription") });
       } else {
-        const userDisplayName = user.email?.split("@")[0] || "Anonymous";
+        const userDisplayName = user.email?.split('@')[0] || "Anonymous";
         const communityWodData = {
           ...wod,
           date: new Date(wod.date).toISOString(),
@@ -257,7 +258,7 @@ function PersonalWodActions({ wod }: { wod: WOD }) {
 export function WodCard({ wod, source = "personal" }: { wod: WOD; source?: "personal" | "community" }) {
   const t = useTranslations("WodCard");
   const { user } = useUser();
-  const date = new Date(wod.date);
+  const date = wod.date ? new Date(wod.date) : new Date();
   const formattedDate = isValid(date) ? format(date, "PPP") : wod.date;
   const href = source === "community" ? `/community-timer/${wod.id}` : `/timer/${wod.id}`;
   const [chatOpen, setChatOpen] = useState(false);
@@ -442,3 +443,4 @@ function WodProfile({ wod }: { wod: WOD }) {
     </div>
   );
 }
+
