@@ -203,7 +203,7 @@ export function CommunityChat({ wodId }: { wodId: string }) {
 
     const messagesQuery = useMemo(() => {
         if (!firestore) return null;
-        return query(collection(firestore, `communityWods/${wodId}/messages`), orderBy('score', 'desc'), orderBy('timestamp', 'desc'));
+        return query(collection(firestore, `communityWods/${wodId}/messages`), orderBy('score', 'desc'));
     }, [firestore, wodId]);
 
     const { data: messages, isLoading } = useCollection<Message>(messagesQuery);
