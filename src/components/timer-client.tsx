@@ -159,7 +159,13 @@ export function TimerClient({ wod }: { wod: WOD }) {
 
   // Reset timer whenever the WOD prop changes
   useEffect(() => {
-    resetTimer();
+    // Defer the reset to the next animation frame to avoid state update conflicts.
+    // This helps prevent errors like "Performance.measure: Given attribute end cannot be negative".
+    const animationFrameId = requestAnimationFrame(() => {
+        resetTimer();
+    });
+
+    return () => cancelAnimationFrame(animationFrameId);
   }, [wod, resetTimer]);
 
 
