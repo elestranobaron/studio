@@ -16,8 +16,9 @@ import { useToast } from './ui/use-toast';
 import { ScrollArea } from './ui/scroll-area';
 
 type MessageWithReplies = Message & { id: string; replies?: MessageWithReplies[] };
+type UserVote = 'up' | 'down' | null;
 
-function Comment({ message, onReply, onVote, userVote }: { message: MessageWithReplies; onReply: (parentId: string) => void; onVote: (messageId: string, vote: 'up' | 'down') => void; userVote?: 'up' | 'down' }) {
+function Comment({ message, onReply, onVote, userVote }: { message: MessageWithReplies; onReply: (parentId: string) => void; onVote: (messageId: string, vote: 'up' | 'down') => void; userVote?: UserVote }) {
     const [isReplying, setIsReplying] = useState(false);
 
     const handleReplyClick = () => {
@@ -27,11 +28,9 @@ function Comment({ message, onReply, onVote, userVote }: { message: MessageWithR
 
     const getFormattedTimestamp = () => {
         if (!message.timestamp) return '...';
-        // Check if timestamp is a Firestore Timestamp object, otherwise it might be a pending serverTimestamp
         if (typeof message.timestamp === 'object' && 'toDate' in message.timestamp) {
             return formatDistanceToNow((message.timestamp as Timestamp).toDate(), { addSuffix: true, locale: fr });
         }
-        // Fallback for string timestamps (from older data or different sources)
         const date = new Date(message.timestamp as string);
         if (!isNaN(date.getTime())) {
             return formatDistanceToNow(date, { addSuffix: true, locale: fr });
@@ -53,7 +52,7 @@ function Comment({ message, onReply, onVote, userVote }: { message: MessageWithR
                 <div className="flex items-center gap-4 text-xs text-muted-foreground">
                     <div className="flex items-center gap-1">
                          <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => onVote(message.id, 'up')}>
-                             <ArrowUp className={cn("h-4 w-4", userVote === 'up' && "text-primary fill-primary")} />
+                             <ArrowUp className={cn("h-4 w-4", userVote === 'up' && "text-green-500 fill-green-500")} />
                          </Button>
                          <span className="font-bold tabular-nums">{message.score ?? 0}</span>
                          <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => onVote(message.id, 'down')}>
@@ -213,6 +212,7 @@ export function CommunityChat({ wodId }: { wodId: string }) {
     const [newMessage, setNewMessage] = useState('');
     const [isPosting, setIsPosting] = useState(false);
     const [replyingTo, setReplyingTo] = useState<string | null>(null);
+    const [userVotes, setUserVotes] = useState<Record<string, UserVote>>({});
     const { toast } = useToast();
 
     const messagesQuery = useMemo(() => {
@@ -222,6 +222,26 @@ export function CommunityChat({ wodId }: { wodId: string }) {
 
     const { data: messages, isLoading } = useCollection<Message>(messagesQuery);
     
+    useEffect(() => {
+        if (!firestore || !user || !messages) return;
+
+        const fetchVotes = async () => {
+            const votes: Record<string, UserVote> = {};
+            for (const message of messages) {
+                const voteRef = doc(firestore, `communityWods/${wodId}/messages/${message.id}/voters`, user.uid);
+                const voteSnap = await getDoc(voteRef);
+                if (voteSnap.exists()) {
+                    votes[message.id] = voteSnap.data().vote as UserVote;
+                } else {
+                    votes[message.id] = null;
+                }
+            }
+            setUserVotes(votes);
+        };
+        fetchVotes();
+
+    }, [firestore, user, messages, wodId]);
+
     const threadedMessages = useMemo(() => {
         if (!messages) return [];
         const messageMap = new Map<string, MessageWithReplies>();
@@ -287,25 +307,46 @@ export function CommunityChat({ wodId }: { wodId: string }) {
         }
     };
     
-    const handleVote = async (messageId: string, vote: 'up' | 'down') => {
+    const handleVote = async (messageId: string, newVote: 'up' | 'down') => {
         if (!firestore || !user) return;
-        
+      
         const messageRef = doc(firestore, `communityWods/${wodId}/messages`, messageId);
-        
+        const voterRef = doc(messageRef, 'voters', user.uid);
+      
         try {
-            await runTransaction(firestore, async (transaction) => {
-                const messageDoc = await transaction.get(messageRef);
-                if (!messageDoc.exists()) throw "Message not found";
-
-                // This part would need user-specific vote tracking, which is complex.
-                // For now, we'll just increment/decrement score.
-                const newScore = (messageDoc.data().score || 0) + (vote === 'up' ? 1 : -1);
-                transaction.update(messageRef, { score: newScore });
-            });
+          await runTransaction(firestore, async (transaction) => {
+            const messageDoc = await transaction.get(messageRef);
+            const voterDoc = await transaction.get(voterRef);
+      
+            if (!messageDoc.exists()) {
+              throw 'Message does not exist!';
+            }
+      
+            const currentVote = voterDoc.exists() ? (voterDoc.data().vote as UserVote) : null;
+            let scoreChange = 0;
+      
+            if (currentVote === newVote) { // User is undoing their vote
+              scoreChange = newVote === 'up' ? -1 : 1;
+              transaction.delete(voterRef);
+              setUserVotes(prev => ({...prev, [messageId]: null}));
+            } else { // New vote or changing vote
+              if (currentVote === 'up') scoreChange -= 1;
+              if (currentVote === 'down') scoreChange += 1;
+              
+              scoreChange += newVote === 'up' ? 1 : -1;
+              
+              transaction.set(voterRef, { vote: newVote });
+              setUserVotes(prev => ({...prev, [messageId]: newVote}));
+            }
+      
+            const newScore = (messageDoc.data().score || 0) + scoreChange;
+            transaction.update(messageRef, { score: newScore });
+          });
         } catch (error) {
-             toast({ variant: 'destructive', title: "Erreur", description: "Impossible de voter." });
+          console.error("Vote transaction failed: ", error);
+          toast({ variant: "destructive", title: "Erreur", description: "Impossible de voter." });
         }
-    };
+      };
 
     if (!user) {
         return <div className="text-center text-muted-foreground p-8">Connectez-vous pour rejoindre la discussion.</div>
@@ -318,7 +359,7 @@ export function CommunityChat({ wodId }: { wodId: string }) {
                     {isLoading && <div className="flex justify-center p-8"><LoaderCircle className="animate-spin" /></div>}
                     {threadedMessages.length === 0 && !isLoading && <p className="text-center text-muted-foreground p-8">Sois le premier à commenter !</p>}
                     {threadedMessages.map((message: MessageWithReplies) => (
-                        <Comment key={message.id} message={message} onReply={setReplyingTo} onVote={handleVote} />
+                        <Comment key={message.id} message={message} onReply={setReplyingTo} onVote={handleVote} userVote={userVotes[message.id]}/>
                     ))}
                 </div>
             </ScrollArea>
@@ -356,4 +397,3 @@ export function CommunityChat({ wodId }: { wodId: string }) {
         </div>
     );
 }
-

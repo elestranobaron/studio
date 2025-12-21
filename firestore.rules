@@ -30,7 +30,7 @@ service cloud.firestore {
       allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
       // Allow deletion only by the owner
       allow delete: if isSignedIn() && resource.data.userId == request.auth.uid;
-      // Allow updates by the owner, or for reactions/comments by anyone signed in
+      // Allow updates by the owner, or for reactions/commentCount by anyone signed in
       allow update: if isSignedIn() && (
         resource.data.userId == request.auth.uid ||
         request.resource.data.diff(resource.data).affectedKeys().hasOnly(['reactions', 'commentCount'])
@@ -44,7 +44,6 @@ service cloud.firestore {
       
       // === MESSAGES SUBCOLLECTION ===
       match /messages/{messageId} {
-        // Allow anyone to read individual messages and list the collection
         allow get: if true;
         allow list: if true;
         
@@ -55,6 +54,12 @@ service cloud.firestore {
                       && request.resource.data.diff(resource.data).affectedKeys()
                          .hasOnly(['upvotes', 'downvotes', 'score', 'replyCount']);
         allow delete: if false; // Deletion is not allowed
+
+        // === VOTERS SUBCOLLECTION FOR MESSAGES ===
+        match /voters/{userId} {
+            allow read: if isSignedIn();
+            allow create, update, delete: if isOwner(userId);
+        }
       }
     }
 
