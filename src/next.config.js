@@ -29,14 +29,6 @@ const nextConfig = {
       },
     ],
   },
-  
-  // Configure PostCSS plugins directly in Next.js config
-  postcss: {
-    plugins: {
-      '@tailwindcss/postcss': {},
-      'autoprefixer': {},
-    },
-  },
 };
 
 module.exports = withNextIntl(nextConfig);
