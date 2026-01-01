@@ -1,22 +1,58 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+
+@theme {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --radius: var(--radius);
+
+  /* Charts et sidebar si tu les utilises dans des classes Tailwind */
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar-background: var(--sidebar-background);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+}
 
 @layer base {
   :root {
-    --background: 224 22% 10%; /* Very dark cool gray */
+    --background: 224 22% 10%;
     --foreground: 210 40% 98%;
-    --card: 224 22% 13%; /* Slightly lighter gray for cards */
+    --card: 224 22% 13%;
     --card-foreground: 210 40% 98%;
     --popover: 224 22% 10%;
     --popover-foreground: 210 40% 98%;
-    --primary: 24 96% 53%; /* Bright, energetic orange */
+    --primary: 24 96% 53%;
     --primary-foreground: 0 0% 100%;
     --secondary: 217.2 32.6% 17.5%;
     --secondary-foreground: 210 40% 98%;
     --muted: 224 22% 17.5%;
     --muted-foreground: 215 20.2% 65.1%;
-    --accent: 24 85% 25%; /* Darker orange for hover states */
+    --accent: 24 85% 25%;
     --accent-foreground: 24 96% 53%;
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 210 40% 98%;
@@ -40,19 +76,19 @@
   }
 
   .dark {
-    --background: 224 22% 10%; /* Very dark cool gray */
+    --background: 224 22% 10%;
     --foreground: 210 40% 98%;
-    --card: 224 22% 13%; /* Slightly lighter gray for cards */
+    --card: 224 22% 13%;
     --card-foreground: 210 40% 98%;
     --popover: 224 22% 10%;
     --popover-foreground: 210 40% 98%;
-    --primary: 24 96% 53%; /* Bright, energetic orange */
+    --primary: 24 96% 53%;
     --primary-foreground: 0 0% 100%;
     --secondary: 217.2 32.6% 17.5%;
     --secondary-foreground: 210 40% 98%;
     --muted: 224 22% 17.5%;
     --muted-foreground: 215 20.2% 65.1%;
-    --accent: 24 85% 25%; /* Darker orange for hover states */
+    --accent: 24 85% 25%;
     --accent-foreground: 24 96% 53%;
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 210 40% 98%;
@@ -73,12 +109,11 @@
     --sidebar-border: 217.2 32.6% 17.5%;
     --sidebar-ring: 24 96% 53%;
   }
-}
 
-@layer base {
   * {
     @apply border-border;
   }
+
   body {
     @apply bg-background text-foreground;
   }
@@ -89,6 +124,7 @@
     0%, 100% { box-shadow: 0 0 20px rgba(239, 68, 68, 0.3); }
     50% { box-shadow: 0 0 40px rgba(239, 68, 68, 0.6); }
   }
+
   .animate-pulse-slow {
     animation: pulse-slow 3s infinite;
   }

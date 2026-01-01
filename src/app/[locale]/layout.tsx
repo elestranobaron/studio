@@ -5,6 +5,7 @@ import { FirebaseProvider } from '@/firebase/provider';
 import { Toaster } from '@/components/ui/toaster';
 import '@/app/globals.css';
 import { Metadata } from 'next';
+import { notFound } from 'next/navigation';
 
 const locales = [
   'en',
@@ -27,23 +28,25 @@ const locales = [
 
 type Props = {
   children: ReactNode;
-  params: { locale: string };
+  params: Promise<{ locale: string }>; // ← Important : Promise maintenant !
 };
 
 export function generateStaticParams() {
   return locales.map((locale) => ({ locale }));
 }
 
-export async function generateMetadata({
-  params: { locale },
-}: Props): Promise<Metadata> {
-  // Récupère l'URL de base (variable d'env ou fallback)
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { locale } = await params; // ← Await ici
+
+  // Validation simple de la locale (sécurité + 404 si invalide)
+  if (!locales.includes(locale)) {
+    notFound();
+  }
+
   const rawBaseUrl =
     process.env.NEXT_PUBLIC_APP_URL || 'https://wodburner.app';
-  const baseUrl = rawBaseUrl.replace(/\/$/, ''); // Supprime un éventuel trailing slash
+  const baseUrl = rawBaseUrl.replace(/\/$/, '');
 
-  // Construction des URLs pour les balises hreflang
-  // L'anglais est à la racine (/), les autres langues ont /fr/, /es/, etc.
   const languages = locales.reduce((acc, loc) => {
     acc[loc] = loc === 'en' ? baseUrl : `${baseUrl}/${loc}`;
     return acc;
@@ -52,22 +55,24 @@ export async function generateMetadata({
   return {
     metadataBase: new URL(baseUrl),
     alternates: {
-      canonical: './', // Self-referencing → chaque page pointe sur elle-même
+      canonical: './',
       languages: {
-        'x-default': `${baseUrl}/`, // Page par défaut = anglais (racine)
+        'x-default': `${baseUrl}/`,
         ...languages,
       },
     },
   };
 }
 
-export default async function LocaleLayout({
-  children,
-  params: { locale },
-}: Props) {
-  // Active le rendu statique pour cette locale
-  setRequestLocale(locale);
+export default async function LocaleLayout({ children, params }: Props) {
+  const { locale } = await params; // ← Await ici aussi
 
+  // Si la locale n'est pas supportée → 404
+  if (!locales.includes(locale)) {
+    notFound();
+  }
+
+  setRequestLocale(locale);
   const messages = await getMessages();
 
   return (

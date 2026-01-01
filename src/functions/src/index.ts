@@ -53,7 +53,7 @@ async function validateTurnstile(token: string, ip: string | undefined): Promise
         body: formData,
     });
     
-    const outcome = await response.json();
+    const outcome = await response.json() as { success: boolean; 'error-codes'?: string[] };
     if (!outcome.success) {
       console.warn('Turnstile validation failed:', outcome['error-codes']);
     }
@@ -273,41 +273,54 @@ exports.createCheckout = onRequest(
   }
 );
 
-const app = express();
+exports.stripeWebhook = onRequest(
+  {
+    region: "us-central1",
+    // Important : permet à Firebase d'exposer req.rawBody nativement
+    // (nécessaire pour Stripe webhook signature verification)
+    // https://firebase.google.com/docs/functions/http-events#raw_request_body
+    // En v2, il suffit de ne pas parser le body automatiquement
+  },
+  async (req, res) => {
+    // Autoriser seulement les POST
+    if (req.method !== "POST") {
+      res.status(405).send("Method Not Allowed");
+      return;
+    }
 
-app.use(
-  express.json({
-    verify: (req, _res, buf) => {
-      req.rawBody = buf.toString();
-    },
-  })
-);
+    // Vérifications de base
+    if (!process.env.STRIPE_SECRET_KEY || !STRIPE_WEBHOOK_SECRET) {
+      console.error("Stripe keys not configured");
+      res.status(500).send("Server configuration error");
+      return;
+    }
 
-app.post("/", async (req, res) => {
-  if (!process.env.STRIPE_SECRET_KEY) {
-    console.error("Stripe secret key is not set for webhook.");
-    return res.status(500).send("Server configuration error.");
-  }
-  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, { apiVersion: "2024-06-20" });
+    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+      apiVersion: "2024-06-20",
+    });
 
-  const sig = req.headers["stripe-signature"] as string;
+    const sig = req.headers["stripe-signature"] as string;
 
-  if (!req.rawBody) {
-    console.error("rawBody manquant");
-    return res.status(400).send("No raw body");
-  }
+    // En Firebase Functions v2, req.rawBody est disponible nativement
+    // tant qu’on n’utilise pas de middleware qui parse le body (comme express.json())
+    if (!req.rawBody) {
+      console.error("rawBody manquant – cela ne devrait pas arriver en v2");
+      res.status(400).send("No raw body");
+      return;
+    }
 
-  let event;
-  try {
-    event = stripe.webhooks.constructEvent(
-      req.rawBody,
-      sig,
-      STRIPE_WEBHOOK_SECRET
-    );
-  } catch (err: any) {
-    console.error("Webhook error:", err.message);
-    return res.status(400).send(`Webhook Error: ${err.message}`);
-  }
+    let event;
+    try {
+      event = stripe.webhooks.constructEvent(
+        req.rawBody,           // ← Utilisation directe de req.rawBody
+        sig,
+        STRIPE_WEBHOOK_SECRET
+      );
+    } catch (err: any) {
+      console.error("Webhook signature verification failed:", err.message);
+      res.status(400).send(`Webhook Error: ${err.message}`);
+      return;
+    }
 
   if (
     ["checkout.session.completed", "customer.subscription.created", "invoice.paid"].includes(event.type)
@@ -425,8 +438,6 @@ app.post("/", async (req, res) => {
 
   res.status(200).send("ok");
 });
-
-exports.stripeWebhook = onRequest({ region: "us-central1" }, app);
 
 exports.createCustomerPortal = onCall({}, async (request: any) => {
     if (!process.env.STRIPE_SECRET_KEY) {
