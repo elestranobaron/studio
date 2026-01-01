@@ -29,10 +29,13 @@ const nextConfig = {
       },
     ],
   },
-
-  // ← Ajout pour fixer l'erreur Turbopack dans Firebase Studio
-  turbopack: {
-    root: '.',
+  
+  // Configure PostCSS plugins directly in Next.js config
+  postcss: {
+    plugins: {
+      '@tailwindcss/postcss': {},
+      'autoprefixer': {},
+    },
   },
 };
 

@@ -1,27 +1,8 @@
-@import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 @layer base {
-  * {
-    border-color: hsl(var(--border));
-  }
-  body {
-    background-color: hsl(var(--background));
-    color: hsl(var(--foreground));
-  }
-}
-
-@layer utilities {
-  @keyframes pulse-slow {
-    0%, 100% { box-shadow: 0 0 20px rgba(239, 68, 68, 0.3); }
-    50% { box-shadow: 0 0 40px rgba(239, 68, 68, 0.6); }
-  }
-
-  .animate-pulse-slow {
-    animation: pulse-slow 3s infinite;
-  }
-}
-
-@theme {
   :root {
     --background: 0 0% 100%;
     --foreground: 222.2 84% 4.9%;
@@ -91,5 +72,25 @@
     --sidebar-accent-foreground: 24 96% 53%;
     --sidebar-border: 217.2 32.6% 17.5%;
     --sidebar-ring: 24 96% 53%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+@layer utilities {
+  @keyframes pulse-slow {
+    0%, 100% { box-shadow: 0 0 20px rgba(239, 68, 68, 0.3); }
+    50% { box-shadow: 0 0 40px rgba(239, 68, 68, 0.6); }
+  }
+
+  .animate-pulse-slow {
+    animation: pulse-slow 3s infinite;
   }
 }
