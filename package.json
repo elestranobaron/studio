@@ -11,8 +11,6 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@genkit-ai/google-genai": "latest",
-    "@genkit-ai/next": "latest",
     "@getbrevo/brevo": "latest",
     "@hookform/resolvers": "latest",
     "@radix-ui/react-accordion": "latest",
@@ -44,7 +42,6 @@
     "embla-carousel-react": "latest",
     "firebase": "latest",
     "framer-motion": "latest",
-    "genkit": "latest",
     "lucide-react": "latest",
     "next": "latest",
     "next-intl": "latest",
@@ -58,12 +55,16 @@
     "zod": "latest"
   },
   "devDependencies": {
+    "@genkit-ai/google-genai": "latest",
+    "@genkit-ai/next": "latest",
+    "@tailwindcss/postcss": "latest",
     "@types/node": "latest",
     "@types/react": "latest",
     "@types/react-dom": "latest",
     "autoprefixer": "latest",
     "eslint": "latest",
     "eslint-config-next": "latest",
+    "genkit": "latest",
     "genkit-cli": "latest",
     "postcss": "latest",
     "tailwindcss": "latest",
