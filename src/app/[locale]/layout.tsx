@@ -28,23 +28,15 @@ const locales = [
 
 type Props = {
   children: ReactNode;
-  params: Promise<{ locale: string }>; // ← Important : Promise maintenant !
+  params: { locale: string };
 };
 
 export function generateStaticParams() {
   return locales.map((locale) => ({ locale }));
 }
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { locale } = await params; // ← Await ici
-
-  // Validation simple de la locale (sécurité + 404 si invalide)
-  if (!locales.includes(locale)) {
-    notFound();
-  }
-
-  const rawBaseUrl =
-    process.env.NEXT_PUBLIC_APP_URL || 'https://wodburner.app';
+export async function generateMetadata({ params: {locale} }: Props): Promise<Metadata> {
+  const rawBaseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://wodburner.app';
   const baseUrl = rawBaseUrl.replace(/\/$/, '');
 
   const languages = locales.reduce((acc, loc) => {
@@ -64,10 +56,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-export default async function LocaleLayout({ children, params }: Props) {
-  const { locale } = await params; // ← Await ici aussi
-
-  // Si la locale n'est pas supportée → 404
+export default async function LocaleLayout({ children, params: {locale} }: Props) {
   if (!locales.includes(locale)) {
     notFound();
   }
