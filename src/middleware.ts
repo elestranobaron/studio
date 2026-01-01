@@ -1,12 +1,13 @@
-// src/proxy.ts
 import createMiddleware from 'next-intl/middleware';
-
+ 
 export default createMiddleware({
-  locales: ['en', 'fr', 'es', 'de', 'it', 'ca', 'pt', 'ru', 'ja', 'zh', 'pl', 'nl', 'ar', 'hi', 'ko', 'ro'],
-  defaultLocale: 'en', // mets ta locale par défaut ici !
-  localePrefix: 'as-needed', // ou 'always' selon ton besoin
+  locales: ['en', 'fr', 'es', 'de', 'it', 'ca', 'pt', 'ru', 'ja', 'zh', 'pl', 'nl', 'ar', 'hi', 'ko', 'ro', 'sv', 'da', 'tr', 'th'],
+  defaultLocale: 'en',
+  localePrefix: 'as-needed'
 });
-
+ 
 export const config = {
-  matcher: ['/((?!api|_next/static|_next/image|favicon.ico|.*\\..*).*)']
+  // Skip all paths that should not be internationalized. This includes
+  // folders like `/api`, `/_next` and files with an extension (e.g. `sitemap.xml`)
+  matcher: ['/((?!api|_next|.*\\..*).*)']
 };
