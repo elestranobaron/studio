@@ -37,6 +37,7 @@
     "@radix-ui/react-toast": "latest",
     "@radix-ui/react-tooltip": "latest",
     "@stripe/stripe-js": "latest",
+    "@tailwindcss/postcss": "latest",
     "class-variance-authority": "latest",
     "clsx": "latest",
     "date-fns": "latest",
@@ -58,7 +59,6 @@
     "zod": "latest"
   },
   "devDependencies": {
-    "@tailwindcss/postcss": "latest",
     "@types/node": "latest",
     "@types/react": "latest",
     "@types/react-dom": "latest",
