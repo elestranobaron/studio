@@ -384,7 +384,9 @@ export function WodCard({ wod, source = "personal" }: { wod: WOD; source?: "pers
                 <DialogContent className="max-w-2xl h-[90vh] flex flex-col">
                     <DialogHeader>
                         <DialogTitle>{wod.name}</DialogTitle>
-                        <DialogDescription>Community Chat</DialogDescription>
+                        <DialogDescription>
+                          Discussion about the workout of the day with the community.
+                        </DialogDescription>
                     </DialogHeader>
                     <CommunityChat wodId={wod.id} />
                 </DialogContent>
@@ -443,4 +445,3 @@ function WodProfile({ wod }: { wod: WOD }) {
     </div>
   );
 }
-
