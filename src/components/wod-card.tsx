@@ -270,7 +270,7 @@ export function WodCard({ wod, source = "personal" }: { wod: WOD; source?: "pers
   const isHeroWod = wod.userId === "system";
   const hasProfile = wod.cardio !== undefined && wod.lifting !== undefined && wod.upperBody !== undefined && wod.lowerBody !== undefined;
   
-  const dialogDescription = isHeroWod && descriptionSections.length > 0 
+  const dialogDescription = isHeroWod && descriptionSections.length > 0 && descriptionSections[0]?.title.toLowerCase().includes('in memory of')
     ? descriptionSections[0].title
     : t("viewWodDescription", { type: wod.type, date: formattedDate });
 
