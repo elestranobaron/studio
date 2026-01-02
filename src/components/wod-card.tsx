@@ -269,6 +269,10 @@ export function WodCard({ wod, source = "personal" }: { wod: WOD; source?: "pers
 
   const isHeroWod = wod.userId === "system";
   const hasProfile = wod.cardio !== undefined && wod.lifting !== undefined && wod.upperBody !== undefined && wod.lowerBody !== undefined;
+  
+  const dialogDescription = isHeroWod && descriptionSections.length > 0 
+    ? descriptionSections[0].title
+    : t("viewWodDescription", { type: wod.type, date: formattedDate });
 
 
   return (
@@ -347,12 +351,12 @@ export function WodCard({ wod, source = "personal" }: { wod: WOD; source?: "pers
                 <DialogHeader>
                     <DialogTitle className="font-headline text-primary text-2xl">{wod.name}</DialogTitle>
                     <DialogDescription>
-                        {t("viewWodDescription", { type: wod.type, date: formattedDate })}
-                        {wod.userDisplayName && (
+                      {dialogDescription}
+                      {wod.userDisplayName && (
                         <span className="block mt-1">
                             {t("viewWodSharedBy", { displayName: wod.userDisplayName })}
                         </span>
-                        )}
+                      )}
                     </DialogDescription>
                 </DialogHeader>
                 <div className="py-4 space-y-6 max-h-[70vh] overflow-y-auto pr-4">
