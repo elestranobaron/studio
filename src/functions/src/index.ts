@@ -9,6 +9,8 @@ import type { QuerySnapshot, DocumentSnapshot } from "firebase-admin/firestore";
 import { setGlobalOptions } from "firebase-functions/v2";
 import express from "express";
 import { generateWod } from './ai/generate-wod-flow';
+import { analyzeWod } from "./ai/analyze-wod-flow";
+
 
 admin.initializeApp();
 const db = admin.firestore();
@@ -141,6 +143,31 @@ exports.generateWod = onCall({}, async (request: any) => {
         console.error("WOD Generation Flow Error:", e);
         // Re-throw the original error to propagate its message to the client
         throw new HttpsError("internal", e.message || "Failed to generate WOD.");
+    }
+});
+
+exports.analyzeWod = onCall({}, async (request: any) => {
+    const { photoDataUri, turnstileToken } = request.data;
+
+    if (!photoDataUri) {
+        throw new HttpsError("invalid-argument", "Image data is missing.");
+    }
+
+    if (!turnstileToken) {
+        throw new HttpsError("invalid-argument", "Captcha token is missing.");
+    }
+
+    const isTurnstileValid = await validateTurnstile(turnstileToken, request.rawRequest.ip);
+    if (!isTurnstileValid) {
+        throw new HttpsError("unauthenticated", "Captcha validation failed.");
+    }
+
+    try {
+        const result = await analyzeWod({ photoDataUri });
+        return result;
+    } catch (e: any) {
+        console.error("WOD Analysis Flow Error:", e);
+        throw new HttpsError("internal", e.message || "Failed to analyze WOD.");
     }
 });
 
@@ -464,3 +491,4 @@ exports.createCustomerPortal = onCall({}, async (request: any) => {
 
     return { url: portalSession.url };
 });
+

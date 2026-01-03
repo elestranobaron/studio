@@ -4,5 +4,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function POST(req: NextRequest) {
-    return NextResponse.json({ error: 'This endpoint is deprecated.' }, { status: 410 });
+    // This endpoint is intentionally deprecated. The client should call the 'analyzeWod' Firebase Function.
+    // Returning a 410 Gone status code informs the client that this resource is no longer available.
+    return NextResponse.json({ error: 'This endpoint is deprecated. Please use the `analyzeWod` cloud function.' }, { status: 410 });
 }

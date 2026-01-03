@@ -8,7 +8,7 @@ import { UploadCloud, X, LoaderCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import { useRouter } from "next/navigation";
-import type { AnalyzeWodOutput } from "@/ai/schema/wod-schema";
+import type { AnalyzeWodOutput } from "@/functions/src/ai/wod-schema";
 import { Input } from "./ui/input";
 import { Textarea } from "./ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
@@ -25,6 +25,8 @@ import { initiateAnonymousSignIn } from "@/firebase/non-blocking-login";
 import { Checkbox } from "./ui/checkbox";
 import { Label } from "./ui/label";
 import { useTranslations } from "next-intl";
+import { getFunctions, httpsCallable } from "firebase/functions";
+import Turnstile from "./turnstile";
 
 
 const toBase64 = (file: File): Promise<string> =>
@@ -67,12 +69,14 @@ export function FileUploader() {
   const [duplicateWod, setDuplicateWod] = useState<WOD | null>(null);
   const [shareToCommunity, setShareToCommunity] = useState(false);
   const [saveIntent, setSaveIntent] = useState(false);
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
 
   const { toast } = useToast();
   const router = useRouter();
   const { firestore } = useFirebase();
   const auth = useAuth();
   const { user, isUserLoading } = useUser();
+  const functions = getFunctions();
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
     if (acceptedFiles.length > 0) {
@@ -91,29 +95,31 @@ export function FileUploader() {
 
   const handleAnalyze = async () => {
     if (!file) return;
+    
+    if (!turnstileToken) {
+        toast({
+            variant: "destructive",
+            title: "Verification required",
+            description: "Please complete the anti-robot verification.",
+        });
+        return;
+    }
+
     setIsLoading(true);
     try {
       const photoDataUri = await toBase64(file);
       
-      const response = await fetch('/api/analyze', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ photoDataUri }),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.details || `Request failed with status ${response.status}`);
-      }
-
-      const result = await response.json();
+      const analyzeWodFn = httpsCallable(functions, 'analyzeWod');
+      const response = await analyzeWodFn({ photoDataUri, turnstileToken });
+      const result = response.data as AnalyzeWodOutput;
+      
       setAnalysisResult(result);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Analysis Error:", error);
       toast({
         variant: "destructive",
         title: t('analysisFailedTitle'),
-        description: t('analysisFailedDescription'),
+        description: error.message || t('analysisFailedDescription'),
       });
     } finally {
       setIsLoading(false);
@@ -253,9 +259,17 @@ export function FileUploader() {
     setAnalysisResult(null);
   };
   
+  const onTurnstileSuccess = useCallback((token: string) => {
+    setTurnstileToken(token);
+  }, []);
+
+  const onTurnstileExpire = useCallback(() => {
+    setTurnstileToken(null);
+  }, []);
+
   const isActionDisabled = isLoading || isSaving || isUserLoading;
 
-  const flatDescription = analysisResult?.description.map(s => s.content).join('\n\n') || '';
+  const flatDescription = analysisResult?.description.map(s => s.content).join('\\n\\n') || '';
 
   const handleDescriptionChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     if (analysisResult) {
@@ -315,24 +329,29 @@ export function FileUploader() {
       </AlertDialog>
 
       {!preview ? (
-        <div
-          {...getRootProps()}
-          className={cn("relative flex flex-col items-center justify-center w-full h-64 border-2 border-dashed rounded-lg cursor-pointer border-primary/50 bg-primary/10 transition-colors hover:bg-primary/20", {
-            "cursor-not-allowed opacity-50": isActionDisabled,
-          })}
-        >
-          <input {...getInputProps()} disabled={isActionDisabled}/>
-          <div className="text-center">
-            <UploadCloud className="w-16 h-16 mx-auto text-primary" />
-            <p className="mt-4 text-lg font-semibold text-foreground">
-            {isDragActive
-                ? t('dragActivePrompt')
-                : t('dragAndDropPrompt')}
-            </p>
-            <p className="mt-1 text-sm text-muted-foreground">
-            {t('fileTypes')}
-            </p>
-          </div>
+        <div className="space-y-4">
+            <div
+            {...getRootProps()}
+            className={cn("relative flex flex-col items-center justify-center w-full h-64 border-2 border-dashed rounded-lg cursor-pointer border-primary/50 bg-primary/10 transition-colors hover:bg-primary/20", {
+                "cursor-not-allowed opacity-50": isActionDisabled,
+            })}
+            >
+            <input {...getInputProps()} disabled={isActionDisabled}/>
+            <div className="text-center">
+                <UploadCloud className="w-16 h-16 mx-auto text-primary" />
+                <p className="mt-4 text-lg font-semibold text-foreground">
+                {isDragActive
+                    ? t('dragActivePrompt')
+                    : t('dragAndDropPrompt')}
+                </p>
+                <p className="mt-1 text-sm text-muted-foreground">
+                {t('fileTypes')}
+                </p>
+            </div>
+            </div>
+             <div className="flex justify-center">
+                <Turnstile onSuccess={onTurnstileSuccess} onExpire={onTurnstileExpire} />
+            </div>
         </div>
       ) : (
         <div className="space-y-6">
@@ -356,13 +375,18 @@ export function FileUploader() {
           </div>
 
           {!analysisResult ? (
-            <Button
-              onClick={handleAnalyze}
-              disabled={isActionDisabled}
-              className="w-full"
-            >
-              {t('analyzeButton')}
-            </Button>
+             <div className="flex flex-col items-center gap-4">
+                <Button
+                onClick={handleAnalyze}
+                disabled={isActionDisabled || !turnstileToken}
+                className="w-full"
+                >
+                {t('analyzeButton')}
+                </Button>
+                 <div className="flex justify-center">
+                    <Turnstile onSuccess={onTurnstileSuccess} onExpire={onTurnstileExpire} />
+                </div>
+            </div>
           ) : (
             <div className="space-y-4">
               <h3 className="text-lg font-semibold font-headline">
