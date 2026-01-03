@@ -1,5 +1,4 @@
-/* This file is intentionally left empty. The functionality has been moved to postcss.config.js */
-@import "tailwindcss";
+@import "tailwindcss/theme";
 
 @layer base {
   :root {
@@ -23,7 +22,6 @@
     --input: 214.3 31.8% 91.4%;
     --ring: 222.2 84% 4.9%;
     --radius: 0.75rem;
-
     --sidebar-background: 0 0% 98%;
     --sidebar-foreground: 222.2 84% 4.9%;
     --sidebar-primary: 24 96% 53%;
@@ -54,7 +52,6 @@
     --border: 217.2 32.6% 17.5%;
     --input: 217.2 32.6% 17.5%;
     --ring: 24 96% 53%;
-
     --sidebar-background: 224 22% 10%;
     --sidebar-foreground: 210 40% 98%;
     --sidebar-primary: 24 96% 53%;
