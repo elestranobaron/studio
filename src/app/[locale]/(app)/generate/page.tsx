@@ -8,7 +8,7 @@ import { doc, collection, setDoc } from "firebase/firestore";
 import { Button } from "@/components/ui/button";
 import { SidebarTrigger, useSidebar } from "@/components/ui/sidebar";
 import { useToast } from "@/components/ui/use-toast";
-import { generateWod } from "@/ai/flows/generate-wod-flow";
+import { generateWod } from "@/functions/src/ai/generate-wod-flow";
 import { WodCard } from "@/components/wod-card";
 import { type WOD } from "@/lib/types";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -184,9 +184,11 @@ export default function GenerateWodPage() {
                                      <Info className="h-4 w-4 !text-blue-500" />
                                     <AlertTitle>{t('freePlanAlert.title')}</AlertTitle>
                                     <AlertDescription>
+                                      <p>
                                         {t.rich('freePlanAlert.description', {
                                             link: (chunks) => <Link href="/premium" className="font-bold underline ml-1">{chunks}</Link>
                                         })}
+                                      </p>
                                     </AlertDescription>
                                 </Alert>
                             )}
