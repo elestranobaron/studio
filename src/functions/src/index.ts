@@ -139,7 +139,8 @@ exports.generateWod = onCall({}, async (request: any) => {
         return result;
     } catch (e: any) {
         console.error("WOD Generation Flow Error:", e);
-        throw new HttpsError("internal", "Failed to generate WOD.");
+        // Re-throw the original error to propagate its message to the client
+        throw new HttpsError("internal", e.message || "Failed to generate WOD.");
     }
 });
 
