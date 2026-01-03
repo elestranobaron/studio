@@ -114,7 +114,6 @@ export default function GenerateWodPage() {
 
         } catch (e: any) {
             console.error("WOD Generation Error:", e);
-            setError(t('errorAlert.description'));
              toast({
                 variant: "destructive",
                 title: t('errorAlert.title'),
@@ -183,9 +182,11 @@ export default function GenerateWodPage() {
                                      <Info className="h-4 w-4 !text-blue-500" />
                                     <AlertTitle>{t('freePlanAlert.title')}</AlertTitle>
                                     <AlertDescription>
+                                      <p>
                                         {t.rich('freePlanAlert.description', {
                                             link: (chunks) => <Link href="/premium" className="font-bold underline ml-1">{chunks}</Link>
                                         })}
+                                      </p>
                                     </AlertDescription>
                                 </Alert>
                             )}
