@@ -1,20 +1,8 @@
-import { analyzeWod } from '@/ai/flows/analyze-wod-flow';
+// This file is now obsolete as the Genkit flow will be called directly 
+// from a Cloud Function instead of a Next.js API route.
+// Keeping it empty to avoid build errors from missing dependencies.
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function POST(req: NextRequest) {
-  try {
-    const body = await req.json();
-    const { photoDataUri } = body;
-
-    if (!photoDataUri) {
-      return NextResponse.json({ error: 'Missing photoDataUri' }, { status: 400 });
-    }
-
-    const result = await analyzeWod({ photoDataUri });
-
-    return NextResponse.json(result);
-  } catch (error: any) {
-    console.error('API Route Error:', error);
-    return NextResponse.json({ error: 'Failed to analyze WOD', details: error.message }, { status: 500 });
-  }
+    return NextResponse.json({ error: 'This endpoint is deprecated.' }, { status: 410 });
 }
