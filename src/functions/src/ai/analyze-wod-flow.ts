@@ -24,6 +24,7 @@ const analyzeWodPrompt = ai.definePrompt({
   name: 'analyzeWodPrompt',
   input: {schema: AnalyzeWodInputSchema},
   output: {schema: AnalyzeWodOutputSchema},
+  model: 'googleai/gemini-1.5-pro-preview',
   config: {
     temperature: 0.2, // Lower temperature for more deterministic analysis
   },
@@ -39,11 +40,11 @@ Follow these instructions precisely:
 4.  **Description Sections**:
     *   Break the workout down into logical sections (e.g., "Warm-up", "Strength", "Metcon", "Accessory", "Cool Down").
     *   For each section, provide the full content, preserving line breaks.
-    *   **Crucially**, if a section has its own specific timer (like a 10-minute AMRAP within a larger workout), extract its parameters (`timerType`, `timerDuration`, `timerRounds`, `timerInterval`) for that section.
+    *   **Crucially**, if a section has its own specific timer (like a 10-minute AMRAP within a larger workout), extract its parameters (\`timerType\`, \`timerDuration\`, \`timerRounds\`, \`timerInterval\`) for that section.
 5.  **Main Workout Duration**:
     *   Calculate the total duration in **minutes** for the *main* workout component (the Metcon/Conditioning part).
     *   For an AMRAP, this is the specified time (e.g., "AMRAP in 20 minutes" -> duration: 20).
-    *   For an EMOM, calculate `rounds * interval_minutes` (e.g., "EMOM for 10 rounds of 1 minute" -> duration: 10).
+    *   For an EMOM, calculate \`rounds * interval_minutes\` (e.g., "EMOM for 10 rounds of 1 minute" -> duration: 10).
     *   For "For Time" or "Tabata", leave this field empty.
 6.  **Image Hint**: Provide a one or two-word hint for a relevant stock photo. This should be based on the main equipment or movement. Examples: "running", "barbell", "kettlebell", "pull-up".
 7.  **Workout Profile Analysis**: Based on the main Metcon/conditioning part, provide a profile analysis.
@@ -69,4 +70,3 @@ const analyzeWodFlow = ai.defineFlow(
     return output!;
   }
 );
-
