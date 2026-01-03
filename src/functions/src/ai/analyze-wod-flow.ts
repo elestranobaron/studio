@@ -24,7 +24,7 @@ const analyzeWodPrompt = ai.definePrompt({
   name: 'analyzeWodPrompt',
   input: {schema: AnalyzeWodInputSchema},
   output: {schema: AnalyzeWodOutputSchema},
-  model: 'googleai/gemini-1.5-pro-preview',
+  model: 'googleai/gemini-1.5-pro-preview', // Explicitly use the Pro model for this task.
   config: {
     temperature: 0.2, // Lower temperature for more deterministic analysis
   },
