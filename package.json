@@ -52,7 +52,7 @@
     "recharts": "latest",
     "stripe": "latest",
     "tailwind-merge": "latest",
-    "zod": "latest",
+    "zod": "^4.3.5",
     "@genkit-ai/google-genai": "latest",
     "@genkit-ai/next": "latest",
     "genkit": "latest"

@@ -13,7 +13,8 @@
     "firebase-functions": "latest",
     "stripe": "latest",
     "genkit": "latest",
-    "@genkit-ai/google-genai": "latest"
+    "@genkit-ai/google-genai": "latest",
+    "zod": "^4.3.5"
   },
   "scripts": {
     "build": "tsc"
