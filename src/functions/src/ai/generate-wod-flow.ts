@@ -21,15 +21,9 @@ export async function generateWod(
   input: GenerateWodInput
 ): Promise<AnalyzeWodOutput> {
   console.log('Starting generateWodFlow with input:', input);
-  try {
-    const result = await generateWodFlow(input);
-    console.log('generateWodFlow completed successfully.');
-    return result;
-  } catch (error) {
-    console.error('Error executing generateWodFlow:', error);
-    // Re-throw the error to be caught by the onCall wrapper
-    throw error;
-  }
+  const result = await generateWodFlow(input);
+  console.log('generateWodFlow completed successfully.');
+  return result;
 }
 
 const generateWodPrompt = ai.definePrompt({
@@ -71,15 +65,21 @@ const generateWodFlow = ai.defineFlow(
     outputSchema: AnalyzeWodOutputSchema,
   },
   async (input: GenerateWodInput) => {
-    console.log('Calling generateWodPrompt...');
-    const {output} = await generateWodPrompt(input);
+    try {
+        console.log('Calling generateWodPrompt...');
+        const {output} = await generateWodPrompt(input);
+        
+        if (!output) {
+          console.error('generateWodPrompt returned a null or undefined output.');
+          throw new Error('AI model failed to generate a valid WOD structure.');
+        }
     
-    if (!output) {
-      console.error('generateWodPrompt returned a null or undefined output.');
-      throw new Error('AI model failed to generate a valid WOD structure.');
+        console.log('generateWodPrompt returned output.');
+        return output;
+    } catch (error) {
+        console.error('Error executing generateWodPrompt in flow:', error);
+        // Re-throw the error to be caught by the onCall wrapper
+        throw error;
     }
-
-    console.log('generateWodPrompt returned output.');
-    return output;
   }
 );

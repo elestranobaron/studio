@@ -83,6 +83,7 @@ export function FileUploader() {
       setFile(selectedFile);
       setPreview(URL.createObjectURL(selectedFile));
       setAnalysisResult(null);
+      setTurnstileToken(null); // Reset token on new file
     }
   }, []);
 
@@ -257,6 +258,7 @@ export function FileUploader() {
     setFile(null);
     setPreview(null);
     setAnalysisResult(null);
+    setTurnstileToken(null);
   };
   
   const onTurnstileSuccess = useCallback((token: string) => {
@@ -348,9 +350,6 @@ export function FileUploader() {
                 {t('fileTypes')}
                 </p>
             </div>
-            </div>
-             <div className="flex justify-center">
-                <Turnstile onSuccess={onTurnstileSuccess} onExpire={onTurnstileExpire} />
             </div>
         </div>
       ) : (
