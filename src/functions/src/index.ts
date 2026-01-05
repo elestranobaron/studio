@@ -1,7 +1,7 @@
 
 "use strict";
 
-import { onCall, HttpsError } from "firebase-functions/v2/https";
+import { onCall, HttpsError } from "firebase-functions/v2";
 import { onSchedule } from "firebase-functions/v2/scheduler";
 import * as admin from "firebase-admin";
 import Stripe from "stripe";
@@ -9,8 +9,6 @@ import type { QuerySnapshot, DocumentSnapshot } from "firebase-admin/firestore";
 import { setGlobalOptions } from "firebase-functions/v2";
 import { generateWod } from './ai/generate-wod-flow';
 import { analyzeWod } from "./ai/analyze-wod-flow";
-import * as express from 'express';
-import * as cors from 'cors';
 
 admin.initializeApp();
 const db = admin.firestore();
@@ -222,7 +220,7 @@ exports.createCheckout = onCall({ cors: true }, async (request) => {
     if (!process.env.STRIPE_SECRET_KEY) {
         throw new HttpsError("internal", 'Stripe secret key is not set');
     }
-    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, { apiVersion: "2024-06-20" });
+    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, { apiVersion: "2025-12-15.clover" });
 
     const uid = request.auth.uid;
     const userDoc = await db.collection("users").doc(uid).get();
@@ -257,7 +255,7 @@ exports.createCustomerPortal = onCall({ cors: true }, async (request) => {
     if (!process.env.STRIPE_SECRET_KEY) {
         throw new HttpsError("internal", 'Stripe secret key is not set.');
     }
-    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, { apiVersion: "2024-06-20" });
+    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, { apiVersion: "2025-12-15.clover" });
 
     const uid = request.auth.uid;
     const userDoc = await db.collection('users').doc(uid).get();
@@ -275,32 +273,28 @@ exports.createCustomerPortal = onCall({ cors: true }, async (request) => {
     return { url: portalSession.url };
 });
 
-const stripeApp = express();
-stripeApp.use(cors({ origin: true }));
-stripeApp.post('/', express.raw({ type: 'application/json' }), async (req, res) => {
+exports.stripeWebhook = onCall({ cors: true }, async (request) => {
+    const sig = request.rawRequest.headers["stripe-signature"] as string;
+    const event = request.data as Stripe.Event;
+
     if (!process.env.STRIPE_SECRET_KEY || !STRIPE_WEBHOOK_SECRET) {
       console.error("Stripe keys not configured");
-      res.status(500).send("Server configuration error");
-      return;
+      throw new HttpsError("internal", "Server configuration error");
     }
 
     const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-      apiVersion: "2024-06-20",
+      apiVersion: "2025-12-15.clover",
     });
 
-    const sig = req.headers["stripe-signature"] as string;
-
-    let event;
     try {
-      event = stripe.webhooks.constructEvent(
-        req.body,
+      stripe.webhooks.constructEvent(
+        request.rawRequest.rawBody,
         sig,
         STRIPE_WEBHOOK_SECRET
       );
     } catch (err: any) {
       console.error("Webhook signature verification failed:", err.message);
-      res.status(400).send(`Webhook Error: ${err.message}`);
-      return;
+      throw new HttpsError("invalid-argument", `Webhook Error: ${err.message}`);
     }
 
     if (["checkout.session.completed", "customer.subscription.created", "invoice.paid"].includes(event.type)) {
@@ -415,10 +409,8 @@ stripeApp.post('/', express.raw({ type: 'application/json' }), async (req, res) 
       }
     }
 
-    res.status(200).send("ok");
+    return { success: true };
 });
-
-// exports.stripeWebhook = onRequest(stripeApp);
 
 
 exports.resetDailyLimits = onSchedule('0 0 * * *', async () => {
