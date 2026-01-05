@@ -1,4 +1,3 @@
-
 "use strict";
 
 import { onCall, onRequest, HttpsError } from "firebase-functions/v2/https";
@@ -9,9 +8,6 @@ import type { QuerySnapshot, DocumentSnapshot } from "firebase-admin/firestore";
 import { setGlobalOptions } from "firebase-functions/v2";
 import { generateWod } from './ai/generate-wod-flow';
 import { analyzeWod } from "./ai/analyze-wod-flow";
-import * as cors from "cors";
-
-const corsMiddleware = cors({ origin: true });
 
 admin.initializeApp();
 const db = admin.firestore();
@@ -112,77 +108,50 @@ exports.sendDigicode = onCall({ cors: true }, async (request) => {
   }
 });
 
-exports.generateWod = onRequest(async (request, response) => {
-  corsMiddleware(request, response, async () => {
-    if (request.method !== 'POST') {
-      response.status(405).send('Method Not Allowed');
-      return;
-    }
-    const { data } = request.body;
-    const { turnstileToken } = data;
+exports.generateWod = onCall({ cors: true }, async (request) => {
+  const { turnstileToken } = request.data;
 
-    if (!turnstileToken) {
-      response.status(400).json({ error: "Captcha token is missing." });
-      return;
-    }
+  if (!turnstileToken) {
+    throw new HttpsError("invalid-argument", "Captcha token is missing.");
+  }
 
-    const isTurnstileValid = await validateTurnstile(turnstileToken, request.ip);
-    if (!isTurnstileValid) {
-      response.status(403).json({ error: "Captcha validation failed." });
-      return;
-    }
+  const isTurnstileValid = await validateTurnstile(turnstileToken, request.rawRequest.ip);
+  if (!isTurnstileValid) {
+    throw new HttpsError("permission-denied", "Captcha validation failed.");
+  }
 
-    try {
-      const result = await generateWod({});
-      response.status(200).json({ data: result });
-    } catch (e: any) {
-      console.error("WOD Generation Flow Error:", e);
-      response.status(500).json({ 
-        error: "Failed to generate WOD.",
-        details: e.message,
-        stack: e.stack 
-      });
-    }
-  });
+  try {
+    const result = await generateWod({});
+    return result;
+  } catch (e: any) {
+    console.error("WOD Generation Flow Error:", e);
+    throw new HttpsError("internal", e.message, e.stack);
+  }
 });
 
-exports.analyzeWod = onRequest(async (request, response) => {
-  corsMiddleware(request, response, async () => {
-    if (request.method !== 'POST') {
-      response.status(405).send('Method Not Allowed');
-      return;
-    }
-    const { data } = request.body;
-    const { photoDataUri, turnstileToken } = data;
-
+exports.analyzeWod = onCall({ cors: true }, async (request) => {
+    const { photoDataUri, turnstileToken } = request.data;
     if (!photoDataUri) {
-      response.status(400).json({ error: "The function must be called with a 'photoDataUri' argument." });
-      return;
+      throw new HttpsError("invalid-argument", "The function must be called with a 'photoDataUri' argument.");
     }
     if (!turnstileToken) {
-      response.status(400).json({ error: "Captcha token is missing." });
-      return;
+      throw new HttpsError("invalid-argument", "Captcha token is missing.");
     }
 
-    const isTurnstileValid = await validateTurnstile(turnstileToken, request.ip);
+    const isTurnstileValid = await validateTurnstile(turnstileToken, request.rawRequest.ip);
     if (!isTurnstileValid) {
-      response.status(403).json({ error: "Captcha validation failed." });
-      return;
+        throw new HttpsError("permission-denied", "Captcha validation failed.");
     }
 
     try {
       const result = await analyzeWod({ photoDataUri });
-      response.status(200).json({ data: result });
+      return result;
     } catch (e: any) {
       console.error("WOD Analysis Flow Error:", e);
-      response.status(500).json({
-        error: "Failed to analyze WOD.",
-        details: e.message,
-        stack: e.stack
-      });
+      throw new HttpsError("internal", e.message, e.stack);
     }
-  });
 });
+
 
 exports.verifyDigicode = onCall({ cors: true }, async (request) => {
   try {
@@ -309,28 +278,30 @@ exports.createCustomerPortal = onCall({ cors: true }, async (request) => {
     return { url: portalSession.url };
 });
 
-exports.stripeWebhook = onCall({ cors: true }, async (request) => {
-    const sig = request.rawRequest.headers["stripe-signature"] as string;
-    const event = request.data as Stripe.Event;
+exports.stripeWebhook = onRequest(async (request, response) => {
+    const sig = request.headers["stripe-signature"] as string;
 
     if (!process.env.STRIPE_SECRET_KEY || !STRIPE_WEBHOOK_SECRET) {
       console.error("Stripe keys not configured");
-      throw new HttpsError("internal", "Server configuration error");
+      response.status(500).send("Server configuration error");
+      return;
     }
 
     const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
       apiVersion: "2025-12-15.clover",
     });
 
+    let event: Stripe.Event;
     try {
-      stripe.webhooks.constructEvent(
-        request.rawRequest.rawBody,
+      event = stripe.webhooks.constructEvent(
+        request.rawBody,
         sig,
         STRIPE_WEBHOOK_SECRET
       );
     } catch (err: any) {
       console.error("Webhook signature verification failed:", err.message);
-      throw new HttpsError("invalid-argument", `Webhook Error: ${err.message}`);
+      response.status(400).send(`Webhook Error: ${err.message}`);
+      return;
     }
 
     if (["checkout.session.completed", "customer.subscription.created", "invoice.paid"].includes(event.type)) {
@@ -445,7 +416,7 @@ exports.stripeWebhook = onCall({ cors: true }, async (request) => {
       }
     }
 
-    return { success: true };
+    response.json({ received: true });
 });
 
 

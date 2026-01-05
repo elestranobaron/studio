@@ -25,7 +25,7 @@ import { initiateAnonymousSignIn } from "@/firebase/non-blocking-login";
 import { Checkbox } from "./ui/checkbox";
 import { Label } from "./ui/label";
 import { useTranslations } from "next-intl";
-import { getFunctions } from "firebase/functions";
+import { getFunctions, httpsCallable } from "firebase/functions";
 import Turnstile from "./turnstile";
 
 const toBase64 = (file: File): Promise<string> =>
@@ -111,28 +111,11 @@ export function FileUploader() {
       const photoDataUri = await toBase64(file);
       
       const functions = getFunctions();
-      // This URL needs to match your function's region and name.
-      const functionUrl = 'https://us-central1-studio-9534743514-17d90.cloudfunctions.net/analyzeWod';
-      const response = await fetch(functionUrl, {
-          method: 'POST',
-          headers: {
-              'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-              data: {
-                  photoDataUri,
-                  turnstileToken,
-              }
-          }),
-      });
-
-      const body = await response.json();
-
-      if (!response.ok) {
-        throw new Error(body.details || body.error || 'Failed to analyze WOD');
-      }
+      const analyzeWodFn = httpsCallable(functions, 'analyzeWod');
       
-      const result = body.data as AnalyzeWodOutput;
+      const response = await analyzeWodFn({ photoDataUri, turnstileToken });
+      
+      const result = response.data as AnalyzeWodOutput;
       
       setAnalysisResult(result);
     } catch (error: any) {
