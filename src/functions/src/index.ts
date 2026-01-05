@@ -259,7 +259,7 @@ exports.createCheckout = onRequest(
       if (!process.env.STRIPE_SECRET_KEY) {
           throw new Error('Stripe secret key is not set');
       }
-      const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, { apiVersion: "2024-06-20" });
+      const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, { apiVersion: "2025-12-15.clover" });
 
       const token = authHeader.split("Bearer ")[1];
       const decodedToken = await admin.auth().verifyIdToken(token);
@@ -322,7 +322,7 @@ exports.stripeWebhook = onRequest(
     }
 
     const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-      apiVersion: "2024-06-20",
+      apiVersion: "2025-12-15.clover",
     });
 
     const sig = req.headers["stripe-signature"] as string;
@@ -469,7 +469,7 @@ exports.createCustomerPortal = onCall({}, async (request: any) => {
     if (!process.env.STRIPE_SECRET_KEY) {
       throw new HttpsError('internal', 'Stripe secret key is not set.');
     }
-    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, { apiVersion: "2024-06-20" });
+    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, { apiVersion: "2025-12-15.clover" });
 
     if (!request.auth) {
         throw new HttpsError('unauthenticated', 'You must be logged in.');

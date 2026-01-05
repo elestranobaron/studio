@@ -41,6 +41,7 @@ const admin = __importStar(require("firebase-admin"));
 const stripe_1 = __importDefault(require("stripe"));
 const v2_1 = require("firebase-functions/v2");
 const generate_wod_flow_1 = require("./ai/generate-wod-flow");
+const analyze_wod_flow_1 = require("./ai/analyze-wod-flow");
 admin.initializeApp();
 const db = admin.firestore();
 (0, v2_1.setGlobalOptions)({ region: "us-central1" });
@@ -141,6 +142,27 @@ exports.generateWod = (0, https_1.onCall)({}, async (request) => {
         console.error("WOD Generation Flow Error:", e);
         // Re-throw the original error to propagate its message to the client
         throw new https_1.HttpsError("internal", e.message || "Failed to generate WOD.");
+    }
+});
+exports.analyzeWod = (0, https_1.onCall)({}, async (request) => {
+    const { photoDataUri, turnstileToken } = request.data;
+    if (!photoDataUri) {
+        throw new https_1.HttpsError("invalid-argument", "The function must be called with a 'photoDataUri' argument.");
+    }
+    if (!turnstileToken) {
+        throw new https_1.HttpsError("invalid-argument", "Captcha token is missing.");
+    }
+    const isTurnstileValid = await validateTurnstile(turnstileToken, request.rawRequest.ip);
+    if (!isTurnstileValid) {
+        throw new https_1.HttpsError("unauthenticated", "Captcha validation failed.");
+    }
+    try {
+        const result = await (0, analyze_wod_flow_1.analyzeWod)({ photoDataUri });
+        return result;
+    }
+    catch (e) {
+        console.error("WOD Analysis Flow Error:", e);
+        throw new https_1.HttpsError("internal", e.message || "Failed to analyze WOD.");
     }
 });
 exports.verifyDigicode = (0, https_1.onCall)({}, async (request) => {

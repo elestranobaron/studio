@@ -51,13 +51,6 @@ const generateWodFlow = genkit_instance_1.ai.defineFlow({
     inputSchema: GenerateWodInputSchema,
     outputSchema: wod_schema_1.AnalyzeWodOutputSchema,
 }, async (input) => {
-    try {
-        const { output } = await generateWodPrompt(input);
-        console.log('Raw output from Gemini:', output); // ← ça montre ce que Gemini renvoie vraiment
-        return output;
-    }
-    catch (error) {
-        console.error('Detailed Genkit error:', error); // ← message complet + stack
-        throw error; // rethrow pour voir dans les logs
-    }
+    const { output } = await generateWodPrompt(input);
+    return output;
 });
