@@ -6,7 +6,7 @@
  * - analyzeWod - A function that handles the WOD analysis process.
  */
 
-import {ai} from './genkit-instance';
+import {getAi} from './genkit-instance';
 import {
   AnalyzeWodInputSchema,
   AnalyzeWodOutputSchema,
@@ -20,15 +20,22 @@ export async function analyzeWod(
   return await analyzeWodFlow(input);
 }
 
-const analyzeWodPrompt = ai.definePrompt({
-  name: 'analyzeWodPrompt',
-  input: {schema: AnalyzeWodInputSchema},
-  output: {schema: AnalyzeWodOutputSchema},
-  model: 'googleai/gemini-1.5-pro-preview', // Explicitly use the Pro model for this task.
-  config: {
-    temperature: 0.2, // Lower temperature for more deterministic analysis
+const analyzeWodFlow = getAi().defineFlow(
+  {
+    name: 'analyzeWodFlow',
+    inputSchema: AnalyzeWodInputSchema,
+    outputSchema: AnalyzeWodOutputSchema,
   },
-  prompt: `You are "WODBurner", an expert CrossFit coach specializing in analyzing images of workouts written on whiteboards.
+  async (input: AnalyzeWodInput) => {
+    const analyzeWodPrompt = getAi().definePrompt({
+      name: 'analyzeWodPrompt',
+      input: {schema: AnalyzeWodInputSchema},
+      output: {schema: AnalyzeWodOutputSchema},
+      model: 'googleai/gemini-1.5-pro-preview', 
+      config: {
+        temperature: 0.2, 
+      },
+      prompt: `You are "WODBurner", an expert CrossFit coach specializing in analyzing images of workouts written on whiteboards.
 
 Your task is to analyze the provided image and extract the workout details in a structured format.
 
@@ -57,15 +64,8 @@ Be meticulous. The accuracy of the extracted data is critical.
 
 Analyze this workout:
 {{media url=photoDataUri}}`,
-});
+    });
 
-const analyzeWodFlow = ai.defineFlow(
-  {
-    name: 'analyzeWodFlow',
-    inputSchema: AnalyzeWodInputSchema,
-    outputSchema: AnalyzeWodOutputSchema,
-  },
-  async (input: AnalyzeWodInput) => {
     const {output} = await analyzeWodPrompt(input);
     return output!;
   }

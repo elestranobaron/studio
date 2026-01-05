@@ -6,7 +6,7 @@
  * - generateWod - A function that handles the WOD generation process.
  */
 
-import {ai} from './genkit-instance';
+import {getAi} from './genkit-instance';
 import {
     AnalyzeWodOutputSchema,
     type AnalyzeWodOutput,
@@ -20,20 +20,25 @@ export type GenerateWodInput = z.infer<typeof GenerateWodInputSchema>;
 export async function generateWod(
   input: GenerateWodInput
 ): Promise<AnalyzeWodOutput> {
-  console.log('Starting generateWodFlow with input:', input);
   const result = await generateWodFlow(input);
-  console.log('generateWodFlow completed successfully.');
   return result;
 }
 
-const generateWodPrompt = ai.definePrompt({
-  name: 'generateWodPrompt',
-  input: {schema: GenerateWodInputSchema},
-  output: {schema: AnalyzeWodOutputSchema},
-  config: {
-    temperature: 1.0, // Increase creativity for more varied WODs
+const generateWodFlow = getAi().defineFlow(
+  {
+    name: 'generateWodFlow',
+    inputSchema: GenerateWodInputSchema,
+    outputSchema: AnalyzeWodOutputSchema,
   },
-  prompt: `You are "WODBot 3000", an expert CrossFit coach with a flair for creating challenging, effective, and fun Workouts of the Day (WODs).
+  async (input: GenerateWodInput) => {
+      const generateWodPrompt = getAi().definePrompt({
+        name: 'generateWodPrompt',
+        input: {schema: GenerateWodInputSchema},
+        output: {schema: AnalyzeWodOutputSchema},
+        config: {
+          temperature: 1.0, 
+        },
+        prompt: `You are "WODBot 3000", an expert CrossFit coach with a flair for creating challenging, effective, and fun Workouts of the Day (WODs).
 
 Your task is to generate a completely new and random workout.
 
@@ -56,30 +61,14 @@ Follow these instructions precisely:
     *   **lowerBody**: On a scale of 0-100, what percentage targets the lower body? (Sum of upperBody and lowerBody must be 100).
 
 Generate a well-balanced and challenging workout. Be creative! Surprise me!`,
-});
+      });
 
-const generateWodFlow = ai.defineFlow(
-  {
-    name: 'generateWodFlow',
-    inputSchema: GenerateWodInputSchema,
-    outputSchema: AnalyzeWodOutputSchema,
-  },
-  async (input: GenerateWodInput) => {
-    try {
-        console.log('Calling generateWodPrompt...');
-        const {output} = await generateWodPrompt(input);
-        
-        if (!output) {
-          console.error('generateWodPrompt returned a null or undefined output.');
-          throw new Error('AI model failed to generate a valid WOD structure.');
-        }
-    
-        console.log('generateWodPrompt returned output.');
-        return output;
-    } catch (error) {
-        console.error('Error executing generateWodPrompt in flow:', error);
-        // Re-throw the error to be caught by the onCall wrapper
-        throw error;
-    }
+      const {output} = await generateWodPrompt(input);
+      
+      if (!output) {
+        throw new Error('AI model failed to generate a valid WOD structure.');
+      }
+  
+      return output;
   }
 );
