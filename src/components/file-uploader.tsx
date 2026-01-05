@@ -123,7 +123,7 @@ export function FileUploader() {
       toast({
         variant: "destructive",
         title: t('analysisFailedTitle'),
-        description: `${error.message} - ${error.details}`,
+        description: error.message,
       });
     } finally {
       setIsLoading(false);

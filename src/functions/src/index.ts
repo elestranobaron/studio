@@ -122,8 +122,8 @@ exports.generateWod = onCall({ cors: true }, async (request) => {
         return await generateWodFlow({});
     } catch (e: any) {
         console.error("[generateWod] CAUGHT ERROR:", e);
-        const errorDetails = e.stack || (typeof e === 'object' ? JSON.stringify(e) : String(e));
-        throw new HttpsError("unknown", e.message, errorDetails);
+        const errorMessage = e.stack || e.message || 'Erreur inconnue du serveur.';
+        throw new HttpsError("unknown", errorMessage, { rawError: String(e) });
     }
 });
 
@@ -143,8 +143,8 @@ exports.analyzeWod = onCall({ cors: true }, async (request) => {
         return await analyzeWodFlow({ photoDataUri });
     } catch (e: any) {
         console.error("[analyzeWod] CAUGHT ERROR:", e);
-        const errorDetails = e.stack || (typeof e === 'object' ? JSON.stringify(e) : String(e));
-        throw new HttpsError("unknown", e.message, errorDetails);
+        const errorMessage = e.stack || e.message || 'Erreur inconnue du serveur.';
+        throw new HttpsError("unknown", errorMessage, { rawError: String(e) });
     }
 });
 

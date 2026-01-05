@@ -111,7 +111,7 @@ export default function GenerateWodPage() {
              toast({
                 variant: "destructive",
                 title: t('errorAlert.title'),
-                description: `${e.message} - ${e.details}`,
+                description: e.message,
             });
         } finally {
             setIsLoading(false);
