@@ -1,3 +1,4 @@
+
 "use strict";
 
 import { onCall, HttpsError } from "firebase-functions/v2/https";
@@ -6,8 +7,8 @@ import * as admin from "firebase-admin";
 import Stripe from "stripe";
 import type { QuerySnapshot, DocumentSnapshot } from "firebase-admin/firestore";
 import { setGlobalOptions } from "firebase-functions/v2";
-import { generateWod } from './ai/generate-wod-flow';
-import { analyzeWod } from "./ai/analyze-wod-flow";
+import { generateWod as generateWodFlow } from './ai/generate-wod-flow';
+import { analyzeWod as analyzeWodFlow } from "./ai/analyze-wod-flow";
 
 admin.initializeApp();
 const db = admin.firestore();
@@ -121,11 +122,11 @@ exports.generateWod = onCall({ cors: true }, async (request) => {
   }
 
   try {
-    const result = await generateWod({});
+    const result = await generateWodFlow({});
     return result;
   } catch (e: any) {
-    console.error("[generateWod] Full error object:", JSON.stringify(e, null, 2));
-    throw new HttpsError("internal", e.message || "An unknown error occurred in the WOD generation flow.", e.stack);
+    console.error("[generateWod] Error:", e);
+    throw new HttpsError("unknown", e.message || "An unknown error occurred in the WOD generation flow.", e.stack);
   }
 });
 
@@ -144,11 +145,11 @@ exports.analyzeWod = onCall({ cors: true }, async (request) => {
     }
 
     try {
-      const result = await analyzeWod({ photoDataUri });
+      const result = await analyzeWodFlow({ photoDataUri });
       return result;
     } catch (e: any) {
-      console.error("[analyzeWod] Full error object:", JSON.stringify(e, null, 2));
-      throw new HttpsError("internal", e.message || "An unknown error occurred in the WOD analysis flow.", e.stack);
+      console.error("[analyzeWod] Error:", e);
+      throw new HttpsError("unknown", e.message || "An unknown error occurred in the WOD analysis flow.", e.stack);
     }
 });
 
@@ -225,7 +226,7 @@ exports.createCheckout = onCall({ cors: true }, async (request) => {
     if (!process.env.STRIPE_SECRET_KEY) {
         throw new HttpsError("internal", 'Stripe secret key is not set');
     }
-    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, { apiVersion: "2024-06-20" });
+    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, { apiVersion: "2025-12-15.clover" });
 
     const uid = request.auth.uid;
     const userDoc = await db.collection("users").doc(uid).get();
@@ -260,7 +261,7 @@ exports.createCustomerPortal = onCall({ cors: true }, async (request) => {
     if (!process.env.STRIPE_SECRET_KEY) {
         throw new HttpsError("internal", 'Stripe secret key is not set.');
     }
-    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, { apiVersion: "2024-06-20" });
+    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, { apiVersion: "2025-12-15.clover" });
 
     const uid = request.auth.uid;
     const userDoc = await db.collection('users').doc(uid).get();
@@ -287,7 +288,7 @@ exports.stripeWebhook = onCall({ cors: true }, async (request) => {
     }
 
     const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-      apiVersion: "2024-06-20",
+      apiVersion: "2025-12-15.clover",
     });
 
     let event: Stripe.Event;
