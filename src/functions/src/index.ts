@@ -9,8 +9,6 @@ import type { QuerySnapshot, DocumentSnapshot } from "firebase-admin/firestore";
 import { setGlobalOptions } from "firebase-functions/v2";
 import express from "express";
 import { generateWod } from './ai/generate-wod-flow';
-import { analyzeWod } from "./ai/analyze-wod-flow";
-
 
 admin.initializeApp();
 const db = admin.firestore();
@@ -146,31 +144,6 @@ exports.generateWod = onCall({}, async (request: any) => {
     }
 });
 
-exports.analyzeWod = onCall({}, async (request: any) => {
-    const { photoDataUri, turnstileToken } = request.data;
-
-    if (!photoDataUri) {
-        throw new HttpsError("invalid-argument", "Image data is missing.");
-    }
-
-    if (!turnstileToken) {
-        throw new HttpsError("invalid-argument", "Captcha token is missing.");
-    }
-
-    const isTurnstileValid = await validateTurnstile(turnstileToken, request.rawRequest.ip);
-    if (!isTurnstileValid) {
-        throw new HttpsError("unauthenticated", "Captcha validation failed.");
-    }
-
-    try {
-        const result = await analyzeWod({ photoDataUri });
-        return result;
-    } catch (e: any) {
-        console.error("WOD Analysis Flow Error:", e);
-        throw new HttpsError("internal", e.message || "Failed to analyze WOD.");
-    }
-});
-
 
 exports.verifyDigicode = onCall({}, async (request: any) => {
   try {
@@ -261,7 +234,7 @@ exports.createCheckout = onRequest(
       if (!process.env.STRIPE_SECRET_KEY) {
           throw new Error('Stripe secret key is not set');
       }
-      const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, { apiVersion: "2024-06-20" });
+      const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, { apiVersion: "2025-12-15.clover" });
 
       const token = authHeader.split("Bearer ")[1];
       const decodedToken = await admin.auth().verifyIdToken(token);
@@ -324,7 +297,7 @@ exports.stripeWebhook = onRequest(
     }
 
     const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-      apiVersion: "2024-06-20",
+      apiVersion: "2025-12-15.clover",
     });
 
     const sig = req.headers["stripe-signature"] as string;
@@ -471,7 +444,7 @@ exports.createCustomerPortal = onCall({}, async (request: any) => {
     if (!process.env.STRIPE_SECRET_KEY) {
       throw new HttpsError('internal', 'Stripe secret key is not set.');
     }
-    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, { apiVersion: "2024-06-20" });
+    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, { apiVersion: "2025-12-15.clover" });
 
     if (!request.auth) {
         throw new HttpsError('unauthenticated', 'You must be logged in.');
@@ -491,4 +464,3 @@ exports.createCustomerPortal = onCall({}, async (request: any) => {
 
     return { url: portalSession.url };
 });
-
