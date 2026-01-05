@@ -80,7 +80,7 @@ export default function GenerateWodPage() {
 
         try {
             const functions = getFunctions();
-            const generateWodFn = httpsCallable(functions, 'api-generateWod');
+            const generateWodFn = httpsCallable(functions, 'generateWod');
             const response = await generateWodFn({ turnstileToken });
             const result = response.data as any;
 
@@ -173,17 +173,17 @@ export default function GenerateWodPage() {
                             >
                                 {isLoading ? t('generatingButton') : t('generateButton')}
                             </Button>
-                            <div className="flex justify-center">
-                                <Turnstile onSuccess={onTurnstileSuccess} onExpire={onTurnstileExpire} />
-                            </div>
+                            <Turnstile onSuccess={onTurnstileSuccess} onExpire={onTurnstileExpire} />
                             {isUserLoading && <Skeleton className="h-6 w-48" />}
                              {!isUserLoading && (!user || user.isAnonymous) && (
                                 <Alert variant="default" className="border-blue-500/50 text-blue-500">
                                      <Info className="h-4 w-4 !text-blue-500" />
                                     <AlertTitle>{t('freePlanAlert.title')}</AlertTitle>
-                                    {t.rich('freePlanAlert.description', {
-                                        link: (chunks) => <AlertDescription><Link href="/premium" className="font-bold underline ml-1">{chunks}</Link></AlertDescription>
-                                    })}
+                                    <AlertDescription>
+                                        {t.rich('freePlanAlert.description', {
+                                            link: (chunks) => <Link href="/premium" className="font-bold underline ml-1">{chunks}</Link>
+                                        })}
+                                    </AlertDescription>
                                 </Alert>
                             )}
                              {!isUserLoading && user?.premium && (

@@ -1,30 +1,14 @@
 
 "use strict";
 
-import { onCall, onRequest, HttpsError } from "firebase-functions/v2/https";
+import { onCall, HttpsError } from "firebase-functions/v2/https";
 import { onSchedule } from "firebase-functions/v2/scheduler";
 import * as admin from "firebase-admin";
 import Stripe from "stripe";
 import type { QuerySnapshot, DocumentSnapshot } from "firebase-admin/firestore";
 import { setGlobalOptions } from "firebase-functions/v2";
-import express from "express";
 import { generateWod } from './ai/generate-wod-flow';
 import { analyzeWod } from "./ai/analyze-wod-flow";
-import cors from "cors";
-
-// Initialize Express app
-const app = express();
-
-// Use CORS middleware to allow requests from your frontend
-const corsMiddleware = cors({ origin: "https://wodburner.app" });
-app.use(corsMiddleware);
-
-// Middleware to handle JSON parsing and raw body for Stripe
-app.use(express.json({
-    verify: (req, res, buf) => {
-        (req as any).rawBody = buf;
-    }
-}));
 
 
 admin.initializeApp();
@@ -71,28 +55,24 @@ function generateDigicode() {
   return Math.floor(100000 + Math.random() * 900000).toString();
 }
 
-app.post('/sendDigicode', async (req, res) => {
-  const { email, turnstileToken } = req.body.data;
+exports.sendDigicode = onCall({ cors: true }, async (request) => {
+  const { email, turnstileToken } = request.data;
   if (!email || typeof email !== "string") {
-    res.status(400).json({ error: { message: "A valid email address is required." } });
-    return;
+    throw new HttpsError("invalid-argument", "A valid email address is required.");
   }
   
   if (!turnstileToken) {
-    res.status(400).json({ error: { message: "Captcha token is missing." } });
-    return;
+    throw new HttpsError("invalid-argument", "Captcha token is missing.");
   }
   
-  const isTurnstileValid = await validateTurnstile(turnstileToken, req.ip);
+  const isTurnstileValid = await validateTurnstile(turnstileToken, request.rawRequest.ip);
   if (!isTurnstileValid) {
-      res.status(403).json({ error: { message: "Captcha validation failed." } });
-      return;
+      throw new HttpsError("permission-denied", "Captcha validation failed.");
   }
 
   if (!process.env.BREVO_API_KEY) {
     console.error("Brevo API key is not configured.");
-    res.status(500).json({ error: { message: "The mail service is not configured." } });
-    return;
+    throw new HttpsError("internal", "The mail service is not configured.");
   }
 
   const code = generateDigicode();
@@ -121,83 +101,68 @@ app.post('/sendDigicode', async (req, res) => {
     if (!brevoRes.ok) {
       const errorText = await brevoRes.text();
       console.error("Brevo API error:", errorText);
-      res.status(500).json({ error: { message: "Failed to send the authentication code." } });
-      return;
+      throw new HttpsError("internal", "Failed to send the authentication code.");
     }
 
-    res.json({ data: { success: true } });
+    return { success: true };
   } catch (error) {
     console.error("sendDigicode error:", error);
-    res.status(500).json({ error: { message: "An unexpected error occurred." } });
+    throw new HttpsError("internal", "An unexpected error occurred.");
   }
 });
 
-app.post('/generateWod', async (req, res) => {
-    const { turnstileToken } = req.body.data;
-
+exports.generateWod = onCall({ cors: true }, async (request) => {
+    const { turnstileToken } = request.data;
     if (!turnstileToken) {
-        res.status(400).json({ error: { message: "Captcha token is missing." } });
-        return;
+        throw new HttpsError("invalid-argument", "Captcha token is missing.");
     }
-
-    const isTurnstileValid = await validateTurnstile(turnstileToken, req.ip);
+    const isTurnstileValid = await validateTurnstile(turnstileToken, request.rawRequest.ip);
     if (!isTurnstileValid) {
-        res.status(403).json({ error: { message: "Captcha validation failed." } });
-        return;
+        throw new HttpsError("permission-denied", "Captcha validation failed.");
     }
-
     try {
         const result = await generateWod({});
-        res.json({ data: result });
+        return result;
     } catch (e: any) {
         console.error("WOD Generation Flow Error:", e);
-        res.status(500).json({ error: { message: e.message || "Failed to generate WOD." } });
+        throw new HttpsError("internal", e.message || "Failed to generate WOD.");
     }
 });
 
-
-app.post('/analyzeWod', async (req, res) => {
-    const { photoDataUri, turnstileToken } = req.body.data;
+exports.analyzeWod = onCall({ cors: true }, async (request) => {
+    const { photoDataUri, turnstileToken } = request.data;
     if (!photoDataUri) {
-        res.status(400).json({ error: { message: "The function must be called with a 'photoDataUri' argument." } });
-        return;
+        throw new HttpsError("invalid-argument", "The function must be called with a 'photoDataUri' argument.");
     }
     if (!turnstileToken) {
-        res.status(400).json({ error: { message: "Captcha token is missing." } });
-        return;
+        throw new HttpsError("invalid-argument", "Captcha token is missing.");
     }
-
-    const isTurnstileValid = await validateTurnstile(turnstileToken, req.ip);
+    const isTurnstileValid = await validateTurnstile(turnstileToken, request.rawRequest.ip);
     if (!isTurnstileValid) {
-        res.status(403).json({ error: { message: "Captcha validation failed." } });
-        return;
+        throw new HttpsError("permission-denied", "Captcha validation failed.");
     }
-
     try {
         const result = await analyzeWod({ photoDataUri });
-        res.json({ data: result });
+        return result;
     } catch (e: any) {
         console.error("WOD Analysis Flow Error:", e);
-        res.status(500).json({ error: { message: e.message || "Failed to analyze WOD." } });
+        throw new HttpsError("internal", e.message || "Failed to analyze WOD.");
     }
 });
 
-
-app.post('/verifyDigicode', async (req, res) => {
+exports.verifyDigicode = onCall({ cors: true }, async (request) => {
   try {
-    const { email, code } = req.body.data;
+    const { email, code } = request.data;
 
     if (!email || !code) {
-      res.status(400).json({ error: { message: "Email and code are required." } });
-      return;
+      throw new HttpsError("invalid-argument", "Email and code are required.");
     }
 
     const codeRef = db.collection("digicodes").doc(email.toLowerCase());
     const codeDoc = await codeRef.get();
 
     if (!codeDoc.exists) {
-      res.status(404).json({ error: { message: "Invalid code. Please request a new one." } });
-      return;
+      throw new HttpsError("not-found", "Invalid code. Please request a new one.");
     }
 
     const data = codeDoc.data()!;
@@ -205,13 +170,11 @@ app.post('/verifyDigicode', async (req, res) => {
 
     if (expires.toMillis() < Date.now()) {
       await codeRef.delete();
-      res.status(408).json({ error: { message: "The code has expired." } });
-      return;
+      throw new HttpsError("deadline-exceeded", "The code has expired.");
     }
 
     if (storedCode !== code) {
-      res.status(401).json({ error: { message: "Invalid code." } });
-      return;
+      throw new HttpsError("unauthenticated", "Invalid code.");
     }
 
     await codeRef.delete();
@@ -233,58 +196,43 @@ app.post('/verifyDigicode', async (req, res) => {
 
     const customToken = await admin.auth().createCustomToken(uid);
     
-    res.json({ data: { token: customToken, isNewUser } });
+    return { token: customToken, isNewUser };
 
   } catch (error: any) {
     console.error("FATAL ERROR in verifyDigicode:", error);
-    res.status(500).json({ error: { message: "Could not complete the sign-in process." } });
+    if (error instanceof HttpsError) throw error;
+    throw new HttpsError("internal", "Could not complete the sign-in process.");
   }
 });
 
-
-app.post('/createCheckout', async (req, res) => {
-    try {
-    const authHeader = req.headers.authorization;
-    if (!authHeader?.startsWith("Bearer ")) {
-        res.status(401).json({ error: "Unauthenticated" });
-        return;
+exports.createCheckout = onCall({ cors: true }, async (request) => {
+    if (!request.auth) {
+        throw new HttpsError("unauthenticated", "User must be authenticated.");
     }
 
-    const { yearly, turnstileToken } = req.body.data || {};
-    const userIp = req.headers['x-forwarded-for'] as string | undefined;
-
+    const { yearly, turnstileToken } = request.data;
     if (!turnstileToken) {
-        res.status(400).json({ error: "Captcha token is missing." });
-        return;
+        throw new HttpsError("invalid-argument", "Captcha token is missing.");
     }
-    
-    const isTurnstileValid = await validateTurnstile(turnstileToken, userIp);
+    const isTurnstileValid = await validateTurnstile(turnstileToken, request.rawRequest.ip);
     if (!isTurnstileValid) {
-        res.status(403).json({ error: "Captcha validation failed." });
-        return;
+        throw new HttpsError("permission-denied", "Captcha validation failed.");
     }
 
     if (!process.env.STRIPE_SECRET_KEY) {
-        throw new Error('Stripe secret key is not set');
+        throw new HttpsError("internal", 'Stripe secret key is not set');
     }
-    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, { apiVersion: "2025-12-15.clover" });
+    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, { apiVersion: "2024-06-20" });
 
-    const token = authHeader.split("Bearer ")[1];
-    const decodedToken = await admin.auth().verifyIdToken(token);
-    const uid = decodedToken.uid;
-    
+    const uid = request.auth.uid;
     const userDoc = await db.collection("users").doc(uid).get();
     if (userDoc.data()?.premium === true) {
-        res.status(400).json({ error: "User is already premium." });
-        return;
+        throw new HttpsError("failed-precondition", "User is already premium.");
     }
 
-
     const priceId = yearly === true ? STRIPE_YEARLY_PRICE_ID : STRIPE_MONTHLY_PRICE_ID;
-
     if (!priceId) {
-        res.status(500).json({ error: "Missing Price ID" });
-        return;
+        throw new HttpsError("internal", "Missing Price ID");
     }
 
     const session = await stripe.checkout.sessions.create({
@@ -294,44 +242,70 @@ app.post('/createCheckout', async (req, res) => {
         allow_promotion_codes: true,
         success_url: `${NEXT_PUBLIC_APP_URL}/premium?success=true`,
         cancel_url: `${NEXT_PUBLIC_APP_URL}/premium?cancel=true`,
-        customer_email: decodedToken.email || undefined,
+        customer_email: request.auth.token.email || undefined,
         metadata: { uid },
         subscription_data: { metadata: { uid } },
     });
 
-    res.status(200).json({ data: { url: session.url }});
-    } catch (error: any) {
-    console.error("createCheckout Error:", error);
-    res.status(500).json({ error: error.message || "Internal Server Error" });
-    }
+    return { url: session.url };
 });
 
-
-app.post('/stripeWebhook', async (req, res) => {
-    if (!process.env.STRIPE_SECRET_KEY || !STRIPE_WEBHOOK_SECRET) {
-      console.error("Stripe keys not configured");
-      res.status(500).send("Server configuration error");
-      return;
+exports.createCustomerPortal = onCall({ cors: true }, async (request) => {
+    if (!request.auth) {
+        throw new HttpsError("unauthenticated", "User must be authenticated.");
     }
+    if (!process.env.STRIPE_SECRET_KEY) {
+        throw new HttpsError("internal", 'Stripe secret key is not set.');
+    }
+    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, { apiVersion: "2024-06-20" });
 
-    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-      apiVersion: "2025-12-15.clover",
+    const uid = request.auth.uid;
+    const userDoc = await db.collection('users').doc(uid).get();
+    const customerId = userDoc.data()?.stripeCustomerId;
+
+    if (!customerId) {
+        throw new HttpsError("not-found", 'Stripe customer ID not found.');
+    }
+    
+    const portalSession = await stripe.billingPortal.sessions.create({
+        customer: customerId,
+        return_url: `${NEXT_PUBLIC_APP_URL}/settings`,
     });
 
-    const sig = req.headers["stripe-signature"] as string;
+    return { url: portalSession.url };
+});
 
-    let event;
-    try {
-      event = stripe.webhooks.constructEvent(
-        (req as any).rawBody,
-        sig,
-        STRIPE_WEBHOOK_SECRET
-      );
-    } catch (err: any) {
-      console.error("Webhook signature verification failed:", err.message);
-      res.status(400).send(`Webhook Error: ${err.message}`);
+// This is an onRequest function because it needs to handle raw request bodies from Stripe.
+exports.stripeWebhook = onRequest({ cors: true }, async (req, res) => {
+  if (req.method !== 'POST') {
+      res.status(405).send('Method Not Allowed');
       return;
-    }
+  }
+  
+  if (!process.env.STRIPE_SECRET_KEY || !STRIPE_WEBHOOK_SECRET) {
+    console.error("Stripe keys not configured");
+    res.status(500).send("Server configuration error");
+    return;
+  }
+
+  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+    apiVersion: "2024-06-20",
+  });
+
+  const sig = req.headers["stripe-signature"] as string;
+
+  let event;
+  try {
+    event = stripe.webhooks.constructEvent(
+      (req as any).rawBody,
+      sig,
+      STRIPE_WEBHOOK_SECRET
+    );
+  } catch (err: any) {
+    console.error("Webhook signature verification failed:", err.message);
+    res.status(400).send(`Webhook Error: ${err.message}`);
+    return;
+  }
 
   if (
     ["checkout.session.completed", "customer.subscription.created", "invoice.paid"].includes(event.type)
@@ -450,49 +424,6 @@ app.post('/stripeWebhook', async (req, res) => {
   res.status(200).send("ok");
 });
 
-app.post('/createCustomerPortal', async (req, res) => {
-    if (!process.env.STRIPE_SECRET_KEY) {
-        res.status(500).json({ error: 'Stripe secret key is not set.' });
-        return;
-    }
-    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, { apiVersion: "2025-12-15.clover" });
-
-    const authHeader = req.headers.authorization;
-    if (!authHeader?.startsWith("Bearer ")) {
-        res.status(401).json({ error: "Unauthenticated" });
-        return;
-    }
-
-    try {
-        const token = authHeader.split("Bearer ")[1];
-        const decodedToken = await admin.auth().verifyIdToken(token);
-        const uid = decodedToken.uid;
-        
-        const userDoc = await db.collection('users').doc(uid).get();
-        const customerId = userDoc.data()?.stripeCustomerId;
-
-        if (!customerId) {
-            res.status(404).json({ error: 'Stripe customer ID not found.' });
-            return;
-        }
-        
-        const portalSession = await stripe.billingPortal.sessions.create({
-            customer: customerId,
-            return_url: `${NEXT_PUBLIC_APP_URL}/settings`,
-        });
-
-        res.json({ data: { url: portalSession.url }});
-    } catch (error: any) {
-         res.status(500).json({ error: error.message || 'Could not create customer portal session.' });
-    }
-});
-
-
-// Export the Express app as a function for each endpoint
-exports.api = onRequest(app);
-
-
-// Scheduled functions remain unchanged
 exports.resetDailyLimits = onSchedule('0 0 * * *', async () => {
     console.log('Running daily limit reset job.');
     try {

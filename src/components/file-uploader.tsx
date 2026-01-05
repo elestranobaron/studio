@@ -76,7 +76,6 @@ export function FileUploader() {
   const { firestore } = useFirebase();
   const auth = useAuth();
   const { user, isUserLoading } = useUser();
-  const functions = getFunctions();
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
     if (acceptedFiles.length > 0) {
@@ -109,7 +108,8 @@ export function FileUploader() {
     try {
       const photoDataUri = await toBase64(file);
       
-      const analyzeWodFn = httpsCallable(functions, 'api-analyzeWod');
+      const functions = getFunctions();
+      const analyzeWodFn = httpsCallable(functions, 'analyzeWod');
       const response = await analyzeWodFn({ photoDataUri, turnstileToken });
       const result = response.data as AnalyzeWodOutput;
       
@@ -250,7 +250,7 @@ export function FileUploader() {
       performSave(user.uid);
       setSaveIntent(false); // Reset intent after save attempt
     }
-  }, [user, saveIntent]);
+  }, [user, saveIntent, performSave]);
 
 
   const handleRemove = () => {
@@ -383,9 +383,7 @@ export function FileUploader() {
                 >
                 {t('analyzeButton')}
                 </Button>
-                 <div className="flex justify-center">
-                    <Turnstile onSuccess={onTurnstileSuccess} onExpire={onTurnstileExpire} />
-                </div>
+                 <Turnstile onSuccess={onTurnstileSuccess} onExpire={onTurnstileExpire} />
             </div>
           ) : (
             <div className="space-y-4">

@@ -78,9 +78,7 @@ function PremiumContent({ t }: { t: any }) {
   
     try {
       const functions = getFunctions();
-      const createCheckoutFn = httpsCallable(functions, 'api-createCheckout');
-
-      const token = await auth.currentUser.getIdToken();
+      const createCheckoutFn = httpsCallable(functions, 'createCheckout');
       
       const response = await createCheckoutFn({
           yearly: plan === 'yearly',

@@ -30,8 +30,6 @@ function LoginClientContent() {
   const searchParams = useSearchParams();
   const { toast } = useToast();
 
-  const functions = getFunctions();
-
   useEffect(() => {
     const isNewUser = searchParams.get('new') === 'true';
     if (isNewUser) {
@@ -68,21 +66,27 @@ function LoginClientContent() {
     setError(null);
 
     try {
-      const sendDigicode = httpsCallable(functions, 'api-sendDigicode');
+      const functions = getFunctions();
+      const sendDigicode = httpsCallable(functions, 'sendDigicode');
       await sendDigicode({ email: currentEmail, turnstileToken });
 
       setEmail(currentEmail);
       setStep('code');
       toast({
-        title: t('linkSentToast') || 'Code envoyé !',
-        description: t.rich ? t.rich('emailSentDescription', {
-          bold: (chunks: React.ReactNode) => <strong>{chunks}</strong>,
+        title: t('linkSentToast'),
+        description: t.rich('emailSentDescription', {
+          bold: (chunks) => <strong>{chunks}</strong>,
           email: currentEmail
-        }) : `Un code a été envoyé à ${currentEmail}`,
+        }),
       });
     } catch (err: any) {
       console.error('sendDigicode error:', err);
-      setError(err.message || 'Impossible d\'envoyer le code. Réessaie.');
+      setError(err.message || "Could not send code. Please try again.");
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: err.message || "Could not send code. Please try again.",
+      })
     } finally {
       setIsLoading(false);
     }
@@ -91,7 +95,7 @@ function LoginClientContent() {
   const handleVerifyCode = async (e: React.FormEvent) => {
     e.preventDefault();
     if (code.length !== 6 || !/^\d+$/.test(code)) {
-      setError('Le code doit contenir exactement 6 chiffres');
+      setError('The code must be exactly 6 digits.');
       return;
     }
 
@@ -99,12 +103,13 @@ function LoginClientContent() {
     setError(null);
 
     try {
-      const verifyDigicode = httpsCallable(functions, 'api-verifyDigicode');
+      const functions = getFunctions();
+      const verifyDigicode = httpsCallable(functions, 'verifyDigicode');
       const result = await verifyDigicode({ email: email.trim().toLowerCase(), code });
 
       const data = result.data as { token?: string, isNewUser?: boolean };
       if (!data.token) {
-        throw new Error('Token manquant dans la réponse');
+        throw new Error('Missing authentication token in response.');
       }
       
       if(data.isNewUser){
@@ -113,12 +118,15 @@ function LoginClientContent() {
 
       await signInWithCustomToken(auth!, data.token);
 
-      toast({ title: 'Connecté !', description: 'Bienvenue sur WODBurner !' });
+      toast({ title: t('signInSuccessToast'), description: t('signInSuccessToastDescription') });
     } catch (err: any) {
       console.error('Verification error:', err);
-      let msg = err.message || 'Impossible de se connecter';
+      let msg = err.message || 'Could not sign in.';
+      if (err.code === 'functions/not-found' || err.code === 'functions/unauthenticated' ) {
+          msg = t('invalidLinkError');
+      }
       setError(msg);
-      toast({ variant: 'destructive', title: 'Erreur', description: msg });
+      toast({ variant: 'destructive', title: t('confirmEmailFailedTitle'), description: msg });
     } finally {
       setIsVerifying(false);
     }
@@ -136,7 +144,7 @@ function LoginClientContent() {
     return (
       <div className="flex h-screen w-full flex-col items-center justify-center gap-4">
         <LoaderCircle className="h-12 w-12 animate-spin text-primary" />
-        <p className="text-muted-foreground">{t('verifying') || 'Vérification en cours...'}</p>
+        <p className="text-muted-foreground">{t('verifying')}</p>
       </div>
     );
   }
@@ -189,17 +197,17 @@ function LoginClientContent() {
             <CardDescription>
               {step === 'email'
                 ? t('formDescription')
-                : t.rich?.('emailSentDescription', {
+                : t.rich('emailSentDescription', {
                     bold: (chunks: React.ReactNode) => <strong>{chunks}</strong>,
                     email
-                  }) || `Code envoyé à ${email}`}
+                  })}
             </CardDescription>
           </CardHeader>
           <CardContent>
             {error && (
               <Alert variant="destructive" className="mb-4">
                 <AlertTriangle className="h-4 w-4" />
-                <AlertTitle>{t('confirmEmailFailedTitle') || 'Erreur'}</AlertTitle>
+                <AlertTitle>{t('confirmEmailFailedTitle')}</AlertTitle>
                 <AlertDescription>{error}</AlertDescription>
               </Alert>
             )}
@@ -218,7 +226,7 @@ function LoginClientContent() {
                     <Turnstile onSuccess={onTurnstileSuccess} onExpire={onTurnstileExpire} />
                 </div>
                 <Button type="submit" className="w-full" disabled={isLoading || !turnstileToken}>
-                  {isLoading ? <LoaderCircle className="animate-spin mr-2" /> : t('sendLinkButton') || 'Envoyer le code'}
+                  {isLoading ? <LoaderCircle className="animate-spin mr-2" /> : t('sendLinkButton')}
                 </Button>
               </form>
             ) : (
@@ -235,10 +243,10 @@ function LoginClientContent() {
                   disabled={isVerifying}
                 />
                 <Button type="submit" className="w-full" disabled={isVerifying}>
-                  {isVerifying ? <LoaderCircle className="animate-spin mr-2" /> : t('confirmEmailSignInButton') || 'Se connecter'}
+                  {isVerifying ? <LoaderCircle className="animate-spin mr-2" /> : t('confirmEmailSignInButton')}
                 </Button>
                 <Button variant="link" size="sm" onClick={() => { setStep('email'); setCode(''); }} className="w-full">
-                  Utiliser une autre adresse e-mail
+                  Use a different email address
                 </Button>
               </form>
             )}
@@ -250,11 +258,12 @@ function LoginClientContent() {
 }
 
 export default function LoginPage() {
+  const t = useTranslations('LoginPage');
   return (
     <Suspense fallback={
       <div className="flex h-screen w-full flex-col items-center justify-center gap-4">
         <LoaderCircle className="h-12 w-12 animate-spin text-primary" />
-        <p className="text-muted-foreground">Chargement...</p>
+        <p className="text-muted-foreground">{t('verifying')}</p>
       </div>
     }>
       <LoginClientContent />
