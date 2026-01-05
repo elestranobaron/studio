@@ -20,7 +20,16 @@ export type GenerateWodInput = z.infer<typeof GenerateWodInputSchema>;
 export async function generateWod(
   input: GenerateWodInput
 ): Promise<AnalyzeWodOutput> {
-  return await generateWodFlow(input);
+  console.log('Starting generateWodFlow with input:', input);
+  try {
+    const result = await generateWodFlow(input);
+    console.log('generateWodFlow completed successfully.');
+    return result;
+  } catch (error) {
+    console.error('Error executing generateWodFlow:', error);
+    // Re-throw the error to be caught by the onCall wrapper
+    throw error;
+  }
 }
 
 const generateWodPrompt = ai.definePrompt({
@@ -62,7 +71,15 @@ const generateWodFlow = ai.defineFlow(
     outputSchema: AnalyzeWodOutputSchema,
   },
   async (input: GenerateWodInput) => {
+    console.log('Calling generateWodPrompt...');
     const {output} = await generateWodPrompt(input);
-    return output!;
+    
+    if (!output) {
+      console.error('generateWodPrompt returned a null or undefined output.');
+      throw new Error('AI model failed to generate a valid WOD structure.');
+    }
+
+    console.log('generateWodPrompt returned output.');
+    return output;
   }
 );
