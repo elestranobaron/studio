@@ -126,7 +126,7 @@ exports.generateWod = onCall({ cors: true }, async (request) => {
     return result;
   } catch (e: any) {
     console.error("[generateWod] Error:", e);
-    throw new HttpsError("unknown", e.message || "An unknown error occurred in the WOD generation flow.", e.stack);
+    throw new HttpsError("unknown", e.message, e.stack);
   }
 });
 
@@ -149,7 +149,7 @@ exports.analyzeWod = onCall({ cors: true }, async (request) => {
       return result;
     } catch (e: any) {
       console.error("[analyzeWod] Error:", e);
-      throw new HttpsError("unknown", e.message || "An unknown error occurred in the WOD analysis flow.", e.stack);
+      throw new HttpsError("unknown", e.message, e.stack);
     }
 });
 
