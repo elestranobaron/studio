@@ -18,6 +18,7 @@ import { useTranslations } from "next-intl";
 import Turnstile from "@/components/turnstile";
 import { getFunctions, httpsCallable } from "firebase/functions";
 import React from "react";
+import { doc, collection } from "firebase/firestore";
 
 
 function GeneratingState() {
@@ -110,7 +111,7 @@ export default function GenerateWodPage() {
              toast({
                 variant: "destructive",
                 title: t('errorAlert.title'),
-                description: e.message || t('errorAlert.description'),
+                description: `${e.message} - ${e.details}`,
             });
         } finally {
             setIsLoading(false);

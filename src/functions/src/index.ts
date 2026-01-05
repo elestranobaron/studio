@@ -110,46 +110,41 @@ exports.sendDigicode = onCall({ cors: true }, async (request) => {
 });
 
 exports.generateWod = onCall({ cors: true }, async (request) => {
-  const { turnstileToken } = request.data;
-
-  if (!turnstileToken) {
-    throw new HttpsError("invalid-argument", "Captcha token is missing.");
-  }
-
-  const isTurnstileValid = await validateTurnstile(turnstileToken, request.rawRequest.ip);
-  if (!isTurnstileValid) {
-    throw new HttpsError("permission-denied", "Captcha validation failed.");
-  }
-
-  try {
-    const result = await generateWodFlow({});
-    return result;
-  } catch (e: any) {
-    console.error("[generateWod] Error:", e);
-    throw new HttpsError("unknown", e.message, e.stack);
-  }
+    try {
+        const { turnstileToken } = request.data;
+        if (!turnstileToken) {
+            throw new HttpsError("invalid-argument", "Captcha token is missing.");
+        }
+        const isTurnstileValid = await validateTurnstile(turnstileToken, request.rawRequest.ip);
+        if (!isTurnstileValid) {
+            throw new HttpsError("permission-denied", "Captcha validation failed.");
+        }
+        return await generateWodFlow({});
+    } catch (e: any) {
+        console.error("[generateWod] CAUGHT ERROR:", e);
+        const errorDetails = e.stack || (typeof e === 'object' ? JSON.stringify(e) : String(e));
+        throw new HttpsError("unknown", e.message, errorDetails);
+    }
 });
 
 exports.analyzeWod = onCall({ cors: true }, async (request) => {
-    const { photoDataUri, turnstileToken } = request.data;
-    if (!photoDataUri) {
-      throw new HttpsError("invalid-argument", "The function must be called with a 'photoDataUri' argument.");
-    }
-    if (!turnstileToken) {
-      throw new HttpsError("invalid-argument", "Captcha token is missing.");
-    }
-
-    const isTurnstileValid = await validateTurnstile(turnstileToken, request.rawRequest.ip);
-    if (!isTurnstileValid) {
-        throw new HttpsError("permission-denied", "Captcha validation failed.");
-    }
-
     try {
-      const result = await analyzeWodFlow({ photoDataUri });
-      return result;
+        const { photoDataUri, turnstileToken } = request.data;
+        if (!photoDataUri) {
+            throw new HttpsError("invalid-argument", "The function must be called with a 'photoDataUri' argument.");
+        }
+        if (!turnstileToken) {
+            throw new HttpsError("invalid-argument", "Captcha token is missing.");
+        }
+        const isTurnstileValid = await validateTurnstile(turnstileToken, request.rawRequest.ip);
+        if (!isTurnstileValid) {
+            throw new HttpsError("permission-denied", "Captcha validation failed.");
+        }
+        return await analyzeWodFlow({ photoDataUri });
     } catch (e: any) {
-      console.error("[analyzeWod] Error:", e);
-      throw new HttpsError("unknown", e.message, e.stack);
+        console.error("[analyzeWod] CAUGHT ERROR:", e);
+        const errorDetails = e.stack || (typeof e === 'object' ? JSON.stringify(e) : String(e));
+        throw new HttpsError("unknown", e.message, errorDetails);
     }
 });
 
