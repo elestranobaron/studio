@@ -47,7 +47,7 @@ export default function SettingsPage() {
     setIsPortalLoading(true);
     try {
       const functions = getFunctions();
-      const createCustomerPortal = httpsCallable(functions, 'createCustomerPortal');
+      const createCustomerPortal = httpsCallable(functions, 'api-createCustomerPortal');
       const { data } = await createCustomerPortal();
       const portalUrl = (data as { url: string }).url;
       if (portalUrl) {
@@ -236,6 +236,3 @@ export default function SettingsPage() {
     </div>
   );
 }
-
-    
-

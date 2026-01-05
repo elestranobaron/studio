@@ -109,7 +109,7 @@ export function FileUploader() {
     try {
       const photoDataUri = await toBase64(file);
       
-      const analyzeWodFn = httpsCallable(functions, 'analyzeWod');
+      const analyzeWodFn = httpsCallable(functions, 'api-analyzeWod');
       const response = await analyzeWodFn({ photoDataUri, turnstileToken });
       const result = response.data as AnalyzeWodOutput;
       

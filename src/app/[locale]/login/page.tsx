@@ -68,7 +68,7 @@ function LoginClientContent() {
     setError(null);
 
     try {
-      const sendDigicode = httpsCallable(functions, 'sendDigicode');
+      const sendDigicode = httpsCallable(functions, 'api-sendDigicode');
       await sendDigicode({ email: currentEmail, turnstileToken });
 
       setEmail(currentEmail);
@@ -99,7 +99,7 @@ function LoginClientContent() {
     setError(null);
 
     try {
-      const verifyDigicode = httpsCallable(functions, 'verifyDigicode');
+      const verifyDigicode = httpsCallable(functions, 'api-verifyDigicode');
       const result = await verifyDigicode({ email: email.trim().toLowerCase(), code });
 
       const data = result.data as { token?: string, isNewUser?: boolean };

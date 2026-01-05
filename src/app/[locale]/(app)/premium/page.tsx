@@ -77,32 +77,17 @@ function PremiumContent({ t }: { t: any }) {
     setIsLoading(plan);
   
     try {
-      // 1. On récupère le token Firebase manuellement
+      const functions = getFunctions();
+      const createCheckoutFn = httpsCallable(functions, 'api-createCheckout');
+
       const token = await auth.currentUser.getIdToken();
-  
-      // 2. Appel direct à la fonction HTTPS (plus de httpsCallable)
-      const response = await fetch(
-        "https://us-central1-studio-9534743514-17d90.cloudfunctions.net/createCheckout",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({
-            data: { 
-                yearly: plan === 'yearly',
-                turnstileToken: turnstileToken,
-            },
-          }),
-        }
-      );
-  
-      const result = await response.json();
-  
-      if (!response.ok) {
-        throw new Error(result.error || "Erreur lors de la création du checkout");
-      }
+      
+      const response = await createCheckoutFn({
+          yearly: plan === 'yearly',
+          turnstileToken: turnstileToken,
+      });
+
+      const result = response.data as any;
   
       if (!result.url) {
         throw new Error("Aucune URL de checkout reçue");

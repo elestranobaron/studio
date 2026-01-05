@@ -12,15 +12,26 @@ import { generateWod } from './ai/generate-wod-flow';
 import { analyzeWod } from "./ai/analyze-wod-flow";
 import cors from "cors";
 
-const corsMiddleware = cors({ origin: true });
+// Initialize Express app
+const app = express();
+
+// Use CORS middleware to allow requests from your frontend
+const corsMiddleware = cors({ origin: "https://wodburner.app" });
+app.use(corsMiddleware);
+
+// Middleware to handle JSON parsing and raw body for Stripe
+app.use(express.json({
+    verify: (req, res, buf) => {
+        (req as any).rawBody = buf;
+    }
+}));
+
 
 admin.initializeApp();
 const db = admin.firestore();
 
-// Set global options for all functions
 setGlobalOptions({ 
-  region: "us-central1",
-  cors: [ "https://wodburner.app", "http://localhost:3000" ] // Whitelist your app's domains
+  region: "us-central1"
 });
 
 
@@ -29,15 +40,6 @@ const STRIPE_MONTHLY_PRICE_ID = process.env.STRIPE_MONTHLY_PRICE_ID!;
 const STRIPE_YEARLY_PRICE_ID = process.env.STRIPE_YEARLY_PRICE_ID!;
 const TURNSTILE_SECRET_KEY = process.env.TURNSTILE_SECRET_KEY!;
 const NEXT_PUBLIC_APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
-
-
-declare global {
-  namespace Express {
-    interface Request {
-      rawBody: string;
-    }
-  }
-}
 
 async function validateTurnstile(token: string, ip: string | undefined): Promise<boolean> {
     if (!TURNSTILE_SECRET_KEY) {
@@ -69,25 +71,28 @@ function generateDigicode() {
   return Math.floor(100000 + Math.random() * 900000).toString();
 }
 
-exports.sendDigicode = onCall(async (request: any) => {
-  const { email, turnstileToken } = request.data;
+app.post('/sendDigicode', async (req, res) => {
+  const { email, turnstileToken } = req.body.data;
   if (!email || typeof email !== "string") {
-    throw new HttpsError("invalid-argument", "A valid email address is required.");
+    res.status(400).json({ error: { message: "A valid email address is required." } });
+    return;
   }
   
   if (!turnstileToken) {
-    throw new HttpsError("invalid-argument", "Captcha token is missing.");
+    res.status(400).json({ error: { message: "Captcha token is missing." } });
+    return;
   }
   
-  const isTurnstileValid = await validateTurnstile(turnstileToken, request.rawRequest.ip);
+  const isTurnstileValid = await validateTurnstile(turnstileToken, req.ip);
   if (!isTurnstileValid) {
-      throw new HttpsError("unauthenticated", "Captcha validation failed.");
+      res.status(403).json({ error: { message: "Captcha validation failed." } });
+      return;
   }
-
 
   if (!process.env.BREVO_API_KEY) {
     console.error("Brevo API key is not configured.");
-    throw new HttpsError("internal", "The mail service is not configured.");
+    res.status(500).json({ error: { message: "The mail service is not configured." } });
+    return;
   }
 
   const code = generateDigicode();
@@ -116,77 +121,83 @@ exports.sendDigicode = onCall(async (request: any) => {
     if (!brevoRes.ok) {
       const errorText = await brevoRes.text();
       console.error("Brevo API error:", errorText);
-      throw new HttpsError("internal", "Failed to send the authentication code.");
+      res.status(500).json({ error: { message: "Failed to send the authentication code." } });
+      return;
     }
 
-    return { success: true };
+    res.json({ data: { success: true } });
   } catch (error) {
     console.error("sendDigicode error:", error);
-    throw new HttpsError("internal", "An unexpected error occurred.");
+    res.status(500).json({ error: { message: "An unexpected error occurred." } });
   }
 });
 
-exports.generateWod = onCall(async (request: any) => {
-    const { turnstileToken } = request.data;
+app.post('/generateWod', async (req, res) => {
+    const { turnstileToken } = req.body.data;
 
     if (!turnstileToken) {
-        throw new HttpsError("invalid-argument", "Captcha token is missing.");
+        res.status(400).json({ error: { message: "Captcha token is missing." } });
+        return;
     }
 
-    const isTurnstileValid = await validateTurnstile(turnstileToken, request.rawRequest.ip);
+    const isTurnstileValid = await validateTurnstile(turnstileToken, req.ip);
     if (!isTurnstileValid) {
-        throw new HttpsError("unauthenticated", "Captcha validation failed.");
+        res.status(403).json({ error: { message: "Captcha validation failed." } });
+        return;
     }
 
     try {
-        console.log('Calling generateWod with input:', {});
         const result = await generateWod({});
-        console.log('generateWod returned:', result);
-        return result;
+        res.json({ data: result });
     } catch (e: any) {
         console.error("WOD Generation Flow Error:", e);
-        // Re-throw the original error to propagate its message to the client
-        throw new HttpsError("internal", e.message || "Failed to generate WOD.");
+        res.status(500).json({ error: { message: e.message || "Failed to generate WOD." } });
     }
 });
 
-exports.analyzeWod = onCall(async (request: any) => {
-    const { photoDataUri, turnstileToken } = request.data;
+
+app.post('/analyzeWod', async (req, res) => {
+    const { photoDataUri, turnstileToken } = req.body.data;
     if (!photoDataUri) {
-        throw new HttpsError("invalid-argument", "The function must be called with a 'photoDataUri' argument.");
+        res.status(400).json({ error: { message: "The function must be called with a 'photoDataUri' argument." } });
+        return;
     }
     if (!turnstileToken) {
-        throw new HttpsError("invalid-argument", "Captcha token is missing.");
+        res.status(400).json({ error: { message: "Captcha token is missing." } });
+        return;
     }
 
-    const isTurnstileValid = await validateTurnstile(turnstileToken, request.rawRequest.ip);
+    const isTurnstileValid = await validateTurnstile(turnstileToken, req.ip);
     if (!isTurnstileValid) {
-        throw new HttpsError("unauthenticated", "Captcha validation failed.");
+        res.status(403).json({ error: { message: "Captcha validation failed." } });
+        return;
     }
 
     try {
         const result = await analyzeWod({ photoDataUri });
-        return result;
+        res.json({ data: result });
     } catch (e: any) {
         console.error("WOD Analysis Flow Error:", e);
-        throw new HttpsError("internal", e.message || "Failed to analyze WOD.");
+        res.status(500).json({ error: { message: e.message || "Failed to analyze WOD." } });
     }
 });
 
 
-exports.verifyDigicode = onCall(async (request: any) => {
+app.post('/verifyDigicode', async (req, res) => {
   try {
-    const { email, code } = request.data;
+    const { email, code } = req.body.data;
 
     if (!email || !code) {
-      throw new HttpsError("invalid-argument", "Email and code are required.");
+      res.status(400).json({ error: { message: "Email and code are required." } });
+      return;
     }
 
     const codeRef = db.collection("digicodes").doc(email.toLowerCase());
     const codeDoc = await codeRef.get();
 
     if (!codeDoc.exists) {
-      throw new HttpsError("not-found", "Invalid code. Please request a new one.");
+      res.status(404).json({ error: { message: "Invalid code. Please request a new one." } });
+      return;
     }
 
     const data = codeDoc.data()!;
@@ -194,11 +205,13 @@ exports.verifyDigicode = onCall(async (request: any) => {
 
     if (expires.toMillis() < Date.now()) {
       await codeRef.delete();
-      throw new HttpsError("deadline-exceeded", "The code has expired.");
+      res.status(408).json({ error: { message: "The code has expired." } });
+      return;
     }
 
     if (storedCode !== code) {
-      throw new HttpsError("unauthenticated", "Invalid code.");
+      res.status(401).json({ error: { message: "Invalid code." } });
+      return;
     }
 
     await codeRef.delete();
@@ -220,100 +233,81 @@ exports.verifyDigicode = onCall(async (request: any) => {
 
     const customToken = await admin.auth().createCustomToken(uid);
     
-    return { token: customToken, isNewUser };
+    res.json({ data: { token: customToken, isNewUser } });
 
   } catch (error: any) {
-    console.error("ERREUR FATALE dans verifyDigicode :", error);
-    console.error("Stack :", error.stack);
-    if (error instanceof HttpsError) {
-        throw error;
-    }
-    throw new HttpsError("internal", "Could not complete the sign-in process.");
+    console.error("FATAL ERROR in verifyDigicode:", error);
+    res.status(500).json({ error: { message: "Could not complete the sign-in process." } });
   }
 });
 
-exports.createCheckout = onRequest(
-  {
-    memory: "256MiB",
-    timeoutSeconds: 60,
-  },
-  async (req, res) => {
-    corsMiddleware(req, res, async () => {
-        try {
-        const authHeader = req.headers.authorization;
-        if (!authHeader?.startsWith("Bearer ")) {
-            res.status(401).json({ error: "Unauthenticated" });
-            return;
-        }
 
-        const { yearly, turnstileToken } = req.body.data || {};
-        const userIp = req.headers['x-forwarded-for'] as string | undefined;
-
-        if (!turnstileToken) {
-            res.status(400).json({ error: "Captcha token is missing." });
-            return;
-        }
-        
-        const isTurnstileValid = await validateTurnstile(turnstileToken, userIp);
-        if (!isTurnstileValid) {
-            res.status(403).json({ error: "Captcha validation failed." });
-            return;
-        }
-
-        if (!process.env.STRIPE_SECRET_KEY) {
-            throw new Error('Stripe secret key is not set');
-        }
-        const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, { apiVersion: "2025-12-15.clover" });
-
-        const token = authHeader.split("Bearer ")[1];
-        const decodedToken = await admin.auth().verifyIdToken(token);
-        const uid = decodedToken.uid;
-        
-        const userDoc = await db.collection("users").doc(uid).get();
-        if (userDoc.data()?.premium === true) {
-            res.status(400).json({ error: "User is already premium." });
-            return;
-        }
-
-
-        const priceId = yearly === true ? STRIPE_YEARLY_PRICE_ID : STRIPE_MONTHLY_PRICE_ID;
-
-        if (!priceId) {
-            res.status(500).json({ error: "Price ID manquant" });
-            return;
-        }
-
-        const session = await stripe.checkout.sessions.create({
-            payment_method_types: ["card"],
-            line_items: [{ price: priceId, quantity: 1 }],
-            mode: "subscription",
-            allow_promotion_codes: true,
-            success_url: `${NEXT_PUBLIC_APP_URL}/premium?success=true`,
-            cancel_url: `${NEXT_PUBLIC_APP_URL}/premium?cancel=true`,
-            customer_email: decodedToken.email || undefined,
-            metadata: { uid },
-            subscription_data: { metadata: { uid } },
-        });
-
-        res.status(200).json({ url: session.url });
-        } catch (error: any) {
-        console.error("Erreur createCheckout:", error);
-        res.status(500).json({ error: error.message || "Erreur interne" });
-        }
-    });
-  }
-);
-
-exports.stripeWebhook = onRequest(
-  {
-    region: "us-central1",
-  },
-  async (req, res) => {
-    if (req.method !== "POST") {
-      res.status(405).send("Method Not Allowed");
-      return;
+app.post('/createCheckout', async (req, res) => {
+    try {
+    const authHeader = req.headers.authorization;
+    if (!authHeader?.startsWith("Bearer ")) {
+        res.status(401).json({ error: "Unauthenticated" });
+        return;
     }
 
+    const { yearly, turnstileToken } = req.body.data || {};
+    const userIp = req.headers['x-forwarded-for'] as string | undefined;
+
+    if (!turnstileToken) {
+        res.status(400).json({ error: "Captcha token is missing." });
+        return;
+    }
+    
+    const isTurnstileValid = await validateTurnstile(turnstileToken, userIp);
+    if (!isTurnstileValid) {
+        res.status(403).json({ error: "Captcha validation failed." });
+        return;
+    }
+
+    if (!process.env.STRIPE_SECRET_KEY) {
+        throw new Error('Stripe secret key is not set');
+    }
+    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, { apiVersion: "2025-12-15.clover" });
+
+    const token = authHeader.split("Bearer ")[1];
+    const decodedToken = await admin.auth().verifyIdToken(token);
+    const uid = decodedToken.uid;
+    
+    const userDoc = await db.collection("users").doc(uid).get();
+    if (userDoc.data()?.premium === true) {
+        res.status(400).json({ error: "User is already premium." });
+        return;
+    }
+
+
+    const priceId = yearly === true ? STRIPE_YEARLY_PRICE_ID : STRIPE_MONTHLY_PRICE_ID;
+
+    if (!priceId) {
+        res.status(500).json({ error: "Missing Price ID" });
+        return;
+    }
+
+    const session = await stripe.checkout.sessions.create({
+        payment_method_types: ["card"],
+        line_items: [{ price: priceId, quantity: 1 }],
+        mode: "subscription",
+        allow_promotion_codes: true,
+        success_url: `${NEXT_PUBLIC_APP_URL}/premium?success=true`,
+        cancel_url: `${NEXT_PUBLIC_APP_URL}/premium?cancel=true`,
+        customer_email: decodedToken.email || undefined,
+        metadata: { uid },
+        subscription_data: { metadata: { uid } },
+    });
+
+    res.status(200).json({ data: { url: session.url }});
+    } catch (error: any) {
+    console.error("createCheckout Error:", error);
+    res.status(500).json({ error: error.message || "Internal Server Error" });
+    }
+});
+
+
+app.post('/stripeWebhook', async (req, res) => {
     if (!process.env.STRIPE_SECRET_KEY || !STRIPE_WEBHOOK_SECRET) {
       console.error("Stripe keys not configured");
       res.status(500).send("Server configuration error");
@@ -326,16 +320,10 @@ exports.stripeWebhook = onRequest(
 
     const sig = req.headers["stripe-signature"] as string;
 
-    if (!req.rawBody) {
-      console.error("rawBody manquant – cela ne devrait pas arriver en v2");
-      res.status(400).send("No raw body");
-      return;
-    }
-
     let event;
     try {
       event = stripe.webhooks.constructEvent(
-        req.rawBody,
+        (req as any).rawBody,
         sig,
         STRIPE_WEBHOOK_SECRET
       );
@@ -452,7 +440,7 @@ exports.stripeWebhook = onRequest(
                     }
                 }
             });
-            console.log(`PREMIUM ACTIVÉ pour ${uid} – ${event.type}`);
+            console.log(`PREMIUM ACTIVATED for ${uid} – ${event.type}`);
         } catch(error) {
             console.error(`Transaction failed for user ${uid}:`, error);
         }
@@ -462,32 +450,49 @@ exports.stripeWebhook = onRequest(
   res.status(200).send("ok");
 });
 
-exports.createCustomerPortal = onCall(async (request: any) => {
+app.post('/createCustomerPortal', async (req, res) => {
     if (!process.env.STRIPE_SECRET_KEY) {
-      throw new HttpsError('internal', 'Stripe secret key is not set.');
+        res.status(500).json({ error: 'Stripe secret key is not set.' });
+        return;
     }
     const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, { apiVersion: "2025-12-15.clover" });
 
-    if (!request.auth) {
-        throw new HttpsError('unauthenticated', 'You must be logged in.');
+    const authHeader = req.headers.authorization;
+    if (!authHeader?.startsWith("Bearer ")) {
+        res.status(401).json({ error: "Unauthenticated" });
+        return;
     }
-    const uid = request.auth.uid;
-    const userDoc = await db.collection('users').doc(uid).get();
-    const customerId = userDoc.data()?.stripeCustomerId;
 
-    if (!customerId) {
-        throw new HttpsError('not-found', 'Stripe customer ID not found.');
+    try {
+        const token = authHeader.split("Bearer ")[1];
+        const decodedToken = await admin.auth().verifyIdToken(token);
+        const uid = decodedToken.uid;
+        
+        const userDoc = await db.collection('users').doc(uid).get();
+        const customerId = userDoc.data()?.stripeCustomerId;
+
+        if (!customerId) {
+            res.status(404).json({ error: 'Stripe customer ID not found.' });
+            return;
+        }
+        
+        const portalSession = await stripe.billingPortal.sessions.create({
+            customer: customerId,
+            return_url: `${NEXT_PUBLIC_APP_URL}/settings`,
+        });
+
+        res.json({ data: { url: portalSession.url }});
+    } catch (error: any) {
+         res.status(500).json({ error: error.message || 'Could not create customer portal session.' });
     }
-    
-    const portalSession = await stripe.billingPortal.sessions.create({
-        customer: customerId,
-        return_url: `${NEXT_PUBLIC_APP_URL}/settings`,
-    });
-
-    return { url: portalSession.url };
 });
 
-// onSchedule function to reset daily limits
+
+// Export the Express app as a function for each endpoint
+exports.api = onRequest(app);
+
+
+// Scheduled functions remain unchanged
 exports.resetDailyLimits = onSchedule('0 0 * * *', async () => {
     console.log('Running daily limit reset job.');
     try {
@@ -514,7 +519,6 @@ exports.resetDailyLimits = onSchedule('0 0 * * *', async () => {
     }
 });
 
-// onSchedule function to reset monthly limits
 exports.resetMonthlyLimits = onSchedule('0 0 1 * *', async () => {
     console.log('Running monthly limit reset job.');
     try {

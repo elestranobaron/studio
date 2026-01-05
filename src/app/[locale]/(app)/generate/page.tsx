@@ -80,7 +80,7 @@ export default function GenerateWodPage() {
 
         try {
             const functions = getFunctions();
-            const generateWodFn = httpsCallable(functions, 'generateWod');
+            const generateWodFn = httpsCallable(functions, 'api-generateWod');
             const response = await generateWodFn({ turnstileToken });
             const result = response.data as any;
 
