@@ -1,6 +1,6 @@
 "use strict";
 
-import { onCall, onRequest, HttpsError } from "firebase-functions/v2/https";
+import { onCall, HttpsError } from "firebase-functions/v2/https";
 import { onSchedule } from "firebase-functions/v2/scheduler";
 import * as admin from "firebase-admin";
 import Stripe from "stripe";
@@ -124,8 +124,8 @@ exports.generateWod = onCall({ cors: true }, async (request) => {
     const result = await generateWod({});
     return result;
   } catch (e: any) {
-    console.error("WOD Generation Flow Error:", e);
-    throw new HttpsError("internal", e.message, e.stack);
+    console.error("[generateWod] Full error object:", JSON.stringify(e, null, 2));
+    throw new HttpsError("internal", e.message || "An unknown error occurred in the WOD generation flow.", e.stack);
   }
 });
 
@@ -147,8 +147,8 @@ exports.analyzeWod = onCall({ cors: true }, async (request) => {
       const result = await analyzeWod({ photoDataUri });
       return result;
     } catch (e: any) {
-      console.error("WOD Analysis Flow Error:", e);
-      throw new HttpsError("internal", e.message, e.stack);
+      console.error("[analyzeWod] Full error object:", JSON.stringify(e, null, 2));
+      throw new HttpsError("internal", e.message || "An unknown error occurred in the WOD analysis flow.", e.stack);
     }
 });
 
@@ -225,7 +225,7 @@ exports.createCheckout = onCall({ cors: true }, async (request) => {
     if (!process.env.STRIPE_SECRET_KEY) {
         throw new HttpsError("internal", 'Stripe secret key is not set');
     }
-    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, { apiVersion: "2025-12-15.clover" });
+    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, { apiVersion: "2024-06-20" });
 
     const uid = request.auth.uid;
     const userDoc = await db.collection("users").doc(uid).get();
@@ -260,7 +260,7 @@ exports.createCustomerPortal = onCall({ cors: true }, async (request) => {
     if (!process.env.STRIPE_SECRET_KEY) {
         throw new HttpsError("internal", 'Stripe secret key is not set.');
     }
-    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, { apiVersion: "2025-12-15.clover" });
+    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, { apiVersion: "2024-06-20" });
 
     const uid = request.auth.uid;
     const userDoc = await db.collection('users').doc(uid).get();
@@ -278,30 +278,28 @@ exports.createCustomerPortal = onCall({ cors: true }, async (request) => {
     return { url: portalSession.url };
 });
 
-exports.stripeWebhook = onRequest(async (request, response) => {
-    const sig = request.headers["stripe-signature"] as string;
+exports.stripeWebhook = onCall({ cors: true }, async (request) => {
+    const sig = request.rawRequest.headers["stripe-signature"] as string;
 
     if (!process.env.STRIPE_SECRET_KEY || !STRIPE_WEBHOOK_SECRET) {
       console.error("Stripe keys not configured");
-      response.status(500).send("Server configuration error");
-      return;
+      throw new HttpsError("internal", "Server configuration error");
     }
 
     const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-      apiVersion: "2025-12-15.clover",
+      apiVersion: "2024-06-20",
     });
 
     let event: Stripe.Event;
     try {
       event = stripe.webhooks.constructEvent(
-        request.rawBody,
+        request.rawRequest.rawBody,
         sig,
         STRIPE_WEBHOOK_SECRET
       );
     } catch (err: any) {
       console.error("Webhook signature verification failed:", err.message);
-      response.status(400).send(`Webhook Error: ${err.message}`);
-      return;
+      throw new HttpsError("invalid-argument", `Webhook Error: ${err.message}`);
     }
 
     if (["checkout.session.completed", "customer.subscription.created", "invoice.paid"].includes(event.type)) {
@@ -416,7 +414,7 @@ exports.stripeWebhook = onRequest(async (request, response) => {
       }
     }
 
-    response.json({ received: true });
+    return { received: true };
 });
 
 
