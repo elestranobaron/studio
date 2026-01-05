@@ -121,9 +121,14 @@ exports.generateWod = onCall({ cors: true }, async (request) => {
         }
         return await generateWodFlow({});
     } catch (e: any) {
-        const errorMessage = e.stack || e.message || 'Erreur inconnue du serveur.';
-        console.error("[generateWod] CAUGHT ERROR:", errorMessage);
-        throw new HttpsError("unknown", errorMessage, { rawError: String(e) });
+        console.error("[generateWod] CAUGHT ERROR:", e);
+        const errorDetails = {
+            message: e.message,
+            stack: e.stack,
+            name: e.name,
+            code: e.code,
+        };
+        throw new HttpsError("unknown", "WOD Generation failed on server.", JSON.stringify(errorDetails, null, 2));
     }
 });
 
@@ -142,9 +147,14 @@ exports.analyzeWod = onCall({ cors: true }, async (request) => {
         }
         return await analyzeWodFlow({ photoDataUri });
     } catch (e: any) {
-        const errorMessage = e.stack || e.message || 'Erreur inconnue du serveur.';
-        console.error("[analyzeWod] CAUGHT ERROR:", errorMessage);
-        throw new HttpsError("unknown", errorMessage, { rawError: String(e) });
+        console.error("[analyzeWod] CAUGHT ERROR:", e);
+        const errorDetails = {
+            message: e.message,
+            stack: e.stack,
+            name: e.name,
+            code: e.code,
+        };
+        throw new HttpsError("unknown", "WOD Analysis failed on server.", JSON.stringify(errorDetails, null, 2));
     }
 });
 

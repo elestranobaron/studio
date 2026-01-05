@@ -52,7 +52,7 @@
     "recharts": "latest",
     "stripe": "latest",
     "tailwind-merge": "latest",
-    "zod": "^4.3.5",
+    "zod": "latest",
     "@genkit-ai/google-genai": "latest",
     "@genkit-ai/next": "latest",
     "genkit": "latest"
@@ -62,11 +62,11 @@
     "@types/node": "latest",
     "@types/react": "latest",
     "@types/react-dom": "latest",
-    "autoprefixer": "^10.4.19",
+    "autoprefixer": "latest",
     "eslint": "latest",
     "eslint-config-next": "latest",
     "genkit-cli": "latest",
-    "postcss": "^8.4.38",
+    "postcss": "latest",
     "tailwindcss": "latest",
     "tailwindcss-animate": "latest",
     "typescript": "latest"

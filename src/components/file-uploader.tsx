@@ -119,12 +119,13 @@ export function FileUploader() {
       
       setAnalysisResult(result);
     } catch (error: any) {
-      console.error("Analysis Error:", error);
-      toast({
-        variant: "destructive",
-        title: t('analysisFailedTitle'),
-        description: error.message,
-      });
+        console.error("Analysis Error:", error);
+        toast({
+            variant: "destructive",
+            title: t('analysisFailedTitle'),
+            description: `${error.message} - ${error.details || ''}`,
+            duration: 15000,
+        });
     } finally {
       setIsLoading(false);
       setTurnstileKey(Date.now());
