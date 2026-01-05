@@ -1,7 +1,7 @@
 
 "use strict";
 
-import { onCall, HttpsError } from "firebase-functions/v2";
+import { onCall, onRequest, HttpsError } from "firebase-functions/v2/https";
 import { onSchedule } from "firebase-functions/v2/scheduler";
 import * as admin from "firebase-admin";
 import Stripe from "stripe";
@@ -9,6 +9,9 @@ import type { QuerySnapshot, DocumentSnapshot } from "firebase-admin/firestore";
 import { setGlobalOptions } from "firebase-functions/v2";
 import { generateWod } from './ai/generate-wod-flow';
 import { analyzeWod } from "./ai/analyze-wod-flow";
+import * as cors from "cors";
+
+const corsMiddleware = cors({ origin: true });
 
 admin.initializeApp();
 const db = admin.firestore();
@@ -109,43 +112,76 @@ exports.sendDigicode = onCall({ cors: true }, async (request) => {
   }
 });
 
-exports.generateWod = onCall({ cors: true }, async (request) => {
-    const { turnstileToken } = request.data;
+exports.generateWod = onRequest(async (request, response) => {
+  corsMiddleware(request, response, async () => {
+    if (request.method !== 'POST') {
+      response.status(405).send('Method Not Allowed');
+      return;
+    }
+    const { data } = request.body;
+    const { turnstileToken } = data;
+
     if (!turnstileToken) {
-        throw new HttpsError("invalid-argument", "Captcha token is missing.");
+      response.status(400).json({ error: "Captcha token is missing." });
+      return;
     }
-    const isTurnstileValid = await validateTurnstile(turnstileToken, request.rawRequest.ip);
+
+    const isTurnstileValid = await validateTurnstile(turnstileToken, request.ip);
     if (!isTurnstileValid) {
-        throw new HttpsError("permission-denied", "Captcha validation failed.");
+      response.status(403).json({ error: "Captcha validation failed." });
+      return;
     }
+
     try {
-        const result = await generateWod({});
-        return result;
+      const result = await generateWod({});
+      response.status(200).json({ data: result });
     } catch (e: any) {
-        console.error("WOD Generation Flow Error:", e);
-        throw new HttpsError("internal", e.message || "Failed to generate WOD.");
+      console.error("WOD Generation Flow Error:", e);
+      response.status(500).json({ 
+        error: "Failed to generate WOD.",
+        details: e.message,
+        stack: e.stack 
+      });
     }
+  });
 });
 
-exports.analyzeWod = onCall({ cors: true }, async (request) => {
-    const { photoDataUri, turnstileToken } = request.data;
+exports.analyzeWod = onRequest(async (request, response) => {
+  corsMiddleware(request, response, async () => {
+    if (request.method !== 'POST') {
+      response.status(405).send('Method Not Allowed');
+      return;
+    }
+    const { data } = request.body;
+    const { photoDataUri, turnstileToken } = data;
+
     if (!photoDataUri) {
-        throw new HttpsError("invalid-argument", "The function must be called with a 'photoDataUri' argument.");
+      response.status(400).json({ error: "The function must be called with a 'photoDataUri' argument." });
+      return;
     }
     if (!turnstileToken) {
-        throw new HttpsError("invalid-argument", "Captcha token is missing.");
+      response.status(400).json({ error: "Captcha token is missing." });
+      return;
     }
-    const isTurnstileValid = await validateTurnstile(turnstileToken, request.rawRequest.ip);
+
+    const isTurnstileValid = await validateTurnstile(turnstileToken, request.ip);
     if (!isTurnstileValid) {
-        throw new HttpsError("permission-denied", "Captcha validation failed.");
+      response.status(403).json({ error: "Captcha validation failed." });
+      return;
     }
+
     try {
-        const result = await analyzeWod({ photoDataUri });
-        return result;
+      const result = await analyzeWod({ photoDataUri });
+      response.status(200).json({ data: result });
     } catch (e: any) {
-        console.error("WOD Analysis Flow Error:", e);
-        throw new HttpsError("internal", e.message || "Failed to analyze WOD.");
+      console.error("WOD Analysis Flow Error:", e);
+      response.status(500).json({
+        error: "Failed to analyze WOD.",
+        details: e.message,
+        stack: e.stack
+      });
     }
+  });
 });
 
 exports.verifyDigicode = onCall({ cors: true }, async (request) => {

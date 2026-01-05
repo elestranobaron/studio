@@ -16,7 +16,7 @@ import Link from "next/link";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { useTranslations } from "next-intl";
 import Turnstile from "@/components/turnstile";
-import { getFunctions, httpsCallable } from "firebase/functions";
+import { getFunctions } from "firebase/functions";
 import React from "react";
 
 
@@ -79,9 +79,27 @@ export default function GenerateWodPage() {
 
         try {
             const functions = getFunctions();
-            const generateWodFn = httpsCallable(functions, 'generateWod');
-            const response = await generateWodFn({ turnstileToken });
-            const result = response.data as any;
+            // This URL needs to match your function's region and name.
+            const functionUrl = 'https://us-central1-studio-9534743514-17d90.cloudfunctions.net/generateWod';
+            const response = await fetch(functionUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    data: {
+                        turnstileToken,
+                    }
+                }),
+            });
+
+            const body = await response.json();
+
+            if (!response.ok) {
+                throw new Error(body.details || body.error || 'Failed to generate WOD');
+            }
+            
+            const result = body.data as any;
             
             const tempId = doc(collection(firestore, 'temp')).id;
             const placeholderImageUrl = `https://picsum.photos/seed/${tempId}/600/400`;
