@@ -1,7 +1,7 @@
 
 "use strict";
 
-import { onCall, HttpsError } from "firebase-functions/v2/https";
+import { onCall, HttpsError, onRequest } from "firebase-functions/v2/https";
 import { onSchedule } from "firebase-functions/v2/scheduler";
 import * as admin from "firebase-admin";
 import Stripe from "stripe";
@@ -222,7 +222,7 @@ exports.createCheckout = onCall({ cors: true }, async (request) => {
     if (!process.env.STRIPE_SECRET_KEY) {
         throw new HttpsError("internal", 'Stripe secret key is not set');
     }
-    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, { apiVersion: "2024-06-20" });
+    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, { apiVersion: "2025-12-15.clover" });
 
     const uid = request.auth.uid;
     const userDoc = await db.collection("users").doc(uid).get();
@@ -257,7 +257,7 @@ exports.createCustomerPortal = onCall({ cors: true }, async (request) => {
     if (!process.env.STRIPE_SECRET_KEY) {
         throw new HttpsError("internal", 'Stripe secret key is not set.');
     }
-    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, { apiVersion: "2024-06-20" });
+    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, { apiVersion: "2025-12-15.clover" });
 
     const uid = request.auth.uid;
     const userDoc = await db.collection('users').doc(uid).get();
@@ -289,7 +289,7 @@ exports.stripeWebhook = onRequest({ cors: true }, async (req, res) => {
   }
 
   const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-    apiVersion: "2024-06-20",
+    apiVersion: "2025-12-15.clover",
   });
 
   const sig = req.headers["stripe-signature"] as string;
