@@ -10,7 +10,9 @@ import { setGlobalOptions } from "firebase-functions/v2";
 import express from "express";
 import { generateWod } from './ai/generate-wod-flow';
 import { analyzeWod } from "./ai/analyze-wod-flow";
+import cors from "cors";
 
+const corsMiddleware = cors({ origin: true });
 
 admin.initializeApp();
 const db = admin.firestore();
@@ -67,7 +69,7 @@ function generateDigicode() {
   return Math.floor(100000 + Math.random() * 900000).toString();
 }
 
-exports.sendDigicode = onCall({}, async (request: any) => {
+exports.sendDigicode = onCall({ cors: true }, async (request: any) => {
   const { email, turnstileToken } = request.data;
   if (!email || typeof email !== "string") {
     throw new HttpsError("invalid-argument", "A valid email address is required.");
@@ -124,7 +126,7 @@ exports.sendDigicode = onCall({}, async (request: any) => {
   }
 });
 
-exports.generateWod = onCall({}, async (request: any) => {
+exports.generateWod = onCall({ cors: true }, async (request: any) => {
     const { turnstileToken } = request.data;
 
     if (!turnstileToken) {
@@ -137,7 +139,9 @@ exports.generateWod = onCall({}, async (request: any) => {
     }
 
     try {
+        console.log('Calling generateWod with input:', {});
         const result = await generateWod({});
+        console.log('generateWod returned:', result);
         return result;
     } catch (e: any) {
         console.error("WOD Generation Flow Error:", e);
@@ -146,7 +150,7 @@ exports.generateWod = onCall({}, async (request: any) => {
     }
 });
 
-exports.analyzeWod = onCall({}, async (request: any) => {
+exports.analyzeWod = onCall({ cors: true }, async (request: any) => {
     const { photoDataUri, turnstileToken } = request.data;
     if (!photoDataUri) {
         throw new HttpsError("invalid-argument", "The function must be called with a 'photoDataUri' argument.");
@@ -170,7 +174,7 @@ exports.analyzeWod = onCall({}, async (request: any) => {
 });
 
 
-exports.verifyDigicode = onCall({}, async (request: any) => {
+exports.verifyDigicode = onCall({ cors: true }, async (request: any) => {
   try {
     const { email, code } = request.data;
 
@@ -465,7 +469,7 @@ exports.stripeWebhook = onRequest(
   res.status(200).send("ok");
 });
 
-exports.createCustomerPortal = onCall({}, async (request: any) => {
+exports.createCustomerPortal = onCall({ cors: true }, async (request: any) => {
     if (!process.env.STRIPE_SECRET_KEY) {
       throw new HttpsError('internal', 'Stripe secret key is not set.');
     }
