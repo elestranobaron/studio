@@ -4,7 +4,6 @@
 import { useState, useCallback } from "react";
 import { useUser, useFirebase } from "@/firebase";
 import { useRouter } from 'next/navigation';
-import { doc, collection, setDoc } from "firebase/firestore";
 import { Button } from "@/components/ui/button";
 import { SidebarTrigger, useSidebar } from "@/components/ui/sidebar";
 import { useToast } from "@/components/ui/use-toast";
@@ -18,6 +17,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { useTranslations } from "next-intl";
 import Turnstile from "@/components/turnstile";
 import { getFunctions, httpsCallable } from "firebase/functions";
+import React from "react";
 
 
 function GeneratingState() {
@@ -46,8 +46,8 @@ export default function GenerateWodPage() {
     const t = useTranslations('GenerateWodPage');
     const [isLoading, setIsLoading] = useState(false);
     const [generatedWod, setGeneratedWod] = useState<WOD | null>(null);
-    const [error, setError] = useState<string | null>(null);
     const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+    const [turnstileKey, setTurnstileKey] = useState(Date.now());
 
 
     const { user, isUserLoading } = useUser();
@@ -60,7 +60,6 @@ export default function GenerateWodPage() {
     const handleGenerate = async () => {
         setIsLoading(true);
         setGeneratedWod(null);
-        setError(null);
         
         if (!firestore) {
             toast({ variant: 'destructive', title: "Service not available" });
@@ -71,8 +70,8 @@ export default function GenerateWodPage() {
         if (!turnstileToken) {
             toast({
                 variant: "destructive",
-                title: "Vérification requise",
-                description: "Veuillez patienter que la vérification anti-robot soit terminée."
+                title: "Verification required",
+                description: "Please complete the anti-robot verification."
             });
             setIsLoading(false);
             return;
@@ -83,13 +82,12 @@ export default function GenerateWodPage() {
             const generateWodFn = httpsCallable(functions, 'generateWod');
             const response = await generateWodFn({ turnstileToken });
             const result = response.data as any;
-
-
-            const tempId = doc(collection(firestore, 'temp')).id; // Just for a unique ID on the client
+            
+            const tempId = doc(collection(firestore, 'temp')).id;
             const placeholderImageUrl = `https://picsum.photos/seed/${tempId}/600/400`;
 
             const newWod: WOD = {
-                id: tempId, // This is a temporary ID for the client
+                id: result.id,
                 userId: user?.uid || 'anonymous',
                 name: result.name,
                 type: result.type,
@@ -103,14 +101,8 @@ export default function GenerateWodPage() {
                 upperBody: result.upperBody,
                 lowerBody: result.lowerBody,
             };
-
-            const userWodCollection = collection(firestore, `users/${user?.uid || 'anonymous'}/wods`);
-            const newWodRef = doc(userWodCollection);
             
-            const finalWod = { ...newWod, id: newWodRef.id };
-            await setDoc(newWodRef, finalWod);
-            
-            setGeneratedWod(finalWod);
+            setGeneratedWod(newWod);
 
         } catch (e: any) {
             console.error("WOD Generation Error:", e);
@@ -121,6 +113,8 @@ export default function GenerateWodPage() {
             });
         } finally {
             setIsLoading(false);
+            setTurnstileToken(null);
+            setTurnstileKey(Date.now());
         }
     };
     
@@ -173,7 +167,7 @@ export default function GenerateWodPage() {
                             >
                                 {isLoading ? t('generatingButton') : t('generateButton')}
                             </Button>
-                            <Turnstile onSuccess={onTurnstileSuccess} onExpire={onTurnstileExpire} />
+                            <Turnstile key={turnstileKey} onSuccess={onTurnstileSuccess} onExpire={onTurnstileExpire} />
                             {isUserLoading && <Skeleton className="h-6 w-48" />}
                              {!isUserLoading && (!user || user.isAnonymous) && (
                                 <Alert variant="default" className="border-blue-500/50 text-blue-500">
@@ -195,16 +189,6 @@ export default function GenerateWodPage() {
                      </Card>
 
                     {isLoading && <GeneratingState />}
-
-                    {error && (
-                         <Alert variant="destructive">
-                            <AlertTriangle className="h-4 w-4" />
-                            <AlertTitle>{t('errorAlert.title')}</AlertTitle>
-                            <AlertDescription>
-                                {error}
-                            </AlertDescription>
-                        </Alert>
-                    )}
                     
                     {generatedWod && (
                          <div className="space-y-4">

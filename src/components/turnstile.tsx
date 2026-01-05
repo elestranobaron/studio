@@ -35,6 +35,7 @@ const Turnstile: React.FC<TurnstileProps> = ({ onSuccess, onExpire, onError }) =
 
   useEffect(() => {
     let script: HTMLScriptElement | null = null;
+    let localWidgetId: string | null = null;
     
     const renderTurnstile = () => {
       if (ref.current && window.turnstile && !widgetIdRef.current) {
@@ -44,12 +45,15 @@ const Turnstile: React.FC<TurnstileProps> = ({ onSuccess, onExpire, onError }) =
           callback: (token) => onSuccess(token),
           'expired-callback': () => {
             onExpire?.();
-            widgetIdRef.current = null; // Allow re-rendering
+            if (widgetIdRef.current) {
+                window.turnstile.reset(widgetIdRef.current);
+            }
           },
           'error-callback': () => onError?.(),
         });
         if (widgetId) {
           widgetIdRef.current = widgetId;
+          localWidgetId = widgetId;
         }
       }
     };
@@ -70,19 +74,20 @@ const Turnstile: React.FC<TurnstileProps> = ({ onSuccess, onExpire, onError }) =
     }
 
     return () => {
-      if (widgetIdRef.current && window.turnstile) {
-        try {
-          window.turnstile.remove(widgetIdRef.current);
-        } catch (error) {
-          console.warn('Error removing Turnstile widget:', error);
+        if (localWidgetId && window.turnstile) {
+            try {
+                window.turnstile.remove(localWidgetId);
+            } catch (error) {
+                console.warn('Error removing Turnstile widget:', error);
+            }
         }
-      }
-      if (script) {
-        document.head.removeChild(script);
-      }
-      if (window.onloadTurnstileCallback) {
-        delete window.onloadTurnstileCallback;
-      }
+        widgetIdRef.current = null;
+        if (script && script.parentNode) {
+            script.parentNode.removeChild(script);
+        }
+        if (window.onloadTurnstileCallback) {
+            delete window.onloadTurnstileCallback;
+        }
     };
   }, [onSuccess, onExpire, onError]);
 

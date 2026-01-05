@@ -70,6 +70,7 @@ export function FileUploader() {
   const [shareToCommunity, setShareToCommunity] = useState(false);
   const [saveIntent, setSaveIntent] = useState(false);
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+  const [turnstileKey, setTurnstileKey] = useState(Date.now());
 
   const { toast } = useToast();
   const router = useRouter();
@@ -83,7 +84,8 @@ export function FileUploader() {
       setFile(selectedFile);
       setPreview(URL.createObjectURL(selectedFile));
       setAnalysisResult(null);
-      setTurnstileToken(null); // Reset token on new file
+      setTurnstileToken(null);
+      setTurnstileKey(Date.now());
     }
   }, []);
 
@@ -124,6 +126,8 @@ export function FileUploader() {
       });
     } finally {
       setIsLoading(false);
+      setTurnstileKey(Date.now());
+      setTurnstileToken(null);
     }
   };
 
@@ -382,7 +386,7 @@ export function FileUploader() {
                 >
                 {t('analyzeButton')}
                 </Button>
-                 <Turnstile onSuccess={onTurnstileSuccess} onExpire={onTurnstileExpire} />
+                 <Turnstile key={turnstileKey} onSuccess={onTurnstileSuccess} onExpire={onTurnstileExpire} />
             </div>
           ) : (
             <div className="space-y-4">

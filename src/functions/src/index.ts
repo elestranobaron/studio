@@ -1,7 +1,7 @@
 
 "use strict";
 
-import { onCall, HttpsError, onRequest } from "firebase-functions/v2/https";
+import { onCall, HttpsError } from "firebase-functions/v2/https";
 import { onSchedule } from "firebase-functions/v2/scheduler";
 import * as admin from "firebase-admin";
 import Stripe from "stripe";
@@ -9,15 +9,16 @@ import type { QuerySnapshot, DocumentSnapshot } from "firebase-admin/firestore";
 import { setGlobalOptions } from "firebase-functions/v2";
 import { generateWod } from './ai/generate-wod-flow';
 import { analyzeWod } from "./ai/analyze-wod-flow";
-
+import * as express from 'express';
+import * as cors from 'cors';
 
 admin.initializeApp();
 const db = admin.firestore();
 
+// Global config for all functions
 setGlobalOptions({ 
   region: "us-central1"
 });
-
 
 const STRIPE_WEBHOOK_SECRET = process.env.STRIPE_WEBHOOK_SECRET!;
 const STRIPE_MONTHLY_PRICE_ID = process.env.STRIPE_MONTHLY_PRICE_ID!;
@@ -49,7 +50,6 @@ async function validateTurnstile(token: string, ip: string | undefined): Promise
     }
     return outcome.success;
 }
-
 
 function generateDigicode() {
   return Math.floor(100000 + Math.random() * 900000).toString();
@@ -222,7 +222,7 @@ exports.createCheckout = onCall({ cors: true }, async (request) => {
     if (!process.env.STRIPE_SECRET_KEY) {
         throw new HttpsError("internal", 'Stripe secret key is not set');
     }
-    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, { apiVersion: "2025-12-15.clover" });
+    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, { apiVersion: "2024-06-20" });
 
     const uid = request.auth.uid;
     const userDoc = await db.collection("users").doc(uid).get();
@@ -257,7 +257,7 @@ exports.createCustomerPortal = onCall({ cors: true }, async (request) => {
     if (!process.env.STRIPE_SECRET_KEY) {
         throw new HttpsError("internal", 'Stripe secret key is not set.');
     }
-    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, { apiVersion: "2025-12-15.clover" });
+    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, { apiVersion: "2024-06-20" });
 
     const uid = request.auth.uid;
     const userDoc = await db.collection('users').doc(uid).get();
@@ -275,154 +275,151 @@ exports.createCustomerPortal = onCall({ cors: true }, async (request) => {
     return { url: portalSession.url };
 });
 
-// This is an onRequest function because it needs to handle raw request bodies from Stripe.
-exports.stripeWebhook = onRequest({ cors: true }, async (req, res) => {
-  if (req.method !== 'POST') {
-      res.status(405).send('Method Not Allowed');
+const stripeApp = express();
+stripeApp.use(cors({ origin: true }));
+stripeApp.post('/', express.raw({ type: 'application/json' }), async (req, res) => {
+    if (!process.env.STRIPE_SECRET_KEY || !STRIPE_WEBHOOK_SECRET) {
+      console.error("Stripe keys not configured");
+      res.status(500).send("Server configuration error");
       return;
-  }
-  
-  if (!process.env.STRIPE_SECRET_KEY || !STRIPE_WEBHOOK_SECRET) {
-    console.error("Stripe keys not configured");
-    res.status(500).send("Server configuration error");
-    return;
-  }
-
-  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-    apiVersion: "2025-12-15.clover",
-  });
-
-  const sig = req.headers["stripe-signature"] as string;
-
-  let event;
-  try {
-    event = stripe.webhooks.constructEvent(
-      (req as any).rawBody,
-      sig,
-      STRIPE_WEBHOOK_SECRET
-    );
-  } catch (err: any) {
-    console.error("Webhook signature verification failed:", err.message);
-    res.status(400).send(`Webhook Error: ${err.message}`);
-    return;
-  }
-
-  if (
-    ["checkout.session.completed", "customer.subscription.created", "invoice.paid"].includes(event.type)
-  ) {
-    const obj = event.data.object as any;
-    let uid = obj.metadata?.uid;
-    let email = (obj.customer_details?.email || obj.customer_email || "").toLowerCase().trim();
-    let customerId = obj.customer;
-
-    if (!uid && email) {
-        try {
-            const userRecord = await admin.auth().getUserByEmail(email);
-            uid = userRecord.uid;
-        } catch (error) {
-            console.error(`Could not find user by email ${email} for Stripe event ${event.id}`);
-        }
-    }
-    
-    if (!uid && customerId) {
-        try {
-            const customer = await stripe.customers.retrieve(customerId);
-            if(!customer.deleted) {
-              uid = customer.metadata.uid;
-            }
-        } catch(e) {
-            console.error(`Could not retrieve customer ${customerId}`);
-        }
-    }
-    
-    if (!uid && obj.subscription) {
-       try {
-           const subscription = await stripe.subscriptions.retrieve(obj.subscription as string);
-           uid = subscription.metadata.uid;
-           if (!customerId) customerId = subscription.customer as string;
-       } catch(e) {
-            console.error(`Could not retrieve subscription ${obj.subscription}`);
-       }
     }
 
-    if (uid) {
-        const userRef = db.collection("users").doc(uid);
+    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+      apiVersion: "2024-06-20",
+    });
 
-        try {
-             await db.runTransaction(async (transaction) => {
-                const userSnap = await transaction.get(userRef);
-                const isAlreadyPremium = userSnap.exists && userSnap.data()?.premium;
-                
-                const updateData: any = {
-                    premium: true,
-                    stripeCustomerId: customerId,
-                };
-                
-                if (!isAlreadyPremium) {
-                    updateData.premiumSince = admin.firestore.FieldValue.serverTimestamp();
-                }
+    const sig = req.headers["stripe-signature"] as string;
 
-                transaction.set(userRef, updateData, { merge: true });
-
-                const yearlyPriceId = STRIPE_YEARLY_PRICE_ID;
-                const lineItems = obj.line_items || obj.items;
-                const isYearly = lineItems?.data?.[0]?.price?.id === yearlyPriceId || obj.plan?.id === yearlyPriceId;
-                
-                if (isYearly) {
-                    const hallOfFameRef = db.collection("hallOfFame");
-                    const ogQuery = await hallOfFameRef.get();
-                    const ogCount = ogQuery.size;
-
-                    if (ogCount < 300) {
-                        const ogDocRef = hallOfFameRef.doc(uid);
-                        const ogDoc = await transaction.get(ogDocRef);
-                        if (!ogDoc.exists) {
-                            const rank = ogCount + 1;
-                            const authUser = await admin.auth().getUser(uid);
-                            const displayName = authUser.email?.split('@')[0] || `user${rank}`;
-                            transaction.set(ogDocRef, {
-                                uid,
-                                displayName,
-                                rank,
-                                joinedAt: admin.firestore.FieldValue.serverTimestamp()
-                            });
-                        }
-                    }
-                }
-
-                if (!isAlreadyPremium && email && process.env.BREVO_API_KEY) {
-                    try {
-                        const brevoRes = await fetch("https://api.brevo.com/v3/smtp/email", {
-                            method: "POST",
-                            headers: {
-                                "api-key": process.env.BREVO_API_KEY,
-                                "Content-Type": "application/json",
-                            },
-                            body: JSON.stringify({
-                                sender: { name: "WODBurner Team", email: "noreply@wodburner.app" },
-                                to: [{ email }],
-                                templateId: 4, 
-                            }),
-                        });
-                        if (!brevoRes.ok) {
-                           console.error(`Brevo API error for premium welcome email to ${email}:`, await brevoRes.text());
-                        } else {
-                           console.log(`Premium welcome email sent to ${email}`);
-                        }
-                    } catch (emailError) {
-                        console.error(`Failed to send premium welcome email to ${email}:`, emailError);
-                    }
-                }
-            });
-            console.log(`PREMIUM ACTIVATED for ${uid} – ${event.type}`);
-        } catch(error) {
-            console.error(`Transaction failed for user ${uid}:`, error);
-        }
+    let event;
+    try {
+      event = stripe.webhooks.constructEvent(
+        req.body,
+        sig,
+        STRIPE_WEBHOOK_SECRET
+      );
+    } catch (err: any) {
+      console.error("Webhook signature verification failed:", err.message);
+      res.status(400).send(`Webhook Error: ${err.message}`);
+      return;
     }
-  }
 
-  res.status(200).send("ok");
+    if (["checkout.session.completed", "customer.subscription.created", "invoice.paid"].includes(event.type)) {
+      const obj = event.data.object as any;
+      let uid = obj.metadata?.uid;
+      let email = (obj.customer_details?.email || obj.customer_email || "").toLowerCase().trim();
+      let customerId = obj.customer;
+
+      if (!uid && email) {
+          try {
+              const userRecord = await admin.auth().getUserByEmail(email);
+              uid = userRecord.uid;
+          } catch (error) {
+              console.error(`Could not find user by email ${email} for Stripe event ${event.id}`);
+          }
+      }
+      
+      if (!uid && customerId) {
+          try {
+              const customer = await stripe.customers.retrieve(customerId);
+              if(!customer.deleted) {
+                uid = customer.metadata.uid;
+              }
+          } catch(e) {
+              console.error(`Could not retrieve customer ${customerId}`);
+          }
+      }
+      
+      if (!uid && obj.subscription) {
+         try {
+             const subscription = await stripe.subscriptions.retrieve(obj.subscription as string);
+             uid = subscription.metadata.uid;
+             if (!customerId) customerId = subscription.customer as string;
+         } catch(e) {
+              console.error(`Could not retrieve subscription ${obj.subscription}`);
+         }
+      }
+
+      if (uid) {
+          const userRef = db.collection("users").doc(uid);
+
+          try {
+               await db.runTransaction(async (transaction) => {
+                  const userSnap = await transaction.get(userRef);
+                  const isAlreadyPremium = userSnap.exists && userSnap.data()?.premium;
+                  
+                  const updateData: any = {
+                      premium: true,
+                      stripeCustomerId: customerId,
+                  };
+                  
+                  if (!isAlreadyPremium) {
+                      updateData.premiumSince = admin.firestore.FieldValue.serverTimestamp();
+                  }
+
+                  transaction.set(userRef, updateData, { merge: true });
+
+                  const yearlyPriceId = STRIPE_YEARLY_PRICE_ID;
+                  const lineItems = obj.line_items || obj.items;
+                  const isYearly = lineItems?.data?.[0]?.price?.id === yearlyPriceId || obj.plan?.id === yearlyPriceId;
+                  
+                  if (isYearly) {
+                      const hallOfFameRef = db.collection("hallOfFame");
+                      const ogQuery = await hallOfFameRef.get();
+                      const ogCount = ogQuery.size;
+
+                      if (ogCount < 300) {
+                          const ogDocRef = hallOfFameRef.doc(uid);
+                          const ogDoc = await transaction.get(ogDocRef);
+                          if (!ogDoc.exists) {
+                              const rank = ogCount + 1;
+                              const authUser = await admin.auth().getUser(uid);
+                              const displayName = authUser.email?.split('@')[0] || `user${rank}`;
+                              transaction.set(ogDocRef, {
+                                  uid,
+                                  displayName,
+                                  rank,
+                                  joinedAt: admin.firestore.FieldValue.serverTimestamp()
+                              });
+                          }
+                      }
+                  }
+
+                  if (!isAlreadyPremium && email && process.env.BREVO_API_KEY) {
+                      try {
+                          const brevoRes = await fetch("https://api.brevo.com/v3/smtp/email", {
+                              method: "POST",
+                              headers: {
+                                  "api-key": process.env.BREVO_API_KEY,
+                                  "Content-Type": "application/json",
+                              },
+                              body: JSON.stringify({
+                                  sender: { name: "WODBurner Team", email: "noreply@wodburner.app" },
+                                  to: [{ email }],
+                                  templateId: 4, 
+                              }),
+                          });
+                          if (!brevoRes.ok) {
+                             console.error(`Brevo API error for premium welcome email to ${email}:`, await brevoRes.text());
+                          } else {
+                             console.log(`Premium welcome email sent to ${email}`);
+                          }
+                      } catch (emailError) {
+                          console.error(`Failed to send premium welcome email to ${email}:`, emailError);
+                      }
+                  }
+              });
+              console.log(`PREMIUM ACTIVATED for ${uid} – ${event.type}`);
+          } catch(error) {
+              console.error(`Transaction failed for user ${uid}:`, error);
+          }
+      }
+    }
+
+    res.status(200).send("ok");
 });
+
+// exports.stripeWebhook = onRequest(stripeApp);
+
 
 exports.resetDailyLimits = onSchedule('0 0 * * *', async () => {
     console.log('Running daily limit reset job.');
