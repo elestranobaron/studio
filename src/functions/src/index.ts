@@ -17,18 +17,18 @@ const corsMiddleware = cors({ origin: true });
 admin.initializeApp();
 const db = admin.firestore();
 
-setGlobalOptions({ region: "us-central1" });
-
-if (process.env.NODE_ENV !== "production") {
-    require("dotenv").config({ path: "./.env" });
-}
+// Set global options for all functions
+setGlobalOptions({ 
+  region: "us-central1",
+  cors: [ "https://wodburner.app", "http://localhost:3000" ] // Whitelist your app's domains
+});
 
 
 const STRIPE_WEBHOOK_SECRET = process.env.STRIPE_WEBHOOK_SECRET!;
 const STRIPE_MONTHLY_PRICE_ID = process.env.STRIPE_MONTHLY_PRICE_ID!;
 const STRIPE_YEARLY_PRICE_ID = process.env.STRIPE_YEARLY_PRICE_ID!;
 const TURNSTILE_SECRET_KEY = process.env.TURNSTILE_SECRET_KEY!;
-const NEXT_PUBLIC_APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:9002';
+const NEXT_PUBLIC_APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
 
 
 declare global {
@@ -69,7 +69,7 @@ function generateDigicode() {
   return Math.floor(100000 + Math.random() * 900000).toString();
 }
 
-exports.sendDigicode = onCall({ cors: true }, async (request: any) => {
+exports.sendDigicode = onCall(async (request: any) => {
   const { email, turnstileToken } = request.data;
   if (!email || typeof email !== "string") {
     throw new HttpsError("invalid-argument", "A valid email address is required.");
@@ -126,7 +126,7 @@ exports.sendDigicode = onCall({ cors: true }, async (request: any) => {
   }
 });
 
-exports.generateWod = onCall({ cors: true }, async (request: any) => {
+exports.generateWod = onCall(async (request: any) => {
     const { turnstileToken } = request.data;
 
     if (!turnstileToken) {
@@ -150,7 +150,7 @@ exports.generateWod = onCall({ cors: true }, async (request: any) => {
     }
 });
 
-exports.analyzeWod = onCall({ cors: true }, async (request: any) => {
+exports.analyzeWod = onCall(async (request: any) => {
     const { photoDataUri, turnstileToken } = request.data;
     if (!photoDataUri) {
         throw new HttpsError("invalid-argument", "The function must be called with a 'photoDataUri' argument.");
@@ -174,7 +174,7 @@ exports.analyzeWod = onCall({ cors: true }, async (request: any) => {
 });
 
 
-exports.verifyDigicode = onCall({ cors: true }, async (request: any) => {
+exports.verifyDigicode = onCall(async (request: any) => {
   try {
     const { email, code } = request.data;
 
@@ -234,91 +234,86 @@ exports.verifyDigicode = onCall({ cors: true }, async (request: any) => {
 
 exports.createCheckout = onRequest(
   {
-    cors: true,
     memory: "256MiB",
     timeoutSeconds: 60,
   },
   async (req, res) => {
-    try {
-      const authHeader = req.headers.authorization;
-      if (!authHeader?.startsWith("Bearer ")) {
-        res.status(401).json({ error: "Unauthenticated" });
-        return;
-      }
+    corsMiddleware(req, res, async () => {
+        try {
+        const authHeader = req.headers.authorization;
+        if (!authHeader?.startsWith("Bearer ")) {
+            res.status(401).json({ error: "Unauthenticated" });
+            return;
+        }
 
-      const { yearly, turnstileToken } = req.body.data || {};
-      const userIp = req.headers['x-forwarded-for'] as string | undefined;
+        const { yearly, turnstileToken } = req.body.data || {};
+        const userIp = req.headers['x-forwarded-for'] as string | undefined;
 
-      if (!turnstileToken) {
-          res.status(400).json({ error: "Captcha token is missing." });
-          return;
-      }
-      
-      const isTurnstileValid = await validateTurnstile(turnstileToken, userIp);
-      if (!isTurnstileValid) {
-          res.status(403).json({ error: "Captcha validation failed." });
-          return;
-      }
+        if (!turnstileToken) {
+            res.status(400).json({ error: "Captcha token is missing." });
+            return;
+        }
+        
+        const isTurnstileValid = await validateTurnstile(turnstileToken, userIp);
+        if (!isTurnstileValid) {
+            res.status(403).json({ error: "Captcha validation failed." });
+            return;
+        }
 
-      if (!process.env.STRIPE_SECRET_KEY) {
-          throw new Error('Stripe secret key is not set');
-      }
-      const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, { apiVersion: "2025-12-15.clover" });
+        if (!process.env.STRIPE_SECRET_KEY) {
+            throw new Error('Stripe secret key is not set');
+        }
+        const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, { apiVersion: "2025-12-15.clover" });
 
-      const token = authHeader.split("Bearer ")[1];
-      const decodedToken = await admin.auth().verifyIdToken(token);
-      const uid = decodedToken.uid;
-      
-      const userDoc = await db.collection("users").doc(uid).get();
-      if (userDoc.data()?.premium === true) {
-          res.status(400).json({ error: "User is already premium." });
-          return;
-      }
+        const token = authHeader.split("Bearer ")[1];
+        const decodedToken = await admin.auth().verifyIdToken(token);
+        const uid = decodedToken.uid;
+        
+        const userDoc = await db.collection("users").doc(uid).get();
+        if (userDoc.data()?.premium === true) {
+            res.status(400).json({ error: "User is already premium." });
+            return;
+        }
 
 
-      const priceId = yearly === true ? STRIPE_YEARLY_PRICE_ID : STRIPE_MONTHLY_PRICE_ID;
+        const priceId = yearly === true ? STRIPE_YEARLY_PRICE_ID : STRIPE_MONTHLY_PRICE_ID;
 
-      if (!priceId) {
-        res.status(500).json({ error: "Price ID manquant" });
-        return;
-      }
+        if (!priceId) {
+            res.status(500).json({ error: "Price ID manquant" });
+            return;
+        }
 
-      const session = await stripe.checkout.sessions.create({
-        payment_method_types: ["card"],
-        line_items: [{ price: priceId, quantity: 1 }],
-        mode: "subscription",
-        allow_promotion_codes: true,
-        success_url: `${NEXT_PUBLIC_APP_URL}/premium?success=true`,
-        cancel_url: `${NEXT_PUBLIC_APP_URL}/premium?cancel=true`,
-        customer_email: decodedToken.email || undefined,
-        metadata: { uid },
-        subscription_data: { metadata: { uid } },
-      });
+        const session = await stripe.checkout.sessions.create({
+            payment_method_types: ["card"],
+            line_items: [{ price: priceId, quantity: 1 }],
+            mode: "subscription",
+            allow_promotion_codes: true,
+            success_url: `${NEXT_PUBLIC_APP_URL}/premium?success=true`,
+            cancel_url: `${NEXT_PUBLIC_APP_URL}/premium?cancel=true`,
+            customer_email: decodedToken.email || undefined,
+            metadata: { uid },
+            subscription_data: { metadata: { uid } },
+        });
 
-      res.status(200).json({ url: session.url });
-    } catch (error: any) {
-      console.error("Erreur createCheckout:", error);
-      res.status(500).json({ error: error.message || "Erreur interne" });
-    }
+        res.status(200).json({ url: session.url });
+        } catch (error: any) {
+        console.error("Erreur createCheckout:", error);
+        res.status(500).json({ error: error.message || "Erreur interne" });
+        }
+    });
   }
 );
 
 exports.stripeWebhook = onRequest(
   {
     region: "us-central1",
-    // Important : permet à Firebase d'exposer req.rawBody nativement
-    // (nécessaire pour Stripe webhook signature verification)
-    // https://firebase.google.com/docs/functions/http-events#raw_request_body
-    // En v2, il suffit de ne pas parser le body automatiquement
   },
   async (req, res) => {
-    // Autoriser seulement les POST
     if (req.method !== "POST") {
       res.status(405).send("Method Not Allowed");
       return;
     }
 
-    // Vérifications de base
     if (!process.env.STRIPE_SECRET_KEY || !STRIPE_WEBHOOK_SECRET) {
       console.error("Stripe keys not configured");
       res.status(500).send("Server configuration error");
@@ -331,8 +326,6 @@ exports.stripeWebhook = onRequest(
 
     const sig = req.headers["stripe-signature"] as string;
 
-    // En Firebase Functions v2, req.rawBody est disponible nativement
-    // tant qu’on n’utilise pas de middleware qui parse le body (comme express.json())
     if (!req.rawBody) {
       console.error("rawBody manquant – cela ne devrait pas arriver en v2");
       res.status(400).send("No raw body");
@@ -342,7 +335,7 @@ exports.stripeWebhook = onRequest(
     let event;
     try {
       event = stripe.webhooks.constructEvent(
-        req.rawBody,           // ← Utilisation directe de req.rawBody
+        req.rawBody,
         sig,
         STRIPE_WEBHOOK_SECRET
       );
@@ -469,7 +462,7 @@ exports.stripeWebhook = onRequest(
   res.status(200).send("ok");
 });
 
-exports.createCustomerPortal = onCall({ cors: true }, async (request: any) => {
+exports.createCustomerPortal = onCall(async (request: any) => {
     if (!process.env.STRIPE_SECRET_KEY) {
       throw new HttpsError('internal', 'Stripe secret key is not set.');
     }
@@ -492,4 +485,57 @@ exports.createCustomerPortal = onCall({ cors: true }, async (request: any) => {
     });
 
     return { url: portalSession.url };
+});
+
+// onSchedule function to reset daily limits
+exports.resetDailyLimits = onSchedule('0 0 * * *', async () => {
+    console.log('Running daily limit reset job.');
+    try {
+        const usersSnapshot: QuerySnapshot = await db.collection('users').get();
+        if (usersSnapshot.empty) {
+            console.log('No users to process.');
+            return;
+        }
+
+        const batch = db.batch();
+        usersSnapshot.forEach((doc: DocumentSnapshot) => {
+            const userRef = doc.ref;
+            batch.update(userRef, {
+                dailyReactions: 0,
+                wodGenerationCount: 0,
+                dailyReset: admin.firestore.Timestamp.now()
+            });
+        });
+
+        await batch.commit();
+        console.log(`Successfully reset daily limits for ${usersSnapshot.size} users.`);
+    } catch (error) {
+        console.error('Error resetting daily limits:', error);
+    }
+});
+
+// onSchedule function to reset monthly limits
+exports.resetMonthlyLimits = onSchedule('0 0 1 * *', async () => {
+    console.log('Running monthly limit reset job.');
+    try {
+        const usersSnapshot: QuerySnapshot = await db.collection('users').get();
+        if (usersSnapshot.empty) {
+            console.log('No users to process for monthly reset.');
+            return;
+        }
+
+        const batch = db.batch();
+        usersSnapshot.forEach((doc: DocumentSnapshot) => {
+            const userRef = doc.ref;
+            batch.update(userRef, {
+                ocrCount: 0,
+                ocrReset: admin.firestore.Timestamp.now()
+            });
+        });
+
+        await batch.commit();
+        console.log(`Successfully reset monthly limits for ${usersSnapshot.size} users.`);
+    } catch (error) {
+        console.error('Error resetting monthly limits:', error);
+    }
 });
