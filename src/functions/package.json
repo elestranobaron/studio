@@ -11,7 +11,9 @@
     "express": "latest",
     "firebase-admin": "latest",
     "firebase-functions": "latest",
-    "stripe": "latest"
+    "stripe": "latest",
+    "genkit": "latest",
+    "@genkit-ai/google-genai": "latest"
   },
   "scripts": {
     "build": "tsc"
