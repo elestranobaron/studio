@@ -119,16 +119,12 @@ exports.generateWod = onCall({ cors: true }, async (request) => {
         if (!isTurnstileValid) {
             throw new HttpsError("permission-denied", "Captcha validation failed.");
         }
-        return await generateWodFlow({});
+        const result = await generateWodFlow({});
+        return { data: result, error: null };
     } catch (e: any) {
         console.error("[generateWod] CAUGHT ERROR:", e);
-        const errorDetails = {
-            message: e.message,
-            stack: e.stack,
-            name: e.name,
-            code: e.code,
-        };
-        throw new HttpsError("unknown", "WOD Generation failed on server.", JSON.stringify(errorDetails, null, 2));
+        const errorDetails = `Message: ${e.message}\nStack: ${e.stack}`;
+        return { data: null, error: errorDetails };
     }
 });
 
@@ -145,16 +141,12 @@ exports.analyzeWod = onCall({ cors: true }, async (request) => {
         if (!isTurnstileValid) {
             throw new HttpsError("permission-denied", "Captcha validation failed.");
         }
-        return await analyzeWodFlow({ photoDataUri });
+        const result = await analyzeWodFlow({ photoDataUri });
+        return { data: result, error: null };
     } catch (e: any) {
         console.error("[analyzeWod] CAUGHT ERROR:", e);
-        const errorDetails = {
-            message: e.message,
-            stack: e.stack,
-            name: e.name,
-            code: e.code,
-        };
-        throw new HttpsError("unknown", "WOD Analysis failed on server.", JSON.stringify(errorDetails, null, 2));
+        const errorDetails = `Message: ${e.message}\nStack: ${e.stack}`;
+        return { data: null, error: errorDetails };
     }
 });
 

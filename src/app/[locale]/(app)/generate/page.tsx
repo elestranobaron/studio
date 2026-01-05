@@ -83,25 +83,29 @@ export default function GenerateWodPage() {
             const generateWodFn = httpsCallable(functions, 'generateWod');
             const response = await generateWodFn({ turnstileToken });
             
-            const result = response.data as any;
+            const result = response.data as { data: any, error: string | null };
+
+            if (result.error) {
+                throw new Error(result.error);
+            }
             
             const tempId = doc(collection(firestore, 'temp')).id;
             const placeholderImageUrl = `https://picsum.photos/seed/${tempId}/600/400`;
 
             const newWod: WOD = {
-                id: result.id,
+                id: result.data.id,
                 userId: user?.uid || 'anonymous',
-                name: result.name,
-                type: result.type,
-                description: result.description,
+                name: result.data.name,
+                type: result.data.type,
+                description: result.data.description,
                 date: new Date().toISOString(),
                 imageUrl: placeholderImageUrl,
-                imageHint: result.imageHint,
-                duration: result.duration,
-                cardio: result.cardio,
-                lifting: result.lifting,
-                upperBody: result.upperBody,
-                lowerBody: result.lowerBody,
+                imageHint: result.data.imageHint,
+                duration: result.data.duration,
+                cardio: result.data.cardio,
+                lifting: result.data.lifting,
+                upperBody: result.data.upperBody,
+                lowerBody: result.data.lowerBody,
             };
             
             setGeneratedWod(newWod);
@@ -111,7 +115,7 @@ export default function GenerateWodPage() {
              toast({
                 variant: "destructive",
                 title: t('errorAlert.title'),
-                description: `${e.message} - ${e.details || ''}`,
+                description: e.message,
                 duration: 15000,
             });
         } finally {
