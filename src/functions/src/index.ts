@@ -123,7 +123,8 @@ exports.generateWod = onCall({ cors: true }, async (request) => {
         return { data: result, error: null };
     } catch (e: any) {
         console.error("[generateWod] CAUGHT ERROR:", e);
-        const errorDetails = `Message: ${e.message}\nStack: ${e.stack}`;
+        const errorDetails = e.stack || e.message || 'Unknown server error.';
+        // Return a success response containing the error details
         return { data: null, error: errorDetails };
     }
 });
@@ -145,7 +146,8 @@ exports.analyzeWod = onCall({ cors: true }, async (request) => {
         return { data: result, error: null };
     } catch (e: any) {
         console.error("[analyzeWod] CAUGHT ERROR:", e);
-        const errorDetails = `Message: ${e.message}\nStack: ${e.stack}`;
+        const errorDetails = e.stack || e.message || 'Unknown server error.';
+        // Return a success response containing the error details
         return { data: null, error: errorDetails };
     }
 });
