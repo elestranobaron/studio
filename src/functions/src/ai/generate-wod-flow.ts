@@ -35,6 +35,7 @@ const generateWodFlow = getAi().defineFlow(
         name: 'generateWodPrompt',
         input: {schema: GenerateWodInputSchema},
         output: {schema: AnalyzeWodOutputSchema},
+        model: 'googleai/gemini-1.5-pro-preview',
         config: {
           temperature: 1.0, 
         },
