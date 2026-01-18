@@ -31,9 +31,13 @@ const analyzeWodFlow = getAi().defineFlow(
       name: 'analyzeWodPrompt',
       input: {schema: AnalyzeWodInputSchema},
       output: {schema: AnalyzeWodOutputSchema},
-      model: 'googleai/gemini-1.5-pro-preview', 
+      model: 'googleai/gemini-2.5-flash', 
       config: {
         temperature: 0.2, 
+        safetySettings: [
+          { category: 'HARM_CATEGORY_DANGEROUS_CONTENT', threshold: 'BLOCK_MEDIUM_AND_ABOVE' },
+          // etc. pour HATE_SPEECH, HARASSMENT, SEXUALLY_EXPLICIT
+        ],
       },
       prompt: `You are "WODBurner", an expert CrossFit coach specializing in analyzing images of workouts written on whiteboards.
 

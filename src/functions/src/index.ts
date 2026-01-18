@@ -7,8 +7,6 @@ import * as admin from "firebase-admin";
 import Stripe from "stripe";
 import type { QuerySnapshot, DocumentSnapshot } from "firebase-admin/firestore";
 import { setGlobalOptions } from "firebase-functions/v2";
-import { generateWod as generateWodFlow } from './ai/generate-wod-flow';
-import { analyzeWod as analyzeWodFlow } from "./ai/analyze-wod-flow";
 
 admin.initializeApp();
 const db = admin.firestore();
@@ -109,7 +107,7 @@ exports.sendDigicode = onCall({ cors: true }, async (request) => {
   }
 });
 
-exports.generateWod = onCall({ cors: true }, async (request) => {
+exports.generateWod = onCall({ cors: true, timeoutSeconds: 60 }, async (request) => {
     try {
         const { turnstileToken } = request.data;
         if (!turnstileToken) {
@@ -119,17 +117,19 @@ exports.generateWod = onCall({ cors: true }, async (request) => {
         if (!isTurnstileValid) {
             throw new HttpsError("permission-denied", "Captcha validation failed.");
         }
-        const result = await generateWodFlow({});
+        
+        const { generateWod } = await import('./ai/generate-wod-flow');
+        const result = await generateWod({});
         return { data: result, error: null };
     } catch (e: any) {
-        console.error("[generateWod] CAUGHT ERROR:", e);
-        const errorDetails = e.stack || e.message || 'Unknown server error.';
-        // Return a success response containing the error details
-        return { data: null, error: errorDetails };
+        console.error("[generateWod] FATAL ERROR:", e);
+        const errorMessage = e.message || 'An unknown server error occurred.';
+        const errorStack = e.stack || 'No stack trace available.';
+        throw new HttpsError("internal", errorMessage, { stack: errorStack });
     }
 });
 
-exports.analyzeWod = onCall({ cors: true }, async (request) => {
+exports.analyzeWod = onCall({ cors: true, timeoutSeconds: 60 }, async (request) => {
     try {
         const { photoDataUri, turnstileToken } = request.data;
         if (!photoDataUri) {
@@ -142,13 +142,15 @@ exports.analyzeWod = onCall({ cors: true }, async (request) => {
         if (!isTurnstileValid) {
             throw new HttpsError("permission-denied", "Captcha validation failed.");
         }
-        const result = await analyzeWodFlow({ photoDataUri });
+
+        const { analyzeWod } = await import("./ai/analyze-wod-flow");
+        const result = await analyzeWod({ photoDataUri });
         return { data: result, error: null };
     } catch (e: any) {
-        console.error("[analyzeWod] CAUGHT ERROR:", e);
-        const errorDetails = e.stack || e.message || 'Unknown server error.';
-        // Return a success response containing the error details
-        return { data: null, error: errorDetails };
+        console.error("[analyzeWod] FATAL ERROR:", e);
+        const errorMessage = e.message || 'An unknown error occurred.';
+        const errorStack = e.stack || 'No stack trace available.';
+        throw new HttpsError("internal", errorMessage, { stack: errorStack });
     }
 });
 

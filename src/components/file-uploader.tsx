@@ -122,13 +122,14 @@ export function FileUploader() {
       }
       
       setAnalysisResult(result.data);
-    } catch (error: any) {
-        console.error("Analysis Error:", error);
+    } catch (e: any) {
+        console.error("Analysis Error:", e);
+        const errorMessage = e.details?.stack ? `${e.message} \n\nSTACK:\n${e.details.stack}` : e.message;
         toast({
             variant: "destructive",
             title: t('analysisFailedTitle'),
-            description: error.message,
-            duration: 15000,
+            description: <pre className="mt-2 w-full rounded-md bg-slate-950 p-4"><code className="text-white whitespace-pre-wrap">{errorMessage}</code></pre>,
+            duration: 30000,
         });
     } finally {
       setIsLoading(false);
