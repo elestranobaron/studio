@@ -38,16 +38,6 @@
     "region": "us-central1",
     "predeploy": [
       "npm --prefix \"$RESOURCE_DIR\" run build"
-    ],
-    "env": {
-      "STRIPE_SECRET_KEY": "${secret:STRIPE_SECRET_KEY}",
-      "STRIPE_WEBHOOK_SECRET": "${secret:STRIPE_WEBHOOK_SECRET}",
-      "BREVO_API_KEY": "${secret:BREVO_API_KEY}",
-      "STRIPE_MONTHLY_PRICE_ID": "${param:STRIPE_MONTHLY_PRICE_ID}",
-      "STRIPE_YEARLY_PRICE_ID": "${param:STRIPE_YEARLY_PRICE_ID}",
-      "TURNSTILE_SECRET_KEY": "${secret:TURNSTILE_SECRET_KEY}",
-      "NEXT_PUBLIC_APP_URL": "https://wodburner.app",
-      "GEMINI_API_KEY": "${secret:GEMINI_API_KEY}"
-    }
+    ]
   }
 }
