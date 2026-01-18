@@ -13,16 +13,23 @@ const genkit_1 = require("genkit");
 // For now, the input is empty, but we can add preferences later (e.g., equipment, duration)
 const GenerateWodInputSchema = genkit_1.z.object({});
 async function generateWod(input) {
-    return await generateWodFlow(input);
+    const result = await generateWodFlow(input);
+    return result;
 }
-const generateWodPrompt = genkit_instance_1.ai.definePrompt({
-    name: 'generateWodPrompt',
-    input: { schema: GenerateWodInputSchema },
-    output: { schema: wod_schema_1.AnalyzeWodOutputSchema },
-    config: {
-        temperature: 1.0, // Increase creativity for more varied WODs
-    },
-    prompt: `You are "WODBot 3000", an expert CrossFit coach with a flair for creating challenging, effective, and fun Workouts of the Day (WODs).
+const generateWodFlow = (0, genkit_instance_1.getAi)().defineFlow({
+    name: 'generateWodFlow',
+    inputSchema: GenerateWodInputSchema,
+    outputSchema: wod_schema_1.AnalyzeWodOutputSchema,
+}, async (input) => {
+    const generateWodPrompt = (0, genkit_instance_1.getAi)().definePrompt({
+        name: 'generateWodPrompt',
+        input: { schema: GenerateWodInputSchema },
+        output: { schema: wod_schema_1.AnalyzeWodOutputSchema },
+        model: 'googleai/gemini-2.5-flash',
+        config: {
+            temperature: 1.0,
+        },
+        prompt: `You are "WODBot 3000", an expert CrossFit coach with a flair for creating challenging, effective, and fun Workouts of the Day (WODs).
 
 Your task is to generate a completely new and random workout.
 
@@ -45,12 +52,10 @@ Follow these instructions precisely:
     *   **lowerBody**: On a scale of 0-100, what percentage targets the lower body? (Sum of upperBody and lowerBody must be 100).
 
 Generate a well-balanced and challenging workout. Be creative! Surprise me!`,
-});
-const generateWodFlow = genkit_instance_1.ai.defineFlow({
-    name: 'generateWodFlow',
-    inputSchema: GenerateWodInputSchema,
-    outputSchema: wod_schema_1.AnalyzeWodOutputSchema,
-}, async (input) => {
+    });
     const { output } = await generateWodPrompt(input);
+    if (!output) {
+        throw new Error('AI model failed to generate a valid WOD structure.');
+    }
     return output;
 });

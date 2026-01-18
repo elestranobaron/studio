@@ -27,6 +27,7 @@ import { Label } from "./ui/label";
 import { useTranslations } from "next-intl";
 import { getFunctions, httpsCallable } from "firebase/functions";
 import Turnstile from "./turnstile";
+import React from 'react';
 
 const toBase64 = (file: File): Promise<string> =>
   new Promise((resolve, reject) => {
@@ -124,11 +125,10 @@ export function FileUploader() {
       setAnalysisResult(result.data);
     } catch (e: any) {
         console.error("Analysis Error:", e);
-        const errorMessage = e.details?.stack ? `${e.message} \n\nSTACK:\n${e.details.stack}` : e.message;
         toast({
             variant: "destructive",
             title: t('analysisFailedTitle'),
-            description: <pre className="mt-2 w-full rounded-md bg-slate-950 p-4"><code className="text-white whitespace-pre-wrap">{errorMessage}</code></pre>,
+            description: <pre className="mt-2 w-full rounded-md bg-slate-950 p-4"><code className="text-white whitespace-pre-wrap">{e.message}</code></pre>,
             duration: 30000,
         });
     } finally {

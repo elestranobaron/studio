@@ -112,11 +112,10 @@ export default function GenerateWodPage() {
 
         } catch (e: any) {
             console.error("WOD Generation Error:", e);
-            const errorMessage = e.details?.stack ? `${e.message} \n\nSTACK:\n${e.details.stack}` : e.message;
              toast({
                 variant: "destructive",
                 title: t('errorAlert.title'),
-                description: <pre className="mt-2 w-full rounded-md bg-slate-950 p-4"><code className="text-white whitespace-pre-wrap">{errorMessage}</code></pre>,
+                description: <pre className="mt-2 w-full rounded-md bg-slate-950 p-4"><code className="text-white whitespace-pre-wrap">{e.message}</code></pre>,
                 duration: 30000,
             });
         } finally {

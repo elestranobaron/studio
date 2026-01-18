@@ -14,7 +14,8 @@
     "stripe": "latest",
     "genkit": "latest",
     "@genkit-ai/google-genai": "latest",
-    "zod": "latest"
+    "zod": "^4.3.5",
+    "dotenv": "latest"
   },
   "scripts": {
     "build": "tsc"

@@ -12,15 +12,24 @@ const wod_schema_1 = require("./wod-schema");
 async function analyzeWod(input) {
     return await analyzeWodFlow(input);
 }
-const analyzeWodPrompt = genkit_instance_1.ai.definePrompt({
-    name: 'analyzeWodPrompt',
-    input: { schema: wod_schema_1.AnalyzeWodInputSchema },
-    output: { schema: wod_schema_1.AnalyzeWodOutputSchema },
-    model: 'googleai/gemini-1.5-pro-preview', // Explicitly use the Pro model for this task.
-    config: {
-        temperature: 0.2, // Lower temperature for more deterministic analysis
-    },
-    prompt: `You are "WODBurner", an expert CrossFit coach specializing in analyzing images of workouts written on whiteboards.
+const analyzeWodFlow = (0, genkit_instance_1.getAi)().defineFlow({
+    name: 'analyzeWodFlow',
+    inputSchema: wod_schema_1.AnalyzeWodInputSchema,
+    outputSchema: wod_schema_1.AnalyzeWodOutputSchema,
+}, async (input) => {
+    const analyzeWodPrompt = (0, genkit_instance_1.getAi)().definePrompt({
+        name: 'analyzeWodPrompt',
+        input: { schema: wod_schema_1.AnalyzeWodInputSchema },
+        output: { schema: wod_schema_1.AnalyzeWodOutputSchema },
+        model: 'googleai/gemini-2.5-flash',
+        config: {
+            temperature: 0.2,
+            safetySettings: [
+                { category: 'HARM_CATEGORY_DANGEROUS_CONTENT', threshold: 'BLOCK_MEDIUM_AND_ABOVE' },
+                // etc. pour HATE_SPEECH, HARASSMENT, SEXUALLY_EXPLICIT
+            ],
+        },
+        prompt: `You are "WODBurner", an expert CrossFit coach specializing in analyzing images of workouts written on whiteboards.
 
 Your task is to analyze the provided image and extract the workout details in a structured format.
 
@@ -49,12 +58,7 @@ Be meticulous. The accuracy of the extracted data is critical.
 
 Analyze this workout:
 {{media url=photoDataUri}}`,
-});
-const analyzeWodFlow = genkit_instance_1.ai.defineFlow({
-    name: 'analyzeWodFlow',
-    inputSchema: wod_schema_1.AnalyzeWodInputSchema,
-    outputSchema: wod_schema_1.AnalyzeWodOutputSchema,
-}, async (input) => {
+    });
     const { output } = await analyzeWodPrompt(input);
     return output;
 });
