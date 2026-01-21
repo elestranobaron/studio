@@ -41,6 +41,7 @@ const scheduler_1 = require("firebase-functions/v2/scheduler");
 const admin = __importStar(require("firebase-admin"));
 const stripe_1 = __importDefault(require("stripe"));
 const v2_1 = require("firebase-functions/v2");
+require('dotenv').config();
 admin.initializeApp();
 const db = admin.firestore();
 // Global config for all functions
@@ -128,11 +129,11 @@ exports.generateWod = (0, https_1.onCall)({ cors: true, timeoutSeconds: 60 }, as
     try {
         const { turnstileToken } = request.data;
         if (!turnstileToken) {
-            throw new https_1.HttpsError("invalid-argument", "Captcha token is missing.");
+            return { data: null, error: "Captcha token is missing." };
         }
         const isTurnstileValid = await validateTurnstile(turnstileToken, request.rawRequest.ip);
         if (!isTurnstileValid) {
-            throw new https_1.HttpsError("permission-denied", "Captcha validation failed.");
+            return { data: null, error: "Captcha validation failed." };
         }
         const { generateWod } = await Promise.resolve().then(() => __importStar(require('./ai/generate-wod-flow')));
         const result = await generateWod({});
@@ -140,23 +141,26 @@ exports.generateWod = (0, https_1.onCall)({ cors: true, timeoutSeconds: 60 }, as
     }
     catch (e) {
         console.error("[generateWod] FATAL ERROR:", e);
-        const errorMessage = e.message || 'An unknown server error occurred.';
-        const errorStack = e.stack || 'No stack trace available.';
-        throw new https_1.HttpsError("internal", errorMessage, { stack: errorStack });
+        const errorString = JSON.stringify({
+            message: e.message,
+            stack: e.stack,
+            name: e.name,
+        }, null, 2);
+        return { data: null, error: `[SERVER SIDE CRASH] \n${errorString}` };
     }
 });
 exports.analyzeWod = (0, https_1.onCall)({ cors: true, timeoutSeconds: 60 }, async (request) => {
     try {
         const { photoDataUri, turnstileToken } = request.data;
         if (!photoDataUri) {
-            throw new https_1.HttpsError("invalid-argument", "The function must be called with a 'photoDataUri' argument.");
+            return { data: null, error: "The function must be called with a 'photoDataUri' argument." };
         }
         if (!turnstileToken) {
-            throw new https_1.HttpsError("invalid-argument", "Captcha token is missing.");
+            return { data: null, error: "Captcha token is missing." };
         }
         const isTurnstileValid = await validateTurnstile(turnstileToken, request.rawRequest.ip);
         if (!isTurnstileValid) {
-            throw new https_1.HttpsError("permission-denied", "Captcha validation failed.");
+            return { data: null, error: "Captcha validation failed." };
         }
         const { analyzeWod } = await Promise.resolve().then(() => __importStar(require("./ai/analyze-wod-flow")));
         const result = await analyzeWod({ photoDataUri });
@@ -164,9 +168,12 @@ exports.analyzeWod = (0, https_1.onCall)({ cors: true, timeoutSeconds: 60 }, asy
     }
     catch (e) {
         console.error("[analyzeWod] FATAL ERROR:", e);
-        const errorMessage = e.message || 'An unknown error occurred.';
-        const errorStack = e.stack || 'No stack trace available.';
-        throw new https_1.HttpsError("internal", errorMessage, { stack: errorStack });
+        const errorString = JSON.stringify({
+            message: e.message,
+            stack: e.stack,
+            name: e.name,
+        }, null, 2);
+        return { data: null, error: `[SERVER SIDE CRASH] \n${errorString}` };
     }
 });
 exports.verifyDigicode = (0, https_1.onCall)({ cors: true }, async (request) => {
