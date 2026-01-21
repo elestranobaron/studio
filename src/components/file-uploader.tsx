@@ -116,10 +116,11 @@ export function FileUploader() {
       
       const response = await analyzeWodFn({ photoDataUri, turnstileToken });
       
-      const result = response.data as { data: any, error: string | null };
+      const result = response.data as { data: any, error: any | null };
 
       if (result.error) {
-        throw new Error(result.error);
+        const errorMessage = result.error.details?.stack || result.error.message || JSON.stringify(result.error, null, 2);
+        throw new Error(errorMessage);
       }
       
       setAnalysisResult(result.data);
@@ -128,7 +129,7 @@ export function FileUploader() {
         toast({
             variant: "destructive",
             title: t('analysisFailedTitle'),
-            description: <pre className="mt-2 w-full rounded-md bg-slate-950 p-4"><code className="text-white whitespace-pre-wrap">{e.message}</code></pre>,
+            description: <pre className="mt-2 w-full rounded-md bg-slate-950 p-4 text-xs"><code className="text-white whitespace-pre-wrap">{e.message}</code></pre>,
             duration: 30000,
         });
     } finally {

@@ -83,17 +83,19 @@ export default function GenerateWodPage() {
             const generateWodFn = httpsCallable(functions, 'generateWod');
             const response = await generateWodFn({ turnstileToken });
             
-            const result = response.data as { data: any, error: string | null };
+            const result = response.data as { data: any, error: any | null };
 
             if (result.error) {
-                throw new Error(result.error);
+                // If the error object from the server has details, use them.
+                const errorMessage = result.error.details?.stack || result.error.message || JSON.stringify(result.error, null, 2);
+                throw new Error(errorMessage);
             }
             
             const tempId = doc(collection(firestore, 'temp')).id;
             const placeholderImageUrl = `https://picsum.photos/seed/${tempId}/600/400`;
 
             const newWod: WOD = {
-                id: result.data.id,
+                id: result.data.id || tempId, // Use a temp ID if the server doesn't provide one
                 userId: user?.uid || 'anonymous',
                 name: result.data.name,
                 type: result.data.type,
@@ -115,7 +117,7 @@ export default function GenerateWodPage() {
              toast({
                 variant: "destructive",
                 title: t('errorAlert.title'),
-                description: <pre className="mt-2 w-full rounded-md bg-slate-950 p-4"><code className="text-white whitespace-pre-wrap">{e.message}</code></pre>,
+                description: <pre className="mt-2 w-full rounded-md bg-slate-950 p-4 text-xs"><code className="text-white whitespace-pre-wrap">{e.message}</code></pre>,
                 duration: 30000,
             });
         } finally {
