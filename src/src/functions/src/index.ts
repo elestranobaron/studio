@@ -25,8 +25,14 @@ const NEXT_PUBLIC_APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost
 
 async function validateTurnstile(token: string, ip: string | undefined): Promise<boolean> {
     if (!TURNSTILE_SECRET_KEY) {
-        console.error('TURNSTILE_SECRET_KEY is not set. Skipping validation.');
-        return process.env.NODE_ENV !== 'production';
+        // If the key is not set, we are lenient in development but strict in production.
+        if (process.env.NODE_ENV !== 'production') {
+            console.warn('TURNSTILE_SECRET_KEY is not set. Bypassing captcha validation for local development. This will fail in production.');
+            return true; 
+        } else {
+            console.error('FATAL: TURNSTILE_SECRET_KEY is not set in production environment. Captcha validation failed.');
+            return false;
+        }
     }
 
     const formData = new FormData();
@@ -36,16 +42,24 @@ async function validateTurnstile(token: string, ip: string | undefined): Promise
         formData.append('remoteip', ip);
     }
     
-    const response = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
-        method: 'POST',
-        body: formData,
-    });
-    
-    const outcome = await response.json() as { success: boolean; 'error-codes'?: string[] };
-    if (!outcome.success) {
-      console.warn('Turnstile validation failed:', outcome['error-codes']);
+    try {
+        const response = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
+            method: 'POST',
+            body: formData,
+        });
+        
+        const outcome = await response.json() as { success: boolean; 'error-codes'?: string[] };
+        
+        if (!outcome.success) {
+          // Log the specific error codes from Cloudflare for easier debugging.
+          console.warn('Turnstile validation failed with error codes:', outcome['error-codes']);
+        }
+
+        return outcome.success;
+    } catch (e) {
+        console.error('An error occurred while contacting Cloudflare Turnstile:', e);
+        return false;
     }
-    return outcome.success;
 }
 
 function generateDigicode() {
@@ -64,7 +78,7 @@ exports.sendDigicode = onCall({ cors: true }, async (request) => {
   
   const isTurnstileValid = await validateTurnstile(turnstileToken, request.rawRequest.ip);
   if (!isTurnstileValid) {
-      throw new HttpsError("permission-denied", "Captcha validation failed.");
+      throw new HttpsError("permission-denied", "Captcha validation failed. Check server logs for details from Cloudflare.");
   }
 
   if (!process.env.BREVO_API_KEY) {
@@ -123,7 +137,7 @@ exports.generateWod = onCall({ cors: true, timeoutSeconds: 60 }, async (request)
         }
         const isTurnstileValid = await validateTurnstile(turnstileToken, request.rawRequest.ip);
         if (!isTurnstileValid) {
-            throw new HttpsError("permission-denied", "Captcha validation failed.");
+            throw new HttpsError("permission-denied", "Captcha validation failed. Check server logs for details from Cloudflare.");
         }
         
         const { generateWod } = await import('./ai/generate-wod-flow');
@@ -155,7 +169,7 @@ exports.analyzeWod = onCall({ cors: true, timeoutSeconds: 60 }, async (request) 
         }
         const isTurnstileValid = await validateTurnstile(turnstileToken, request.rawRequest.ip);
         if (!isTurnstileValid) {
-            throw new HttpsError("permission-denied", "Captcha validation failed.");
+            throw new HttpsError("permission-denied", "Captcha validation failed. Check server logs for details from Cloudflare.");
         }
 
         const { analyzeWod } = await import("./ai/analyze-wod-flow");
@@ -236,7 +250,7 @@ exports.createCheckout = onCall({ cors: true }, async (request) => {
     }
     const isTurnstileValid = await validateTurnstile(turnstileToken, request.rawRequest.ip);
     if (!isTurnstileValid) {
-        throw new HttpsError("permission-denied", "Captcha validation failed.");
+        throw new HttpsError("permission-denied", "Captcha validation failed. Check server logs for details from Cloudflare.");
     }
 
     if (!process.env.STRIPE_SECRET_KEY) {
