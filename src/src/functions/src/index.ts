@@ -7,7 +7,6 @@ import * as admin from "firebase-admin";
 import Stripe from "stripe";
 import type { QuerySnapshot, DocumentSnapshot } from "firebase-admin/firestore";
 import { setGlobalOptions } from "firebase-functions/v2";
-require('dotenv').config();
 
 admin.initializeApp();
 const db = admin.firestore();
@@ -125,19 +124,16 @@ exports.sendDigicode = onCall({ cors: true }, async (request) => {
 exports.generateWod = onCall({ cors: true, timeoutSeconds: 60 }, async (request) => {
     try {
         if (!process.env.GEMINI_API_KEY) {
-            throw new HttpsError(
-                'failed-precondition', 
-                'FATAL: GEMINI_API_KEY is not set in the function\'s environment. Please ensure it is present in the `functions/.env` file.'
-            );
+            return { data: null, error: "FATAL: GEMINI_API_KEY is not set in the function's environment. Please ensure it is present in the `functions/.env` file." };
         }
 
         const { turnstileToken } = request.data;
         if (!turnstileToken) {
-            throw new HttpsError("invalid-argument", "Captcha token is missing.");
+             return { data: null, error: "Captcha token is missing." };
         }
         const isTurnstileValid = await validateTurnstile(turnstileToken, request.rawRequest.ip);
         if (!isTurnstileValid) {
-            throw new HttpsError("permission-denied", "Captcha validation failed. Check server logs for details from Cloudflare.");
+            return { data: null, error: "Captcha validation failed. Check server logs for details from Cloudflare." };
         }
         
         const { generateWod } = await import('./ai/generate-wod-flow');
@@ -145,31 +141,30 @@ exports.generateWod = onCall({ cors: true, timeoutSeconds: 60 }, async (request)
         return { data: result, error: null };
     } catch (e: any) {
         console.error("[generateWod] FATAL ERROR:", e);
-        const errorMessage = e.message || 'An unknown server error occurred.';
-        const errorStack = e.stack || 'No stack trace available.';
-        throw new HttpsError("internal", errorMessage, { stack: errorStack });
+        const errorString = JSON.stringify({
+            message: e.message,
+            stack: e.stack,
+            name: e.name,
+        }, null, 2);
+        return { data: null, error: `[SERVER SIDE CRASH] \n${errorString}` };
     }
 });
 
 exports.analyzeWod = onCall({ cors: true, timeoutSeconds: 60 }, async (request) => {
     try {
         if (!process.env.GEMINI_API_KEY) {
-            throw new HttpsError(
-                'failed-precondition', 
-                'FATAL: GEMINI_API_KEY is not set in the function\'s environment. Please ensure it is present in the `functions/.env` file.'
-            );
+            return { data: null, error: "FATAL: GEMINI_API_KEY is not set in the function's environment. Please ensure it is present in the `functions/.env` file." };
         }
-
         const { photoDataUri, turnstileToken } = request.data;
         if (!photoDataUri) {
-            throw new HttpsError("invalid-argument", "The function must be called with a 'photoDataUri' argument.");
+            return { data: null, error: "The function must be called with a 'photoDataUri' argument." };
         }
         if (!turnstileToken) {
-             throw new HttpsError("invalid-argument", "Captcha token is missing.");
+             return { data: null, error: "Captcha token is missing." };
         }
         const isTurnstileValid = await validateTurnstile(turnstileToken, request.rawRequest.ip);
         if (!isTurnstileValid) {
-            throw new HttpsError("permission-denied", "Captcha validation failed. Check server logs for details from Cloudflare.");
+            return { data: null, error: "Captcha validation failed. Check server logs for details from Cloudflare." };
         }
 
         const { analyzeWod } = await import("./ai/analyze-wod-flow");
@@ -177,9 +172,12 @@ exports.analyzeWod = onCall({ cors: true, timeoutSeconds: 60 }, async (request) 
         return { data: result, error: null };
     } catch (e: any) {
         console.error("[analyzeWod] FATAL ERROR:", e);
-        const errorMessage = e.message || 'An unknown server error occurred.';
-        const errorStack = e.stack || 'No stack trace available.';
-        throw new HttpsError("internal", errorMessage, { stack: errorStack });
+        const errorString = JSON.stringify({
+            message: e.message,
+            stack: e.stack,
+            name: e.name,
+        }, null, 2);
+        return { data: null, error: `[SERVER SIDE CRASH] \n${errorString}` };
     }
 });
 
