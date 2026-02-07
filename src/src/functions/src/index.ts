@@ -14,10 +14,10 @@ if (admin.apps.length === 0) {
 }
 const db = admin.firestore();
 
-// Config globale : Augmentation drastique de la mémoire pour l'IA
+// Config globale : onCall gère le CORS par défaut, on n'ajoute pas cors: true
 setGlobalOptions({ 
   region: "us-central1",
-  memory: "1GiB", // On passe à 1Go pour être large
+  memory: "512MiB",
   timeoutSeconds: 120
 });
 
@@ -30,8 +30,8 @@ const TURNSTILE_SECRET_KEY = process.env.TURNSTILE_SECRET_KEY || '';
 const NEXT_PUBLIC_APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
 
 async function validateTurnstile(token: string, ip: string | undefined): Promise<boolean> {
-    if (!TURNSTILE_SECRET_KEY) {
-        logger.warn('TURNSTILE_SECRET_KEY is not set. Bypassing validation.');
+    if (!TURNSTILE_SECRET_KEY || TURNSTILE_SECRET_KEY.includes('your_')) {
+        logger.warn('TURNSTILE_SECRET_KEY is not set correctly. Bypassing validation.');
         return true; 
     }
 
@@ -59,7 +59,7 @@ async function validateTurnstile(token: string, ip: string | undefined): Promise
 
 // --- CLOUD FUNCTIONS ---
 
-exports.sendDigicode = onCall({ cors: true }, async (request) => {
+exports.sendDigicode = onCall(async (request) => {
   try {
     const { email, turnstileToken } = request.data;
     if (!email) throw new HttpsError("invalid-argument", "Email is required.");
@@ -89,41 +89,33 @@ exports.sendDigicode = onCall({ cors: true }, async (request) => {
     return { success: true };
   } catch (error: any) {
     logger.error("sendDigicode error", error);
-    throw new HttpsError("internal", error.message, error.stack);
+    throw new HttpsError("internal", error.message);
   }
 });
 
-exports.generateWod = onCall({ cors: true }, async (request) => {
+exports.generateWod = onCall(async (request) => {
     try {
         const { turnstileToken } = request.data;
         const isValid = await validateTurnstile(turnstileToken, request.rawRequest.ip);
         if (!isValid) throw new HttpsError("permission-denied", "Captcha invalid.");
 
-        // On vérifie la clé avant d'importer quoi que ce soit
         const geminiKey = process.env.GEMINI_API_KEY;
         if (!geminiKey) {
-            throw new HttpsError("failed-precondition", "CRITICAL: GEMINI_API_KEY is missing in functions/.env");
+            throw new HttpsError("failed-precondition", "GEMINI_API_KEY is missing.");
         }
         
-        // On force la clé pour Genkit
         process.env.GOOGLE_GENAI_API_KEY = geminiKey;
 
-        // Import dynamique pour éviter les crashs au démarrage
         const { generateWod } = await import('./ai/generate-wod-flow');
         const result = await generateWod({});
         return result;
     } catch (e: any) {
         logger.error("generateWod crash", e);
-        // On renvoie l'erreur sous forme d'objet pour bypasser le comportement "internal" du SDK en cas de crash
-        return { 
-            error: e.message || "Unknown error",
-            details: e.stack || "No stack trace",
-            code: e.code || "unknown"
-        };
+        throw new HttpsError("internal", e.message, e.stack);
     }
 });
 
-exports.analyzeWod = onCall({ cors: true }, async (request) => {
+exports.analyzeWod = onCall(async (request) => {
     try {
         const { photoDataUri, turnstileToken } = request.data;
         const isValid = await validateTurnstile(turnstileToken, request.rawRequest.ip);
@@ -131,7 +123,7 @@ exports.analyzeWod = onCall({ cors: true }, async (request) => {
 
         const geminiKey = process.env.GEMINI_API_KEY;
         if (!geminiKey) {
-            throw new HttpsError("failed-precondition", "CRITICAL: GEMINI_API_KEY is missing in functions/.env");
+            throw new HttpsError("failed-precondition", "GEMINI_API_KEY is missing.");
         }
         process.env.GOOGLE_GENAI_API_KEY = geminiKey;
 
@@ -140,15 +132,11 @@ exports.analyzeWod = onCall({ cors: true }, async (request) => {
         return result;
     } catch (e: any) {
         logger.error("analyzeWod crash", e);
-        return { 
-            error: e.message || "Unknown error",
-            details: e.stack || "No stack trace",
-            code: e.code || "unknown"
-        };
+        throw new HttpsError("internal", e.message, e.stack);
     }
 });
 
-exports.verifyDigicode = onCall({ cors: true }, async (request) => {
+exports.verifyDigicode = onCall(async (request) => {
   try {
     const { email, code } = request.data;
     const digiDoc = await db.collection("digicodes").doc(email.toLowerCase()).get();
@@ -174,11 +162,11 @@ exports.verifyDigicode = onCall({ cors: true }, async (request) => {
     return { token: await admin.auth().createCustomToken(uid), isNewUser };
   } catch (error: any) {
     logger.error("verifyDigicode error", error);
-    throw new HttpsError("internal", error.message, error.stack);
+    throw new HttpsError("internal", error.message);
   }
 });
 
-exports.createCheckout = onCall({ cors: true }, async (request) => {
+exports.createCheckout = onCall(async (request) => {
     try {
         if (!request.auth) throw new HttpsError("unauthenticated", "Login required.");
         const { yearly, turnstileToken } = request.data;
@@ -198,7 +186,7 @@ exports.createCheckout = onCall({ cors: true }, async (request) => {
         return { url: session.url };
     } catch (error: any) {
         logger.error("createCheckout error", error);
-        throw new HttpsError("internal", error.message, error.stack);
+        throw new HttpsError("internal", error.message);
     }
 });
 

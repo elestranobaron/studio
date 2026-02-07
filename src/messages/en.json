@@ -385,7 +385,7 @@
     "generatingButton": "Generating...",
     "freePlanAlert": {
       "title": "Free Plan",
-      "description": "You have a limited number of daily generations. {link} for unlimited access.",
+      "description": "You have a limited number of daily generations. <link>Go Premium</link> for unlimited access.",
       "link": "Go Premium"
     },
     "premiumPlanMessage": "Unlimited generations enabled.",
