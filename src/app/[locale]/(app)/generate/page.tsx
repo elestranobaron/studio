@@ -65,7 +65,7 @@ export default function GenerateWodPage() {
         console.log("DEBUG 1 - Starting handleGenerate");
 
         if (!firestore) {
-            toast({ variant: 'destructive', title: "Service non disponible" });
+            toast({ variant: 'destructive', title: "Firestore not initialized" });
             setIsLoading(false);
             return;
         }
@@ -73,8 +73,8 @@ export default function GenerateWodPage() {
         if (!turnstileToken) {
             toast({
                 variant: "destructive",
-                title: "Vérification requise",
-                description: "Veuillez compléter la vérification anti-robot."
+                title: "Verification required",
+                description: "Please complete the Turnstile verification."
             });
             setIsLoading(false);
             return;
@@ -88,12 +88,11 @@ export default function GenerateWodPage() {
             console.log("DEBUG 3 - Calling function...");
             const response = await generateWodFn({ turnstileToken });
             
-            console.log("DEBUG 4 - Response received:", response);
-            const result = response.data as any;
-            const wodData = result.data || result;
+            console.log("DEBUG 4 - Response received");
+            const wodData = response.data as any;
             
             if (!wodData || !wodData.name) {
-                throw new Error("Format de données WOD invalide reçu du serveur.");
+                throw new Error("Invalid data format received from server.");
             }
 
             const tempId = doc(collection(firestore, 'temp')).id;
@@ -119,22 +118,13 @@ export default function GenerateWodPage() {
 
         } catch (e: any) {
             console.error("DEBUG - Full Error Object:", e);
-            
-            const errorCode = e.code || 'unknown';
-            const errorMessage = e.message || 'No message';
-            const errorDetails = e.details ? (typeof e.details === 'object' ? JSON.stringify(e.details, null, 2) : String(e.details)) : 'None';
+            const errMsg = e.message || "Unknown error";
+            const errCode = e.code || "unknown";
 
              toast({
                 variant: "destructive",
                 title: t('errorAlert.title'),
-                description: (
-                    <div className="mt-2 w-full max-h-60 overflow-auto rounded-md bg-slate-950 p-4 text-[10px]">
-                        <code className="text-white whitespace-pre-wrap">
-                            {`Code: ${errorCode}\nMessage: ${errorMessage}\n\nDetails:\n${errorDetails}`}
-                        </code>
-                    </div>
-                ),
-                duration: 30000,
+                description: `Error: ${errMsg} (Code: ${errCode})`,
             });
         } finally {
             setIsLoading(false);
@@ -144,7 +134,6 @@ export default function GenerateWodPage() {
     };
     
     const onTurnstileSuccess = useCallback((token: string) => {
-        console.log("DEBUG - Turnstile Success, token received");
         setTurnstileToken(token);
     }, []);
 
@@ -200,7 +189,7 @@ export default function GenerateWodPage() {
                              {!isUserLoading && (!user || user.isAnonymous) && (
                                 <Alert variant="default" className="border-blue-500/50 text-blue-500">
                                      <Info className="h-4 w-4 !text-blue-500" />
-                                    <AlertTitle>{t('freePlanAlert.title')}</AlertTitle>
+                                    <AlertTitle>Free Plan</AlertTitle>
                                     <AlertDescription>
                                         Please sign in to go Premium and unlock unlimited generations.
                                     </AlertDescription>
