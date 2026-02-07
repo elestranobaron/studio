@@ -83,19 +83,19 @@ export default function GenerateWodPage() {
         try {
             console.log("DEBUG 2 - Getting functions instance (us-central1)");
             const functions = getFunctions(undefined, 'us-central1');
-            
-            console.log("DEBUG 3 - Creating callable for 'generateWod'");
             const generateWodFn = httpsCallable(functions, 'generateWod');
             
-            console.log("DEBUG 4 - Calling function with token:", turnstileToken.substring(0, 10) + "...");
+            console.log("DEBUG 3 - Calling function...");
             const response = await generateWodFn({ turnstileToken });
             
-            console.log("DEBUG 5 - Response received:", response);
+            console.log("DEBUG 4 - Response received:", response);
             const result = response.data as any;
             const wodData = result.data || result;
             
-            console.log("DEBUG 6 - Extracting WOD data:", wodData);
-            
+            if (!wodData || !wodData.name) {
+                throw new Error("Format de données WOD invalide reçu du serveur.");
+            }
+
             const tempId = doc(collection(firestore, 'temp')).id;
             const placeholderImageUrl = `https://picsum.photos/seed/${tempId}/600/400`;
 
@@ -115,16 +115,14 @@ export default function GenerateWodPage() {
                 lowerBody: wodData.lowerBody,
             };
             
-            console.log("DEBUG 7 - Setting generated WOD state");
             setGeneratedWod(newWod);
 
         } catch (e: any) {
-            console.log("DEBUG - CATCH BLOCK REACHED");
             console.error("DEBUG - Full Error Object:", e);
             
             const errorCode = e.code || 'unknown';
             const errorMessage = e.message || 'No message';
-            const errorDetails = e.details ? JSON.stringify(e.details) : 'None';
+            const errorDetails = e.details ? (typeof e.details === 'object' ? JSON.stringify(e.details, null, 2) : String(e.details)) : 'None';
 
              toast({
                 variant: "destructive",
@@ -139,7 +137,6 @@ export default function GenerateWodPage() {
                 duration: 30000,
             });
         } finally {
-            console.log("DEBUG 11 - Process finished");
             setIsLoading(false);
             setTurnstileToken(null);
             setTurnstileKey(Date.now());
@@ -147,6 +144,7 @@ export default function GenerateWodPage() {
     };
     
     const onTurnstileSuccess = useCallback((token: string) => {
+        console.log("DEBUG - Turnstile Success, token received");
         setTurnstileToken(token);
     }, []);
 

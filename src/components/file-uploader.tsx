@@ -118,7 +118,7 @@ export function FileUploader() {
         console.error("Analysis Error:", e);
         const errorCode = e.code || 'unknown';
         const errorMessage = e.message || 'No message';
-        const errorDetails = e.details ? JSON.stringify(e.details) : 'None';
+        const errorDetails = e.details ? (typeof e.details === 'object' ? JSON.stringify(e.details, null, 2) : String(e.details)) : 'None';
 
         toast({
             variant: "destructive",
