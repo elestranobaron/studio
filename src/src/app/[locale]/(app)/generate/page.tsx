@@ -83,10 +83,10 @@ export default function GenerateWodPage() {
             const generateWodFn = httpsCallable(functions, 'generateWod');
             const response = await generateWodFn({ turnstileToken });
             
-            const result = response.data as { data: any, error: string | null, stack?: string };
+            const result = response.data as any;
 
             if (result.error) {
-                throw new Error(`Server Error: ${result.error}\n\nStack: ${result.stack || 'N/A'}`);
+                throw new Error(`SERVER ERROR: ${result.error}\n\nDETAILS: ${result.details}`);
             }
             
             const tempId = doc(collection(firestore, 'temp')).id;
@@ -111,16 +111,16 @@ export default function GenerateWodPage() {
             setGeneratedWod(newWod);
 
         } catch (e: any) {
-            console.error("WOD Generation Error:", e);
-            // On extrait tout ce qu'on peut de l'erreur Firebase
-            const detailedError = e.details ? JSON.stringify(e.details, null, 2) : (e.stack || e.message || "Unknown error");
-
+            console.error("GENERATE ERROR:", e);
+            
              toast({
                 variant: "destructive",
                 title: t('errorAlert.title'),
                 description: (
                     <div className="mt-2 w-full max-h-60 overflow-auto rounded-md bg-slate-950 p-4 text-[10px]">
-                        <code className="text-white whitespace-pre-wrap">{detailedError}</code>
+                        <code className="text-white whitespace-pre-wrap">
+                            {e.message || "Unknown error"}
+                        </code>
                     </div>
                 ),
                 duration: 30000,
@@ -188,9 +188,7 @@ export default function GenerateWodPage() {
                                      <Info className="h-4 w-4 !text-blue-500" />
                                     <AlertTitle>{t('freePlanAlert.title')}</AlertTitle>
                                     <AlertDescription>
-                                        {t.rich('freePlanAlert.description', {
-                                            link: (chunks) => <Link href="/premium" className="font-bold underline ml-1">{chunks}</Link>
-                                        })}
+                                        Please log in to upgrade to premium and unlock unlimited generation.
                                     </AlertDescription>
                                 </Alert>
                             )}
