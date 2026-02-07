@@ -59,6 +59,7 @@ export default function GenerateWodPage() {
 
 
     const handleGenerate = async () => {
+        console.log("DEBUG 1 - Starting handleGenerate");
         setIsLoading(true);
         setGeneratedWod(null);
         
@@ -79,20 +80,22 @@ export default function GenerateWodPage() {
         }
 
         try {
-            const functions = getFunctions();
+            console.log("DEBUG 2 - Getting functions instance (us-central1)");
+            const functions = getFunctions(undefined, 'us-central1');
+            
+            console.log("DEBUG 3 - Calling function...");
             const generateWodFn = httpsCallable(functions, 'generateWod');
             const response = await generateWodFn({ turnstileToken });
             
-            const result = response.data as any;
-
-            // Gestion des erreurs renvoyées par l'objet success (format personnalisé précédent)
-            if (result && result.error) {
-                throw new Error(`SERVER ERROR: ${result.error}\n\nDETAILS: ${result.details}`);
-            }
+            console.log("DEBUG 4 - Response received:", response);
+            const wodData = response.data as any;
             
-            // Le résultat est maintenant dans result.data si on utilise mon nouveau format ou directement dans result
-            const wodData = result.data || result;
+            if (!wodData || !wodData.name) {
+                console.error("DEBUG 5 - Invalid data format", wodData);
+                throw new Error("Format de données WOD invalide reçu du serveur.");
+            }
 
+            console.log("DEBUG 6 - Creating WOD object");
             const tempId = doc(collection(firestore, 'temp')).id;
             const placeholderImageUrl = `https://picsum.photos/seed/${tempId}/600/400`;
 
@@ -112,6 +115,7 @@ export default function GenerateWodPage() {
                 lowerBody: wodData.lowerBody,
             };
             
+            console.log("DEBUG 7 - WOD set");
             setGeneratedWod(newWod);
 
         } catch (e: any) {
@@ -119,7 +123,7 @@ export default function GenerateWodPage() {
             
             const errorCode = e.code || 'unknown';
             const errorMessage = e.message || 'No message';
-            const errorDetails = e.details ? (typeof e.details === 'object' ? JSON.stringify(e.details, null, 2) : e.details) : 'None';
+            const errorDetails = e.details ? (typeof e.details === 'object' ? JSON.stringify(e.details, null, 2) : String(e.details)) : 'None';
 
              toast({
                 variant: "destructive",
@@ -134,6 +138,7 @@ export default function GenerateWodPage() {
                 duration: 30000,
             });
         } finally {
+            console.log("DEBUG 11 - Process finished");
             setIsLoading(false);
             setTurnstileToken(null);
             setTurnstileKey(Date.now());
@@ -141,6 +146,7 @@ export default function GenerateWodPage() {
     };
     
     const onTurnstileSuccess = useCallback((token: string) => {
+        console.log("DEBUG - Turnstile Success, token received");
         setTurnstileToken(token);
     }, []);
 
@@ -190,7 +196,9 @@ export default function GenerateWodPage() {
                                 {isLoading ? t('generatingButton') : t('generateButton')}
                             </Button>
                             <Turnstile key={turnstileKey} onSuccess={onTurnstileSuccess} onExpire={onTurnstileExpire} />
+                            
                             {isUserLoading && <Skeleton className="h-6 w-48" />}
+                            
                              {!isUserLoading && (!user || user.isAnonymous) && (
                                 <Alert variant="default" className="border-blue-500/50 text-blue-500">
                                      <Info className="h-4 w-4 !text-blue-500" />

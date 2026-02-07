@@ -90,6 +90,26 @@
       "lower": "Lower"
     }
   },
+  "TimerClient": {
+    "workoutComplete": "Workout Complete!",
+    "totalTime": "Total Time",
+    "timeCompleted": "Time Completed",
+    "goAgain": "Go Again",
+    "shareResult": "Share Result",
+    "shareModal": {
+      "title": "WOD Result: {wodName}",
+      "description": "Your final time was {finalTime}. This card is ready for sharing.",
+      "finalTimeLabel": "FINAL TIME",
+      "screenshotReady": "Ready for screenshot!"
+    },
+    "timeCap": "Time Cap: {duration}:00",
+    "pause": "Pause",
+    "start": "Start",
+    "reset": "Reset",
+    "finish": "Finish",
+    "round": "Round {current} / {total}",
+    "totalTimeElapsed": "Total: {time}"
+  },
   "TimerPage": {
     "backToDashboard": "Back to Dashboard",
     "viewWod": "View WOD",
@@ -357,26 +377,6 @@
     "claimSpotButton": "Claim Your Spot Now",
     "emptyList": "Be the first to claim a spot!"
   },
-  "TimerClient": {
-    "workoutComplete": "Workout Complete!",
-    "totalTime": "Total Time",
-    "timeCompleted": "Time Completed",
-    "goAgain": "Go Again",
-    "shareResult": "Share Result",
-    "shareModal": {
-      "title": "WOD Result: {wodName}",
-      "description": "Your final time was {finalTime}. This card is ready for sharing.",
-      "finalTimeLabel": "FINAL TIME",
-      "screenshotReady": "Ready for screenshot!"
-    },
-    "timeCap": "Time Cap: {duration}:00",
-    "pause": "Pause",
-    "start": "Start",
-    "reset": "Reset",
-    "finish": "Finish",
-    "round": "Round {current} / {total}",
-    "totalTimeElapsed": "Total: {time}"
-  },
   "GenerateWodPage": {
     "title": "AI WOD Generator",
     "cardTitle": "WODBot 3000",
@@ -385,7 +385,7 @@
     "generatingButton": "Generating...",
     "freePlanAlert": {
       "title": "Free Plan",
-      "description": "You have a limited number of daily generations. <link>Go Premium</link> for unlimited access.",
+      "description": "You have a limited number of daily generations. Go Premium for unlimited access.",
       "link": "Go Premium"
     },
     "premiumPlanMessage": "Unlimited generations enabled.",

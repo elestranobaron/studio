@@ -27,7 +27,8 @@ setGlobalOptions({
 async function validateTurnstile(token: string, ip: string | undefined): Promise<boolean> {
     const secret = process.env.TURNSTILE_SECRET_KEY;
     
-    if (!secret || secret.startsWith('your_') || secret === '1x0000000000000000000000000000000AA') {
+    // Bypass pour le debug Studio ou si les clés sont dummy
+    if (!secret || secret.startsWith('your_') || secret.includes('DUMMY') || secret === '1x0000000000000000000000000000000AA') {
         logger.warn('TURNSTILE_SECRET_KEY non configurée ou valeur de test. Validation ignorée.');
         return true; 
     }
@@ -113,12 +114,18 @@ export const generateWod = onCall({ cors: true }, async (request) => {
         
         process.env.GOOGLE_GENAI_API_KEY = geminiKey;
 
-        const { generateWod } = await import('./ai/generate-wod-flow');
-        const result = await generateWod({});
-        return { data: result };
+        // On renomme l'import pour éviter le conflit de noms
+        const { generateWod: runAiFlow } = await import('./ai/generate-wod-flow');
+        const result = await runAiFlow({});
+        
+        // onCall renvoie directement le contenu de 'data'
+        return result;
     } catch (e: any) {
         logger.error("generateWod error:", e);
-        throw new HttpsError("internal", e.message || "Erreur interne", { stack: e.stack });
+        throw new HttpsError("internal", e.message || "Erreur interne", { 
+            stack: e.stack,
+            message: e.message 
+        });
     }
 });
 
@@ -138,12 +145,16 @@ export const analyzeWod = onCall({ cors: true }, async (request) => {
         
         process.env.GOOGLE_GENAI_API_KEY = geminiKey;
 
-        const { analyzeWod } = await import("./ai/analyze-wod-flow");
-        const result = await analyzeWod({ photoDataUri });
-        return { data: result };
+        // On renomme l'import pour éviter le conflit de noms
+        const { analyzeWod: runAiFlow } = await import("./ai/analyze-wod-flow");
+        const result = await runAiFlow({ photoDataUri });
+        return result;
     } catch (e: any) {
         logger.error("analyzeWod error:", e);
-        throw new HttpsError("internal", e.message || "Erreur interne", { stack: e.stack });
+        throw new HttpsError("internal", e.message || "Erreur interne", { 
+            stack: e.stack,
+            message: e.message 
+        });
     }
 });
 

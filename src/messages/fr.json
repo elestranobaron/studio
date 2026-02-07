@@ -90,6 +90,26 @@
       "lower": "Bas"
     }
   },
+  "TimerClient": {
+    "workoutComplete": "Entraînement Terminé !",
+    "totalTime": "Temps Total",
+    "timeCompleted": "Temps Final",
+    "goAgain": "Recommencer",
+    "shareResult": "Partager le Résultat",
+    "shareModal": {
+      "title": "Résultat WOD : {wodName}",
+      "description": "Votre temps final était {finalTime}. Cette carte est prête à être partagée.",
+      "finalTimeLabel": "TEMPS FINAL",
+      "screenshotReady": "Prêt pour la capture d'écran !"
+    },
+    "timeCap": "Time Cap : {duration}:00",
+    "pause": "Pause",
+    "start": "Démarrer",
+    "reset": "Réinitialiser",
+    "finish": "Terminer",
+    "round": "Round {current} / {total}",
+    "totalTimeElapsed": "Total : {time}"
+  },
   "TimerPage": {
     "backToDashboard": "Retour au Dashboard",
     "viewWod": "Voir le WOD",
@@ -241,7 +261,7 @@
       "deleteButton": "Supprimer Mon Compte",
       "deletingButton": "Suppression...",
       "dialogTitle": "Êtes-vous absolument sûr ?",
-      "dialogDescription": "Cette action est irréversible. Elle supprimera définitivement votre compte et effacera toutes vos données, y compris tous vos WODs enregistrés, de nos serveurs.",
+      "dialogDescription": "Cette action est irréversible. Elle supprimera définitivement votre compte et effacera toutes vos données, y compris tous vos WODs enregistrés, de nos servidors.",
       "dialogCancel": "Annuler",
       "dialogConfirm": "Oui, supprimer mon compte",
       "helpText": "Si vous supprimez votre compte, toutes vos données seront perdues à jamais."
@@ -351,31 +371,11 @@
   "HallOfFamePage": {
     "title": "Hall of Fame",
     "cardTitle": "Les 300 Premiers OGs",
-    "cardDescription": "Premium à vie. Une place permanente pour nos premiers supporters.",
+    "cardDescription": "Gratis à vie. Une place permanente pour nos premiers supporters.",
     "spotsRemaining": "Seulement {spotsLeft} places restantes !",
     "spotsFull": "La liste est maintenant fermée pour toujours.",
     "claimSpotButton": "Réclamez Votre Place Maintenant",
     "emptyList": "Soyez le premier à réclamer une place !"
-  },
-  "TimerClient": {
-    "workoutComplete": "Entraînement Terminé !",
-    "totalTime": "Temps Total",
-    "timeCompleted": "Temps Final",
-    "goAgain": "Recommencer",
-    "shareResult": "Partager le Résultat",
-    "shareModal": {
-      "title": "Résultat WOD : {wodName}",
-      "description": "Votre temps final était {finalTime}. Cette carte est prête à être partagée.",
-      "finalTimeLabel": "TEMPS FINAL",
-      "screenshotReady": "Prêt pour la capture d'écran !"
-    },
-    "timeCap": "Time Cap : {duration}:00",
-    "pause": "Pause",
-    "start": "Démarrer",
-    "reset": "Réinitialiser",
-    "finish": "Terminer",
-    "round": "Round {current} / {total}",
-    "totalTimeElapsed": "Total : {time}"
   },
   "GenerateWodPage": {
     "title": "Générateur de WOD IA",
@@ -385,7 +385,7 @@
     "generatingButton": "Génération...",
     "freePlanAlert": {
       "title": "Plan Gratuit",
-      "description": "Vous avez un nombre limité de générations quotidiennes. <link>Passez Premium</link> pour un accès illimité.",
+      "description": "Vous avez un nombre limité de générations quotidiennes. Passez Premium pour un accès illimité.",
       "link": "Passez Premium"
     },
     "premiumPlanMessage": "Générations illimitées activées.",
