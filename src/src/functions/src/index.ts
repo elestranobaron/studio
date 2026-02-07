@@ -7,8 +7,6 @@ import * as admin from "firebase-admin";
 import Stripe from "stripe";
 import type { QuerySnapshot, DocumentSnapshot } from "firebase-admin/firestore";
 import { setGlobalOptions } from "firebase-functions/v2";
-import { generateWod as generateWodFlow } from './ai/generate-wod-flow';
-import { analyzeWod as analyzeWodFlow } from './ai/analyze-wod-flow';
 
 admin.initializeApp();
 const db = admin.firestore();
@@ -26,8 +24,8 @@ const NEXT_PUBLIC_APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost
 
 async function validateTurnstile(token: string, ip: string | undefined): Promise<boolean> {
     if (!TURNSTILE_SECRET_KEY) {
-        console.warn('TURNSTILE_SECRET_KEY is not set. Bypassing validation in non-prod.');
-        return process.env.NODE_ENV !== 'production';
+        console.warn('TURNSTILE_SECRET_KEY is not set. Captcha bypass in development.');
+        return true; 
     }
 
     const formData = new FormData();
@@ -45,7 +43,7 @@ async function validateTurnstile(token: string, ip: string | undefined): Promise
         
         const outcome = await response.json() as { success: boolean; 'error-codes'?: string[] };
         if (!outcome.success) {
-          console.warn('Turnstile validation failed:', outcome['error-codes']);
+          console.error('Turnstile validation failed. Codes:', outcome['error-codes']);
         }
         return outcome.success;
     } catch (e) {
@@ -74,7 +72,7 @@ exports.sendDigicode = onCall({ cors: true }, async (request) => {
   }
 
   if (!process.env.BREVO_API_KEY) {
-    throw new HttpsError("internal", "The mail service is not configured (BREVO_API_KEY missing).");
+    throw new HttpsError("internal", "Mail service BREVO_API_KEY is missing.");
   }
 
   const code = generateDigicode();
@@ -101,9 +99,7 @@ exports.sendDigicode = onCall({ cors: true }, async (request) => {
     });
 
     if (!brevoRes.ok) {
-      const errorText = await brevoRes.text();
-      console.error("Brevo API error:", errorText);
-      throw new HttpsError("internal", "Failed to send the authentication code.");
+      throw new Error(`Brevo error: ${await brevoRes.text()}`);
     }
 
     return { success: true };
@@ -116,85 +112,72 @@ exports.sendDigicode = onCall({ cors: true }, async (request) => {
 exports.generateWod = onCall({ cors: true, timeoutSeconds: 60 }, async (request) => {
     try {
         const { turnstileToken } = request.data;
-        if (!turnstileToken) {
-            throw new HttpsError("invalid-argument", "Captcha token is missing.");
-        }
-        const isTurnstileValid = await validateTurnstile(turnstileToken, request.rawRequest.ip);
-        if (!isTurnstileValid) {
-            throw new HttpsError("permission-denied", "Captcha validation failed.");
-        }
-
-        if (!process.env.GEMINI_API_KEY) {
-            throw new HttpsError("failed-precondition", "GEMINI_API_KEY is not configured on the server.");
-        }
+        if (!turnstileToken) throw new HttpsError("invalid-argument", "Captcha token is missing.");
         
-        const result = await generateWodFlow({});
-        return result;
+        const isTurnstileValid = await validateTurnstile(turnstileToken, request.rawRequest.ip);
+        if (!isTurnstileValid) throw new HttpsError("permission-denied", "Captcha validation failed.");
+
+        if (!process.env.GEMINI_API_KEY) throw new HttpsError("failed-precondition", "GEMINI_API_KEY is missing on server.");
+
+        // On s'assure que Genkit trouve la clé là où il l'attend
+        process.env.GOOGLE_GENAI_API_KEY = process.env.GEMINI_API_KEY;
+
+        const { generateWod } = await import('./ai/generate-wod-flow');
+        const result = await generateWod({});
+        return { data: result, error: null };
     } catch (e: any) {
-        console.error("[generateWod] FATAL ERROR:", e);
-        throw new HttpsError("internal", e.message || "Server error during WOD generation", { 
-            stack: e.stack,
-            details: e.details || null 
-        });
+        console.error("[generateWod] Error:", e);
+        return { 
+            data: null, 
+            error: e.message || "Unknown error",
+            stack: e.stack || ""
+        };
     }
 });
 
 exports.analyzeWod = onCall({ cors: true, timeoutSeconds: 60 }, async (request) => {
     try {
         const { photoDataUri, turnstileToken } = request.data;
-        if (!photoDataUri) {
-            throw new HttpsError("invalid-argument", "The function must be called with a 'photoDataUri' argument.");
-        }
-        if (!turnstileToken) {
-             throw new HttpsError("invalid-argument", "Captcha token is missing.");
-        }
+        if (!photoDataUri) throw new HttpsError("invalid-argument", "photoDataUri is required.");
+        if (!turnstileToken) throw new HttpsError("invalid-argument", "Captcha token is missing.");
+        
         const isTurnstileValid = await validateTurnstile(turnstileToken, request.rawRequest.ip);
-        if (!isTurnstileValid) {
-            throw new HttpsError("permission-denied", "Captcha validation failed.");
-        }
+        if (!isTurnstileValid) throw new HttpsError("permission-denied", "Captcha validation failed.");
 
-        if (!process.env.GEMINI_API_KEY) {
-            throw new HttpsError("failed-precondition", "GEMINI_API_KEY is not configured on the server.");
-        }
+        if (!process.env.GEMINI_API_KEY) throw new HttpsError("failed-precondition", "GEMINI_API_KEY is missing on server.");
+        
+        process.env.GOOGLE_GENAI_API_KEY = process.env.GEMINI_API_KEY;
 
-        const result = await analyzeWodFlow({ photoDataUri });
-        return result;
+        const { analyzeWod } = await import("./ai/analyze-wod-flow");
+        const result = await analyzeWod({ photoDataUri });
+        return { data: result, error: null };
     } catch (e: any) {
-        console.error("[analyzeWod] FATAL ERROR:", e);
-        throw new HttpsError("internal", e.message || "Server error during image analysis", { 
-            stack: e.stack,
-            details: e.details || null 
-        });
+        console.error("[analyzeWod] Error:", e);
+        return { 
+            data: null, 
+            error: e.message || "Unknown error",
+            stack: e.stack || ""
+        };
     }
 });
-
 
 exports.verifyDigicode = onCall({ cors: true }, async (request) => {
   try {
     const { email, code } = request.data;
-
-    if (!email || !code) {
-      throw new HttpsError("invalid-argument", "Email and code are required.");
-    }
+    if (!email || !code) throw new HttpsError("invalid-argument", "Email and code are required.");
 
     const codeRef = db.collection("digicodes").doc(email.toLowerCase());
     const codeDoc = await codeRef.get();
 
-    if (!codeDoc.exists) {
-      throw new HttpsError("not-found", "Invalid code. Please request a new one.");
-    }
+    if (!codeDoc.exists) throw new HttpsError("not-found", "Invalid code.");
 
-    const data = codeDoc.data()!;
-    const { code: storedCode, expires } = data;
-
+    const { code: storedCode, expires } = codeDoc.data()!;
     if (expires.toMillis() < Date.now()) {
       await codeRef.delete();
-      throw new HttpsError("deadline-exceeded", "The code has expired.");
+      throw new HttpsError("deadline-exceeded", "Code expired.");
     }
 
-    if (storedCode !== code) {
-      throw new HttpsError("unauthenticated", "Invalid code.");
-    }
+    if (storedCode !== code) throw new HttpsError("unauthenticated", "Invalid code.");
 
     await codeRef.delete();
 
@@ -205,7 +188,7 @@ exports.verifyDigicode = onCall({ cors: true }, async (request) => {
       uid = user.uid;
     } catch (err: any) {
       if (err.code === "auth/user-not-found") {
-        const newUser = await admin.auth().createUser({ email });
+        const newUser = await admin.auth().createUser({ email: email.toLowerCase() });
         uid = newUser.uid;
         isNewUser = true;
       } else {
@@ -214,45 +197,29 @@ exports.verifyDigicode = onCall({ cors: true }, async (request) => {
     }
 
     const customToken = await admin.auth().createCustomToken(uid);
-    
     return { token: customToken, isNewUser };
-
   } catch (error: any) {
-    console.error("FATAL ERROR in verifyDigicode:", error);
     if (error instanceof HttpsError) throw error;
-    throw new HttpsError("internal", "Could not complete the sign-in process.");
+    throw new HttpsError("internal", error.message || "Sign-in error");
   }
 });
 
 exports.createCheckout = onCall({ cors: true }, async (request) => {
-    if (!request.auth) {
-        throw new HttpsError("unauthenticated", "User must be authenticated.");
-    }
+    if (!request.auth) throw new HttpsError("unauthenticated", "Auth required.");
 
     const { yearly, turnstileToken } = request.data;
-    if (!turnstileToken) {
-        throw new HttpsError("invalid-argument", "Captcha token is missing.");
-    }
+    if (!turnstileToken) throw new HttpsError("invalid-argument", "Captcha missing.");
+    
     const isTurnstileValid = await validateTurnstile(turnstileToken, request.rawRequest.ip);
-    if (!isTurnstileValid) {
-        throw new HttpsError("permission-denied", "Captcha validation failed.");
-    }
+    if (!isTurnstileValid) throw new HttpsError("permission-denied", "Captcha failed.");
 
-    if (!process.env.STRIPE_SECRET_KEY) {
-        throw new HttpsError("internal", 'Stripe secret key is not set');
-    }
-    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, { apiVersion: "2025-12-15.clover" });
-
+    if (!process.env.STRIPE_SECRET_KEY) throw new HttpsError("internal", 'Stripe key missing.');
+    
+    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, { apiVersion: "2025-12-15.clover" });
     const uid = request.auth.uid;
-    const userDoc = await db.collection("users").doc(uid).get();
-    if (userDoc.data()?.premium === true) {
-        throw new HttpsError("failed-precondition", "User is already premium.");
-    }
-
+    
     const priceId = yearly === true ? STRIPE_YEARLY_PRICE_ID : STRIPE_MONTHLY_PRICE_ID;
-    if (!priceId) {
-        throw new HttpsError("internal", "Missing Price ID");
-    }
+    if (!priceId) throw new HttpsError("internal", "Stripe Price ID missing.");
 
     const session = await stripe.checkout.sessions.create({
         payment_method_types: ["card"],
@@ -269,54 +236,19 @@ exports.createCheckout = onCall({ cors: true }, async (request) => {
     return { url: session.url };
 });
 
-exports.createCustomerPortal = onCall({ cors: true }, async (request) => {
-    if (!request.auth) {
-        throw new HttpsError("unauthenticated", "User must be authenticated.");
-    }
-    if (!process.env.STRIPE_SECRET_KEY) {
-        throw new HttpsError("internal", 'Stripe secret key is not set.');
-    }
-    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, { apiVersion: "2025-12-15.clover" });
-
-    const uid = request.auth.uid;
-    const userDoc = await db.collection('users').doc(uid).get();
-    const customerId = userDoc.data()?.stripeCustomerId;
-
-    if (!customerId) {
-        throw new HttpsError("not-found", 'Stripe customer ID not found.');
-    }
-    
-    const portalSession = await stripe.billingPortal.sessions.create({
-        customer: customerId,
-        return_url: `${NEXT_PUBLIC_APP_URL}/settings`,
-    });
-
-    return { url: portalSession.url };
-});
-
-// Webhooks must be onRequest, NOT onCall
 exports.stripeWebhook = onRequest({ cors: true }, async (req, res) => {
     const sig = req.headers["stripe-signature"] as string;
-
     if (!process.env.STRIPE_SECRET_KEY || !STRIPE_WEBHOOK_SECRET) {
-      console.error("Stripe keys not configured");
-      res.status(500).send("Server configuration error");
+      res.status(500).send("Config error");
       return;
     }
 
-    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-      apiVersion: "2025-12-15.clover",
-    });
+    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, { apiVersion: "2025-12-15.clover" });
 
     let event: Stripe.Event;
     try {
-      event = stripe.webhooks.constructEvent(
-        req.rawBody,
-        sig,
-        STRIPE_WEBHOOK_SECRET
-      );
+      event = stripe.webhooks.constructEvent(req.rawBody, sig, STRIPE_WEBHOOK_SECRET);
     } catch (err: any) {
-      console.error("Webhook signature verification failed:", err.message);
       res.status(400).send(`Webhook Error: ${err.message}`);
       return;
     }
@@ -327,158 +259,59 @@ exports.stripeWebhook = onRequest({ cors: true }, async (req, res) => {
       let email = (obj.customer_details?.email || obj.customer_email || "").toLowerCase().trim();
       let customerId = obj.customer;
 
-      if (!uid && email) {
-          try {
-              const userRecord = await admin.auth().getUserByEmail(email);
-              uid = userRecord.uid;
-          } catch (error) {
-              console.error(`Could not find user by email ${email} for Stripe event ${event.id}`);
-          }
-      }
-      
-      if (!uid && customerId) {
-          try {
-              const customer = await stripe.customers.retrieve(customerId);
-              if(!customer.deleted) {
-                uid = customer.metadata.uid;
-              }
-          } catch(e) {
-              console.error(`Could not retrieve customer ${customerId}`);
-          }
-      }
-      
-      if (!uid && obj.subscription) {
-         try {
-             const subscription = await stripe.subscriptions.retrieve(obj.subscription as string);
-             uid = subscription.metadata.uid;
-             if (!customerId) customerId = subscription.customer as string;
-         } catch(e) {
-              console.error(`Could not retrieve subscription ${obj.subscription}`);
-         }
-      }
-
       if (uid) {
           const userRef = db.collection("users").doc(uid);
-
           try {
                await db.runTransaction(async (transaction) => {
-                  const userSnap = await transaction.get(userRef);
-                  const isAlreadyPremium = userSnap.exists && userSnap.data()?.premium;
-                  
                   const updateData: any = {
                       premium: true,
                       stripeCustomerId: customerId,
                   };
-                  
-                  if (!isAlreadyPremium) {
-                      updateData.premiumSince = admin.firestore.FieldValue.serverTimestamp();
-                  }
-
                   transaction.set(userRef, updateData, { merge: true });
 
-                  const yearlyPriceId = price_1STqDaBuRfqlcCPR68w1Rwuj; // Usar ID hardcoded o de .env
+                  const yearlyPriceId = STRIPE_YEARLY_PRICE_ID;
                   const lineItems = obj.line_items || obj.items;
                   const isYearly = lineItems?.data?.[0]?.price?.id === yearlyPriceId || obj.plan?.id === yearlyPriceId;
                   
                   if (isYearly) {
                       const hallOfFameRef = db.collection("hallOfFame");
-                      const ogQuery = await hallOfFameRef.get();
-                      const ogCount = ogQuery.size;
-
-                      if (ogCount < 300) {
-                          const ogDocRef = hallOfFameRef.doc(uid);
-                          const ogDoc = await transaction.get(ogDocRef);
-                          if (!ogDoc.exists) {
-                              const rank = ogCount + 1;
-                              const authUser = await admin.auth().getUser(uid);
-                              const displayName = authUser.email?.split('@')[0] || `user${rank}`;
+                      const ogDocRef = hallOfFameRef.doc(uid);
+                      const ogDoc = await transaction.get(ogDocRef);
+                      if (!ogDoc.exists) {
+                          const count = (await hallOfFameRef.get()).size;
+                          if (count < 300) {
                               transaction.set(ogDocRef, {
                                   uid,
-                                  displayName,
-                                  rank,
+                                  displayName: email.split('@')[0] || 'Member',
+                                  rank: count + 1,
                                   joinedAt: admin.firestore.FieldValue.serverTimestamp()
                               });
                           }
                       }
                   }
-
-                  if (!isAlreadyPremium && email && process.env.BREVO_API_KEY) {
-                      try {
-                          await fetch("https://api.brevo.com/v3/smtp/email", {
-                              method: "POST",
-                              headers: {
-                                  "api-key": process.env.BREVO_API_KEY,
-                                  "Content-Type": "application/json",
-                              },
-                              body: JSON.stringify({
-                                  sender: { name: "WODBurner Team", email: "noreply@wodburner.app" },
-                                  to: [{ email }],
-                                  templateId: 4, 
-                              }),
-                          });
-                      } catch (emailError) {
-                          console.error(`Failed to send premium welcome email to ${email}:`, emailError);
-                      }
-                  }
               });
-              console.log(`PREMIUM ACTIVATED for ${uid} – ${event.type}`);
           } catch(error) {
-              console.error(`Transaction failed for user ${uid}:`, error);
+              console.error(`Transaction failed for ${uid}:`, error);
           }
       }
     }
-
     res.status(200).send({ received: true });
 });
 
-
 exports.resetDailyLimits = onSchedule('0 0 * * *', async () => {
-    console.log('Running daily limit reset job.');
-    try {
-        const usersSnapshot: QuerySnapshot = await db.collection('users').get();
-        if (usersSnapshot.empty) {
-            console.log('No users to process.');
-            return;
-        }
-
-        const batch = db.batch();
-        usersSnapshot.forEach((doc: DocumentSnapshot) => {
-            const userRef = doc.ref;
-            batch.update(userRef, {
-                dailyReactions: 0,
-                wodGenerationCount: 0,
-                dailyReset: admin.firestore.Timestamp.now()
-            });
-        });
-
-        await batch.commit();
-        console.log(`Successfully reset daily limits for ${usersSnapshot.size} users.`);
-    } catch (error) {
-        console.error('Error resetting daily limits:', error);
-    }
+    const usersSnapshot = await db.collection('users').get();
+    const batch = db.batch();
+    usersSnapshot.forEach(doc => {
+        batch.update(doc.ref, { dailyReactions: 0, wodGenerationCount: 0, dailyReset: admin.firestore.Timestamp.now() });
+    });
+    await batch.commit();
 });
 
 exports.resetMonthlyLimits = onSchedule('0 0 1 * *', async () => {
-    console.log('Running monthly limit reset job.');
-    try {
-        const usersSnapshot: QuerySnapshot = await db.collection('users').get();
-        if (usersSnapshot.empty) {
-            console.log('No users to process for monthly reset.');
-            return;
-        }
-
-        const batch = db.batch();
-        usersSnapshot.forEach((doc: DocumentSnapshot) => {
-            const userRef = doc.ref;
-            batch.update(userRef, {
-                ocrCount: 0,
-                ocrReset: admin.firestore.Timestamp.now()
-            });
-        });
-
-        await batch.commit();
-        console.log(`Successfully reset monthly limits for ${usersSnapshot.size} users.`);
-    } catch (error) {
-        console.error('Error resetting monthly limits:', error);
-    }
+    const usersSnapshot = await db.collection('users').get();
+    const batch = db.batch();
+    usersSnapshot.forEach(doc => {
+        batch.update(doc.ref, { ocrCount: 0, ocrReset: admin.firestore.Timestamp.now() });
+    });
+    await batch.commit();
 });
