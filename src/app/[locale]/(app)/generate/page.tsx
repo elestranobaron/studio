@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useCallback } from "react";
@@ -82,7 +81,6 @@ export default function GenerateWodPage() {
             const functions = getFunctions();
             const generateWodFn = httpsCallable(functions, 'generateWod');
             const response = await generateWodFn({ turnstileToken });
-            
             const data = response.data as any;
             
             const tempId = doc(collection(firestore, 'temp')).id;
@@ -107,18 +105,19 @@ export default function GenerateWodPage() {
             setGeneratedWod(newWod);
 
         } catch (e: any) {
-            console.error("WOD Generation Error:", e);
-            // Enhanced error extraction for Firebase Callable
-            const errorInfo = e.details ? 
-                (typeof e.details === 'object' ? JSON.stringify(e.details, null, 2) : e.details) : 
-                e.message;
+            console.error("DEBUG - Full Firebase Error Object:", e);
+            console.error("DEBUG - Error Details:", e.details);
+            
+            const detailedError = e.details 
+                ? (typeof e.details === 'object' ? JSON.stringify(e.details, null, 2) : e.details)
+                : `${e.code || 'unknown_code'}: ${e.message || 'No message'}`;
 
              toast({
                 variant: "destructive",
                 title: t('errorAlert.title'),
                 description: (
-                    <div className="mt-2 w-full max-h-60 overflow-auto rounded-md bg-slate-950 p-4 text-xs">
-                        <code className="text-white whitespace-pre-wrap">{errorInfo}</code>
+                    <div className="mt-2 w-full max-h-60 overflow-auto rounded-md bg-slate-950 p-4 text-[10px]">
+                        <code className="text-white whitespace-pre-wrap">{detailedError}</code>
                     </div>
                 ),
                 duration: 30000,
