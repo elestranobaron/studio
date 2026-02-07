@@ -11,7 +11,7 @@ import { WodCard } from "@/components/wod-card";
 import { type WOD } from "@/lib/types";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Gem, Zap, AlertTriangle, Info, ArrowLeft } from "lucide-react";
+import { Gem, Zap, Info, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { useTranslations } from "next-intl";
@@ -83,41 +83,44 @@ export default function GenerateWodPage() {
             const generateWodFn = httpsCallable(functions, 'generateWod');
             const response = await generateWodFn({ turnstileToken });
             
-            const result = response.data as { data: any, error: any | null };
-
-            if (result.error) {
-                // If the error object from the server has details, use them.
-                const errorMessage = result.error.details?.stack || result.error.message || JSON.stringify(result.error, null, 2);
-                throw new Error(errorMessage);
-            }
+            const data = response.data as any;
             
             const tempId = doc(collection(firestore, 'temp')).id;
             const placeholderImageUrl = `https://picsum.photos/seed/${tempId}/600/400`;
 
             const newWod: WOD = {
-                id: result.data.id || tempId, // Use a temp ID if the server doesn't provide one
+                id: data.id || tempId,
                 userId: user?.uid || 'anonymous',
-                name: result.data.name,
-                type: result.data.type,
-                description: result.data.description,
+                name: data.name,
+                type: data.type,
+                description: data.description,
                 date: new Date().toISOString(),
                 imageUrl: placeholderImageUrl,
-                imageHint: result.data.imageHint,
-                duration: result.data.duration,
-                cardio: result.data.cardio,
-                lifting: result.data.lifting,
-                upperBody: result.data.upperBody,
-                lowerBody: result.data.lowerBody,
+                imageHint: data.imageHint,
+                duration: data.duration,
+                cardio: data.cardio,
+                lifting: data.lifting,
+                upperBody: data.upperBody,
+                lowerBody: data.lowerBody,
             };
             
             setGeneratedWod(newWod);
 
         } catch (e: any) {
             console.error("WOD Generation Error:", e);
+            // Enhanced error extraction for Firebase Callable
+            const errorInfo = e.details ? 
+                (typeof e.details === 'object' ? JSON.stringify(e.details, null, 2) : e.details) : 
+                e.message;
+
              toast({
                 variant: "destructive",
                 title: t('errorAlert.title'),
-                description: <pre className="mt-2 w-full rounded-md bg-slate-950 p-4 text-xs"><code className="text-white whitespace-pre-wrap">{e.message}</code></pre>,
+                description: (
+                    <div className="mt-2 w-full max-h-60 overflow-auto rounded-md bg-slate-950 p-4 text-xs">
+                        <code className="text-white whitespace-pre-wrap">{errorInfo}</code>
+                    </div>
+                ),
                 duration: 30000,
             });
         } finally {

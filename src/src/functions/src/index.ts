@@ -1,12 +1,14 @@
 
 "use strict";
 
-import { onCall, HttpsError } from "firebase-functions/v2/https";
+import { onCall, HttpsError, onRequest } from "firebase-functions/v2/https";
 import { onSchedule } from "firebase-functions/v2/scheduler";
 import * as admin from "firebase-admin";
 import Stripe from "stripe";
 import type { QuerySnapshot, DocumentSnapshot } from "firebase-admin/firestore";
 import { setGlobalOptions } from "firebase-functions/v2";
+import { generateWod as generateWodFlow } from './ai/generate-wod-flow';
+import { analyzeWod as analyzeWodFlow } from './ai/analyze-wod-flow';
 
 admin.initializeApp();
 const db = admin.firestore();
@@ -16,22 +18,16 @@ setGlobalOptions({
   region: "us-central1"
 });
 
-const STRIPE_WEBHOOK_SECRET = process.env.STRIPE_WEBHOOK_SECRET!;
-const STRIPE_MONTHLY_PRICE_ID = process.env.STRIPE_MONTHLY_PRICE_ID!;
-const STRIPE_YEARLY_PRICE_ID = process.env.STRIPE_YEARLY_PRICE_ID!;
-const TURNSTILE_SECRET_KEY = process.env.TURNSTILE_SECRET_KEY!;
+const STRIPE_WEBHOOK_SECRET = process.env.STRIPE_WEBHOOK_SECRET || '';
+const STRIPE_MONTHLY_PRICE_ID = process.env.STRIPE_MONTHLY_PRICE_ID || '';
+const STRIPE_YEARLY_PRICE_ID = process.env.STRIPE_YEARLY_PRICE_ID || '';
+const TURNSTILE_SECRET_KEY = process.env.TURNSTILE_SECRET_KEY || '';
 const NEXT_PUBLIC_APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
 
 async function validateTurnstile(token: string, ip: string | undefined): Promise<boolean> {
     if (!TURNSTILE_SECRET_KEY) {
-        // If the key is not set, we are lenient in development but strict in production.
-        if (process.env.NODE_ENV !== 'production') {
-            console.warn('TURNSTILE_SECRET_KEY is not set. Bypassing captcha validation for local development. This will fail in production.');
-            return true; 
-        } else {
-            console.error('FATAL: TURNSTILE_SECRET_KEY is not set in production environment. Captcha validation failed.');
-            return false;
-        }
+        console.warn('TURNSTILE_SECRET_KEY is not set. Bypassing validation in non-prod.');
+        return process.env.NODE_ENV !== 'production';
     }
 
     const formData = new FormData();
@@ -48,15 +44,12 @@ async function validateTurnstile(token: string, ip: string | undefined): Promise
         });
         
         const outcome = await response.json() as { success: boolean; 'error-codes'?: string[] };
-        
         if (!outcome.success) {
-          // Log the specific error codes from Cloudflare for easier debugging.
-          console.warn('Turnstile validation failed with error codes:', outcome['error-codes']);
+          console.warn('Turnstile validation failed:', outcome['error-codes']);
         }
-
         return outcome.success;
     } catch (e) {
-        console.error('An error occurred while contacting Cloudflare Turnstile:', e);
+        console.error('Error contacting Turnstile:', e);
         return false;
     }
 }
@@ -77,12 +70,11 @@ exports.sendDigicode = onCall({ cors: true }, async (request) => {
   
   const isTurnstileValid = await validateTurnstile(turnstileToken, request.rawRequest.ip);
   if (!isTurnstileValid) {
-      throw new HttpsError("permission-denied", "Captcha validation failed. Check server logs for details from Cloudflare.");
+      throw new HttpsError("permission-denied", "Captcha validation failed.");
   }
 
   if (!process.env.BREVO_API_KEY) {
-    console.error("Brevo API key is not configured.");
-    throw new HttpsError("internal", "The mail service is not configured.");
+    throw new HttpsError("internal", "The mail service is not configured (BREVO_API_KEY missing).");
   }
 
   const code = generateDigicode();
@@ -115,69 +107,64 @@ exports.sendDigicode = onCall({ cors: true }, async (request) => {
     }
 
     return { success: true };
-  } catch (error) {
+  } catch (error: any) {
     console.error("sendDigicode error:", error);
-    throw new HttpsError("internal", "An unexpected error occurred.");
+    throw new HttpsError("internal", error.message || "An unexpected error occurred.");
   }
 });
 
 exports.generateWod = onCall({ cors: true, timeoutSeconds: 60 }, async (request) => {
     try {
-        if (!process.env.GEMINI_API_KEY) {
-            return { data: null, error: "FATAL: GEMINI_API_KEY is not set in the function's environment. Please ensure it is present in the `functions/.env` file." };
-        }
-
         const { turnstileToken } = request.data;
         if (!turnstileToken) {
-             return { data: null, error: "Captcha token is missing." };
+            throw new HttpsError("invalid-argument", "Captcha token is missing.");
         }
         const isTurnstileValid = await validateTurnstile(turnstileToken, request.rawRequest.ip);
         if (!isTurnstileValid) {
-            return { data: null, error: "Captcha validation failed. Check server logs for details from Cloudflare." };
+            throw new HttpsError("permission-denied", "Captcha validation failed.");
+        }
+
+        if (!process.env.GEMINI_API_KEY) {
+            throw new HttpsError("failed-precondition", "GEMINI_API_KEY is not configured on the server.");
         }
         
-        const { generateWod } = await import('./ai/generate-wod-flow');
-        const result = await generateWod({});
-        return { data: result, error: null };
+        const result = await generateWodFlow({});
+        return result;
     } catch (e: any) {
         console.error("[generateWod] FATAL ERROR:", e);
-        const errorString = JSON.stringify({
-            message: e.message,
+        throw new HttpsError("internal", e.message || "Server error during WOD generation", { 
             stack: e.stack,
-            name: e.name,
-        }, null, 2);
-        return { data: null, error: `[SERVER SIDE CRASH] \n${errorString}` };
+            details: e.details || null 
+        });
     }
 });
 
 exports.analyzeWod = onCall({ cors: true, timeoutSeconds: 60 }, async (request) => {
     try {
-        if (!process.env.GEMINI_API_KEY) {
-            return { data: null, error: "FATAL: GEMINI_API_KEY is not set in the function's environment. Please ensure it is present in the `functions/.env` file." };
-        }
         const { photoDataUri, turnstileToken } = request.data;
         if (!photoDataUri) {
-            return { data: null, error: "The function must be called with a 'photoDataUri' argument." };
+            throw new HttpsError("invalid-argument", "The function must be called with a 'photoDataUri' argument.");
         }
         if (!turnstileToken) {
-             return { data: null, error: "Captcha token is missing." };
+             throw new HttpsError("invalid-argument", "Captcha token is missing.");
         }
         const isTurnstileValid = await validateTurnstile(turnstileToken, request.rawRequest.ip);
         if (!isTurnstileValid) {
-            return { data: null, error: "Captcha validation failed. Check server logs for details from Cloudflare." };
+            throw new HttpsError("permission-denied", "Captcha validation failed.");
         }
 
-        const { analyzeWod } = await import("./ai/analyze-wod-flow");
-        const result = await analyzeWod({ photoDataUri });
-        return { data: result, error: null };
+        if (!process.env.GEMINI_API_KEY) {
+            throw new HttpsError("failed-precondition", "GEMINI_API_KEY is not configured on the server.");
+        }
+
+        const result = await analyzeWodFlow({ photoDataUri });
+        return result;
     } catch (e: any) {
         console.error("[analyzeWod] FATAL ERROR:", e);
-        const errorString = JSON.stringify({
-            message: e.message,
+        throw new HttpsError("internal", e.message || "Server error during image analysis", { 
             stack: e.stack,
-            name: e.name,
-        }, null, 2);
-        return { data: null, error: `[SERVER SIDE CRASH] \n${errorString}` };
+            details: e.details || null 
+        });
     }
 });
 
@@ -248,7 +235,7 @@ exports.createCheckout = onCall({ cors: true }, async (request) => {
     }
     const isTurnstileValid = await validateTurnstile(turnstileToken, request.rawRequest.ip);
     if (!isTurnstileValid) {
-        throw new HttpsError("permission-denied", "Captcha validation failed. Check server logs for details from Cloudflare.");
+        throw new HttpsError("permission-denied", "Captcha validation failed.");
     }
 
     if (!process.env.STRIPE_SECRET_KEY) {
@@ -307,12 +294,14 @@ exports.createCustomerPortal = onCall({ cors: true }, async (request) => {
     return { url: portalSession.url };
 });
 
-exports.stripeWebhook = onCall({ cors: true }, async (request) => {
-    const sig = request.rawRequest.headers["stripe-signature"] as string;
+// Webhooks must be onRequest, NOT onCall
+exports.stripeWebhook = onRequest({ cors: true }, async (req, res) => {
+    const sig = req.headers["stripe-signature"] as string;
 
     if (!process.env.STRIPE_SECRET_KEY || !STRIPE_WEBHOOK_SECRET) {
       console.error("Stripe keys not configured");
-      throw new HttpsError("internal", "Server configuration error");
+      res.status(500).send("Server configuration error");
+      return;
     }
 
     const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
@@ -322,13 +311,14 @@ exports.stripeWebhook = onCall({ cors: true }, async (request) => {
     let event: Stripe.Event;
     try {
       event = stripe.webhooks.constructEvent(
-        request.rawRequest.rawBody,
+        req.rawBody,
         sig,
         STRIPE_WEBHOOK_SECRET
       );
     } catch (err: any) {
       console.error("Webhook signature verification failed:", err.message);
-      throw new HttpsError("invalid-argument", `Webhook Error: ${err.message}`);
+      res.status(400).send(`Webhook Error: ${err.message}`);
+      return;
     }
 
     if (["checkout.session.completed", "customer.subscription.created", "invoice.paid"].includes(event.type)) {
@@ -386,7 +376,7 @@ exports.stripeWebhook = onCall({ cors: true }, async (request) => {
 
                   transaction.set(userRef, updateData, { merge: true });
 
-                  const yearlyPriceId = STRIPE_YEARLY_PRICE_ID;
+                  const yearlyPriceId = price_1STqDaBuRfqlcCPR68w1Rwuj; // Usar ID hardcoded o de .env
                   const lineItems = obj.line_items || obj.items;
                   const isYearly = lineItems?.data?.[0]?.price?.id === yearlyPriceId || obj.plan?.id === yearlyPriceId;
                   
@@ -414,7 +404,7 @@ exports.stripeWebhook = onCall({ cors: true }, async (request) => {
 
                   if (!isAlreadyPremium && email && process.env.BREVO_API_KEY) {
                       try {
-                          const brevoRes = await fetch("https://api.brevo.com/v3/smtp/email", {
+                          await fetch("https://api.brevo.com/v3/smtp/email", {
                               method: "POST",
                               headers: {
                                   "api-key": process.env.BREVO_API_KEY,
@@ -426,11 +416,6 @@ exports.stripeWebhook = onCall({ cors: true }, async (request) => {
                                   templateId: 4, 
                               }),
                           });
-                          if (!brevoRes.ok) {
-                             console.error(`Brevo API error for premium welcome email to ${email}:`, await brevoRes.text());
-                          } else {
-                             console.log(`Premium welcome email sent to ${email}`);
-                          }
                       } catch (emailError) {
                           console.error(`Failed to send premium welcome email to ${email}:`, emailError);
                       }
@@ -443,7 +428,7 @@ exports.stripeWebhook = onCall({ cors: true }, async (request) => {
       }
     }
 
-    return { received: true };
+    res.status(200).send({ received: true });
 });
 
 

@@ -8,7 +8,6 @@ import { UploadCloud, X, LoaderCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import { useRouter } from "next/navigation";
-import type { AnalyzeWodOutput } from "@/functions/src/ai/wod-schema";
 import { Input } from "./ui/input";
 import { Textarea } from "./ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
@@ -63,9 +62,7 @@ export function FileUploader() {
   const [preview, setPreview] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
-  const [analysisResult, setAnalysisResult] = useState<AnalyzeWodOutput | null>(
-    null
-  );
+  const [analysisResult, setAnalysisResult] = useState<any | null>(null);
   const [duplicateWod, setDuplicateWod] = useState<WOD | null>(null);
   const [shareToCommunity, setShareToCommunity] = useState(false);
   const [saveIntent, setSaveIntent] = useState(false);
@@ -115,20 +112,21 @@ export function FileUploader() {
       const analyzeWodFn = httpsCallable(functions, 'analyzeWod');
       
       const response = await analyzeWodFn({ photoDataUri, turnstileToken });
-      
-      const result = response.data as { data: any, error: string | null };
-
-      if (result.error) {
-        throw new Error(result.error);
-      }
-      
-      setAnalysisResult(result.data);
+      setAnalysisResult(response.data);
     } catch (e: any) {
         console.error("Analysis Error:", e);
+        const errorInfo = e.details ? 
+            (typeof e.details === 'object' ? JSON.stringify(e.details, null, 2) : e.details) : 
+            e.message;
+
         toast({
             variant: "destructive",
             title: t('analysisFailedTitle'),
-            description: <pre className="mt-2 w-full rounded-md bg-slate-950 p-4"><code className="text-white whitespace-pre-wrap">{e.message}</code></pre>,
+            description: (
+                <div className="mt-2 w-full max-h-60 overflow-auto rounded-md bg-slate-950 p-4 text-xs">
+                    <code className="text-white whitespace-pre-wrap">{errorInfo}</code>
+                </div>
+            ),
             duration: 30000,
         });
     } finally {
@@ -282,7 +280,7 @@ export function FileUploader() {
 
   const isActionDisabled = isLoading || isSaving || isUserLoading;
 
-  const flatDescription = analysisResult?.description.map(s => s.content).join('\\n\\n') || '';
+  const flatDescription = analysisResult?.description?.map((s: any) => s.content).join('\\n\\n') || '';
 
   const handleDescriptionChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     if (analysisResult) {
