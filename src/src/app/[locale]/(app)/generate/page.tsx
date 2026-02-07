@@ -63,7 +63,7 @@ export default function GenerateWodPage() {
         setGeneratedWod(null);
         
         if (!firestore) {
-            toast({ variant: 'destructive', title: "Service not available" });
+            toast({ variant: 'destructive', title: "Service non disponible" });
             setIsLoading(false);
             return;
         }
@@ -71,8 +71,8 @@ export default function GenerateWodPage() {
         if (!turnstileToken) {
             toast({
                 variant: "destructive",
-                title: "Verification required",
-                description: "Please complete the anti-robot verification."
+                title: "Vérification requise",
+                description: "Veuillez compléter la vérification anti-robot."
             });
             setIsLoading(false);
             return;
@@ -85,41 +85,49 @@ export default function GenerateWodPage() {
             
             const result = response.data as any;
 
-            if (result.error) {
+            // Gestion des erreurs renvoyées par l'objet success (format personnalisé précédent)
+            if (result && result.error) {
                 throw new Error(`SERVER ERROR: ${result.error}\n\nDETAILS: ${result.details}`);
             }
             
+            // Le résultat est maintenant dans result.data si on utilise mon nouveau format ou directement dans result
+            const wodData = result.data || result;
+
             const tempId = doc(collection(firestore, 'temp')).id;
             const placeholderImageUrl = `https://picsum.photos/seed/${tempId}/600/400`;
 
             const newWod: WOD = {
-                id: result.data.id || tempId,
+                id: wodData.id || tempId,
                 userId: user?.uid || 'anonymous',
-                name: result.data.name,
-                type: result.data.type,
-                description: result.data.description,
+                name: wodData.name,
+                type: wodData.type,
+                description: wodData.description,
                 date: new Date().toISOString(),
                 imageUrl: placeholderImageUrl,
-                imageHint: result.data.imageHint,
-                duration: result.data.duration,
-                cardio: result.data.cardio,
-                lifting: result.data.lifting,
-                upperBody: result.data.upperBody,
-                lowerBody: result.data.lowerBody,
+                imageHint: wodData.imageHint,
+                duration: wodData.duration,
+                cardio: wodData.cardio,
+                lifting: wodData.lifting,
+                upperBody: wodData.upperBody,
+                lowerBody: wodData.lowerBody,
             };
             
             setGeneratedWod(newWod);
 
         } catch (e: any) {
-            console.error("GENERATE ERROR:", e);
+            console.error("DEBUG - Full Error Object:", e);
             
+            const errorCode = e.code || 'unknown';
+            const errorMessage = e.message || 'No message';
+            const errorDetails = e.details ? (typeof e.details === 'object' ? JSON.stringify(e.details, null, 2) : e.details) : 'None';
+
              toast({
                 variant: "destructive",
                 title: t('errorAlert.title'),
                 description: (
                     <div className="mt-2 w-full max-h-60 overflow-auto rounded-md bg-slate-950 p-4 text-[10px]">
                         <code className="text-white whitespace-pre-wrap">
-                            {e.message || "Unknown error"}
+                            {`Code: ${errorCode}\nMessage: ${errorMessage}\n\nDetails:\n${errorDetails}`}
                         </code>
                     </div>
                 ),
@@ -188,7 +196,7 @@ export default function GenerateWodPage() {
                                      <Info className="h-4 w-4 !text-blue-500" />
                                     <AlertTitle>{t('freePlanAlert.title')}</AlertTitle>
                                     <AlertDescription>
-                                        Please log in to upgrade to premium and unlock unlimited generation.
+                                        Veuillez vous connecter pour passer Premium et débloquer les générations illimitées.
                                     </AlertDescription>
                                 </Alert>
                             )}
