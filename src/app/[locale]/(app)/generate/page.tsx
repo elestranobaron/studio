@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useCallback } from "react";
@@ -81,43 +82,54 @@ export default function GenerateWodPage() {
             const functions = getFunctions();
             const generateWodFn = httpsCallable(functions, 'generateWod');
             const response = await generateWodFn({ turnstileToken });
-            const data = response.data as any;
+            
+            const result = response.data as any;
+
+            // Gestion des erreurs personnalisées renvoyées par l'objet de succès
+            if (result && result.error) {
+                throw {
+                    code: result.code || 'functions/internal',
+                    message: result.error,
+                    details: result.details
+                };
+            }
             
             const tempId = doc(collection(firestore, 'temp')).id;
             const placeholderImageUrl = `https://picsum.photos/seed/${tempId}/600/400`;
 
             const newWod: WOD = {
-                id: data.id || tempId,
+                id: result.id || tempId,
                 userId: user?.uid || 'anonymous',
-                name: data.name,
-                type: data.type,
-                description: data.description,
+                name: result.name,
+                type: result.type,
+                description: result.description,
                 date: new Date().toISOString(),
                 imageUrl: placeholderImageUrl,
-                imageHint: data.imageHint,
-                duration: data.duration,
-                cardio: data.cardio,
-                lifting: data.lifting,
-                upperBody: data.upperBody,
-                lowerBody: data.lowerBody,
+                imageHint: result.imageHint,
+                duration: result.duration,
+                cardio: result.cardio,
+                lifting: result.lifting,
+                upperBody: result.upperBody,
+                lowerBody: result.lowerBody,
             };
             
             setGeneratedWod(newWod);
 
         } catch (e: any) {
-            console.error("DEBUG - Full Firebase Error Object:", e);
-            console.error("DEBUG - Error Details:", e.details);
+            console.error("DEBUG - Full Error Object:", e);
             
-            const detailedError = e.details 
-                ? (typeof e.details === 'object' ? JSON.stringify(e.details, null, 2) : e.details)
-                : `${e.code || 'unknown_code'}: ${e.message || 'No message'}`;
+            const errorCode = e.code || 'unknown';
+            const errorMessage = e.message || 'No message';
+            const errorDetails = e.details ? (typeof e.details === 'object' ? JSON.stringify(e.details, null, 2) : e.details) : 'None';
 
              toast({
                 variant: "destructive",
                 title: t('errorAlert.title'),
                 description: (
                     <div className="mt-2 w-full max-h-60 overflow-auto rounded-md bg-slate-950 p-4 text-[10px]">
-                        <code className="text-white whitespace-pre-wrap">{detailedError}</code>
+                        <code className="text-white whitespace-pre-wrap">
+                            {`Code: ${errorCode}\nMessage: ${errorMessage}\n\nDetails:\n${errorDetails}`}
+                        </code>
                     </div>
                 ),
                 duration: 30000,

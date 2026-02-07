@@ -1,3 +1,4 @@
+
 "use strict";
 
 import { onCall, HttpsError, onRequest } from "firebase-functions/v2/https";
@@ -8,13 +9,15 @@ import { setGlobalOptions } from "firebase-functions/v2";
 import { logger } from "firebase-functions";
 
 // Initialisation Firebase Admin
-admin.initializeApp();
+if (admin.apps.length === 0) {
+  admin.initializeApp();
+}
 const db = admin.firestore();
 
-// Config globale : Augmentation de la mémoire pour l'IA (512MiB minimum)
+// Config globale : Augmentation drastique de la mémoire pour l'IA
 setGlobalOptions({ 
   region: "us-central1",
-  memory: "512MiB", 
+  memory: "1GiB", // On passe à 1Go pour être large
   timeoutSeconds: 120
 });
 
@@ -32,7 +35,7 @@ async function validateTurnstile(token: string, ip: string | undefined): Promise
         return true; 
     }
 
-    const formData = new FormData();
+    const formData = new URLSearchParams();
     formData.append('secret', TURNSTILE_SECRET_KEY);
     formData.append('response', token);
     if (ip) formData.append('remoteip', ip);
@@ -43,7 +46,7 @@ async function validateTurnstile(token: string, ip: string | undefined): Promise
             body: formData,
         });
         
-        const outcome = await response.json() as { success: boolean; 'error-codes'?: string[] };
+        const outcome = await response.json() as any;
         if (!outcome.success) {
           logger.error('Turnstile validation failed:', outcome['error-codes']);
         }
@@ -57,21 +60,21 @@ async function validateTurnstile(token: string, ip: string | undefined): Promise
 // --- CLOUD FUNCTIONS ---
 
 exports.sendDigicode = onCall({ cors: true }, async (request) => {
-  const { email, turnstileToken } = request.data;
-  if (!email) throw new HttpsError("invalid-argument", "Email is required.");
-  
-  const isValid = await validateTurnstile(turnstileToken, request.rawRequest.ip);
-  if (!isValid) throw new HttpsError("permission-denied", "Captcha invalid.");
-
-  if (!process.env.BREVO_API_KEY) throw new HttpsError("internal", "BREVO_API_KEY missing.");
-
-  const code = Math.floor(100000 + Math.random() * 900000).toString();
-  await db.collection("digicodes").doc(email.toLowerCase()).set({
-    code,
-    expires: admin.firestore.Timestamp.fromMillis(Date.now() + 10 * 60 * 1000),
-  });
-
   try {
+    const { email, turnstileToken } = request.data;
+    if (!email) throw new HttpsError("invalid-argument", "Email is required.");
+    
+    const isValid = await validateTurnstile(turnstileToken, request.rawRequest.ip);
+    if (!isValid) throw new HttpsError("permission-denied", "Captcha invalid.");
+
+    if (!process.env.BREVO_API_KEY) throw new HttpsError("internal", "BREVO_API_KEY missing.");
+
+    const code = Math.floor(100000 + Math.random() * 900000).toString();
+    await db.collection("digicodes").doc(email.toLowerCase()).set({
+      code,
+      expires: admin.firestore.Timestamp.fromMillis(Date.now() + 10 * 60 * 1000),
+    });
+
     const res = await fetch("https://api.brevo.com/v3/smtp/email", {
       method: "POST",
       headers: { "api-key": process.env.BREVO_API_KEY, "Content-Type": "application/json" },
@@ -86,7 +89,7 @@ exports.sendDigicode = onCall({ cors: true }, async (request) => {
     return { success: true };
   } catch (error: any) {
     logger.error("sendDigicode error", error);
-    throw new HttpsError("internal", error.message);
+    throw new HttpsError("internal", error.message, error.stack);
   }
 });
 
@@ -96,15 +99,27 @@ exports.generateWod = onCall({ cors: true }, async (request) => {
         const isValid = await validateTurnstile(turnstileToken, request.rawRequest.ip);
         if (!isValid) throw new HttpsError("permission-denied", "Captcha invalid.");
 
-        if (!process.env.GEMINI_API_KEY) throw new HttpsError("failed-precondition", "GEMINI_API_KEY missing.");
-        process.env.GOOGLE_GENAI_API_KEY = process.env.GEMINI_API_KEY;
+        // On vérifie la clé avant d'importer quoi que ce soit
+        const geminiKey = process.env.GEMINI_API_KEY;
+        if (!geminiKey) {
+            throw new HttpsError("failed-precondition", "CRITICAL: GEMINI_API_KEY is missing in functions/.env");
+        }
+        
+        // On force la clé pour Genkit
+        process.env.GOOGLE_GENAI_API_KEY = geminiKey;
 
+        // Import dynamique pour éviter les crashs au démarrage
         const { generateWod } = await import('./ai/generate-wod-flow');
         const result = await generateWod({});
         return result;
     } catch (e: any) {
         logger.error("generateWod crash", e);
-        throw new HttpsError("internal", e.message, e.stack);
+        // On renvoie l'erreur sous forme d'objet pour bypasser le comportement "internal" du SDK en cas de crash
+        return { 
+            error: e.message || "Unknown error",
+            details: e.stack || "No stack trace",
+            code: e.code || "unknown"
+        };
     }
 });
 
@@ -114,60 +129,77 @@ exports.analyzeWod = onCall({ cors: true }, async (request) => {
         const isValid = await validateTurnstile(turnstileToken, request.rawRequest.ip);
         if (!isValid) throw new HttpsError("permission-denied", "Captcha invalid.");
 
-        if (!process.env.GEMINI_API_KEY) throw new HttpsError("failed-precondition", "GEMINI_API_KEY missing.");
-        process.env.GOOGLE_GENAI_API_KEY = process.env.GEMINI_API_KEY;
+        const geminiKey = process.env.GEMINI_API_KEY;
+        if (!geminiKey) {
+            throw new HttpsError("failed-precondition", "CRITICAL: GEMINI_API_KEY is missing in functions/.env");
+        }
+        process.env.GOOGLE_GENAI_API_KEY = geminiKey;
 
         const { analyzeWod } = await import("./ai/analyze-wod-flow");
         const result = await analyzeWod({ photoDataUri });
         return result;
     } catch (e: any) {
         logger.error("analyzeWod crash", e);
-        throw new HttpsError("internal", e.message, e.stack);
+        return { 
+            error: e.message || "Unknown error",
+            details: e.stack || "No stack trace",
+            code: e.code || "unknown"
+        };
     }
 });
 
 exports.verifyDigicode = onCall({ cors: true }, async (request) => {
-  const { email, code } = request.data;
-  const doc = await db.collection("digicodes").doc(email.toLowerCase()).get();
-  if (!doc.exists) throw new HttpsError("not-found", "Invalid code.");
-
-  const data = doc.data()!;
-  if (data.code !== code || data.expires.toMillis() < Date.now()) {
-    throw new HttpsError("unauthenticated", "Expired or invalid code.");
-  }
-
-  await doc.ref.delete();
-  let uid: string;
-  let isNewUser = false;
   try {
-    const user = await admin.auth().getUserByEmail(email.toLowerCase());
-    uid = user.uid;
-  } catch {
-    const user = await admin.auth().createUser({ email: email.toLowerCase() });
-    uid = user.uid;
-    isNewUser = true;
-  }
+    const { email, code } = request.data;
+    const digiDoc = await db.collection("digicodes").doc(email.toLowerCase()).get();
+    if (!digiDoc.exists) throw new HttpsError("not-found", "Invalid code.");
 
-  return { token: await admin.auth().createCustomToken(uid), isNewUser };
+    const data = digiDoc.data()!;
+    if (data.code !== code || data.expires.toMillis() < Date.now()) {
+      throw new HttpsError("unauthenticated", "Expired or invalid code.");
+    }
+
+    await digiDoc.ref.delete();
+    let uid: string;
+    let isNewUser = false;
+    try {
+      const user = await admin.auth().getUserByEmail(email.toLowerCase());
+      uid = user.uid;
+    } catch {
+      const user = await admin.auth().createUser({ email: email.toLowerCase() });
+      uid = user.uid;
+      isNewUser = true;
+    }
+
+    return { token: await admin.auth().createCustomToken(uid), isNewUser };
+  } catch (error: any) {
+    logger.error("verifyDigicode error", error);
+    throw new HttpsError("internal", error.message, error.stack);
+  }
 });
 
 exports.createCheckout = onCall({ cors: true }, async (request) => {
-    if (!request.auth) throw new HttpsError("unauthenticated", "Login required.");
-    const { yearly, turnstileToken } = request.data;
-    
-    const isValid = await validateTurnstile(turnstileToken, request.rawRequest.ip);
-    if (!isValid) throw new HttpsError("permission-denied", "Captcha failed.");
+    try {
+        if (!request.auth) throw new HttpsError("unauthenticated", "Login required.");
+        const { yearly, turnstileToken } = request.data;
+        
+        const isValid = await validateTurnstile(turnstileToken, request.rawRequest.ip);
+        if (!isValid) throw new HttpsError("permission-denied", "Captcha failed.");
 
-    const stripe = new Stripe(STRIPE_SECRET_KEY, { apiVersion: "2025-12-15.clover" });
-    const session = await stripe.checkout.sessions.create({
-        payment_method_types: ["card"],
-        line_items: [{ price: yearly ? STRIPE_YEARLY_PRICE_ID : STRIPE_MONTHLY_PRICE_ID, quantity: 1 }],
-        mode: "subscription",
-        success_url: `${NEXT_PUBLIC_APP_URL}/premium?success=true`,
-        cancel_url: `${NEXT_PUBLIC_APP_URL}/premium?cancel=true`,
-        metadata: { uid: request.auth.uid },
-    });
-    return { url: session.url };
+        const stripe = new Stripe(STRIPE_SECRET_KEY, { apiVersion: "2025-12-15.clover" });
+        const session = await stripe.checkout.sessions.create({
+            payment_method_types: ["card"],
+            line_items: [{ price: yearly ? STRIPE_YEARLY_PRICE_ID : STRIPE_MONTHLY_PRICE_ID, quantity: 1 }],
+            mode: "subscription",
+            success_url: `${NEXT_PUBLIC_APP_URL}/premium?success=true`,
+            cancel_url: `${NEXT_PUBLIC_APP_URL}/premium?cancel=true`,
+            metadata: { uid: request.auth.uid },
+        });
+        return { url: session.url };
+    } catch (error: any) {
+        logger.error("createCheckout error", error);
+        throw new HttpsError("internal", error.message, error.stack);
+    }
 });
 
 exports.stripeWebhook = onRequest({ cors: true }, async (req, res) => {
