@@ -62,6 +62,8 @@ export default function GenerateWodPage() {
         setIsLoading(true);
         setGeneratedWod(null);
         
+        console.log("DEBUG 1 - Starting handleGenerate");
+
         if (!firestore) {
             toast({ variant: 'destructive', title: "Service non disponible" });
             setIsLoading(false);
@@ -79,12 +81,20 @@ export default function GenerateWodPage() {
         }
 
         try {
+            console.log("DEBUG 2 - Getting functions instance (us-central1)");
             const functions = getFunctions(undefined, 'us-central1');
+            
+            console.log("DEBUG 3 - Creating callable for 'generateWod'");
             const generateWodFn = httpsCallable(functions, 'generateWod');
+            
+            console.log("DEBUG 4 - Calling function with token:", turnstileToken.substring(0, 10) + "...");
             const response = await generateWodFn({ turnstileToken });
             
+            console.log("DEBUG 5 - Response received:", response);
             const result = response.data as any;
             const wodData = result.data || result;
+            
+            console.log("DEBUG 6 - Extracting WOD data:", wodData);
             
             const tempId = doc(collection(firestore, 'temp')).id;
             const placeholderImageUrl = `https://picsum.photos/seed/${tempId}/600/400`;
@@ -105,21 +115,31 @@ export default function GenerateWodPage() {
                 lowerBody: wodData.lowerBody,
             };
             
+            console.log("DEBUG 7 - Setting generated WOD state");
             setGeneratedWod(newWod);
 
         } catch (e: any) {
+            console.log("DEBUG - CATCH BLOCK REACHED");
             console.error("DEBUG - Full Error Object:", e);
             
             const errorCode = e.code || 'unknown';
             const errorMessage = e.message || 'No message';
+            const errorDetails = e.details ? JSON.stringify(e.details) : 'None';
 
              toast({
                 variant: "destructive",
                 title: t('errorAlert.title'),
-                description: `Error ${errorCode}: ${errorMessage}`,
-                duration: 10000,
+                description: (
+                    <div className="mt-2 w-full max-h-60 overflow-auto rounded-md bg-slate-950 p-4 text-[10px]">
+                        <code className="text-white whitespace-pre-wrap">
+                            {`Code: ${errorCode}\nMessage: ${errorMessage}\n\nDetails:\n${errorDetails}`}
+                        </code>
+                    </div>
+                ),
+                duration: 30000,
             });
         } finally {
+            console.log("DEBUG 11 - Process finished");
             setIsLoading(false);
             setTurnstileToken(null);
             setTurnstileKey(Date.now());
@@ -184,7 +204,7 @@ export default function GenerateWodPage() {
                                      <Info className="h-4 w-4 !text-blue-500" />
                                     <AlertTitle>{t('freePlanAlert.title')}</AlertTitle>
                                     <AlertDescription>
-                                        Veuillez vous connecter pour passer Premium et débloquer les générations illimitées.
+                                        Please sign in to go Premium and unlock unlimited generations.
                                     </AlertDescription>
                                 </Alert>
                             )}

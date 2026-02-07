@@ -8,16 +8,13 @@ import Stripe from "stripe";
 import { setGlobalOptions } from "firebase-functions/v2";
 import { logger } from "firebase-functions";
 
-// Initialisation unique de Firebase Admin
+// Initialisation de Firebase Admin
 if (admin.apps.length === 0) {
   admin.initializeApp();
 }
 const db = admin.firestore();
 
-/**
- * Configuration GLOBALE des fonctions.
- * Note: onCall gère le CORS par défaut, mais setGlobalOptions force la robustesse.
- */
+// Configuration GLOBALE des fonctions
 setGlobalOptions({ 
   region: "us-central1",
   memory: "512MiB", 
@@ -30,7 +27,6 @@ setGlobalOptions({
 async function validateTurnstile(token: string, ip: string | undefined): Promise<boolean> {
     const secret = process.env.TURNSTILE_SECRET_KEY;
     
-    // Si la clé est absente ou est une valeur par défaut, on laisse passer en mode test
     if (!secret || secret.startsWith('your_') || secret === '1x0000000000000000000000000000000AA') {
         logger.warn('TURNSTILE_SECRET_KEY non configurée ou valeur de test. Validation ignorée.');
         return true; 
@@ -59,7 +55,8 @@ async function validateTurnstile(token: string, ip: string | undefined): Promise
 
 // --- FONCTIONS CLOUD ---
 
-exports.sendDigicode = onCall(async (request) => {
+export const sendDigicode = onCall({ cors: true }, async (request) => {
+  logger.info("Function started: sendDigicode");
   const { email, turnstileToken } = request.data;
   if (!email) throw new HttpsError("invalid-argument", "L'adresse e-mail est requise.");
   
@@ -68,7 +65,7 @@ exports.sendDigicode = onCall(async (request) => {
 
   const brevoKey = process.env.BREVO_API_KEY;
   if (!brevoKey || brevoKey.startsWith('your_')) {
-      throw new HttpsError("failed-precondition", "Le service d'envoi d'e-mails n'est pas configuré (BREVO_API_KEY manquante).");
+      throw new HttpsError("failed-precondition", "Le service d'envoi d'e-mails n'est pas configuré.");
   }
 
   const code = Math.floor(100000 + Math.random() * 900000).toString();
@@ -77,26 +74,33 @@ exports.sendDigicode = onCall(async (request) => {
     expires: admin.firestore.Timestamp.fromMillis(Date.now() + 10 * 60 * 1000),
   });
 
-  const res = await fetch("https://api.brevo.com/v3/smtp/email", {
-    method: "POST",
-    headers: { "api-key": brevoKey, "Content-Type": "application/json" },
-    body: JSON.stringify({
-      sender: { name: "WODBurner", email: "noreply@wodburner.app" },
-      to: [{ email }],
-      templateId: 2,
-      params: { DIGICODE: code },
-    }),
-  });
-  
-  if (!res.ok) {
-      const errorText = await res.text();
-      logger.error("Brevo error:", errorText);
-      throw new HttpsError("internal", "Échec de l'envoi de l'e-mail.");
+  try {
+      const res = await fetch("https://api.brevo.com/v3/smtp/email", {
+        method: "POST",
+        headers: { "api-key": brevoKey, "Content-Type": "application/json" },
+        body: JSON.stringify({
+          sender: { name: "WODBurner", email: "noreply@wodburner.app" },
+          to: [{ email }],
+          templateId: 2,
+          params: { DIGICODE: code },
+        }),
+      });
+      
+      if (!res.ok) {
+          const errorText = await res.text();
+          logger.error("Brevo error:", errorText);
+          throw new HttpsError("internal", "Échec de l'envoi de l'e-mail.");
+      }
+  } catch (e: any) {
+      logger.error("Fetch error:", e);
+      throw new HttpsError("internal", "Erreur réseau lors de l'envoi de l'e-mail.");
   }
+  
   return { success: true };
 });
 
-exports.generateWod = onCall(async (request) => {
+export const generateWod = onCall({ cors: true }, async (request) => {
+    logger.info("Function started: generateWod");
     try {
         const { turnstileToken } = request.data;
         const isValid = await validateTurnstile(turnstileToken, request.rawRequest.ip);
@@ -104,24 +108,22 @@ exports.generateWod = onCall(async (request) => {
 
         const geminiKey = process.env.GEMINI_API_KEY;
         if (!geminiKey || geminiKey.startsWith('your_')) {
-            throw new HttpsError("failed-precondition", "La clé API Gemini n'est pas configurée (GEMINI_API_KEY manquante dans functions/.env).");
+            throw new HttpsError("failed-precondition", "Clé API Gemini non configurée.");
         }
         
-        // Injection dynamique pour s'assurer que Genkit utilise la bonne clé
         process.env.GOOGLE_GENAI_API_KEY = geminiKey;
 
-        // Importation dynamique pour éviter les crashs d'initialisation globale (CORS)
         const { generateWod } = await import('./ai/generate-wod-flow');
         const result = await generateWod({});
         return { data: result };
     } catch (e: any) {
         logger.error("generateWod error:", e);
-        // On renvoie une erreur structurée au client
-        throw new HttpsError("internal", e.message || "Erreur interne lors de la génération", e.stack);
+        throw new HttpsError("internal", e.message || "Erreur interne", { stack: e.stack });
     }
 });
 
-exports.analyzeWod = onCall(async (request) => {
+export const analyzeWod = onCall({ cors: true }, async (request) => {
+    logger.info("Function started: analyzeWod");
     try {
         const { photoDataUri, turnstileToken } = request.data;
         if (!photoDataUri) throw new HttpsError("invalid-argument", "Aucune image fournie.");
@@ -131,7 +133,7 @@ exports.analyzeWod = onCall(async (request) => {
 
         const geminiKey = process.env.GEMINI_API_KEY;
         if (!geminiKey || geminiKey.startsWith('your_')) {
-            throw new HttpsError("failed-precondition", "La clé API Gemini n'est pas configurée (GEMINI_API_KEY manquante).");
+            throw new HttpsError("failed-precondition", "Clé API Gemini non configurée.");
         }
         
         process.env.GOOGLE_GENAI_API_KEY = geminiKey;
@@ -141,20 +143,21 @@ exports.analyzeWod = onCall(async (request) => {
         return { data: result };
     } catch (e: any) {
         logger.error("analyzeWod error:", e);
-        throw new HttpsError("internal", e.message || "Erreur interne lors de l'analyse", e.stack);
+        throw new HttpsError("internal", e.message || "Erreur interne", { stack: e.stack });
     }
 });
 
-exports.verifyDigicode = onCall(async (request) => {
+export const verifyDigicode = onCall({ cors: true }, async (request) => {
+    logger.info("Function started: verifyDigicode");
     const { email, code } = request.data;
     if (!email || !code) throw new HttpsError("invalid-argument", "E-mail ou code manquant.");
 
     const digiDoc = await db.collection("digicodes").doc(email.toLowerCase()).get();
-    if (!digiDoc.exists) throw new HttpsError("not-found", "Code invalide ou expiré.");
+    if (!digiDoc.exists) throw new HttpsError("not-found", "Code invalide.");
 
     const data = digiDoc.data()!;
     if (data.code !== code || data.expires.toMillis() < Date.now()) {
-      throw new HttpsError("unauthenticated", "Code expiré ou incorrect.");
+      throw new HttpsError("unauthenticated", "Code expiré.");
     }
 
     await digiDoc.ref.delete();
@@ -174,83 +177,86 @@ exports.verifyDigicode = onCall(async (request) => {
     return { token, isNewUser };
 });
 
-exports.createCheckout = onCall(async (request) => {
-    if (!request.auth) throw new HttpsError("unauthenticated", "Vous devez être connecté.");
-    const { yearly, turnstileToken } = request.data;
+export const createCheckout = onCall({ cors: true }, async (request) => {
+    logger.info("Function started: createCheckout");
+    if (!request.auth) throw new HttpsError("unauthenticated", "Non connecté.");
     
+    const { yearly, turnstileToken } = request.data;
     const isValid = await validateTurnstile(turnstileToken, request.rawRequest.ip);
-    if (!isValid) throw new HttpsError("permission-denied", "La validation captcha a échoué.");
+    if (!isValid) throw new HttpsError("permission-denied", "Captcha invalide.");
 
     const stripeKey = process.env.STRIPE_SECRET_KEY;
     if (!stripeKey || stripeKey.startsWith('your_')) {
-        throw new HttpsError("failed-precondition", "Stripe n'est pas configuré.");
+        throw new HttpsError("failed-precondition", "Stripe non configuré.");
     }
 
     const stripe = new Stripe(stripeKey, { apiVersion: "2025-12-15.clover" });
     const priceId = yearly ? process.env.STRIPE_YEARLY_PRICE_ID : process.env.STRIPE_MONTHLY_PRICE_ID;
 
-    if (!priceId) throw new HttpsError("internal", "Price ID manquant.");
+    if (!priceId) throw new HttpsError("internal", "Price ID Stripe manquant.");
 
     const session = await stripe.checkout.sessions.create({
         payment_method_types: ["card"],
         line_items: [{ price: priceId, quantity: 1 }],
         mode: "subscription",
-        success_url: `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/premium?success=true`,
-        cancel_url: `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/premium?cancel=true`,
+        success_url: `${process.env.NEXT_PUBLIC_APP_URL}/premium?success=true`,
+        cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/premium?cancel=true`,
         metadata: { uid: request.auth.uid },
     });
     return { url: session.url };
 });
 
-exports.stripeWebhook = onRequest(async (req, res) => {
+export const createCustomerPortal = onCall({ cors: true }, async (request) => {
+    logger.info("Function started: createCustomerPortal");
+    if (!request.auth) throw new HttpsError("unauthenticated", "Non connecté.");
+    
+    const stripeKey = process.env.STRIPE_SECRET_KEY;
+    const userDoc = await db.collection('users').doc(request.auth.uid).get();
+    const customerId = userDoc.data()?.stripeCustomerId;
+    
+    if (!customerId) throw new HttpsError("not-found", "Client Stripe inconnu.");
+
+    const stripe = new Stripe(stripeKey!, { apiVersion: "2025-12-15.clover" });
+    const portalSession = await stripe.billingPortal.sessions.create({
+        customer: customerId,
+        return_url: `${process.env.NEXT_PUBLIC_APP_URL}/settings`,
+    });
+    return { url: portalSession.url };
+});
+
+export const stripeWebhook = onRequest(async (req, res) => {
     const sig = req.headers["stripe-signature"] as string;
     const stripeKey = process.env.STRIPE_SECRET_KEY || "";
     const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET || "";
     
     const stripe = new Stripe(stripeKey, { apiVersion: "2025-12-15.clover" });
     
-    let event;
     try {
-        event = stripe.webhooks.constructEvent(req.rawBody, sig, webhookSecret);
-    } catch (err: any) {
-        logger.error("Webhook signature verification failed:", err.message);
-        res.status(400).send(`Webhook Error: ${err.message}`);
-        return;
-    }
-
-    if (event.type === "checkout.session.completed") {
-        const obj = event.data.object as any;
-        const uid = obj.metadata?.uid;
-        if (uid) {
-            await db.collection("users").doc(uid).set({ 
-                premium: true, 
-                stripeCustomerId: obj.customer 
-            }, { merge: true });
-            logger.info(`Utilisateur ${uid} passé en PREMIUM.`);
+        const event = stripe.webhooks.constructEvent(req.rawBody, sig, webhookSecret);
+        if (event.type === "checkout.session.completed") {
+            const obj = event.data.object as any;
+            const uid = obj.metadata?.uid;
+            if (uid) {
+                await db.collection("users").doc(uid).set({ premium: true, stripeCustomerId: obj.customer }, { merge: true });
+            }
         }
+        res.status(200).send({ received: true });
+    } catch (err: any) {
+        logger.error("Webhook Error:", err.message);
+        res.status(400).send(`Webhook Error: ${err.message}`);
     }
-    res.status(200).send({ received: true });
 });
 
-exports.resetDailyLimits = onSchedule('0 0 * * *', async () => {
+export const resetDailyLimits = onSchedule('0 0 * * *', async () => {
     const users = await db.collection('users').get();
     const batch = db.batch();
-    users.forEach(d => batch.update(d.ref, { 
-        dailyReactions: 0, 
-        wodGenerationCount: 0, 
-        dailyReset: admin.firestore.Timestamp.now() 
-    }));
+    users.forEach(d => batch.update(d.ref, { dailyReactions: 0, wodGenerationCount: 0 }));
     await batch.commit();
-    logger.info("Limites quotidiennes réinitialisées.");
 });
 
-exports.resetMonthlyLimits = onSchedule('0 0 1 * *', async () => {
+export const resetMonthlyLimits = onSchedule('0 0 1 * *', async () => {
     const users = await db.collection('users').get();
     const batch = db.batch();
-    users.forEach(d => batch.update(d.ref, { 
-        ocrCount: 0, 
-        ocrReset: admin.firestore.Timestamp.now() 
-    }));
+    users.forEach(d => batch.update(d.ref, { ocrCount: 0 }));
     await batch.commit();
-    logger.info("Limites mensuelles réinitialisées.");
 });

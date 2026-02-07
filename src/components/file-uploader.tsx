@@ -113,21 +113,21 @@ export function FileUploader() {
       
       const response = await analyzeWodFn({ photoDataUri, turnstileToken });
       const result = response.data as any;
-      if (result && result.error) throw new Error(result.error);
-      
       setAnalysisResult(result.data || result);
     } catch (e: any) {
         console.error("Analysis Error:", e);
-        const errorInfo = e.details ? 
-            (typeof e.details === 'object' ? JSON.stringify(e.details, null, 2) : e.details) : 
-            e.message;
+        const errorCode = e.code || 'unknown';
+        const errorMessage = e.message || 'No message';
+        const errorDetails = e.details ? JSON.stringify(e.details) : 'None';
 
         toast({
             variant: "destructive",
             title: t('analysisFailedTitle'),
             description: (
-                <div className="mt-2 w-full max-h-60 overflow-auto rounded-md bg-slate-950 p-4 text-xs">
-                    <code className="text-white whitespace-pre-wrap">{errorInfo}</code>
+                <div className="mt-2 w-full max-h-60 overflow-auto rounded-md bg-slate-950 p-4 text-[10px]">
+                    <code className="text-white whitespace-pre-wrap">
+                        {`Code: ${errorCode}\nMessage: ${errorMessage}\n\nDetails:\n${errorDetails}`}
+                    </code>
                 </div>
             ),
             duration: 30000,
