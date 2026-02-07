@@ -63,7 +63,7 @@ export default function GenerateWodPage() {
         setGeneratedWod(null);
         
         if (!firestore) {
-            toast({ variant: 'destructive', title: "Service not available" });
+            toast({ variant: 'destructive', title: "Service non disponible" });
             setIsLoading(false);
             return;
         }
@@ -71,46 +71,43 @@ export default function GenerateWodPage() {
         if (!turnstileToken) {
             toast({
                 variant: "destructive",
-                title: "Verification required",
-                description: "Please complete the anti-robot verification."
+                title: "Vérification requise",
+                description: "Veuillez compléter la vérification anti-robot."
             });
             setIsLoading(false);
             return;
         }
 
         try {
-            const functions = getFunctions();
+            // Spécifier explicitement la région us-central1
+            const functions = getFunctions(undefined, 'us-central1');
             const generateWodFn = httpsCallable(functions, 'generateWod');
             const response = await generateWodFn({ turnstileToken });
             
             const result = response.data as any;
 
-            // Gestion des erreurs personnalisées renvoyées par l'objet de succès
             if (result && result.error) {
-                throw {
-                    code: result.code || 'functions/internal',
-                    message: result.error,
-                    details: result.details
-                };
+                throw new Error(`SERVER ERROR: ${result.error}`);
             }
             
+            const wodData = result.data || result;
             const tempId = doc(collection(firestore, 'temp')).id;
             const placeholderImageUrl = `https://picsum.photos/seed/${tempId}/600/400`;
 
             const newWod: WOD = {
-                id: result.id || tempId,
+                id: wodData.id || tempId,
                 userId: user?.uid || 'anonymous',
-                name: result.name,
-                type: result.type,
-                description: result.description,
+                name: wodData.name,
+                type: wodData.type,
+                description: wodData.description,
                 date: new Date().toISOString(),
                 imageUrl: placeholderImageUrl,
-                imageHint: result.imageHint,
-                duration: result.duration,
-                cardio: result.cardio,
-                lifting: result.lifting,
-                upperBody: result.upperBody,
-                lowerBody: result.lowerBody,
+                imageHint: wodData.imageHint,
+                duration: wodData.duration,
+                cardio: wodData.cardio,
+                lifting: wodData.lifting,
+                upperBody: wodData.upperBody,
+                lowerBody: wodData.lowerBody,
             };
             
             setGeneratedWod(newWod);
@@ -191,15 +188,15 @@ export default function GenerateWodPage() {
                                 {isLoading ? t('generatingButton') : t('generateButton')}
                             </Button>
                             <Turnstile key={turnstileKey} onSuccess={onTurnstileSuccess} onExpire={onTurnstileExpire} />
+                            
                             {isUserLoading && <Skeleton className="h-6 w-48" />}
+                            
                              {!isUserLoading && (!user || user.isAnonymous) && (
                                 <Alert variant="default" className="border-blue-500/50 text-blue-500">
                                      <Info className="h-4 w-4 !text-blue-500" />
                                     <AlertTitle>{t('freePlanAlert.title')}</AlertTitle>
                                     <AlertDescription>
-                                        {t.rich('freePlanAlert.description', {
-                                            link: (chunks) => <Link href="/premium" className="font-bold underline ml-1">{chunks}</Link>
-                                        })}
+                                        Veuillez vous connecter pour passer Premium et débloquer les générations illimitées.
                                     </AlertDescription>
                                 </Alert>
                             )}
