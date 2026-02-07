@@ -59,16 +59,19 @@ export default function GenerateWodPage() {
 
 
     const handleGenerate = async () => {
+        console.log("DEBUG 1 - Starting handleGenerate");
         setIsLoading(true);
         setGeneratedWod(null);
         
         if (!firestore) {
+            console.error("DEBUG ERR - Firestore not initialized");
             toast({ variant: 'destructive', title: "Service non disponible" });
             setIsLoading(false);
             return;
         }
 
         if (!turnstileToken) {
+            console.error("DEBUG ERR - No Turnstile token");
             toast({
                 variant: "destructive",
                 title: "Vérification requise",
@@ -79,19 +82,29 @@ export default function GenerateWodPage() {
         }
 
         try {
-            // Spécifier explicitement la région us-central1
+            console.log("DEBUG 2 - Getting functions instance (us-central1)");
             const functions = getFunctions(undefined, 'us-central1');
+            
+            console.log("DEBUG 3 - Creating callable for 'generateWod'");
             const generateWodFn = httpsCallable(functions, 'generateWod');
+            
+            console.log("DEBUG 4 - Calling function with token:", turnstileToken);
             const response = await generateWodFn({ turnstileToken });
             
+            console.log("DEBUG 5 - Function response received:", response);
             const result = response.data as any;
 
             if (result && result.error) {
-                throw new Error(`SERVER ERROR: ${result.error}`);
+                console.error("DEBUG 6 - Server returned logical error:", result.error);
+                throw new Error(`SERVER LOGIC ERROR: ${result.error}`);
             }
             
+            console.log("DEBUG 7 - Extracting WOD data");
             const wodData = result.data || result;
+            
             const tempId = doc(collection(firestore, 'temp')).id;
+            console.log("DEBUG 8 - Generated tempId:", tempId);
+            
             const placeholderImageUrl = `https://picsum.photos/seed/${tempId}/600/400`;
 
             const newWod: WOD = {
@@ -110,9 +123,12 @@ export default function GenerateWodPage() {
                 lowerBody: wodData.lowerBody,
             };
             
+            console.log("DEBUG 9 - Final WOD object ready:", newWod);
             setGeneratedWod(newWod);
+            console.log("DEBUG 10 - State updated successfully");
 
         } catch (e: any) {
+            console.error("DEBUG - CATCH BLOCK REACHED");
             console.error("DEBUG - Full Error Object:", e);
             
             const errorCode = e.code || 'unknown';
@@ -135,6 +151,7 @@ export default function GenerateWodPage() {
             setIsLoading(false);
             setTurnstileToken(null);
             setTurnstileKey(Date.now());
+            console.log("DEBUG 11 - Process finished");
         }
     };
     

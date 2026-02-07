@@ -16,13 +16,12 @@ const db = admin.firestore();
 
 /**
  * Configuration GLOBALE des fonctions.
- * cors: true est indispensable pour accepter les requêtes de Studio.
+ * Note: onCall gère le CORS par défaut. Retrait de cors: true pour éviter les conflits.
  */
 setGlobalOptions({ 
   region: "us-central1",
   memory: "512MiB", 
-  timeoutSeconds: 120,
-  cors: true
+  timeoutSeconds: 120
 });
 
 /**
@@ -31,7 +30,7 @@ setGlobalOptions({
 async function validateTurnstile(token: string, ip: string | undefined): Promise<boolean> {
     const secret = process.env.TURNSTILE_SECRET_KEY;
     
-    // Bypass en mode test ou si non configuré pour éviter de bloquer le dev
+    // Bypass en mode test ou si non configuré
     if (!secret || secret.startsWith('your_') || secret === '1x0000000000000000000000000000000AA') {
         logger.warn('TURNSTILE_SECRET_KEY non configurée. Validation ignorée.');
         return true; 
@@ -92,6 +91,7 @@ exports.sendDigicode = onCall(async (request) => {
 });
 
 exports.generateWod = onCall(async (request) => {
+    logger.info("DEBUG - generateWod called");
     try {
         const { turnstileToken } = request.data;
         const isValid = await validateTurnstile(turnstileToken, request.rawRequest.ip);
@@ -102,6 +102,7 @@ exports.generateWod = onCall(async (request) => {
         
         process.env.GOOGLE_GENAI_API_KEY = geminiKey;
 
+        // Importation dynamique à l'intérieur pour isoler les crashs
         const { generateWod } = await import('./ai/generate-wod-flow');
         const result = await generateWod({});
         return { data: result };
@@ -112,6 +113,7 @@ exports.generateWod = onCall(async (request) => {
 });
 
 exports.analyzeWod = onCall(async (request) => {
+    logger.info("DEBUG - analyzeWod called");
     try {
         const { photoDataUri, turnstileToken } = request.data;
         if (!photoDataUri) throw new HttpsError("invalid-argument", "Image manquante.");
