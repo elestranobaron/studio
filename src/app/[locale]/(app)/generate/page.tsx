@@ -86,6 +86,7 @@ export default function GenerateWodPage() {
             const generateWodFn = httpsCallable(functions, 'generateWod');
             
             console.log("DEBUG 3 - Calling function...");
+            // This is where it was stopping because the server was crashing during 'import'
             const response = await generateWodFn({ turnstileToken });
             
             console.log("DEBUG 4 - Response received");
@@ -115,21 +116,23 @@ export default function GenerateWodPage() {
             };
             
             setGeneratedWod(newWod);
+            console.log("DEBUG 5 - WOD set successfully");
 
         } catch (e: any) {
+            console.error("DEBUG - CATCH BLOCK REACHED");
             console.error("DEBUG - Full Error Object:", e);
             const errMsg = e.message || "Unknown error";
-            const errCode = e.code || "unknown";
-
+            
              toast({
                 variant: "destructive",
                 title: t('errorAlert.title'),
-                description: `Error: ${errMsg} (Code: ${errCode})`,
+                description: `Error: ${errMsg}`,
             });
         } finally {
             setIsLoading(false);
             setTurnstileToken(null);
             setTurnstileKey(Date.now());
+            console.log("DEBUG 11 - Process finished");
         }
     };
     
@@ -189,7 +192,7 @@ export default function GenerateWodPage() {
                              {!isUserLoading && (!user || user.isAnonymous) && (
                                 <Alert variant="default" className="border-blue-500/50 text-blue-500">
                                      <Info className="h-4 w-4 !text-blue-500" />
-                                    <AlertTitle>Free Plan</AlertTitle>
+                                    <AlertTitle>{t('freePlanAlert.title')}</AlertTitle>
                                     <AlertDescription>
                                         Please sign in to go Premium and unlock unlimited generations.
                                     </AlertDescription>

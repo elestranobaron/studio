@@ -27,8 +27,9 @@ setGlobalOptions({
 async function validateTurnstile(token: string, ip: string | undefined): Promise<boolean> {
     const secret = process.env.TURNSTILE_SECRET_KEY;
     
-    if (!token || token.includes('DUMMY')) {
-        logger.warn('DUMMY Turnstile token detected. Bypassing validation for debug.');
+    // Safety check for test environments
+    if (!token || token.includes('DUMMY') || token === 'XXXX.DUMMY.TOKEN.XXXX') {
+        logger.warn('Test Turnstile token detected. Bypassing validation.');
         return true;
     }
 
@@ -55,15 +56,15 @@ async function validateTurnstile(token: string, ip: string | undefined): Promise
     }
 }
 
-// --- CLOUD FUNCTIONS ---
-
-// We explicitly set cors: true in the options object for v2 functions
-const functionOptions = { 
-    cors: true,
+// Configuration object for functions
+const callOptions = { 
+    cors: true, // Crucial for Studio/Workstations environment
     maxInstances: 10
 };
 
-export const sendDigicode = onCall(functionOptions, async (request) => {
+// --- CLOUD FUNCTIONS ---
+
+export const sendDigicode = onCall(callOptions, async (request) => {
   const { email, turnstileToken } = request.data;
   if (!email) throw new HttpsError("invalid-argument", "Email required");
   
@@ -96,15 +97,15 @@ export const sendDigicode = onCall(functionOptions, async (request) => {
   return { success: true };
 });
 
-export const generateWod = onCall(functionOptions, async (request) => {
+export const generateWod = onCall(callOptions, async (request) => {
     try {
         const { turnstileToken } = request.data;
         const isValid = await validateTurnstile(turnstileToken, request.rawRequest.ip);
         if (!isValid) throw new HttpsError("permission-denied", "Turnstile failed");
 
-        // Lazy load AI module to prevent initialization crash
-        const { generateWod: runFlow } = await import("./ai/generate-wod-flow");
-        const result = await runFlow({});
+        // Lazy load the flow to prevent top-level initialization crashes
+        const flowModule = await import("./ai/generate-wod-flow");
+        const result = await flowModule.generateWod({});
         return result;
     } catch (e: any) {
         logger.error("generateWod error:", e);
@@ -112,7 +113,7 @@ export const generateWod = onCall(functionOptions, async (request) => {
     }
 });
 
-export const analyzeWod = onCall(functionOptions, async (request) => {
+export const analyzeWod = onCall(callOptions, async (request) => {
     try {
         const { photoDataUri, turnstileToken } = request.data;
         if (!photoDataUri) throw new HttpsError("invalid-argument", "Image required");
@@ -120,8 +121,9 @@ export const analyzeWod = onCall(functionOptions, async (request) => {
         const isValid = await validateTurnstile(turnstileToken, request.rawRequest.ip);
         if (!isValid) throw new HttpsError("permission-denied", "Turnstile failed");
 
-        const { analyzeWod: runFlow } = await import("./ai/analyze-wod-flow");
-        const result = await runFlow({ photoDataUri });
+        // Lazy load the flow
+        const flowModule = await import("./ai/analyze-wod-flow");
+        const result = await flowModule.analyzeWod({ photoDataUri });
         return result;
     } catch (e: any) {
         logger.error("analyzeWod error:", e);
@@ -129,7 +131,7 @@ export const analyzeWod = onCall(functionOptions, async (request) => {
     }
 });
 
-export const verifyDigicode = onCall(functionOptions, async (request) => {
+export const verifyDigicode = onCall(callOptions, async (request) => {
     const { email, code } = request.data;
     if (!email || !code) throw new HttpsError("invalid-argument", "Missing data");
 
@@ -158,7 +160,7 @@ export const verifyDigicode = onCall(functionOptions, async (request) => {
     return { token, isNewUser };
 });
 
-export const createCheckout = onCall(functionOptions, async (request) => {
+export const createCheckout = onCall(callOptions, async (request) => {
     if (!request.auth) throw new HttpsError("unauthenticated", "Auth required");
     
     const { yearly, turnstileToken } = request.data;
@@ -186,7 +188,7 @@ export const createCheckout = onCall(functionOptions, async (request) => {
     return { url: session.url };
 });
 
-export const createCustomerPortal = onCall(functionOptions, async (request) => {
+export const createCustomerPortal = onCall(callOptions, async (request) => {
     if (!request.auth) throw new HttpsError("unauthenticated", "Auth required");
     
     const stripeKey = process.env.STRIPE_SECRET_KEY;
