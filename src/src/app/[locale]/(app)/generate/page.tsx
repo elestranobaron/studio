@@ -62,8 +62,10 @@ export default function GenerateWodPage() {
         setIsLoading(true);
         setGeneratedWod(null);
         
+        console.log("DEBUG 1 - Starting handleGenerate");
+
         if (!firestore) {
-            toast({ variant: 'destructive', title: "Firestore non initialisé" });
+            toast({ variant: 'destructive', title: "Firestore not initialized" });
             setIsLoading(false);
             return;
         }
@@ -71,22 +73,26 @@ export default function GenerateWodPage() {
         if (!turnstileToken) {
             toast({
                 variant: "destructive",
-                title: "Vérification requise",
-                description: "Veuillez compléter la vérification Turnstile."
+                title: "Verification required",
+                description: "Please complete the Turnstile verification."
             });
             setIsLoading(false);
             return;
         }
 
         try {
+            console.log("DEBUG 2 - Getting functions instance (us-central1)");
             const functions = getFunctions(undefined, 'us-central1');
             const generateWodFn = httpsCallable(functions, 'generateWod');
+            
+            console.log("DEBUG 3 - Calling function...");
             const response = await generateWodFn({ turnstileToken });
             
+            console.log("DEBUG 4 - Response received");
             const wodData = response.data as any;
             
             if (!wodData || !wodData.name) {
-                throw new Error("Format de données reçu invalide.");
+                throw new Error("Invalid data format received from server.");
             }
 
             const tempId = doc(collection(firestore, 'temp')).id;
@@ -111,15 +117,14 @@ export default function GenerateWodPage() {
             setGeneratedWod(newWod);
 
         } catch (e: any) {
-            console.error("Full Error Object:", e);
-            
-            const errorCode = e.code || 'unknown';
-            const errorMessage = e.message || 'No message';
+            console.error("DEBUG - Full Error Object:", e);
+            const errMsg = e.message || "Unknown error";
+            const errCode = e.code || "unknown";
 
              toast({
                 variant: "destructive",
                 title: t('errorAlert.title'),
-                description: `Erreur: ${errorMessage} (${errorCode})`,
+                description: `Error: ${errMsg} (Code: ${errCode})`,
             });
         } finally {
             setIsLoading(false);
@@ -129,6 +134,7 @@ export default function GenerateWodPage() {
     };
     
     const onTurnstileSuccess = useCallback((token: string) => {
+        console.log("DEBUG - Turnstile Success, token received");
         setTurnstileToken(token);
     }, []);
 
@@ -186,7 +192,7 @@ export default function GenerateWodPage() {
                                      <Info className="h-4 w-4 !text-blue-500" />
                                     <AlertTitle>{t('freePlanAlert.title')}</AlertTitle>
                                     <AlertDescription>
-                                        Veuillez vous connecter pour passer Premium et débloquer les générations illimitées.
+                                        Please sign in to go Premium and unlock unlimited generations.
                                     </AlertDescription>
                                 </Alert>
                             )}
