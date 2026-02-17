@@ -29,12 +29,12 @@ async function validateTurnstile(token: string, ip: string | undefined): Promise
     
     // Safety check for test environments
     if (!token || token.includes('DUMMY') || token === 'XXXX.DUMMY.TOKEN.XXXX') {
-        logger.warn('Test Turnstile token detected. Bypassing validation.');
+        logger.warn('[validateTurnstile] Test token detected. Bypassing.');
         return true;
     }
 
     if (!secret || secret.startsWith('your_') || secret.includes('DUMMY')) {
-        logger.warn('TURNSTILE_SECRET_KEY not properly configured. Bypassing validation.');
+        logger.warn('[validateTurnstile] TURNSTILE_SECRET_KEY not configured. Bypassing.');
         return true; 
     }
 
@@ -51,14 +51,13 @@ async function validateTurnstile(token: string, ip: string | undefined): Promise
         const outcome = await response.json() as any;
         return !!outcome.success;
     } catch (e) {
-        logger.error('Turnstile connection error:', e);
+        logger.error('[validateTurnstile] Connection error:', e);
         return false;
     }
 }
 
-// Configuration object for functions
+// Configuration object for functions (CORS handled automatically by onCall)
 const callOptions = { 
-    cors: true, // Crucial for Studio/Workstations environment
     maxInstances: 10
 };
 
@@ -98,22 +97,36 @@ export const sendDigicode = onCall(callOptions, async (request) => {
 });
 
 export const generateWod = onCall(callOptions, async (request) => {
+    logger.info("[generateWod] Execution started");
     try {
         const { turnstileToken } = request.data;
         const isValid = await validateTurnstile(turnstileToken, request.rawRequest.ip);
-        if (!isValid) throw new HttpsError("permission-denied", "Turnstile failed");
+        if (!isValid) {
+            logger.error("[generateWod] Turnstile validation failed");
+            throw new HttpsError("permission-denied", "Turnstile failed");
+        }
 
         // Lazy load the flow to prevent top-level initialization crashes
+        logger.info("[generateWod] Importing AI flow...");
         const flowModule = await import("./ai/generate-wod-flow");
+        
+        logger.info("[generateWod] Running AI flow...");
         const result = await flowModule.generateWod({});
+        
+        logger.info("[generateWod] Success");
         return result;
     } catch (e: any) {
-        logger.error("generateWod error:", e);
-        throw new HttpsError("internal", e.message || "Internal AI Error");
+        logger.error("[generateWod] CRITICAL ERROR:", e);
+        // Ensure we throw a serializable error
+        throw new HttpsError("internal", e.message || "Internal AI Error", {
+            stack: e.stack,
+            details: e.details || null
+        });
     }
 });
 
 export const analyzeWod = onCall(callOptions, async (request) => {
+    logger.info("[analyzeWod] Execution started");
     try {
         const { photoDataUri, turnstileToken } = request.data;
         if (!photoDataUri) throw new HttpsError("invalid-argument", "Image required");
@@ -122,11 +135,16 @@ export const analyzeWod = onCall(callOptions, async (request) => {
         if (!isValid) throw new HttpsError("permission-denied", "Turnstile failed");
 
         // Lazy load the flow
+        logger.info("[analyzeWod] Importing AI flow...");
         const flowModule = await import("./ai/analyze-wod-flow");
+        
+        logger.info("[analyzeWod] Running AI flow...");
         const result = await flowModule.analyzeWod({ photoDataUri });
+        
+        logger.info("[analyzeWod] Success");
         return result;
     } catch (e: any) {
-        logger.error("analyzeWod error:", e);
+        logger.error("[analyzeWod] CRITICAL ERROR:", e);
         throw new HttpsError("internal", e.message || "Internal AI Error");
     }
 });

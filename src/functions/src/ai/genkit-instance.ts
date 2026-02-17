@@ -9,10 +9,10 @@ import {googleAI} from '@genkit-ai/google-genai';
 export function getAi(): Genkit {
   const geminiKey = process.env.GEMINI_API_KEY || process.env.GOOGLE_GENAI_API_KEY;
   
-  // We provide a fallback 'dummy' key for the definition phase.
-  // This prevents the top-level 'defineFlow' calls from throwing errors
-  // during the 'import' statement in the main index.ts.
-  const apiKey = geminiKey || 'placeholder-key-for-definition-only';
+  // Safety check: if no key is found, use a placeholder to avoid throwing during initialization.
+  // The actual flow execution will fail later if the key is still missing, 
+  // but it won't crash the entire Cloud Function process at startup.
+  const apiKey = geminiKey || 'missing-api-key';
 
   return genkit({
     plugins: [googleAI({ apiKey })],

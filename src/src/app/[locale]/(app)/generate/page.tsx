@@ -19,6 +19,7 @@ import Turnstile from "@/components/turnstile";
 import { getFunctions, httpsCallable } from "firebase/functions";
 import React from "react";
 import { doc, collection } from "firebase/firestore";
+import { FirebaseError } from "firebase/app";
 
 
 function GeneratingState() {
@@ -52,7 +53,7 @@ export default function GenerateWodPage() {
 
 
     const { user, isUserLoading } = useUser();
-    const { firestore } = useFirebase();
+    const { firestore, firebaseApp } = useFirebase();
     const router = useRouter();
     const { toast } = useToast();
     const { toggleSidebar } = useSidebar();
@@ -62,15 +63,17 @@ export default function GenerateWodPage() {
         setIsLoading(true);
         setGeneratedWod(null);
         
-        console.log("DEBUG 1 - Starting handleGenerate");
+        console.log("[GenerateWodPage] 1 - handleGenerate started");
 
-        if (!firestore) {
-            toast({ variant: 'destructive', title: "Firestore not initialized" });
+        if (!firebaseApp) {
+            console.error("[GenerateWodPage] Firebase app not initialized");
+            toast({ variant: 'destructive', title: "Firebase Error", description: "Firebase is not ready." });
             setIsLoading(false);
             return;
         }
 
         if (!turnstileToken) {
+            console.warn("[GenerateWodPage] Turnstile token missing");
             toast({
                 variant: "destructive",
                 title: "Verification required",
@@ -81,18 +84,25 @@ export default function GenerateWodPage() {
         }
 
         try {
-            console.log("DEBUG 2 - Getting functions instance (us-central1)");
-            const functions = getFunctions(undefined, 'us-central1');
+            console.log("[GenerateWodPage] 2 - Getting functions instance (us-central1)");
+            const functions = getFunctions(firebaseApp, 'us-central1');
+            
+            console.log("[GenerateWodPage] 3 - Creating callable for 'generateWod'");
             const generateWodFn = httpsCallable(functions, 'generateWod');
             
-            console.log("DEBUG 3 - Calling function...");
+            console.log("[GenerateWodPage] 4 - Calling function with token:", turnstileToken.substring(0, 10) + "...");
             const response = await generateWodFn({ turnstileToken });
             
-            console.log("DEBUG 4 - Response received");
+            console.log("[GenerateWodPage] 5 - Response received:", response);
             const wodData = response.data as any;
             
             if (!wodData || !wodData.name) {
+                console.error("[GenerateWodPage] Invalid WOD data structure:", wodData);
                 throw new Error("Invalid data format received from server.");
+            }
+
+            if (!firestore) {
+                throw new Error("Firestore instance missing for ID generation.");
             }
 
             const tempId = doc(collection(firestore, 'temp')).id;
@@ -115,30 +125,44 @@ export default function GenerateWodPage() {
             };
             
             setGeneratedWod(newWod);
+            console.log("[GenerateWodPage] 6 - WOD set successfully");
 
         } catch (e: any) {
-            console.error("DEBUG - Full Error Object:", e);
-            const errMsg = e.message || "Unknown error";
-            const errCode = e.code || "unknown";
+            console.error("[GenerateWodPage] 7 - CATCH BLOCK REACHED");
+            console.error("[GenerateWodPage] Error details:", e);
+            
+            let errMsg = "An unexpected error occurred.";
+            let errCode = "unknown";
+
+            if (e instanceof FirebaseError) {
+                errCode = e.code;
+                errMsg = e.message;
+                console.error(`[GenerateWodPage] Firebase Error Code: ${e.code}`);
+            } else if (e.code) {
+                errCode = e.code;
+                errMsg = e.message || errMsg;
+            }
 
              toast({
                 variant: "destructive",
                 title: t('errorAlert.title'),
-                description: `Error: ${errMsg} (Code: ${errCode})`,
+                description: `Error ${errCode}: ${errMsg}`,
             });
         } finally {
             setIsLoading(false);
             setTurnstileToken(null);
             setTurnstileKey(Date.now());
+            console.log("[GenerateWodPage] 8 - Process finished");
         }
     };
     
     const onTurnstileSuccess = useCallback((token: string) => {
-        console.log("DEBUG - Turnstile Success, token received");
+        console.log("[GenerateWodPage] Turnstile verified");
         setTurnstileToken(token);
     }, []);
 
     const onTurnstileExpire = useCallback(() => {
+        console.log("[GenerateWodPage] Turnstile expired");
         setTurnstileToken(null);
     }, []);
 
