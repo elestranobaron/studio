@@ -3,12 +3,17 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.getAi = getAi;
 const genkit_1 = require("genkit");
 const google_genai_1 = require("@genkit-ai/google-genai");
-let aiInstance = null;
+/**
+ * Lazy initialization of Genkit to prevent crashes during module loading
+ * if environment variables are not yet available.
+ */
 function getAi() {
-    if (!aiInstance) {
-        aiInstance = (0, genkit_1.genkit)({
-            plugins: [(0, google_genai_1.googleAI)({ apiVersion: 'v1beta' })],
-        });
-    }
-    return aiInstance;
+    const geminiKey = process.env.GEMINI_API_KEY || process.env.GOOGLE_GENAI_API_KEY;
+    // Safety check: if no key is found, use a placeholder to avoid throwing during initialization.
+    // The actual flow execution will fail later if the key is still missing, 
+    // but it won't crash the entire Cloud Function process at startup.
+    const apiKey = geminiKey || 'missing-api-key';
+    return (0, genkit_1.genkit)({
+        plugins: [(0, google_genai_1.googleAI)({ apiKey })],
+    });
 }

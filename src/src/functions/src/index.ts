@@ -166,7 +166,7 @@ export const createCheckout = onCall(callOptions, async (request) => {
         throw new HttpsError("failed-precondition", "Stripe non configuré");
     }
 
-    const stripe = new Stripe(stripeKey, { apiVersion: "2024-12-18.acacia" });
+    const stripe = new Stripe(stripeKey, { apiVersion: "2026-01-28.clover" });
     const priceId = yearly ? process.env.STRIPE_YEARLY_PRICE_ID : process.env.STRIPE_MONTHLY_PRICE_ID;
 
     if (!priceId) throw new HttpsError("internal", "Price ID Stripe manquant");
@@ -191,7 +191,7 @@ export const createCustomerPortal = onCall(callOptions, async (request) => {
     
     if (!customerId) throw new HttpsError("not-found", "Client Stripe introuvable");
 
-    const stripe = new Stripe(stripeKey!, { apiVersion: "2024-12-18.acacia" });
+    const stripe = new Stripe(stripeKey!, { apiVersion: "2026-01-28.clover" });
     const portalSession = await stripe.billingPortal.sessions.create({
         customer: customerId,
         return_url: `${process.env.NEXT_PUBLIC_APP_URL}/settings`,
@@ -204,7 +204,7 @@ export const stripeWebhook = onRequest(async (req, res) => {
     const stripeKey = process.env.STRIPE_SECRET_KEY || "";
     const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET || "";
     
-    const stripe = new Stripe(stripeKey, { apiVersion: "2024-12-18.acacia" });
+    const stripe = new Stripe(stripeKey, { apiVersion: "2026-01-28.clover" });
     
     try {
         const event = stripe.webhooks.constructEvent(req.rawBody, sig, webhookSecret);

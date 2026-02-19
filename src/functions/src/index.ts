@@ -1,4 +1,3 @@
-
 "use strict";
 
 import { onCall, HttpsError, onRequest } from "firebase-functions/v2/https";
@@ -8,35 +7,21 @@ import Stripe from "stripe";
 import { setGlobalOptions } from "firebase-functions/v2";
 import { logger } from "firebase-functions";
 
-// Initialize Firebase Admin
 if (admin.apps.length === 0) {
   admin.initializeApp();
 }
 const db = admin.firestore();
 
-// Global options for all functions
 setGlobalOptions({ 
   region: "us-central1",
   memory: "512MiB", 
   timeoutSeconds: 120
 });
 
-/**
- * Validates Cloudflare Turnstile token
- */
 async function validateTurnstile(token: string, ip: string | undefined): Promise<boolean> {
     const secret = process.env.TURNSTILE_SECRET_KEY;
-    
-    // Safety check for test environments
-    if (!token || token.includes('DUMMY') || token === 'XXXX.DUMMY.TOKEN.XXXX') {
-        logger.warn('[validateTurnstile] Test token detected. Bypassing.');
-        return true;
-    }
-
-    if (!secret || secret.startsWith('your_') || secret.includes('DUMMY')) {
-        logger.warn('[validateTurnstile] TURNSTILE_SECRET_KEY not configured. Bypassing.');
-        return true; 
-    }
+    if (!token || token.includes('DUMMY')) return true;
+    if (!secret || secret.startsWith('your_')) return true; 
 
     const formData = new URLSearchParams();
     formData.append('secret', secret);
@@ -51,29 +36,54 @@ async function validateTurnstile(token: string, ip: string | undefined): Promise
         const outcome = await response.json() as any;
         return !!outcome.success;
     } catch (e) {
-        logger.error('[validateTurnstile] Connection error:', e);
+        logger.error('Turnstile error:', e);
         return false;
     }
 }
 
-// Configuration object for functions (CORS handled automatically by onCall)
-const callOptions = { 
-    maxInstances: 10
-};
+export const generateWod = onCall({ cors: true }, async (request) => {
+    logger.info("[generateWod] Started");
+    try {
+        const { turnstileToken } = request.data;
+        const isValid = await validateTurnstile(turnstileToken, request.rawRequest.ip);
+        if (!isValid) throw new HttpsError("permission-denied", "Captcha failed");
 
-// --- CLOUD FUNCTIONS ---
+        // Use a different name for the imported function to avoid shadowing
+        const flowModule = await import("./ai/generate-wod-flow");
+        const result = await flowModule.generateWod({});
+        return result;
+    } catch (e: any) {
+        logger.error("[generateWod] Error:", e);
+        throw new HttpsError("internal", e.message || "AI Error");
+    }
+});
 
-export const sendDigicode = onCall(callOptions, async (request) => {
+export const analyzeWod = onCall({ cors: true }, async (request) => {
+    try {
+        const { photoDataUri, turnstileToken } = request.data;
+        if (!photoDataUri) throw new HttpsError("invalid-argument", "Image required");
+
+        const isValid = await validateTurnstile(turnstileToken, request.rawRequest.ip);
+        if (!isValid) throw new HttpsError("permission-denied", "Captcha failed");
+
+        const flowModule = await import("./ai/analyze-wod-flow");
+        const result = await flowModule.analyzeWod({ photoDataUri });
+        return result;
+    } catch (e: any) {
+        logger.error("[analyzeWod] Error:", e);
+        throw new HttpsError("internal", e.message || "AI Error");
+    }
+});
+
+export const sendDigicode = onCall({ cors: true }, async (request) => {
   const { email, turnstileToken } = request.data;
   if (!email) throw new HttpsError("invalid-argument", "Email required");
   
   const isValid = await validateTurnstile(turnstileToken, request.rawRequest.ip);
-  if (!isValid) throw new HttpsError("permission-denied", "Robot validation failed");
+  if (!isValid) throw new HttpsError("permission-denied", "Captcha failed");
 
   const brevoKey = process.env.BREVO_API_KEY;
-  if (!brevoKey || brevoKey.startsWith('your_')) {
-      throw new HttpsError("failed-precondition", "Email service not configured");
-  }
+  if (!brevoKey || brevoKey.startsWith('your_')) throw new HttpsError("failed-precondition", "Email config missing");
 
   const code = Math.floor(100000 + Math.random() * 900000).toString();
   await db.collection("digicodes").doc(email.toLowerCase()).set({
@@ -92,74 +102,17 @@ export const sendDigicode = onCall(callOptions, async (request) => {
     }),
   });
   
-  if (!res.ok) throw new HttpsError("internal", "Email delivery failed");
+  if (!res.ok) throw new HttpsError("internal", "Email failed");
   return { success: true };
 });
 
-export const generateWod = onCall(callOptions, async (request) => {
-    logger.info("[generateWod] Execution started");
-    try {
-        const { turnstileToken } = request.data;
-        const isValid = await validateTurnstile(turnstileToken, request.rawRequest.ip);
-        if (!isValid) {
-            logger.error("[generateWod] Turnstile validation failed");
-            throw new HttpsError("permission-denied", "Turnstile failed");
-        }
-
-        // Lazy load the flow to prevent top-level initialization crashes
-        logger.info("[generateWod] Importing AI flow...");
-        const flowModule = await import("./ai/generate-wod-flow");
-        
-        logger.info("[generateWod] Running AI flow...");
-        const result = await flowModule.generateWod({});
-        
-        logger.info("[generateWod] Success");
-        return result;
-    } catch (e: any) {
-        logger.error("[generateWod] CRITICAL ERROR:", e);
-        // Ensure we throw a serializable error
-        throw new HttpsError("internal", e.message || "Internal AI Error", {
-            stack: e.stack,
-            details: e.details || null
-        });
-    }
-});
-
-export const analyzeWod = onCall(callOptions, async (request) => {
-    logger.info("[analyzeWod] Execution started");
-    try {
-        const { photoDataUri, turnstileToken } = request.data;
-        if (!photoDataUri) throw new HttpsError("invalid-argument", "Image required");
-
-        const isValid = await validateTurnstile(turnstileToken, request.rawRequest.ip);
-        if (!isValid) throw new HttpsError("permission-denied", "Turnstile failed");
-
-        // Lazy load the flow
-        logger.info("[analyzeWod] Importing AI flow...");
-        const flowModule = await import("./ai/analyze-wod-flow");
-        
-        logger.info("[analyzeWod] Running AI flow...");
-        const result = await flowModule.analyzeWod({ photoDataUri });
-        
-        logger.info("[analyzeWod] Success");
-        return result;
-    } catch (e: any) {
-        logger.error("[analyzeWod] CRITICAL ERROR:", e);
-        throw new HttpsError("internal", e.message || "Internal AI Error");
-    }
-});
-
-export const verifyDigicode = onCall(callOptions, async (request) => {
+export const verifyDigicode = onCall({ cors: true }, async (request) => {
     const { email, code } = request.data;
-    if (!email || !code) throw new HttpsError("invalid-argument", "Missing data");
-
     const digiDoc = await db.collection("digicodes").doc(email.toLowerCase()).get();
     if (!digiDoc.exists) throw new HttpsError("not-found", "Invalid code");
 
     const data = digiDoc.data()!;
-    if (data.code !== code || data.expires.toMillis() < Date.now()) {
-      throw new HttpsError("unauthenticated", "Code expired");
-    }
+    if (data.code !== code || data.expires.toMillis() < Date.now()) throw new HttpsError("unauthenticated", "Expired");
 
     await digiDoc.ref.delete();
     let uid: string;
@@ -178,26 +131,19 @@ export const verifyDigicode = onCall(callOptions, async (request) => {
     return { token, isNewUser };
 });
 
-export const createCheckout = onCall(callOptions, async (request) => {
+export const createCheckout = onCall({ cors: true }, async (request) => {
     if (!request.auth) throw new HttpsError("unauthenticated", "Auth required");
-    
     const { yearly, turnstileToken } = request.data;
     const isValid = await validateTurnstile(turnstileToken, request.rawRequest.ip);
-    if (!isValid) throw new HttpsError("permission-denied", "Turnstile failed");
+    if (!isValid) throw new HttpsError("permission-denied", "Captcha failed");
 
     const stripeKey = process.env.STRIPE_SECRET_KEY;
-    if (!stripeKey || stripeKey.includes('your_')) {
-        throw new HttpsError("failed-precondition", "Stripe key missing");
-    }
-
-    const stripe = new Stripe(stripeKey, { apiVersion: "2024-12-18.acacia" });
+    const stripe = new Stripe(stripeKey!, { apiVersion: "2026-01-28.clover" });
     const priceId = yearly ? process.env.STRIPE_YEARLY_PRICE_ID : process.env.STRIPE_MONTHLY_PRICE_ID;
-
-    if (!priceId) throw new HttpsError("internal", "Stripe Price ID missing");
 
     const session = await stripe.checkout.sessions.create({
         payment_method_types: ["card"],
-        line_items: [{ price: priceId, quantity: 1 }],
+        line_items: [{ price: priceId!, quantity: 1 }],
         mode: "subscription",
         success_url: `${process.env.NEXT_PUBLIC_APP_URL}/premium?success=true`,
         cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/premium?cancel=true`,
@@ -206,16 +152,14 @@ export const createCheckout = onCall(callOptions, async (request) => {
     return { url: session.url };
 });
 
-export const createCustomerPortal = onCall(callOptions, async (request) => {
+export const createCustomerPortal = onCall({ cors: true }, async (request) => {
     if (!request.auth) throw new HttpsError("unauthenticated", "Auth required");
-    
     const stripeKey = process.env.STRIPE_SECRET_KEY;
     const userDoc = await db.collection('users').doc(request.auth.uid).get();
     const customerId = userDoc.data()?.stripeCustomerId;
-    
     if (!customerId) throw new HttpsError("not-found", "Stripe customer not found");
 
-    const stripe = new Stripe(stripeKey!, { apiVersion: "2024-12-18.acacia" });
+    const stripe = new Stripe(stripeKey!, { apiVersion: "2026-01-28.clover" });
     const portalSession = await stripe.billingPortal.sessions.create({
         customer: customerId,
         return_url: `${process.env.NEXT_PUBLIC_APP_URL}/settings`,
@@ -227,8 +171,7 @@ export const stripeWebhook = onRequest(async (req, res) => {
     const sig = req.headers["stripe-signature"] as string;
     const stripeKey = process.env.STRIPE_SECRET_KEY || "";
     const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET || "";
-    
-    const stripe = new Stripe(stripeKey, { apiVersion: "2024-12-18.acacia" });
+    const stripe = new Stripe(stripeKey, { apiVersion: "2026-01-28.clover" });
     
     try {
         const event = stripe.webhooks.constructEvent(req.rawBody, sig, webhookSecret);
@@ -241,8 +184,7 @@ export const stripeWebhook = onRequest(async (req, res) => {
         }
         res.status(200).send({ received: true });
     } catch (err: any) {
-        logger.error("Webhook Error:", err.message);
-        res.status(400).send(`Webhook Error: ${err.message}`);
+        res.status(400).send(`Error: ${err.message}`);
     }
 });
 

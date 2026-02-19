@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useCallback } from "react";
@@ -19,10 +18,10 @@ import Turnstile from "@/components/turnstile";
 import { getFunctions, httpsCallable } from "firebase/functions";
 import React from "react";
 import { doc, collection } from "firebase/firestore";
-
+import { FirebaseError } from "firebase/app";
 
 function GeneratingState() {
-    const t = useTranslations('GenerateWodPage.generatingState');
+  const t = useTranslations('GenerateWodPage.generatingState');
   return (
     <div className="w-full flex-1 flex flex-col items-center justify-center gap-4 text-center">
       <video
@@ -50,13 +49,11 @@ export default function GenerateWodPage() {
     const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
     const [turnstileKey, setTurnstileKey] = useState(Date.now());
 
-
     const { user, isUserLoading } = useUser();
-    const { firestore } = useFirebase();
+    const { firestore, firebaseApp } = useFirebase();
     const router = useRouter();
     const { toast } = useToast();
     const { toggleSidebar } = useSidebar();
-
 
     const handleGenerate = async () => {
         setIsLoading(true);
@@ -64,8 +61,8 @@ export default function GenerateWodPage() {
         
         console.log("DEBUG 1 - Starting handleGenerate");
 
-        if (!firestore) {
-            toast({ variant: 'destructive', title: "Firestore not initialized" });
+        if (!firebaseApp) {
+            toast({ variant: 'destructive', title: "Firebase not ready" });
             setIsLoading(false);
             return;
         }
@@ -81,20 +78,21 @@ export default function GenerateWodPage() {
         }
 
         try {
-            console.log("DEBUG 2 - Getting functions instance (us-central1)");
-            const functions = getFunctions(undefined, 'us-central1');
+            console.log("DEBUG 2 - Getting functions (us-central1)");
+            const functions = getFunctions(firebaseApp, 'us-central1');
             const generateWodFn = httpsCallable(functions, 'generateWod');
             
-            console.log("DEBUG 3 - Calling function...");
-            // This is where it was stopping because the server was crashing during 'import'
+            console.log("DEBUG 3 - Calling generateWod...");
             const response = await generateWodFn({ turnstileToken });
             
             console.log("DEBUG 4 - Response received");
             const wodData = response.data as any;
             
             if (!wodData || !wodData.name) {
-                throw new Error("Invalid data format received from server.");
+                throw new Error("Invalid data format from server.");
             }
+
+            if (!firestore) throw new Error("Firestore not available");
 
             const tempId = doc(collection(firestore, 'temp')).id;
             const placeholderImageUrl = `https://picsum.photos/seed/${tempId}/600/400`;
@@ -116,23 +114,27 @@ export default function GenerateWodPage() {
             };
             
             setGeneratedWod(newWod);
-            console.log("DEBUG 5 - WOD set successfully");
+            console.log("DEBUG 5 - WOD Success");
 
         } catch (e: any) {
-            console.error("DEBUG - CATCH BLOCK REACHED");
-            console.error("DEBUG - Full Error Object:", e);
-            const errMsg = e.message || "Unknown error";
+            console.error("DEBUG 6 - CATCH ERROR:", e);
             
-             toast({
+            let errMsg = "Unknown error.";
+            if (e instanceof FirebaseError) {
+                errMsg = `[${e.code}] ${e.message}`;
+            } else {
+                errMsg = e.message || errMsg;
+            }
+
+            toast({
                 variant: "destructive",
                 title: t('errorAlert.title'),
-                description: `Error: ${errMsg}`,
+                description: errMsg,
             });
         } finally {
             setIsLoading(false);
             setTurnstileToken(null);
             setTurnstileKey(Date.now());
-            console.log("DEBUG 11 - Process finished");
         }
     };
     
@@ -187,11 +189,9 @@ export default function GenerateWodPage() {
                             </Button>
                             <Turnstile key={turnstileKey} onSuccess={onTurnstileSuccess} onExpire={onTurnstileExpire} />
                             
-                            {isUserLoading && <Skeleton className="h-6 w-48" />}
-                            
-                             {!isUserLoading && (!user || user.isAnonymous) && (
+                            {!isUserLoading && (!user || user.isAnonymous) && (
                                 <Alert variant="default" className="border-blue-500/50 text-blue-500">
-                                     <Info className="h-4 w-4 !text-blue-500" />
+                                     <Info className="h-4 w-4 text-blue-500" />
                                     <AlertTitle>{t('freePlanAlert.title')}</AlertTitle>
                                     <AlertDescription>
                                         Please sign in to go Premium and unlock unlimited generations.
