@@ -8,3 +8,5 @@ runConfig:
 env:
   - variable: NEXT_PUBLIC_APP_URL
     value: "https://wodburner.app"
+  - variable: NEXT_PUBLIC_TURNSTILE_SITE_KEY
+    value: "0x4AAAAAACHYaUKWRZamcmAR"

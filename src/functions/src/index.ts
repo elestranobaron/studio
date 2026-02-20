@@ -41,7 +41,7 @@ async function validateTurnstile(token: string, ip: string | undefined): Promise
     }
 }
 
-export const generateWod = onCall({ cors: true }, async (request) => {
+export const generateWod = onCall(async (request) => {
     logger.info("[generateWod] Started");
     try {
         const { turnstileToken } = request.data;
@@ -58,7 +58,7 @@ export const generateWod = onCall({ cors: true }, async (request) => {
     }
 });
 
-export const analyzeWod = onCall({ cors: true }, async (request) => {
+export const analyzeWod = onCall(async (request) => {
     try {
         const { photoDataUri, turnstileToken } = request.data;
         if (!photoDataUri) throw new HttpsError("invalid-argument", "Image required");
@@ -75,7 +75,7 @@ export const analyzeWod = onCall({ cors: true }, async (request) => {
     }
 });
 
-export const sendDigicode = onCall({ cors: true }, async (request) => {
+export const sendDigicode = onCall(async (request) => {
   const { email, turnstileToken } = request.data;
   if (!email) throw new HttpsError("invalid-argument", "Email required");
   
@@ -106,7 +106,7 @@ export const sendDigicode = onCall({ cors: true }, async (request) => {
   return { success: true };
 });
 
-export const verifyDigicode = onCall({ cors: true }, async (request) => {
+export const verifyDigicode = onCall(async (request) => {
     const { email, code } = request.data;
     const digiDoc = await db.collection("digicodes").doc(email.toLowerCase()).get();
     if (!digiDoc.exists) throw new HttpsError("not-found", "Invalid code");
@@ -131,7 +131,7 @@ export const verifyDigicode = onCall({ cors: true }, async (request) => {
     return { token, isNewUser };
 });
 
-export const createCheckout = onCall({ cors: true }, async (request) => {
+export const createCheckout = onCall(async (request) => {
     if (!request.auth) throw new HttpsError("unauthenticated", "Auth required");
     const { yearly, turnstileToken } = request.data;
     const isValid = await validateTurnstile(turnstileToken, request.rawRequest.ip);
@@ -152,7 +152,7 @@ export const createCheckout = onCall({ cors: true }, async (request) => {
     return { url: session.url };
 });
 
-export const createCustomerPortal = onCall({ cors: true }, async (request) => {
+export const createCustomerPortal = onCall(async (request) => {
     if (!request.auth) throw new HttpsError("unauthenticated", "Auth required");
     const stripeKey = process.env.STRIPE_SECRET_KEY;
     const userDoc = await db.collection('users').doc(request.auth.uid).get();

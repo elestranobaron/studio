@@ -151,7 +151,7 @@ export const createCheckout = onCall({ cors: true }, async (request) => {
     if (!isValid) throw new HttpsError("permission-denied", "Captcha failed");
 
     const stripeKey = process.env.STRIPE_SECRET_KEY;
-    const stripe = new Stripe(stripeKey!, { apiVersion: "2025-01-27.clover" });
+    const stripe = new Stripe(stripeKey!, { apiVersion: "2026-01-28.clover" });
     const priceId = yearly ? process.env.STRIPE_YEARLY_PRICE_ID : process.env.STRIPE_MONTHLY_PRICE_ID;
 
     const session = await stripe.checkout.sessions.create({
@@ -172,7 +172,7 @@ export const createCustomerPortal = onCall({ cors: true }, async (request) => {
     const customerId = userDoc.data()?.stripeCustomerId;
     if (!customerId) throw new HttpsError("not-found", "Stripe customer not found");
 
-    const stripe = new Stripe(stripeKey!, { apiVersion: "2025-01-27.clover" });
+    const stripe = new Stripe(stripeKey!, { apiVersion: "2026-01-28.clover" });
     const portalSession = await stripe.billingPortal.sessions.create({
         customer: customerId,
         return_url: `${process.env.NEXT_PUBLIC_APP_URL}/settings`,
@@ -184,7 +184,7 @@ export const stripeWebhook = onRequest(async (req, res) => {
     const sig = req.headers["stripe-signature"] as string;
     const stripeKey = process.env.STRIPE_SECRET_KEY || "";
     const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET || "";
-    const stripe = new Stripe(stripeKey, { apiVersion: "2025-01-27.clover" });
+    const stripe = new Stripe(stripeKey, { apiVersion: "2026-01-28.clover" });
     
     try {
         const event = stripe.webhooks.constructEvent(req.rawBody, sig, webhookSecret);

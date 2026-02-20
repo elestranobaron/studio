@@ -36,38 +36,28 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.resetMonthlyLimits = exports.resetDailyLimits = exports.stripeWebhook = exports.createCustomerPortal = exports.createCheckout = exports.verifyDigicode = exports.analyzeWod = exports.generateWod = exports.sendDigicode = void 0;
+exports.resetMonthlyLimits = exports.resetDailyLimits = exports.stripeWebhook = exports.createCustomerPortal = exports.createCheckout = exports.verifyDigicode = exports.sendDigicode = exports.analyzeWod = exports.generateWod = void 0;
 const https_1 = require("firebase-functions/v2/https");
 const scheduler_1 = require("firebase-functions/v2/scheduler");
 const admin = __importStar(require("firebase-admin"));
 const stripe_1 = __importDefault(require("stripe"));
 const v2_1 = require("firebase-functions/v2");
 const firebase_functions_1 = require("firebase-functions");
-// Initialize Firebase Admin
 if (admin.apps.length === 0) {
     admin.initializeApp();
 }
 const db = admin.firestore();
-// Global options for all functions
 (0, v2_1.setGlobalOptions)({
     region: "us-central1",
     memory: "512MiB",
     timeoutSeconds: 120
 });
-/**
- * Validates Cloudflare Turnstile token
- */
 async function validateTurnstile(token, ip) {
     const secret = process.env.TURNSTILE_SECRET_KEY;
-    // Safety check for test environments
-    if (!token || token.includes('DUMMY') || token === 'XXXX.DUMMY.TOKEN.XXXX') {
-        firebase_functions_1.logger.warn('[validateTurnstile] Test token detected. Bypassing.');
+    if (!token || token.includes('DUMMY'))
         return true;
-    }
-    if (!secret || secret.startsWith('your_') || secret.includes('DUMMY')) {
-        firebase_functions_1.logger.warn('[validateTurnstile] TURNSTILE_SECRET_KEY not configured. Bypassing.');
+    if (!secret || secret.startsWith('your_'))
         return true;
-    }
     const formData = new URLSearchParams();
     formData.append('secret', secret);
     formData.append('response', token);
@@ -82,26 +72,54 @@ async function validateTurnstile(token, ip) {
         return !!outcome.success;
     }
     catch (e) {
-        firebase_functions_1.logger.error('[validateTurnstile] Connection error:', e);
+        firebase_functions_1.logger.error('Turnstile error:', e);
         return false;
     }
 }
-// Configuration object for functions (CORS handled automatically by onCall)
-const callOptions = {
-    maxInstances: 10
-};
-// --- CLOUD FUNCTIONS ---
-exports.sendDigicode = (0, https_1.onCall)(callOptions, async (request) => {
+exports.generateWod = (0, https_1.onCall)(async (request) => {
+    firebase_functions_1.logger.info("[generateWod] Started");
+    try {
+        const { turnstileToken } = request.data;
+        const isValid = await validateTurnstile(turnstileToken, request.rawRequest.ip);
+        if (!isValid)
+            throw new https_1.HttpsError("permission-denied", "Captcha failed");
+        // Use a different name for the imported function to avoid shadowing
+        const flowModule = await Promise.resolve().then(() => __importStar(require("./ai/generate-wod-flow")));
+        const result = await flowModule.generateWod({});
+        return result;
+    }
+    catch (e) {
+        firebase_functions_1.logger.error("[generateWod] Error:", e);
+        throw new https_1.HttpsError("internal", e.message || "AI Error");
+    }
+});
+exports.analyzeWod = (0, https_1.onCall)(async (request) => {
+    try {
+        const { photoDataUri, turnstileToken } = request.data;
+        if (!photoDataUri)
+            throw new https_1.HttpsError("invalid-argument", "Image required");
+        const isValid = await validateTurnstile(turnstileToken, request.rawRequest.ip);
+        if (!isValid)
+            throw new https_1.HttpsError("permission-denied", "Captcha failed");
+        const flowModule = await Promise.resolve().then(() => __importStar(require("./ai/analyze-wod-flow")));
+        const result = await flowModule.analyzeWod({ photoDataUri });
+        return result;
+    }
+    catch (e) {
+        firebase_functions_1.logger.error("[analyzeWod] Error:", e);
+        throw new https_1.HttpsError("internal", e.message || "AI Error");
+    }
+});
+exports.sendDigicode = (0, https_1.onCall)(async (request) => {
     const { email, turnstileToken } = request.data;
     if (!email)
         throw new https_1.HttpsError("invalid-argument", "Email required");
     const isValid = await validateTurnstile(turnstileToken, request.rawRequest.ip);
     if (!isValid)
-        throw new https_1.HttpsError("permission-denied", "Robot validation failed");
+        throw new https_1.HttpsError("permission-denied", "Captcha failed");
     const brevoKey = process.env.BREVO_API_KEY;
-    if (!brevoKey || brevoKey.startsWith('your_')) {
-        throw new https_1.HttpsError("failed-precondition", "Email service not configured");
-    }
+    if (!brevoKey || brevoKey.startsWith('your_'))
+        throw new https_1.HttpsError("failed-precondition", "Email config missing");
     const code = Math.floor(100000 + Math.random() * 900000).toString();
     await db.collection("digicodes").doc(email.toLowerCase()).set({
         code,
@@ -118,68 +136,17 @@ exports.sendDigicode = (0, https_1.onCall)(callOptions, async (request) => {
         }),
     });
     if (!res.ok)
-        throw new https_1.HttpsError("internal", "Email delivery failed");
+        throw new https_1.HttpsError("internal", "Email failed");
     return { success: true };
 });
-exports.generateWod = (0, https_1.onCall)(callOptions, async (request) => {
-    firebase_functions_1.logger.info("[generateWod] Execution started");
-    try {
-        const { turnstileToken } = request.data;
-        const isValid = await validateTurnstile(turnstileToken, request.rawRequest.ip);
-        if (!isValid) {
-            firebase_functions_1.logger.error("[generateWod] Turnstile validation failed");
-            throw new https_1.HttpsError("permission-denied", "Turnstile failed");
-        }
-        // Lazy load the flow to prevent top-level initialization crashes
-        firebase_functions_1.logger.info("[generateWod] Importing AI flow...");
-        const flowModule = await Promise.resolve().then(() => __importStar(require("./ai/generate-wod-flow")));
-        firebase_functions_1.logger.info("[generateWod] Running AI flow...");
-        const result = await flowModule.generateWod({});
-        firebase_functions_1.logger.info("[generateWod] Success");
-        return result;
-    }
-    catch (e) {
-        firebase_functions_1.logger.error("[generateWod] CRITICAL ERROR:", e);
-        // Ensure we throw a serializable error
-        throw new https_1.HttpsError("internal", e.message || "Internal AI Error", {
-            stack: e.stack,
-            details: e.details || null
-        });
-    }
-});
-exports.analyzeWod = (0, https_1.onCall)(callOptions, async (request) => {
-    firebase_functions_1.logger.info("[analyzeWod] Execution started");
-    try {
-        const { photoDataUri, turnstileToken } = request.data;
-        if (!photoDataUri)
-            throw new https_1.HttpsError("invalid-argument", "Image required");
-        const isValid = await validateTurnstile(turnstileToken, request.rawRequest.ip);
-        if (!isValid)
-            throw new https_1.HttpsError("permission-denied", "Turnstile failed");
-        // Lazy load the flow
-        firebase_functions_1.logger.info("[analyzeWod] Importing AI flow...");
-        const flowModule = await Promise.resolve().then(() => __importStar(require("./ai/analyze-wod-flow")));
-        firebase_functions_1.logger.info("[analyzeWod] Running AI flow...");
-        const result = await flowModule.analyzeWod({ photoDataUri });
-        firebase_functions_1.logger.info("[analyzeWod] Success");
-        return result;
-    }
-    catch (e) {
-        firebase_functions_1.logger.error("[analyzeWod] CRITICAL ERROR:", e);
-        throw new https_1.HttpsError("internal", e.message || "Internal AI Error");
-    }
-});
-exports.verifyDigicode = (0, https_1.onCall)(callOptions, async (request) => {
+exports.verifyDigicode = (0, https_1.onCall)(async (request) => {
     const { email, code } = request.data;
-    if (!email || !code)
-        throw new https_1.HttpsError("invalid-argument", "Missing data");
     const digiDoc = await db.collection("digicodes").doc(email.toLowerCase()).get();
     if (!digiDoc.exists)
         throw new https_1.HttpsError("not-found", "Invalid code");
     const data = digiDoc.data();
-    if (data.code !== code || data.expires.toMillis() < Date.now()) {
-        throw new https_1.HttpsError("unauthenticated", "Code expired");
-    }
+    if (data.code !== code || data.expires.toMillis() < Date.now())
+        throw new https_1.HttpsError("unauthenticated", "Expired");
     await digiDoc.ref.delete();
     let uid;
     let isNewUser = false;
@@ -195,21 +162,16 @@ exports.verifyDigicode = (0, https_1.onCall)(callOptions, async (request) => {
     const token = await admin.auth().createCustomToken(uid);
     return { token, isNewUser };
 });
-exports.createCheckout = (0, https_1.onCall)(callOptions, async (request) => {
+exports.createCheckout = (0, https_1.onCall)(async (request) => {
     if (!request.auth)
         throw new https_1.HttpsError("unauthenticated", "Auth required");
     const { yearly, turnstileToken } = request.data;
     const isValid = await validateTurnstile(turnstileToken, request.rawRequest.ip);
     if (!isValid)
-        throw new https_1.HttpsError("permission-denied", "Turnstile failed");
+        throw new https_1.HttpsError("permission-denied", "Captcha failed");
     const stripeKey = process.env.STRIPE_SECRET_KEY;
-    if (!stripeKey || stripeKey.includes('your_')) {
-        throw new https_1.HttpsError("failed-precondition", "Stripe key missing");
-    }
     const stripe = new stripe_1.default(stripeKey, { apiVersion: "2026-01-28.clover" });
     const priceId = yearly ? process.env.STRIPE_YEARLY_PRICE_ID : process.env.STRIPE_MONTHLY_PRICE_ID;
-    if (!priceId)
-        throw new https_1.HttpsError("internal", "Stripe Price ID missing");
     const session = await stripe.checkout.sessions.create({
         payment_method_types: ["card"],
         line_items: [{ price: priceId, quantity: 1 }],
@@ -220,7 +182,7 @@ exports.createCheckout = (0, https_1.onCall)(callOptions, async (request) => {
     });
     return { url: session.url };
 });
-exports.createCustomerPortal = (0, https_1.onCall)(callOptions, async (request) => {
+exports.createCustomerPortal = (0, https_1.onCall)(async (request) => {
     if (!request.auth)
         throw new https_1.HttpsError("unauthenticated", "Auth required");
     const stripeKey = process.env.STRIPE_SECRET_KEY;
@@ -252,8 +214,7 @@ exports.stripeWebhook = (0, https_1.onRequest)(async (req, res) => {
         res.status(200).send({ received: true });
     }
     catch (err) {
-        firebase_functions_1.logger.error("Webhook Error:", err.message);
-        res.status(400).send(`Webhook Error: ${err.message}`);
+        res.status(400).send(`Error: ${err.message}`);
     }
 });
 exports.resetDailyLimits = (0, scheduler_1.onSchedule)('0 0 * * *', async () => {
