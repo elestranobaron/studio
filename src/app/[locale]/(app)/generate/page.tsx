@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useCallback } from "react";
@@ -56,40 +57,27 @@ export default function GenerateWodPage() {
     const { toggleSidebar } = useSidebar();
 
     const handleGenerate = async () => {
+        console.log("DEBUG 1 - Starting handleGenerate");
         setIsLoading(true);
         setGeneratedWod(null);
-        
-        console.log("DEBUG 1 - Starting handleGenerate");
-
-        if (!firebaseApp) {
-            toast({ variant: 'destructive', title: "Firebase not ready" });
-            setIsLoading(false);
-            return;
-        }
-
-        if (!turnstileToken) {
-            toast({
-                variant: "destructive",
-                title: "Verification required",
-                description: "Please complete the Turnstile verification."
-            });
-            setIsLoading(false);
-            return;
-        }
 
         try {
-            console.log("DEBUG 2 - Getting functions (us-central1)");
+            if (!firebaseApp) {
+                throw new Error("Firebase app not initialized");
+            }
+
+            console.log("DEBUG 2 - Getting functions instance (us-central1)");
             const functions = getFunctions(firebaseApp, 'us-central1');
-            const generateWodFn = httpsCallable(functions, 'generateWod');
             
-            console.log("DEBUG 3 - Calling generateWod...");
+            console.log("DEBUG 3 - Calling function...");
+            const generateWodFn = httpsCallable(functions, 'generateWod');
             const response = await generateWodFn({ turnstileToken });
             
             console.log("DEBUG 4 - Response received");
             const wodData = response.data as any;
             
             if (!wodData || !wodData.name) {
-                throw new Error("Invalid data format from server.");
+                throw new Error("Invalid data format received from AI.");
             }
 
             if (!firestore) throw new Error("Firestore not available");
@@ -114,16 +102,15 @@ export default function GenerateWodPage() {
             };
             
             setGeneratedWod(newWod);
-            console.log("DEBUG 5 - WOD Success");
+            console.log("DEBUG 5 - WOD generated successfully");
 
         } catch (e: any) {
-            console.error("DEBUG 6 - CATCH ERROR:", e);
-            
-            let errMsg = "Unknown error.";
+            console.error("DEBUG - Error:", e);
+            let errMsg = "An unexpected error occurred.";
             if (e instanceof FirebaseError) {
                 errMsg = `[${e.code}] ${e.message}`;
-            } else {
-                errMsg = e.message || errMsg;
+            } else if (e.message) {
+                errMsg = e.message;
             }
 
             toast({

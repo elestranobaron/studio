@@ -78,7 +78,6 @@ import { Separator } from "./ui/separator";
 import { HeroLetter } from "./hero-letter";
 import { useTranslations } from "next-intl";
 import { Progress } from "./ui/progress";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./ui/tooltip";
 import { CommunityChat, ReactionGrid } from "./community-chat";
 
 function WodIcon({ type }: { type: WOD["type"] }) {
@@ -140,7 +139,6 @@ function PersonalWodActions({ wod }: { wod: WOD }) {
 
         const communityWodsCollection = collection(firestore, "communityWods");
         const newCommunityDocRef = await addDoc(communityWodsCollection, communityWodData);
-        // Link the personal WOD to the community one
         await updateDoc(userWodRef, { communityWodId: newCommunityDocRef.id });
         toast({ title: t("sharedToastTitle"), description: t("sharedToastDescription") });
       }
@@ -288,6 +286,7 @@ export function WodCard({ wod, source = "personal" }: { wod: WOD; source?: "pers
                         src={wod.imageUrl}
                         alt={wod.name}
                         fill
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                         className="object-cover transition-transform duration-300 group-hover/image:scale-105"
                         data-ai-hint={wod.imageHint}
                     />
@@ -311,6 +310,7 @@ export function WodCard({ wod, source = "personal" }: { wod: WOD; source?: "pers
                 src={wod.imageUrl!}
                 alt={t('viewImageAlt', {wodName: wod.name})}
                 fill
+                sizes="100vw"
                 className="object-contain w-full h-auto rounded-t-lg"
               />
             </div>
@@ -406,12 +406,11 @@ export function WodCard({ wod, source = "personal" }: { wod: WOD; source?: "pers
 
 function WodProfile({ wod }: { wod: WOD }) {
   const t = useTranslations("WodCard.profile");
-  const cardio = wod.cardio ?? 50; // Default to 50 if undefined
+  const cardio = wod.cardio ?? 50; 
   const upperBody = wod.upperBody ?? 50;
 
   return (
     <div className="space-y-3 pt-2">
-      {/* Cardio vs Lifting */}
       <div className="space-y-1">
         <div className="flex justify-between items-center text-xs font-medium text-muted-foreground">
           <div className="flex items-center gap-1.5">
@@ -429,7 +428,6 @@ function WodProfile({ wod }: { wod: WOD }) {
         </div>
       </div>
 
-      {/* Upper vs Lower */}
        <div className="space-y-1">
         <div className="flex justify-between items-center text-xs font-medium text-muted-foreground">
           <div className="flex items-center gap-1.5">

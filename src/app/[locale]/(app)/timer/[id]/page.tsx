@@ -78,7 +78,6 @@ export default function TimerPage() {
   const { data: wod, isLoading } = useDoc<WOD>(wodRef, {
       onLoad: (data) => {
           if (data && !activeWod) {
-            // Find a 'metcon' section to set as default timer, otherwise use the full WOD
             const metconSection = Array.isArray(data.description)
                 ? data.description.find(s => s.title.toLowerCase().includes('metcon'))
                 : null;
@@ -118,6 +117,7 @@ export default function TimerPage() {
             src={wod.imageUrl}
             alt={`${wod.name} background`}
             fill
+            sizes="100vw"
             className="object-cover z-0 opacity-20 blur-lg"
             data-ai-hint={wod.imageHint}
         />

@@ -104,7 +104,7 @@ export default function CommunityTimerPage() {
     useEffect(() => {
         if (heroWod && !activeWod) {
             const mainSection = Array.isArray(heroWod.description)
-                ? heroWod.description.find(s => s.timerType) // Find first section with a timer
+                ? heroWod.description.find(s => s.timerType) 
                 : null;
             if (mainSection) {
                 setActiveWod(createWodFromSection(heroWod, mainSection));
@@ -122,7 +122,6 @@ export default function CommunityTimerPage() {
     return <TimerPageSkeleton />;
   }
 
-  // If it's not a Hero WOD, check for authentication
   if (!isHeroWod && (!user || user.isAnonymous)) {
       return (
          <div className="flex flex-col items-center justify-center h-screen bg-background p-4">
@@ -188,6 +187,7 @@ export default function CommunityTimerPage() {
                 src={wod.imageUrl}
                 alt={`${wod.name} background`}
                 fill
+                sizes="100vw"
                 className="object-cover z-0 opacity-20 blur-lg"
                 data-ai-hint={wod.imageHint}
             />
