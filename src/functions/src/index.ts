@@ -12,14 +12,16 @@ if (admin.apps.length === 0) {
 }
 const db = admin.firestore();
 
+// Augmentation de la mémoire à 1GiB pour le traitement d'images
 setGlobalOptions({ 
   region: "us-central1",
-  memory: "512MiB", 
+  memory: "1GiB", 
   timeoutSeconds: 120
 });
 
 async function validateTurnstile(token: string, ip: string | undefined): Promise<boolean> {
     const secret = process.env.TURNSTILE_SECRET_KEY;
+    // Autoriser les tokens de test ou si le secret n'est pas configuré en dev
     if (!token || token.includes('DUMMY')) return true;
     if (!secret || secret.startsWith('your_')) return true; 
 
@@ -34,7 +36,6 @@ async function validateTurnstile(token: string, ip: string | undefined): Promise
             body: formData,
         });
         const outcome = await response.json() as any;
-        logger.info("[validateTurnstile] Full Cloudflare response:", outcome);
         return !!outcome.success;
     } catch (e) {
         logger.error('Turnstile error:', e);
@@ -42,14 +43,12 @@ async function validateTurnstile(token: string, ip: string | undefined): Promise
     }
 }
 
-export const generateWod = onCall(async (request) => {
-    logger.info("[generateWod] Started");
+export const generateWod = onCall({ cors: true }, async (request) => {
     try {
         const { turnstileToken } = request.data;
         const isValid = await validateTurnstile(turnstileToken, request.rawRequest.ip);
         if (!isValid) throw new HttpsError("permission-denied", "Captcha failed");
 
-        // Use a different name for the imported function to avoid shadowing
         const flowModule = await import("./ai/generate-wod-flow");
         const result = await flowModule.generateWod({});
         return result;
@@ -59,7 +58,7 @@ export const generateWod = onCall(async (request) => {
     }
 });
 
-export const analyzeWod = onCall(async (request) => {
+export const analyzeWod = onCall({ cors: true }, async (request) => {
     try {
         const { photoDataUri, turnstileToken } = request.data;
         if (!photoDataUri) throw new HttpsError("invalid-argument", "Image required");
@@ -76,7 +75,7 @@ export const analyzeWod = onCall(async (request) => {
     }
 });
 
-export const sendDigicode = onCall(async (request) => {
+export const sendDigicode = onCall({ cors: true }, async (request) => {
   const { email, turnstileToken } = request.data;
   if (!email) throw new HttpsError("invalid-argument", "Email required");
   
@@ -107,7 +106,7 @@ export const sendDigicode = onCall(async (request) => {
   return { success: true };
 });
 
-export const verifyDigicode = onCall(async (request) => {
+export const verifyDigicode = onCall({ cors: true }, async (request) => {
     const { email, code } = request.data;
     const digiDoc = await db.collection("digicodes").doc(email.toLowerCase()).get();
     if (!digiDoc.exists) throw new HttpsError("not-found", "Invalid code");
@@ -132,14 +131,14 @@ export const verifyDigicode = onCall(async (request) => {
     return { token, isNewUser };
 });
 
-export const createCheckout = onCall(async (request) => {
+export const createCheckout = onCall({ cors: true }, async (request) => {
     if (!request.auth) throw new HttpsError("unauthenticated", "Auth required");
     const { yearly, turnstileToken } = request.data;
     const isValid = await validateTurnstile(turnstileToken, request.rawRequest.ip);
     if (!isValid) throw new HttpsError("permission-denied", "Captcha failed");
 
     const stripeKey = process.env.STRIPE_SECRET_KEY;
-    const stripe = new Stripe(stripeKey!, { apiVersion: "2026-01-28.clover" });
+    const stripe = new Stripe(stripeKey!, { apiVersion: "2025-01-27.clover" });
     const priceId = yearly ? process.env.STRIPE_YEARLY_PRICE_ID : process.env.STRIPE_MONTHLY_PRICE_ID;
 
     const session = await stripe.checkout.sessions.create({
@@ -153,14 +152,14 @@ export const createCheckout = onCall(async (request) => {
     return { url: session.url };
 });
 
-export const createCustomerPortal = onCall(async (request) => {
+export const createCustomerPortal = onCall({ cors: true }, async (request) => {
     if (!request.auth) throw new HttpsError("unauthenticated", "Auth required");
     const stripeKey = process.env.STRIPE_SECRET_KEY;
     const userDoc = await db.collection('users').doc(request.auth.uid).get();
     const customerId = userDoc.data()?.stripeCustomerId;
     if (!customerId) throw new HttpsError("not-found", "Stripe customer not found");
 
-    const stripe = new Stripe(stripeKey!, { apiVersion: "2026-01-28.clover" });
+    const stripe = new Stripe(stripeKey!, { apiVersion: "2025-01-27.clover" });
     const portalSession = await stripe.billingPortal.sessions.create({
         customer: customerId,
         return_url: `${process.env.NEXT_PUBLIC_APP_URL}/settings`,
@@ -172,7 +171,7 @@ export const stripeWebhook = onRequest(async (req, res) => {
     const sig = req.headers["stripe-signature"] as string;
     const stripeKey = process.env.STRIPE_SECRET_KEY || "";
     const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET || "";
-    const stripe = new Stripe(stripeKey, { apiVersion: "2026-01-28.clover" });
+    const stripe = new Stripe(stripeKey, { apiVersion: "2025-01-27.clover" });
     
     try {
         const event = stripe.webhooks.constructEvent(req.rawBody, sig, webhookSecret);

@@ -1,10 +1,9 @@
-
 "use client";
 
 import { useState, useCallback, useEffect } from "react";
 import { useDropzone } from "react-dropzone";
 import Image from "next/image";
-import { UploadCloud, X, LoaderCircle } from "lucide-react";
+import { UploadCloud, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import { useRouter } from "next/navigation";
@@ -15,14 +14,9 @@ import { WodType, type WOD } from "@/lib/types";
 import { useFirebase } from "@/firebase";
 import { doc, collection, query, where, getDocs, setDoc, addDoc, updateDoc } from "firebase/firestore";
 import { useUser, useAuth } from "@/firebase/provider";
-import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "./ui/alert-dialog";
-import { errorEmitter } from "@/firebase/error-emitter";
-import { FirestorePermissionError } from "@/firebase/errors";
 import { initiateAnonymousSignIn } from "@/firebase/non-blocking-login";
-import { Checkbox } from "./ui/checkbox";
-import { Label } from "./ui/label";
 import { useTranslations } from "next-intl";
 import { getFunctions, httpsCallable } from "firebase/functions";
 import Turnstile from "./turnstile";
@@ -60,7 +54,7 @@ export function FileUploader() {
   const [isSaving, setIsSaving] = useState(false);
   const [analysisResult, setAnalysisResult] = useState<any | null>(null);
   const [duplicateWod, setDuplicateWod] = useState<WOD | null>(null);
-  const [shareToCommunity, setShareToCommunity] = useState(false);
+  const [shareToCommunity] = useState(false);
   const [saveIntent, setSaveIntent] = useState(false);
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
   const [turnstileKey, setTurnstileKey] = useState(Date.now());
@@ -88,12 +82,20 @@ export function FileUploader() {
     multiple: false,
   });
 
+  const onTurnstileSuccess = useCallback((token: string) => {
+    setTurnstileToken(token);
+  }, []);
+
+  const onTurnstileExpire = useCallback(() => {
+    setTurnstileToken(null);
+  }, []);
+
   const handleAnalyze = async () => {
     if (!file || !turnstileToken) return;
     setIsLoading(true);
     try {
       const photoDataUri = await toBase64(file);
-      const functions = getFunctions(undefined, 'us-central1');
+      const functions = getFunctions();
       const analyzeWodFn = httpsCallable(functions, 'analyzeWod');
       const response = await analyzeWodFn({ photoDataUri, turnstileToken });
       setAnalysisResult(response.data);
@@ -102,7 +104,7 @@ export function FileUploader() {
         toast({
             variant: "destructive",
             title: t('analysisFailedTitle'),
-            description: `Error: ${e.message || "Unknown"}`,
+            description: e.message || "Unknown error",
         });
     } finally {
       setIsLoading(false);
@@ -111,7 +113,7 @@ export function FileUploader() {
     }
   };
 
-  const performSave = async (userId: string, force: boolean = false) => {
+  const performSave = useCallback(async (userId: string, force: boolean = false) => {
     if (!analysisResult || !firestore || !file) return;
     setIsSaving(true);
     try {
@@ -143,10 +145,7 @@ export function FileUploader() {
         };
         if (analysisResult.duration) wodData.duration = analysisResult.duration;
         await setDoc(newWodRef, wodData);
-        if (shareToCommunity && user && !user.isAnonymous) {
-            const newCommunityDocRef = await addDoc(collection(firestore, 'communityWods'), { ...wodData, userDisplayName: user.email?.split('@')[0] || 'Anonymous' });
-            await updateDoc(newWodRef, { communityWodId: newCommunityDocRef.id });
-        }
+        
         toast({ title: t('wodSavedTitle'), description: t('wodSavedDescription') });
         router.push("/dashboard");
     } catch (e: any) {
@@ -155,7 +154,7 @@ export function FileUploader() {
         setIsSaving(false);
         setDuplicateWod(null);
     }
-  };
+  }, [analysisResult, firestore, file, user, toast, router, t]);
 
   const handleSave = async () => {
     if (!analysisResult) return;
@@ -165,7 +164,7 @@ export function FileUploader() {
 
   useEffect(() => {
     if (saveIntent && user) { performSave(user.uid); setSaveIntent(false); }
-  }, [user, saveIntent]);
+  }, [user, saveIntent, performSave]);
 
   const isActionDisabled = isLoading || isSaving || isUserLoading;
   const flatDescription = analysisResult?.description?.map((s: any) => s.content).join('\n\n') || '';
@@ -212,7 +211,7 @@ export function FileUploader() {
           {!analysisResult ? (
              <div className="flex flex-col items-center gap-4">
                 <Button onClick={handleAnalyze} disabled={isActionDisabled || !turnstileToken} className="w-full">{t('analyzeButton')}</Button>
-                <Turnstile key={turnstileKey} onSuccess={(t) => setTurnstileToken(t)} onExpire={() => setTurnstileToken(null)} />
+                <Turnstile key={turnstileKey} onSuccess={onTurnstileSuccess} onExpire={onTurnstileExpire} />
             </div>
           ) : (
             <div className="space-y-4">
