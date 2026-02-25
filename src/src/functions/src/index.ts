@@ -12,9 +12,10 @@ if (admin.apps.length === 0) {
 }
 const db = admin.firestore();
 
+// Augmentation de la mémoire à 1GiB pour le traitement d'images
 setGlobalOptions({ 
   region: "us-central1",
-  memory: "512MiB", 
+  memory: "1GiB", 
   timeoutSeconds: 120
 });
 
@@ -51,10 +52,7 @@ export const generateWod = onCall({ cors: true }, async (request) => {
             throw new HttpsError("permission-denied", "Captcha failed");
         }
 
-        logger.info("[generateWod] Importing AI flow...");
         const flowModule = await import("./ai/generate-wod-flow");
-        
-        logger.info("[generateWod] Running AI generation...");
         const result = await flowModule.generateWod({});
         
         logger.info("[generateWod] Generation successful");
@@ -74,10 +72,7 @@ export const analyzeWod = onCall({ cors: true }, async (request) => {
         const isValid = await validateTurnstile(turnstileToken, request.rawRequest.ip);
         if (!isValid) throw new HttpsError("permission-denied", "Captcha failed");
 
-        logger.info("[analyzeWod] Importing AI flow...");
         const flowModule = await import("./ai/analyze-wod-flow");
-        
-        logger.info("[analyzeWod] Running AI analysis...");
         const result = await flowModule.analyzeWod({ photoDataUri });
         
         logger.info("[analyzeWod] Analysis successful");
@@ -151,7 +146,7 @@ export const createCheckout = onCall({ cors: true }, async (request) => {
     if (!isValid) throw new HttpsError("permission-denied", "Captcha failed");
 
     const stripeKey = process.env.STRIPE_SECRET_KEY;
-    const stripe = new Stripe(stripeKey!, { apiVersion: "2026-01-28.clover" });
+    const stripe = new Stripe(stripeKey!, { apiVersion: "2025-01-27.clover" });
     const priceId = yearly ? process.env.STRIPE_YEARLY_PRICE_ID : process.env.STRIPE_MONTHLY_PRICE_ID;
 
     const session = await stripe.checkout.sessions.create({
@@ -172,7 +167,7 @@ export const createCustomerPortal = onCall({ cors: true }, async (request) => {
     const customerId = userDoc.data()?.stripeCustomerId;
     if (!customerId) throw new HttpsError("not-found", "Stripe customer not found");
 
-    const stripe = new Stripe(stripeKey!, { apiVersion: "2026-01-28.clover" });
+    const stripe = new Stripe(stripeKey!, { apiVersion: "2025-01-27.clover" });
     const portalSession = await stripe.billingPortal.sessions.create({
         customer: customerId,
         return_url: `${process.env.NEXT_PUBLIC_APP_URL}/settings`,
@@ -184,7 +179,7 @@ export const stripeWebhook = onRequest(async (req, res) => {
     const sig = req.headers["stripe-signature"] as string;
     const stripeKey = process.env.STRIPE_SECRET_KEY || "";
     const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET || "";
-    const stripe = new Stripe(stripeKey, { apiVersion: "2026-01-28.clover" });
+    const stripe = new Stripe(stripeKey, { apiVersion: "2025-01-27.clover" });
     
     try {
         const event = stripe.webhooks.constructEvent(req.rawBody, sig, webhookSecret);

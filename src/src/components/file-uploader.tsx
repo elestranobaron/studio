@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useCallback, useEffect } from "react";
@@ -43,17 +42,13 @@ const toBase64 = (file: File): Promise<string> =>
         canvas.height = img.height * scaleSize;
 
         const ctx = canvas.getContext("2d");
-        if (!ctx) {
-            return reject(new Error("Could not get canvas context"));
-        }
+        if (!ctx) return reject(new Error("Canvas failure"));
         ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-        
-        const dataUrl = canvas.toDataURL(file.type, 0.8); 
-        resolve(dataUrl);
+        resolve(canvas.toDataURL(file.type, 0.8));
       };
-      img.onerror = (error) => reject(error);
+      img.onerror = reject;
     };
-    reader.onerror = (error) => reject(error);
+    reader.onerror = reject;
   });
 
 export function FileUploader() {
@@ -93,41 +88,20 @@ export function FileUploader() {
   });
 
   const handleAnalyze = async () => {
-    if (!file) return;
-    
-    if (!turnstileToken) {
-        toast({
-            variant: "destructive",
-            title: "Verification required",
-            description: "Please complete the anti-robot verification.",
-        });
-        return;
-    }
-
+    if (!file || !turnstileToken) return;
     setIsLoading(true);
     try {
       const photoDataUri = await toBase64(file);
-      
       const functions = getFunctions();
       const analyzeWodFn = httpsCallable(functions, 'analyzeWod');
-      
       const response = await analyzeWodFn({ photoDataUri, turnstileToken });
       setAnalysisResult(response.data);
     } catch (e: any) {
         console.error("Analysis Error:", e);
-        const errorInfo = e.details ? 
-            (typeof e.details === 'object' ? JSON.stringify(e.details, null, 2) : e.details) : 
-            e.message;
-
         toast({
             variant: "destructive",
             title: t('analysisFailedTitle'),
-            description: (
-                <div className="mt-2 w-full max-h-60 overflow-auto rounded-md bg-slate-950 p-4 text-xs">
-                    <code className="text-white whitespace-pre-wrap">{errorInfo}</code>
-                </div>
-            ),
-            duration: 30000,
+            description: e.message || "Erreur inconnue",
         });
     } finally {
       setIsLoading(false);
@@ -136,33 +110,22 @@ export function FileUploader() {
     }
   };
 
-  const performSave = async (userId: string, force: boolean = false) => {
+  const performSave = useCallback(async (userId: string, force: boolean = false) => {
     if (!analysisResult || !firestore || !file) return;
-
     setIsSaving(true);
-    
     try {
         const wodsCollection = collection(firestore, 'users', userId, 'wods');
-
-        // Duplicate check logic
         if (!force) {
-            const q = query(
-                wodsCollection,
-                where("name", "==", analysisResult.name),
-                where("type", "==", analysisResult.type)
-            );
+            const q = query(wodsCollection, where("name", "==", analysisResult.name), where("type", "==", analysisResult.type));
             const querySnapshot = await getDocs(q);
             if (!querySnapshot.empty) {
-                const existingWod = querySnapshot.docs[0].data() as WOD;
-                setDuplicateWod(existingWod);
+                setDuplicateWod(querySnapshot.docs[0].data() as WOD);
                 setIsSaving(false); 
                 return; 
             }
         }
-        
         const photoDataUri = await toBase64(file);
         const newWodRef = doc(wodsCollection);
-
         const wodData: Partial<WOD> = {
             id: newWodRef.id,
             userId: userId,
@@ -177,99 +140,32 @@ export function FileUploader() {
             upperBody: analysisResult.upperBody,
             lowerBody: analysisResult.lowerBody
         };
-
-        if (analysisResult.duration) {
-            wodData.duration = analysisResult.duration;
-        }
-
+        if (analysisResult.duration) wodData.duration = analysisResult.duration;
         await setDoc(newWodRef, wodData);
-
         if (shareToCommunity && user && !user.isAnonymous) {
-            const userDisplayName = user.email?.split('@')[0] || 'Anonymous';
-            const communityWodsCollection = collection(firestore, 'communityWods');
-            const communityWodData = {
-                ...wodData,
-                userId: user.uid, // Keep owner ID for security rules
-                userDisplayName
-            };
-
-            const newCommunityDocRef = await addDoc(communityWodsCollection, communityWodData);
-            // Link the personal WOD to the community one
+            const newCommunityDocRef = await addDoc(collection(firestore, 'communityWods'), { ...wodData, userDisplayName: user.email?.split('@')[0] || 'Anonymous' });
             await updateDoc(newWodRef, { communityWodId: newCommunityDocRef.id });
         }
-
-        toast({
-            title: t('wodSavedTitle'),
-            description: t('wodSavedDescription'),
-        });
+        toast({ title: t('wodSavedTitle'), description: t('wodSavedDescription') });
         router.push("/dashboard");
-
-    } catch (serverError) {
-        let errorToEmit = serverError;
-        if (serverError instanceof Error && serverError.message.includes('permission-denied')) {
-             errorToEmit = new FirestorePermissionError({
-                path: 'users/' + userId + '/wods',
-                operation: 'create',
-                requestResourceData: analysisResult,
-            });
-             errorEmitter.emit('permission-error', errorToEmit as FirestorePermissionError);
-        }
-        
-        console.error("An unexpected error occurred during the save process:", errorToEmit);
-        toast({
-            variant: "destructive",
-            title: t('saveFailedTitle'),
-            description: t('saveFailedDescription'),
-        });
-
+    } catch (e: any) {
+        toast({ variant: "destructive", title: t('saveFailedTitle'), description: e.message });
     } finally {
         setIsSaving(false);
-        if (force) setDuplicateWod(null);
+        setDuplicateWod(null);
     }
-  };
+  }, [analysisResult, firestore, file, shareToCommunity, user, toast, router, t]);
 
   const handleSave = async () => {
     if (!analysisResult) return;
-    if (user) {
-      await performSave(user.uid);
-    } else if (auth) {
-      initiateAnonymousSignIn(auth);
-      setSaveIntent(true);
-    } else {
-      toast({
-        variant: "destructive",
-        title: t('authErrorTitle'),
-        description: t('authErrorDescription'),
-      });
-    }
-  };
-
-  const handleForceSave = async () => {
-    if (user) {
-        await performSave(user.uid, true);
-    } else if (auth) {
-        initiateAnonymousSignIn(auth);
-        setSaveIntent(true);
-    }
+    if (user) await performSave(user.uid);
+    else if (auth) { initiateAnonymousSignIn(auth); setSaveIntent(true); }
   };
 
   useEffect(() => {
-    // This effect triggers the save ONLY if an intent was registered
-    // and a user (anonymous or otherwise) has become available.
-    if (saveIntent && user) {
-      performSave(user.uid);
-      setSaveIntent(false); // Reset intent after save attempt
-    }
+    if (saveIntent && user) { performSave(user.uid); setSaveIntent(false); }
   }, [user, saveIntent, performSave]);
 
-
-  const handleRemove = () => {
-    setFile(null);
-    setPreview(null);
-    setAnalysisResult(null);
-    setTurnstileToken(null);
-  };
-  
   const onTurnstileSuccess = useCallback((token: string) => {
     setTurnstileToken(token);
   }, []);
@@ -279,41 +175,17 @@ export function FileUploader() {
   }, []);
 
   const isActionDisabled = isLoading || isSaving || isUserLoading;
-
-  const flatDescription = analysisResult?.description?.map((s: any) => s.content).join('\\n\\n') || '';
-
-  const handleDescriptionChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    if (analysisResult) {
-      const newDescription = [...analysisResult.description];
-      if (newDescription.length > 0) {
-        newDescription[0].title = 'Workout';
-        newDescription[0].content = e.target.value;
-        newDescription.splice(1);
-      } else {
-        newDescription.push({ title: 'Workout', content: e.target.value });
-      }
-      setAnalysisResult({ ...analysisResult, description: newDescription });
-    }
-  };
-
+  const flatDescription = analysisResult?.description?.map((s: any) => s.content).join('\n\n') || '';
 
   if (isLoading) {
     return (
       <div className="w-full flex-1 flex flex-col items-center justify-center gap-4 text-center">
-        <video
-          src="/loading-animation.mp4"
-          autoPlay
-          loop
-          muted
-          playsInline
-          className="w-48 h-48 rounded-lg"
-        />
+        <video src="/loading-animation.mp4" autoPlay loop muted playsInline className="w-48 h-48 rounded-lg" />
         <h2 className="text-2xl font-headline font-bold text-foreground">{t('analyzingTitle')}</h2>
         <p className="text-muted-foreground">{t('analyzingDescription')}</p>
       </div>
     );
   }
-
 
   return (
     <div className="w-full max-w-2xl mx-auto">
@@ -321,100 +193,40 @@ export function FileUploader() {
         <AlertDialogContent>
             <AlertDialogHeader>
                 <AlertDialogTitle>{t('duplicateDialogTitle')}</AlertDialogTitle>
-                <AlertDialogDescription>
-                    {t('duplicateDialogDescription')}
-                    <br/><br/>
-                    <div className="p-4 border rounded-md bg-muted/50">
-                        <div className="font-bold">{duplicateWod?.name}</div>
-                        <div className="text-sm text-muted-foreground">{duplicateWod?.date ? t('duplicateDialogSavedOn', { date: format(new Date(duplicateWod.date), 'PPP') }) : ''}</div>
-                    </div>
-                    <br/>
-                    {t('duplicateDialogQuestion')}
-                </AlertDialogDescription>
+                <AlertDialogDescription>{t('duplicateDialogDescription')}</AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
-                <AlertDialogCancel onClick={() => setDuplicateWod(null)}>{t('duplicateDialogCancel')}</AlertDialogCancel>
-                <AlertDialogAction onClick={handleForceSave}>{t('duplicateDialogConfirm')}</AlertDialogAction>
+                <AlertDialogCancel onClick={() => setDuplicateWod(null)}>Cancel</AlertDialogCancel>
+                <AlertDialogAction onClick={() => performSave(user!.uid, true)}>Save Anyway</AlertDialogAction>
             </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
 
       {!preview ? (
-        <div className="space-y-4">
-            <div
-            {...getRootProps()}
-            className={cn("relative flex flex-col items-center justify-center w-full h-64 border-2 border-dashed rounded-lg cursor-pointer border-primary/50 bg-primary/10 transition-colors hover:bg-primary/20", {
-                "cursor-not-allowed opacity-50": isActionDisabled,
-            })}
-            >
+        <div {...getRootProps()} className={cn("relative flex flex-col items-center justify-center w-full h-64 border-2 border-dashed rounded-lg cursor-pointer border-primary/50 bg-primary/10 transition-colors hover:bg-primary/20", { "cursor-not-allowed opacity-50": isActionDisabled })}>
             <input {...getInputProps()} disabled={isActionDisabled}/>
             <div className="text-center">
                 <UploadCloud className="w-16 h-16 mx-auto text-primary" />
-                <p className="mt-4 text-lg font-semibold text-foreground">
-                {isDragActive
-                    ? t('dragActivePrompt')
-                    : t('dragAndDropPrompt')}
-                </p>
-                <p className="mt-1 text-sm text-muted-foreground">
-                {t('fileTypes')}
-                </p>
-            </div>
+                <p className="mt-4 text-lg font-semibold text-foreground">{isDragActive ? t('dragActivePrompt') : t('dragAndDropPrompt')}</p>
             </div>
         </div>
       ) : (
         <div className="space-y-6">
           <div className="relative w-full p-4 border border-dashed rounded-lg">
-            <Image
-              src={preview}
-              alt={t('wodPreviewAlt')}
-              width={600}
-              height={400}
-              className="object-contain w-full h-auto max-h-96 rounded-md"
-            />
-            <Button
-              variant="destructive"
-              size="icon"
-              className="absolute top-2 right-2 rounded-full h-8 w-8"
-              onClick={handleRemove}
-              disabled={isActionDisabled}
-            >
-              <X className="h-4 w-4" />
-            </Button>
+            <Image src={preview} alt="preview" width={600} height={400} className="object-contain w-full h-auto max-h-96 rounded-md" />
+            <Button variant="destructive" size="icon" className="absolute top-2 right-2 rounded-full h-8 w-8" onClick={() => setPreview(null)} disabled={isActionDisabled}><X className="h-4 w-4" /></Button>
           </div>
-
           {!analysisResult ? (
              <div className="flex flex-col items-center gap-4">
-                <Button
-                onClick={handleAnalyze}
-                disabled={isActionDisabled || !turnstileToken}
-                className="w-full"
-                >
-                {t('analyzeButton')}
-                </Button>
-                 <Turnstile key={turnstileKey} onSuccess={onTurnstileSuccess} onExpire={onTurnstileExpire} />
+                <Button onClick={handleAnalyze} disabled={isActionDisabled || !turnstileToken} className="w-full">{t('analyzeButton')}</Button>
+                <Turnstile key={turnstileKey} onSuccess={onTurnstileSuccess} onExpire={onTurnstileExpire} />
             </div>
           ) : (
             <div className="space-y-4">
-              <h3 className="text-lg font-semibold font-headline">
-                {t('analysisResultTitle')}
-              </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                 <Input
-                  value={analysisResult.name}
-                  onChange={(e) =>
-                    analysisResult && setAnalysisResult({ ...analysisResult, name: e.target.value })
-                  }
-                  placeholder={t('wodNamePlaceholder')}
-                  disabled={isActionDisabled}
-                />
-                 <Select
-                  value={analysisResult.type}
-                  onValueChange={(value: WodType) => analysisResult && setAnalysisResult({...analysisResult, type: value})}
-                  disabled={isActionDisabled}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder={t('wodTypePlaceholder')} />
-                  </SelectTrigger>
+                 <Input value={analysisResult.name} onChange={(e) => setAnalysisResult({ ...analysisResult, name: e.target.value })} placeholder="Name" disabled={isActionDisabled} />
+                 <Select value={analysisResult.type} onValueChange={(v: WodType) => setAnalysisResult({...analysisResult, type: v})} disabled={isActionDisabled}>
+                  <SelectTrigger><SelectValue /></SelectValue></SelectTrigger>
                   <SelectContent>
                     <SelectItem value="For Time">For Time</SelectItem>
                     <SelectItem value="AMRAP">AMRAP</SelectItem>
@@ -424,49 +236,8 @@ export function FileUploader() {
                   </SelectContent>
                 </Select>
               </div>
-               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                 <Input
-                    type="number"
-                    value={analysisResult.duration || ''}
-                    onChange={(e) =>
-                        analysisResult && setAnalysisResult({ ...analysisResult, duration: e.target.value ? parseInt(e.target.value) : undefined })
-                    }
-                    placeholder={t('durationPlaceholder')}
-                    disabled={isActionDisabled}
-                    />
-               </div>
-
-              <Textarea
-                value={flatDescription}
-                onChange={handleDescriptionChange}
-                rows={10}
-                className="whitespace-pre-wrap font-mono text-sm"
-                placeholder="WOD Description"
-                disabled={isActionDisabled}
-              />
-              <div className="flex items-center space-x-2">
-                <Checkbox 
-                  id="share" 
-                  checked={shareToCommunity} 
-                  onCheckedChange={(checked) => setShareToCommunity(checked as boolean)}
-                  disabled={isActionDisabled || !!user?.isAnonymous}
-                />
-                <Label htmlFor="share" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                    {t('shareCheckbox')}
-                </Label>
-              </div>
-               {user && user.isAnonymous && (
-                 <p className="text-xs text-muted-foreground">{t('shareAnonymousHelp')}</p>
-               )}
-
-              <Button onClick={handleSave} className="w-full" disabled={isActionDisabled}>
-                {isSaving ? (
-                     <>
-                        <LoaderCircle className="animate-spin mr-2" />
-                        {t('savingButton')}
-                    </>
-                ): t('saveWodButton')}
-              </Button>
+              <Textarea value={flatDescription} rows={10} className="whitespace-pre-wrap font-mono text-sm" placeholder="Description" disabled={isActionDisabled} />
+              <Button onClick={handleSave} className="w-full" disabled={isActionDisabled}>{isSaving ? "Saving..." : t('saveWodButton')}</Button>
             </div>
           )}
         </div>

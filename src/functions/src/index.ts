@@ -34,6 +34,7 @@ async function validateTurnstile(token: string, ip: string | undefined): Promise
             body: formData,
         });
         const outcome = await response.json() as any;
+        logger.info("[validateTurnstile] Full Cloudflare response:", outcome);
         return !!outcome.success;
     } catch (e) {
         logger.error('Turnstile error:', e);

@@ -69,6 +69,7 @@ async function validateTurnstile(token, ip) {
             body: formData,
         });
         const outcome = await response.json();
+        firebase_functions_1.logger.info("[validateTurnstile] Full Cloudflare response:", outcome);
         return !!outcome.success;
     }
     catch (e) {
