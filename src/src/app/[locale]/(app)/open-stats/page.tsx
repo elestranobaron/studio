@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
@@ -11,7 +12,7 @@ import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, 
   ScatterChart, Scatter, Cell 
 } from 'recharts';
-import { LoaderCircle, Info, Users, BarChart3, Weight, Trophy, AlertTriangle, Calendar as CalendarIcon, Zap } from 'lucide-react';
+import { LoaderCircle, Info, Users, BarChart3, Weight, Trophy, AlertTriangle, Calendar as CalendarIcon, Zap, Filter } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useTranslations } from 'next-intl';
 
@@ -45,10 +46,13 @@ export default function OpenStatsPage() {
     const bins: Record<string, number> = {};
     
     // Adjust binning based on overall or workout
-    const step = parseInt(workout) === 0 ? 50 : 10;
+    // Overall score is often very high (cumulative rank points), while workout is reps
+    const workoutInt = parseInt(workout);
+    const step = workoutInt === 0 ? 50 : 10;
     
     stats.data.forEach(entry => {
-      const bin = Math.floor(entry.reps / step) * step;
+      const val = entry.reps;
+      const bin = Math.floor(val / step) * step;
       const label = `${bin}`;
       bins[label] = (bins[label] || 0) + 1;
     });
@@ -76,22 +80,23 @@ export default function OpenStatsPage() {
 
   return (
     <div className="flex flex-col h-full bg-background">
+      {/* Header compact avec Year/Workout */}
       <header className="flex flex-col border-b bg-card/50 backdrop-blur-md sticky top-0 z-30">
         <div className="flex items-center justify-between p-4 md:p-6 pb-2">
           <div className="flex items-center gap-4">
             <SidebarTrigger />
             <div className="flex flex-col">
-              <h1 className="text-2xl font-bold font-headline tracking-tight md:text-3xl text-primary">
-                {t('title')}
+              <h1 className="text-xl font-bold font-headline tracking-tight md:text-2xl text-primary">
+                Open Stats
               </h1>
-              <p className="text-xs text-muted-foreground hidden md:block">{t('description')}</p>
+              <p className="text-[10px] text-muted-foreground hidden md:block">Données Live API CrossFit</p>
             </div>
           </div>
           <div className="flex items-center gap-2">
              <Select value={year} onValueChange={setYear} disabled={isLoading}>
-              <SelectTrigger className="w-[100px] h-9 border-primary/20">
-                <CalendarIcon className="h-3 w-3 mr-2 text-primary" />
-                <SelectValue placeholder="Year" />
+              <SelectTrigger className="w-[100px] h-9 border-primary/20 bg-background/50">
+                <CalendarIcon className="h-3.5 w-3.5 mr-2 text-primary" />
+                <SelectValue placeholder="Année" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="2026">2026</SelectItem>
@@ -100,8 +105,8 @@ export default function OpenStatsPage() {
               </SelectContent>
             </Select>
             <Select value={workout} onValueChange={setWorkout} disabled={isLoading}>
-              <SelectTrigger className="w-[120px] h-9 border-primary/20">
-                <Zap className="h-3 w-3 mr-2 text-primary" />
+              <SelectTrigger className="w-[120px] h-9 border-primary/20 bg-background/50">
+                <Zap className="h-3.5 w-3.5 mr-2 text-primary" />
                 <SelectValue placeholder="Workout" />
               </SelectTrigger>
               <SelectContent>
@@ -114,9 +119,13 @@ export default function OpenStatsPage() {
           </div>
         </div>
         
-        <div className="flex items-center gap-2 p-4 pt-0 md:px-6 overflow-x-auto no-scrollbar">
+        {/* Barre de filtres Division/Region compacte */}
+        <div className="flex items-center gap-3 p-4 pt-0 md:px-6 overflow-x-auto no-scrollbar border-t border-border/50 py-2">
+          <div className="flex items-center gap-1.5 text-muted-foreground whitespace-nowrap text-xs font-medium mr-2">
+            <Filter className="h-3 w-3" /> Filtres :
+          </div>
           <Select value={division} onValueChange={setDivision} disabled={isLoading}>
-            <SelectTrigger className="w-[140px] h-8 text-xs shrink-0">
+            <SelectTrigger className="w-[130px] h-7 text-[11px] shrink-0 rounded-full border-muted-foreground/20">
               <SelectValue placeholder="Division" />
             </SelectTrigger>
             <SelectContent>
@@ -127,14 +136,15 @@ export default function OpenStatsPage() {
             </SelectContent>
           </Select>
           <Select value={region} onValueChange={setRegion} disabled={isLoading}>
-            <SelectTrigger className="w-[140px] h-8 text-xs shrink-0">
-              <SelectValue placeholder="Region" />
+            <SelectTrigger className="w-[130px] h-7 text-[11px] shrink-0 rounded-full border-muted-foreground/20">
+              <SelectValue placeholder="Région" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="0">Worldwide</SelectItem>
               <SelectItem value="29">Europe</SelectItem>
               <SelectItem value="35">NA East</SelectItem>
               <SelectItem value="34">NA West</SelectItem>
+              <SelectItem value="32">Oceania</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -151,10 +161,11 @@ export default function OpenStatsPage() {
           </div>
         )}
 
+        {/* Stats Summary */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <Card className="bg-primary/5 border-primary/20">
             <CardHeader className="pb-2">
-              <CardDescription className="flex items-center gap-2 text-xs uppercase tracking-wider font-bold">
+              <CardDescription className="flex items-center gap-2 text-[10px] uppercase tracking-wider font-bold">
                 <Users className="h-3 w-3" /> Athlètes ({year})
               </CardDescription>
               <CardTitle className="text-3xl font-bold">{isLoading ? "..." : (stats?.totalCount || 0)}</CardTitle>
@@ -162,31 +173,32 @@ export default function OpenStatsPage() {
           </Card>
           <Card>
             <CardHeader className="pb-2">
-              <CardDescription className="text-xs uppercase tracking-wider font-bold">Médiane {workoutLabel}</CardDescription>
-              <CardTitle className="text-3xl font-bold text-blue-400">{isLoading ? "..." : (stats?.median || 0)} <span className="text-sm font-normal text-muted-foreground">{workout === "0" ? "pts" : "reps"}</span></CardTitle>
+              <CardDescription className="text-[10px] uppercase tracking-wider font-bold">Médiane {workoutLabel}</CardDescription>
+              <CardTitle className="text-3xl font-bold text-blue-400">{isLoading ? "..." : (stats?.median || 0)} <span className="text-xs font-normal text-muted-foreground">{workout === "0" ? "pts" : "reps"}</span></CardTitle>
             </CardHeader>
           </Card>
           <Card>
             <CardHeader className="pb-2">
-              <CardDescription className="flex items-center gap-2 text-xs uppercase tracking-wider font-bold">
+              <CardDescription className="flex items-center gap-2 text-[10px] uppercase tracking-wider font-bold">
                 <Trophy className="h-3 w-3 text-yellow-500" /> Top 10%
               </CardDescription>
-              <CardTitle className="text-3xl font-bold text-yellow-500">{isLoading ? "..." : (stats?.p90 || 0)} <span className="text-sm font-normal text-muted-foreground">{workout === "0" ? "pts" : "reps"}</span></CardTitle>
+              <CardTitle className="text-3xl font-bold text-yellow-500">{isLoading ? "..." : (stats?.p90 || 0)} <span className="text-xs font-normal text-muted-foreground">{workout === "0" ? "pts" : "reps"}</span></CardTitle>
             </CardHeader>
           </Card>
           <Card className="bg-yellow-500/10 border-yellow-500/30">
             <CardHeader className="pb-2">
-              <CardDescription className="font-bold text-yellow-600 text-xs uppercase tracking-wider">Élite (1%)</CardDescription>
-              <CardTitle className="text-3xl font-bold text-yellow-600">{isLoading ? "..." : (stats?.p99 || 0)} <span className="text-sm font-normal text-muted-foreground">{workout === "0" ? "pts" : "reps"}</span></CardTitle>
+              <CardDescription className="font-bold text-yellow-600 text-[10px] uppercase tracking-wider">Élite (1%)</CardDescription>
+              <CardTitle className="text-3xl font-bold text-yellow-600">{isLoading ? "..." : (stats?.p99 || 0)} <span className="text-xs font-normal text-muted-foreground">{workout === "0" ? "pts" : "reps"}</span></CardTitle>
             </CardHeader>
           </Card>
         </div>
 
+        {/* Charts Section */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           <Card className="shadow-lg overflow-hidden border-border/50">
-            <CardHeader className="bg-muted/30 border-b">
-              <CardTitle className="flex items-center gap-2 text-lg"><BarChart3 className="h-5 w-5 text-primary" /> Distribution des scores ({workoutLabel})</CardTitle>
-              <CardDescription>Répartition de l'échantillon analysé</CardDescription>
+            <CardHeader className="bg-muted/30 border-b p-4">
+              <CardTitle className="flex items-center gap-2 text-base font-headline"><BarChart3 className="h-4 w-4 text-primary" /> Distribution des scores</CardTitle>
+              <CardDescription className="text-xs">Fréquence des performances ({workoutLabel})</CardDescription>
             </CardHeader>
             <CardContent className="pt-6">
               <div className="h-[350px] w-full min-h-[350px]">
@@ -201,7 +213,7 @@ export default function OpenStatsPage() {
                       <XAxis dataKey="name" stroke="hsl(var(--muted-foreground))" fontSize={10} tickLine={false} axisLine={false} />
                       <YAxis stroke="hsl(var(--muted-foreground))" fontSize={10} tickLine={false} axisLine={false} />
                       <Tooltip 
-                        contentStyle={{ backgroundColor: 'hsl(var(--card))', borderRadius: '8px', border: '1px solid hsl(var(--border))' }}
+                        contentStyle={{ backgroundColor: 'hsl(var(--card))', borderRadius: '8px', border: '1px solid hsl(var(--border))', fontSize: '12px' }}
                         cursor={{ fill: 'hsl(var(--primary) / 0.1)' }}
                       />
                       <Bar dataKey="count" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
@@ -213,9 +225,9 @@ export default function OpenStatsPage() {
           </Card>
 
           <Card className="shadow-lg overflow-hidden border-border/50">
-            <CardHeader className="bg-muted/30 border-b">
-              <CardTitle className="flex items-center gap-2 text-lg"><Weight className="h-5 w-5 text-primary" /> Corrélation IMC / Rang</CardTitle>
-              <CardDescription>Impact de la composition corporelle sur le classement</CardDescription>
+            <CardHeader className="bg-muted/30 border-b p-4">
+              <CardTitle className="flex items-center gap-2 text-base font-headline"><Weight className="h-4 w-4 text-primary" /> Corrélation IMC / Rang</CardTitle>
+              <CardDescription className="text-xs">Impact de la composition corporelle</CardDescription>
             </CardHeader>
             <CardContent className="pt-6">
               <div className="h-[350px] w-full min-h-[350px]">
@@ -231,7 +243,7 @@ export default function OpenStatsPage() {
                       <YAxis type="number" dataKey="y" name="Rank" reversed label={{ value: 'Rang', angle: -90, position: 'insideLeft', fontSize: 10 }} stroke="hsl(var(--muted-foreground))" fontSize={10} />
                       <Tooltip 
                         cursor={{ strokeDasharray: '3 3' }}
-                        contentStyle={{ backgroundColor: 'hsl(var(--card))', borderRadius: '8px', border: '1px solid hsl(var(--border))' }}
+                        contentStyle={{ backgroundColor: 'hsl(var(--card))', borderRadius: '8px', border: '1px solid hsl(var(--border))', fontSize: '12px' }}
                       />
                       <Scatter name="Athletes" data={scatterData}>
                         {scatterData.map((entry, index) => (
@@ -247,10 +259,10 @@ export default function OpenStatsPage() {
         </div>
 
         <div className="bg-muted/30 p-4 rounded-lg flex items-start gap-3 border border-border/50">
-          <Info className="h-5 w-5 text-primary mt-0.5" />
-          <div className="text-sm text-muted-foreground">
-            <p className="font-semibold text-foreground">Méthodologie</p>
-            <p>Les données sont récupérées en temps réel via l'API CrossFit. Les statistiques sont basées sur un échantillon représentatif des premiers athlètes classés (Top Pages).</p>
+          <Info className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
+          <div className="text-xs text-muted-foreground">
+            <p className="font-semibold text-foreground mb-1">Méthodologie</p>
+            <p>Les données sont récupérées en temps réel via l'API CrossFit. Les statistiques sont calculées sur un échantillon représentatif (Top Pages) pour garantir la performance. Les unités sont converties automatiquement.</p>
           </div>
         </div>
       </main>

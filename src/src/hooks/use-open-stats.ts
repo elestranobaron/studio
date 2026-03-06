@@ -1,3 +1,4 @@
+
 import { useState, useCallback } from 'react';
 
 export interface LeaderboardEntry {
@@ -67,19 +68,24 @@ export function useOpenStats() {
             bmi = w / (heightM * heightM);
           }
 
-          // Use the score corresponding to the selected workout or overall
-          // If sort is 0 (overall), we might use the overall rank as a weight, 
-          // but for stats, we'll try to find the score of the first available workout
+          // Extraction du score selon le workout sélectionné (sort)
+          // Si sort=0 (Overall), on prend l'overallScore ou le premier score valide
+          // Si sort > 0, on cherche le score dont l'ordinal correspond
           const scoreObj = sort === 0 ? (row.scores?.[0]) : row.scores?.find((s: any) => s.ordinal === sort);
           const scoreStr = scoreObj?.scoreDisplay || '0';
           
-          // Basic rep extraction. For "For Time" workouts like "12:30", 
-          // this might need refinement to seconds for better stats.
+          // Calcul de la valeur numérique pour les stats
           let scoreValue = 0;
           if (scoreStr.includes(':')) {
-            const [min, sec] = scoreStr.split(':').map(Number);
-            scoreValue = (min * 60) + (sec || 0);
+            // Format temps (12:30) -> convertir en secondes
+            const parts = scoreStr.split(':').map(Number);
+            if (parts.length === 2) {
+              scoreValue = (parts[0] * 60) + parts[1];
+            } else {
+              scoreValue = parts[0] || 0;
+            }
           } else {
+            // Format reps (337 reps) -> extraire l'entier
             scoreValue = parseInt(scoreStr) || 0;
           }
 
@@ -101,7 +107,7 @@ export function useOpenStats() {
       }
 
       if (allEntries.length === 0) {
-        throw new Error("No data found");
+        throw new Error("Aucune donnée trouvée.");
       }
 
       const sortedScores = [...allEntries].map(e => e.reps).sort((a, b) => a - b);
