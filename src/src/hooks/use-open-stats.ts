@@ -1,100 +1,114 @@
 
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
-export interface AthleteData {
-  id: string;
-  name: string;
-  age: number;
-  heightCm: number | null;
-  weightKg: number | null;
-  bmi: number | null;
-  rank: number;
-  score1: number | null;
-  score2: number | null;
-  region: string;
+export interface Entrant {
+  competitorId: string;
+  competitorName: string;
+  age: string;
+  height: string;
+  weight: string;
+  gender: string;
+  regionName: string;
 }
 
-interface LeaderboardParams {
-  division: string;
-  region: string;
-  scaled: string;
+export interface Score {
+  ordinal: number;
+  scoreDisplay: string;
+  time?: number;
+  rank: string;
 }
 
-export function useOpenStatsData() {
-  const [data, setData] = useState<AthleteData[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [progress, setProgress] = useState(0);
+export interface LeaderboardRow {
+  overallRank: string;
+  entrant: Entrant;
+  scores: Score[];
+  bmi?: number;
+}
 
-  const parseMetric = (val: string, unitType: 'height' | 'weight'): number | null => {
-    if (!val) return null;
-    const num = parseFloat(val.replace(/[^0-9.]/g, ''));
-    if (isNaN(num)) return null;
+interface OpenStatsData {
+  rows: LeaderboardRow[];
+  totalCompetitors: number;
+  loading: boolean;
+  error: string | null;
+}
 
-    if (unitType === 'height') {
-      if (val.toLowerCase().includes('in')) return num * 2.54;
-      return num; // assume cm
-    } else {
-      if (val.toLowerCase().includes('lb')) return num * 0.453592;
-      return num; // assume kg
-    }
-  };
+const parseBmi = (heightStr: string, weightStr: string): number | undefined => {
+  if (!heightStr || !weightStr) return undefined;
 
-  const calculateBMI = (heightCm: number | null, weightKg: number | null): number | null => {
-    if (!heightCm || !weightKg || heightCm === 0) return null;
+  let heightCm = 0;
+  if (heightStr.includes('cm')) {
+    heightCm = parseFloat(heightStr);
+  } else if (heightStr.includes('in')) {
+    heightCm = parseFloat(heightStr) * 2.54;
+  }
+
+  let weightKg = 0;
+  if (weightStr.includes('kg')) {
+    weightKg = parseFloat(weightStr);
+  } else if (weightStr.includes('lb')) {
+    weightKg = parseFloat(weightStr) * 0.453592;
+  }
+
+  if (heightCm > 0 && weightKg > 0) {
     const heightM = heightCm / 100;
-    return weightKg / (heightM * heightM);
-  };
+    return parseFloat((weightKg / (heightM * heightM)).toFixed(1));
+  }
+  return undefined;
+};
 
-  const fetchStats = useCallback(async (params: LeaderboardParams, maxPages: number = 5) => {
-    setIsLoading(true);
-    setError(null);
-    setProgress(0);
-    const allAthletes: AthleteData[] = [];
+export function useOpenStats(division: string = '1', region: string = '0', scaled: string = '0') {
+  const [data, setData] = useState<OpenStatsData>({
+    rows: [],
+    totalCompetitors: 0,
+    loading: true,
+    error: null,
+  });
 
+  const fetchData = useCallback(async () => {
+    setData(prev => ({ ...prev, loading: true, error: null }));
     try {
-      for (let page = 1; page <= maxPages; page++) {
-        const url = `https://c3po.crossfit.com/api/competitions/v2/competitions/open/2026/leaderboards?division=${params.division}&region=${params.region}&scaled=${params.scaled}&page=${page}`;
-        
+      // Pour des raisons de performance et de rate limit, on récupère les 10 premières pages (500 athlètes)
+      // On pourrait augmenter cette limite, mais 500 est un échantillon statistique solide pour un dashboard.
+      const rows: LeaderboardRow[] = [];
+      let totalCompetitors = 0;
+      const pagesToFetch = 5; 
+
+      for (let page = 1; page <= pagesToFetch; page++) {
+        const url = `https://c3po.crossfit.com/api/competitions/v2/competitions/open/2026/leaderboards?division=${division}&region=${region}&scaled=${scaled}&page=${page}&sort=0`;
         const response = await fetch(url);
-        if (!response.ok) throw new Error(`API Error: ${response.status}`);
-        
+        if (!response.ok) throw new Error('API Error');
         const json = await response.json();
-        const rows = json.leaderboardRows || [];
         
-        const parsedRows = rows.map((row: any) => {
-          const h = parseMetric(row.entrant.height, 'height');
-          const w = parseMetric(row.entrant.weight, 'weight');
-          return {
-            id: row.entrant.competitorId,
-            name: row.entrant.competitorName,
-            age: parseInt(row.entrant.age),
-            heightCm: h,
-            weightKg: w,
-            bmi: calculateBMI(h, w),
-            rank: parseInt(row.overallRank),
-            score1: row.scores[0]?.score ? parseInt(row.scores[0].score) : null,
-            score2: row.scores[1]?.score ? parseInt(row.scores[1].score) : null,
-            region: row.entrant.regionName,
-          };
-        });
-
-        allAthletes.push(...parsedRows);
-        setProgress((page / maxPages) * 100);
-
+        totalCompetitors = json.pagination.totalCompetitors;
+        
+        const processedRows = json.leaderboardRows.map((row: any) => ({
+          ...row,
+          bmi: parseBmi(row.entrant.height, row.entrant.weight)
+        }));
+        
+        rows.push(...processedRows);
+        
         if (page >= json.pagination.totalPages) break;
         // Respect rate limit
-        await new Promise(r => setTimeout(r, 500));
+        await new Promise(r => setTimeout(r, 200));
       }
-      setData(allAthletes);
-    } catch (err: any) {
-      setError(err.message);
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
 
-  return { data, isLoading, error, progress, fetchStats };
+      setData({
+        rows,
+        totalCompetitors,
+        loading: false,
+        error: null,
+      });
+    } catch (err: any) {
+      setData(prev => ({ ...prev, loading: false, error: err.message }));
+    }
+  }, [division, region, scaled]);
+
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
+
+  return data;
 }
