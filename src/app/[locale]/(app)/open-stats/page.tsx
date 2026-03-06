@@ -208,7 +208,6 @@ export default function OpenStatsPage() {
                 {isLoading ? "..." : formatScore(stats?.p99 || 0)}
               </CardTitle>
             </CardHeader>
-          </Card>
           
           <Card className="md:col-span-4 lg:col-span-1 border-accent/30 shadow-lg relative overflow-hidden">
             {!user?.premium && (
