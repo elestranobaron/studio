@@ -10,9 +10,9 @@ import { SidebarTrigger, useSidebar } from '@/components/ui/sidebar';
 import { useOpenStats, LeaderboardEntry } from '@/hooks/use-open-stats';
 import { 
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, 
-  ScatterChart, Scatter, ZAxis, Cell, LineChart, Line 
+  ScatterChart, Scatter, Cell 
 } from 'recharts';
-import { LoaderCircle, Filter, Info, ArrowLeft, Trophy, Users, BarChart3, Weight } from 'lucide-react';
+import { LoaderCircle, Info, Users, BarChart3, Weight, Trophy } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useTranslations } from 'next-intl';
 
@@ -21,7 +21,7 @@ export default function OpenStatsPage() {
   const { user, isUserLoading } = useUser();
   const router = useRouter();
   const { toggleSidebar } = useSidebar();
-  const { fetchLeaderboard, stats, isLoading, error } = useOpenStats();
+  const { fetchLeaderboard, stats, isLoading } = useOpenStats();
 
   const [division, setDivision] = useState("1");
   const [region, setRegion] = useState("0");
@@ -104,40 +104,38 @@ export default function OpenStatsPage() {
       </header>
 
       <main className="flex-1 overflow-y-auto p-4 md:p-8 space-y-8">
-        {/* Stats Grid */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <Card className="bg-primary/5 border-primary/20">
             <CardHeader className="pb-2">
-              <CardDescription className="flex items-center gap-2"><Users className="h-4 w-4" /> Analyzed</CardDescription>
+              <CardDescription className="flex items-center gap-2"><Users className="h-4 w-4" /> {t('analyzed')}</CardDescription>
               <CardTitle className="text-3xl font-bold">{stats?.totalCount || 0}</CardTitle>
             </CardHeader>
           </Card>
           <Card>
             <CardHeader className="pb-2">
-              <CardDescription>Median Score</CardDescription>
-              <CardTitle className="text-3xl font-bold text-blue-400">{stats?.median || 0} reps</CardTitle>
+              <CardDescription>{t('medianScore')}</CardDescription>
+              <CardTitle className="text-3xl font-bold text-blue-400">{stats?.median || 0} {t('reps')}</CardTitle>
             </CardHeader>
           </Card>
           <Card>
             <CardHeader className="pb-2">
-              <CardDescription className="flex items-center gap-2"><Trophy className="h-4 w-4 text-yellow-500" /> Top 10% (P90)</CardDescription>
-              <CardTitle className="text-3xl font-bold text-yellow-500">{stats?.p90 || 0} reps</CardTitle>
+              <CardDescription className="flex items-center gap-2"><Trophy className="h-4 w-4 text-yellow-500" /> {t('top10')}</CardDescription>
+              <CardTitle className="text-3xl font-bold text-yellow-500">{stats?.p90 || 0} {t('reps')}</CardTitle>
             </CardHeader>
           </Card>
           <Card className="bg-yellow-500/10 border-yellow-500/30">
             <CardHeader className="pb-2">
-              <CardDescription className="font-bold text-yellow-600">Elite (P99)</CardDescription>
-              <CardTitle className="text-3xl font-bold text-yellow-600">{stats?.p99 || 0} reps</CardTitle>
+              <CardDescription className="font-bold text-yellow-600">{t('elite')}</CardDescription>
+              <CardTitle className="text-3xl font-bold text-yellow-600">{stats?.p99 || 0} {t('reps')}</CardTitle>
             </CardHeader>
           </Card>
         </div>
 
-        {/* Charts Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           <Card className="shadow-lg">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2"><BarChart3 className="h-5 w-5" /> Score Distribution</CardTitle>
-              <CardDescription>Frequency of reps across the leaderboard (Workout 26.1)</CardDescription>
+              <CardTitle className="flex items-center gap-2"><BarChart3 className="h-5 w-5" /> {t('scoreDistribution')}</CardTitle>
+              <CardDescription>{t('scoreDistributionDesc')}</CardDescription>
             </CardHeader>
             <CardContent className="h-[350px]">
               <ResponsiveContainer width="100%" height="100%">
@@ -157,8 +155,8 @@ export default function OpenStatsPage() {
 
           <Card className="shadow-lg">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2"><Weight className="h-5 w-5" /> BMI vs World Rank</CardTitle>
-              <CardDescription>Correlation between Body Mass Index and Ranking (Top 250 analyzed)</CardDescription>
+              <CardTitle className="flex items-center gap-2"><Weight className="h-5 w-5" /> {t('bmiCorrelation')}</CardTitle>
+              <CardDescription>{t('bmiCorrelationDesc')}</CardDescription>
             </CardHeader>
             <CardContent className="h-[350px]">
               <ResponsiveContainer width="100%" height="100%">
@@ -184,8 +182,8 @@ export default function OpenStatsPage() {
         <div className="bg-muted/30 p-4 rounded-lg flex items-start gap-3 border border-border/50">
           <Info className="h-5 w-5 text-muted-foreground mt-0.5" />
           <div className="text-sm text-muted-foreground">
-            <p className="font-semibold text-foreground">Analytics Methodology</p>
-            <p>Data is fetched directly from the official CrossFit API. BMI calculation relies on self-reported athlete height/weight which may contain inconsistencies. Percentiles are calculated based on the current fetched sample (Top 250 athletes per page).</p>
+            <p className="font-semibold text-foreground">{t('methodologyTitle')}</p>
+            <p>{t('methodologyDesc')}</p>
           </div>
         </div>
       </main>
