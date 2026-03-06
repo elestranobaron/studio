@@ -40,7 +40,7 @@ export default function OpenStatsPage() {
   }, [year, workout, division, region, fetchLeaderboard]);
 
   const histogramData = useMemo(() => {
-    if (!stats || stats.data.length === 0) return [];
+    if (!stats || !stats.data || stats.data.length === 0) return [];
     const bins: Record<string, number> = {};
     const scores = stats.data.map(e => e.reps);
     const min = Math.min(...scores);
@@ -57,7 +57,7 @@ export default function OpenStatsPage() {
   }, [stats]);
 
   const scatterData = useMemo(() => {
-    if (!stats) return [];
+    if (!stats || !stats.data) return [];
     return stats.data
       .filter(e => e.bmi && e.bmi < 40 && e.bmi > 15)
       .map(e => ({ x: e.bmi, y: e.rank, name: e.name }));
@@ -73,7 +73,7 @@ export default function OpenStatsPage() {
   }, [userScoreInput]);
 
   const userPercentile = useMemo(() => {
-    if (!stats || userNumericScore === null) return null;
+    if (!stats || !stats.data || userNumericScore === null) return null;
     const scores = stats.data.map(e => e.reps).sort((a, b) => a - b);
     const index = scores.findIndex(s => s >= userNumericScore);
     if (index === -1) return 100;
@@ -208,6 +208,7 @@ export default function OpenStatsPage() {
                 {isLoading ? "..." : formatScore(stats?.p99 || 0)}
               </CardTitle>
             </CardHeader>
+          </Card>
           
           <Card className="md:col-span-4 lg:col-span-1 border-accent/30 shadow-lg relative overflow-hidden">
             {!user?.premium && (
