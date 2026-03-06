@@ -252,12 +252,8 @@ export default function OpenStatsPage() {
               <CardDescription>{t('charts.distributionSub')}</CardDescription>
             </CardHeader>
             <CardContent className="pt-6 h-[350px]">
-              {isLoading ? (
-                <div className="h-full w-full flex items-center justify-center bg-muted/10 rounded-md">
-                  <LoaderCircle className="h-8 w-8 animate-spin text-muted-foreground" />
-                </div>
-              ) : (
-                <ResponsiveContainer width="100%" height="100%" minHeight={300}>
+              <div className="h-full w-full">
+                <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={histogramData} margin={{ top: 20, right: 10, left: -20, bottom: 0 }}>
                     <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" />
                     <XAxis dataKey="name" stroke="hsl(var(--muted-foreground))" fontSize={10} tickLine={false} axisLine={false} />
@@ -286,7 +282,7 @@ export default function OpenStatsPage() {
                     )}
                   </BarChart>
                 </ResponsiveContainer>
-              )}
+              </div>
             </CardContent>
           </Card>
 
@@ -296,12 +292,8 @@ export default function OpenStatsPage() {
               <CardDescription>{t('charts.bmiSub')}</CardDescription>
             </CardHeader>
             <CardContent className="pt-6 h-[350px]">
-              {isLoading ? (
-                <div className="h-full w-full flex items-center justify-center bg-muted/10 rounded-md">
-                  <LoaderCircle className="h-8 w-8 animate-spin text-muted-foreground" />
-                </div>
-              ) : (
-                <ResponsiveContainer width="100%" height="100%" minHeight={300}>
+              <div className="h-full w-full">
+                <ResponsiveContainer width="100%" height="100%">
                   <ScatterChart margin={{ top: 10, right: 10, bottom: 20, left: -20 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
                     <XAxis type="number" dataKey="x" name="BMI" domain={[18, 35]} label={{ value: 'IMC', position: 'insideBottom', offset: -10, fontSize: 10 }} stroke="hsl(var(--muted-foreground))" fontSize={10} />
@@ -317,7 +309,7 @@ export default function OpenStatsPage() {
                     </Scatter>
                   </ScatterChart>
                 </ResponsiveContainer>
-              )}
+              </div>
             </CardContent>
           </Card>
         </div>
