@@ -1,0 +1,99 @@
+
+{
+  "UserNav": {
+    "signIn": "Se connecter",
+    "signOut": "Se déconnecter",
+    "loading": "Chargement...",
+    "anonymousUser": "Utilisateur Anonyme",
+    "temporaryProfile": "Profil Temporaire",
+    "settingsTooltip": "Paramètres"
+  },
+  "MainNav": {
+    "dashboard": "Dashboard",
+    "scanWod": "Scanner WOD",
+    "generateWod": "Générer WOD",
+    "heroWods": "Hero WODs",
+    "timers": "Minuteurs",
+    "goPremium": "Devenir Premium",
+    "hallOfFame": "Hall of Fame",
+    "openStats": "Open Stats"
+  },
+  "OpenStatsPage": {
+    "title": "Open Stats 2026",
+    "description": "Données live CrossFit Open via API publique – refresh quotidien",
+    "loading": "Connexion aux serveurs CrossFit..."
+  },
+  "DashboardPage": {
+    "title": "Dashboard",
+    "scanNewWod": "Scanner un WOD",
+    "tabs": {
+      "personal": "Mes WODs",
+      "community": "Communauté"
+    },
+    "PersonalWodList": {
+      "emptyTitle": "Aucun WOD trouvé ici.",
+      "emptyDescription": "Scannez votre premier WOD pour commencer !"
+    },
+    "CommunityWodList": {
+      "joinTitle": "Rejoignez la Communauté !",
+      "joinDescription": "Créez un compte gratuit pour voir les WODs de la communauté.",
+      "joinButton": "S'inscrire / Se connecter",
+      "errorTitle": "Une erreur est survenue",
+      "errorDescription": "Impossible de charger les WODs. Veuillez réessayer.",
+      "searchInputPlaceholder": "Rechercher des WODs...",
+      "sortByLabel": "Trier par",
+      "sort": {
+        "recent": "Plus récents",
+        "popular": "Plus populaires",
+        "alphabetical": "Alphabétique (A-Z)"
+      },
+      "emptySearchTitle": "Aucun résultat.",
+      "emptySearchDescription": "Essayez un autre terme.",
+      "emptyCommunityTitle": "Soyez le premier à partager !"
+    },
+    "ScrollTop": {
+      "label": "Remonter"
+    }
+  },
+  "WelcomeEmptyState": {
+    "title": "Bienvenue sur WODBurner !",
+    "subtitle": "Enregistrez votre premier WOD en 3 secondes :",
+    "scanButton": "Scanner un WOD",
+    "generateButton": "Générer un WOD",
+    "heroButton": "Essayer un Hero WOD",
+    "communityLink": "Ou explorez la communauté pour voir ce que les autres brûlent aujourd'hui."
+  },
+  "WodCard": {
+    "optionsAlt": "Options",
+    "share": "Partager",
+    "unshare": "Retirer",
+    "edit": "Modifier",
+    "delete": "Supprimer",
+    "sharedToastTitle": "Partagé !",
+    "sharedToastDescription": "Visible par la communauté.",
+    "unsharedToastTitle": "Retiré",
+    "unsharedToastDescription": "Retiré de la communauté.",
+    "shareErrorToastTitle": "Échec",
+    "shareErrorToastDescription": "Erreur de mise à jour.",
+    "deleteDialogTitle": "Supprimer ?",
+    "deleteDialogDescription": "Action irréversible.",
+    "deleteDialogCancel": "Annuler",
+    "deleteDialogConfirm": "Supprimer",
+    "deleteToastTitle": "Supprimé",
+    "deleteToastDescription": "WOD supprimé.",
+    "deleteErrorToastTitle": "Échec",
+    "deleteErrorToastDescription": "Erreur de suppression.",
+    "reactionErrorToastTitle": "Oups",
+    "reactionErrorToastDescription": "Erreur de réaction.",
+    "viewImageAlt": "Image originale",
+    "viewWodDescription": "{type} - {date}",
+    "viewWodSharedBy": "Par {displayName}",
+    "startWod": "Démarrer",
+    "profile": {
+      "cardio": "Cardio",
+      "lifting": "Haltéro",
+      "upper": "Haut",
+      "lower": "Bas"
+    }
+  }
+}

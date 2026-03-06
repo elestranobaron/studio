@@ -1,43 +1,122 @@
+
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useUser } from '@/firebase/provider';
 import { useRouter } from 'next/navigation';
-import { 
-  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, 
-  ScatterChart, Scatter, ZAxis, Cell, LineChart, Line 
-} from 'recharts';
-import { 
-  Card, CardContent, CardDescription, CardHeader, CardTitle 
-} from '@/components/ui/card';
-import { 
-  Select, SelectContent, SelectItem, SelectTrigger, SelectValue 
-} from '@/components/ui/select';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { SidebarTrigger, useSidebar } from '@/components/ui/sidebar';
 import { 
-  LoaderCircle, ArrowLeft, BarChart3, Info, 
-  TrendingUp, Users, Scale, Activity 
+  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, 
+  ScatterChart, Scatter, ZAxis, Legend, LineChart, Line 
+} from 'recharts';
+import { 
+  BarChart3, Users, Scale, Calendar, Filter, 
+  Loader2, ArrowLeft, Info, Trophy, TrendingUp 
 } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
-import { useOpenStatsData, AthleteData } from '@/hooks/use-open-stats';
 import { useTranslations } from 'next-intl';
+import { Badge } from '@/components/ui/badge';
+import { Skeleton } from '@/components/ui/skeleton';
 
-const DIVISIONS = [
-  { id: "1", name: "Men Rx" },
-  { id: "2", name: "Women Rx" },
-  { id: "18", name: "Men 35-39" },
-  { id: "19", name: "Women 35-39" },
-];
+// --- Types ---
+interface Athlete {
+  rank: number;
+  name: string;
+  age: number;
+  height: number; // in cm
+  weight: number; // in kg
+  bmi: number;
+  scores: {
+    workout: number;
+    reps: number;
+    time?: number;
+    rank: number;
+  }[];
+  region: string;
+}
 
-const REGIONS = [
-  { id: "0", name: "Worldwide" },
-  { id: "29", name: "Europe" },
-  { id: "35", name: "NA East" },
-  { id: "34", name: "NA West" },
-  { id: "32", name: "Oceania" },
-];
+interface StatsResult {
+  median: number;
+  p90: number;
+  p99: number;
+  total: number;
+  distribution: { range: string; count: number }[];
+  correlations: { bmi: number; rank: number; age: number; score: number }[];
+}
+
+// --- Helper Functions ---
+const parseHeight = (h: string): number => {
+  if (!h) return 0;
+  if (h.includes('cm')) return parseFloat(h);
+  if (h.includes('in')) return Math.round(parseFloat(h) * 2.54);
+  return 0;
+};
+
+const parseWeight = (w: string): number => {
+  if (!w) return 0;
+  if (w.includes('kg')) return parseFloat(w);
+  if (w.includes('lb')) return Math.round(parseFloat(w) * 0.453592);
+  return 0;
+};
+
+// --- Hook ---
+function useOpenStatsData(division: string, region: string, scaled: string) {
+  const [data, setData] = useState<Athlete[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchLeaderboard = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        // Limitation à 2 pages (100 athlètes) pour la démo/perf, peut être augmenté
+        const athletes: Athlete[] = [];
+        for (let p = 1; p <= 2; p++) {
+          const res = await fetch(
+            `https://c3po.crossfit.com/api/competitions/v2/competitions/open/2026/leaderboards?division=${division}&region=${region}&scaled=${scaled}&page=${p}`
+          );
+          if (!res.ok) throw new Error('API Rate limit or error');
+          const json = await res.json();
+          
+          json.leaderboardRows.forEach((row: any) => {
+            const h = parseHeight(row.entrant.height);
+            const w = parseWeight(row.entrant.weight);
+            const bmi = h > 0 ? parseFloat((w / ((h / 100) ** 2)).toFixed(1)) : 0;
+
+            athletes.push({
+              rank: parseInt(row.overallRank),
+              name: row.entrant.competitorName,
+              age: parseInt(row.entrant.age),
+              height: h,
+              weight: w,
+              bmi: bmi,
+              region: row.entrant.regionName,
+              scores: row.scores.map((s: any) => ({
+                workout: s.ordinal,
+                reps: parseInt(s.scoreDisplay.replace(/[^0-9]/g, '')),
+                time: s.time || 0,
+                rank: parseInt(s.rank)
+              }))
+            });
+          });
+        }
+        setData(athletes);
+      } catch (err) {
+        setError("Impossible de récupérer les données live. Réessayez dans 1 minute.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchLeaderboard();
+  }, [division, region, scaled]);
+
+  return { data, loading, error };
+}
 
 export default function OpenStatsPage() {
   const t = useTranslations('OpenStatsPage');
@@ -45,203 +124,224 @@ export default function OpenStatsPage() {
   const router = useRouter();
   const { toggleSidebar } = useSidebar();
 
+  // Filtres
   const [division, setDivision] = useState("1");
   const [region, setRegion] = useState("0");
-  const [workout, setWorkout] = useState(1);
   const [scaled, setScaled] = useState("0");
+  const [activeWorkout, setActiveWorkout] = useState(1);
 
-  const { data, loading, error, progress } = useOpenStatsData({
-    division,
-    region,
-    scaled,
-    workout,
-    samplePages: 10 // Fetch top 500 for statistics
-  });
+  const { data, loading, error } = useOpenStatsData(division, region, scaled);
 
-  // Calculate stats
+  // Redirection si non premium
+  useEffect(() => {
+    if (!isUserLoading && (!user || !user.premium)) {
+      router.push('/premium');
+    }
+  }, [user, isUserLoading, router]);
+
   const stats = useMemo(() => {
     if (data.length === 0) return null;
 
-    const sortedReps = [...data].sort((a, b) => a.reps - b.reps);
-    const median = sortedReps[Math.floor(data.length * 0.5)].reps;
-    const p90 = sortedReps[Math.floor(data.length * 0.9)].reps;
-    const p99 = sortedReps[Math.floor(data.length * 0.99)].reps;
+    const scores = data.map(a => a.scores.find(s => s.workout === activeWorkout)?.reps || 0).sort((a, b) => a - b);
+    const median = scores[Math.floor(scores.length / 2)];
+    const p90 = scores[Math.floor(scores.length * 0.9)];
+    const p99 = scores[Math.floor(scores.length * 0.99)];
 
-    const avgBMI = data.reduce((acc, curr) => acc + (curr.bmi || 0), 0) / data.filter(a => a.bmi).length;
+    // Distribution
+    const ranges = [
+      { min: 0, max: 100, label: "0-100" },
+      { min: 101, max: 200, label: "101-200" },
+      { min: 201, max: 300, label: "201-300" },
+      { min: 301, max: 400, label: "301-400" },
+      { min: 401, max: 999, label: "401+" },
+    ];
 
-    // Reps distribution histogram
-    const min = sortedReps[0].reps;
-    const max = sortedReps[data.length - 1].reps;
-    const step = Math.max(1, Math.ceil((max - min) / 10));
-    const histogram: { range: string, count: number }[] = [];
+    const distribution = ranges.map(r => ({
+      range: r.label,
+      count: scores.filter(s => s >= r.min && s <= r.max).length
+    }));
 
-    for (let i = min; i <= max; i += step) {
-      const count = data.filter(a => a.reps >= i && a.reps < i + step).length;
-      histogram.push({ range: `${i}-${i+step-1}`, count });
-    }
+    const correlations = data.filter(a => a.bmi > 0).map(a => ({
+      bmi: a.bmi,
+      rank: a.rank,
+      age: a.age,
+      score: a.scores.find(s => s.workout === activeWorkout)?.reps || 0
+    }));
 
-    return { median, p90, p99, avgBMI, histogram };
-  }, [data]);
+    return { median, p90, p99, total: data.length, distribution, correlations };
+  }, [data, activeWorkout]);
 
-  if (isUserLoading) return <div className="flex h-screen items-center justify-center"><LoaderCircle className="animate-spin" /></div>;
-
-  if (!user?.premium) {
+  if (isUserLoading || (user && !user.premium)) {
     return (
-      <div className="flex flex-col items-center justify-center h-full p-6 text-center">
-        <div className="max-w-md space-y-6">
-          <div className="bg-primary/10 p-6 rounded-full w-24 h-24 mx-auto flex items-center justify-center">
-            <BarChart3 className="w-12 h-12 text-primary" />
-          </div>
-          <h1 className="text-3xl font-headline font-bold">Open Stats Premium</h1>
-          <p className="text-muted-foreground text-lg">
-            Compare yourself to the best. Unlock advanced analytics for the CrossFit Open 2026.
-          </p>
-          <Button size="lg" onClick={() => router.push('/premium')} className="w-full">
-            Upgrade to Premium
-          </Button>
-        </div>
+      <div className="flex h-screen items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col h-full bg-background/50">
-      <header className="flex items-center justify-between p-4 border-b md:p-6 bg-background">
+    <div className="flex flex-col h-full bg-background">
+      <header className="flex items-center justify-between p-4 border-b md:p-6 sticky top-0 bg-background/80 backdrop-blur-md z-30">
         <div className="flex items-center gap-4">
-          <SidebarTrigger />
-          <h1 className="text-2xl font-bold tracking-tight font-headline md:text-3xl">
-            Open Stats 2026
-          </h1>
+          <Button variant="ghost" size="icon" className="md:hidden" onClick={() => router.back()}>
+            <ArrowLeft className="h-5 w-5" />
+          </Button>
+          <div className="flex items-center gap-3">
+            <div className="bg-primary/10 p-2 rounded-lg">
+              <BarChart3 className="h-6 w-6 text-primary" />
+            </div>
+            <div>
+              <h1 className="text-2xl font-bold font-headline tracking-tight">{t('title')}</h1>
+              <p className="text-xs text-muted-foreground flex items-center gap-1">
+                <Info className="h-3 w-3" /> {t('description')}
+              </p>
+            </div>
+          </div>
         </div>
-        <Badge variant="outline" className="bg-blue-500/10 text-blue-500 border-blue-500/20">
-          Live Data
-        </Badge>
+        <div className="hidden md:flex">
+          <SidebarTrigger />
+        </div>
       </header>
 
       <main className="flex-1 overflow-y-auto p-4 md:p-6 space-y-6">
-        {/* Filters */}
-        <Card className="border-2 border-primary/10">
-          <CardContent className="p-4 md:p-6 flex flex-wrap gap-4 items-end">
-            <div className="space-y-2 flex-1 min-w-[150px]">
-              <label className="text-xs font-bold uppercase text-muted-foreground">Division</label>
+        {/* Filtres Bar */}
+        <Card className="border-primary/20 shadow-lg">
+          <CardContent className="p-4 flex flex-wrap gap-4 items-end">
+            <div className="space-y-1.5 flex-1 min-w-[150px]">
+              <label className="text-xs font-semibold uppercase text-muted-foreground flex items-center gap-1">
+                <Users className="h-3 w-3" /> Division
+              </label>
               <Select value={division} onValueChange={setDivision}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectTrigger className="bg-muted/50 border-none">
+                  <SelectValue />
+                </SelectTrigger>
                 <SelectContent>
-                  {DIVISIONS.map(d => <SelectItem key={d.id} value={d.id}>{d.name}</SelectItem>)}
+                  <SelectItem value="1">Men Rx</SelectItem>
+                  <SelectItem value="2">Women Rx</SelectItem>
+                  <SelectItem value="11">Teens (14-15)</SelectItem>
+                  <SelectItem value="18">Masters (35-39)</SelectItem>
                 </SelectContent>
               </Select>
             </div>
-            <div className="space-y-2 flex-1 min-w-[150px]">
-              <label className="text-xs font-bold uppercase text-muted-foreground">Region</label>
+
+            <div className="space-y-1.5 flex-1 min-w-[150px]">
+              <label className="text-xs font-semibold uppercase text-muted-foreground flex items-center gap-1">
+                <Filter className="h-3 w-3" /> Région
+              </label>
               <Select value={region} onValueChange={setRegion}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectTrigger className="bg-muted/50 border-none">
+                  <SelectValue />
+                </SelectTrigger>
                 <SelectContent>
-                  {REGIONS.map(r => <SelectItem key={r.id} value={r.id}>{r.name}</SelectItem>)}
+                  <SelectItem value="0">Worldwide</SelectItem>
+                  <SelectItem value="29">Europe</SelectItem>
+                  <SelectItem value="35">North America East</SelectItem>
+                  <SelectItem value="32">Oceania</SelectItem>
                 </SelectContent>
               </Select>
             </div>
-            <div className="space-y-2 flex-1 min-w-[150px]">
-              <label className="text-xs font-bold uppercase text-muted-foreground">Workout</label>
-              <Select value={workout.toString()} onValueChange={(v) => setWorkout(parseInt(v))}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
+
+            <div className="space-y-1.5 flex-1 min-w-[150px]">
+              <label className="text-xs font-semibold uppercase text-muted-foreground flex items-center gap-1">
+                <Calendar className="h-3 w-3" /> Workout
+              </label>
+              <Select value={activeWorkout.toString()} onValueChange={(v) => setActiveWorkout(parseInt(v))}>
+                <SelectTrigger className="bg-muted/50 border-none text-primary font-bold">
+                  <SelectValue />
+                </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="1">26.1</SelectItem>
-                  <SelectItem value="2">26.2</SelectItem>
+                  <SelectItem value="1">Workout 26.1</SelectItem>
+                  <SelectItem value="2">Workout 26.2</SelectItem>
                 </SelectContent>
               </Select>
             </div>
-            <div className="space-y-2 flex-1 min-w-[150px]">
-              <label className="text-xs font-bold uppercase text-muted-foreground">Scaled/Rx</label>
-              <Select value={scaled} onValueChange={setScaled}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="0">Rx</SelectItem>
-                  <SelectItem value="1">Scaled</SelectItem>
-                </SelectContent>
-              </Select>
+
+            <div className="space-y-1.5">
+              <label className="text-xs font-semibold uppercase text-muted-foreground">Type</label>
+              <div className="flex bg-muted/50 rounded-md p-1 gap-1">
+                <Button 
+                  size="sm" 
+                  variant={scaled === "0" ? "default" : "ghost"} 
+                  className="h-8 text-xs px-3" 
+                  onClick={() => setScaled("0")}
+                >Rx</Button>
+                <Button 
+                  size="sm" 
+                  variant={scaled === "1" ? "default" : "ghost"} 
+                  className="h-8 text-xs px-3" 
+                  onClick={() => setScaled("1")}
+                >Scaled</Button>
+              </div>
             </div>
           </CardContent>
         </Card>
 
         {loading ? (
-          <div className="space-y-6">
-            <div className="flex flex-col items-center justify-center py-12 space-y-4">
-              <LoaderCircle className="w-12 h-12 animate-spin text-primary" />
-              <p className="text-lg font-medium">Scanning Leaderboards...</p>
-              <div className="w-full max-w-xs">
-                <Progress value={progress} />
-              </div>
-            </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <Skeleton className="h-32 w-full" />
+            <Skeleton className="h-32 w-full" />
+            <Skeleton className="h-32 w-full" />
+            <Skeleton className="h-[400px] md:col-span-2 w-full" />
+            <Skeleton className="h-[400px] w-full" />
           </div>
         ) : error ? (
-          <Card className="border-destructive bg-destructive/5">
-            <CardContent className="p-6 text-center text-destructive">
-              {error}
+          <Card className="border-destructive bg-destructive/10">
+            <CardContent className="p-12 text-center space-y-4">
+              <div className="bg-destructive/20 w-16 h-16 rounded-full flex items-center justify-center mx-auto">
+                <Info className="text-destructive h-8 w-8" />
+              </div>
+              <p className="text-lg font-medium">{error}</p>
+              <Button onClick={() => window.location.reload()}>Réessayer</Button>
             </CardContent>
           </Card>
         ) : stats ? (
           <>
-            {/* Quick Stats Grid */}
+            {/* Quick Stats */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              <Card>
-                <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-                  <CardTitle className="text-sm font-medium">Median Score</CardTitle>
-                  <Users className="w-4 h-4 text-muted-foreground" />
+              <Card className="bg-gradient-to-br from-primary/5 to-background border-none shadow-sm">
+                <CardHeader className="pb-2">
+                  <CardDescription className="text-xs font-bold uppercase tracking-wider">Median Score</CardDescription>
+                  <CardTitle className="text-4xl font-headline text-primary">{stats.median} <span className="text-sm font-sans font-normal text-muted-foreground">reps</span></CardTitle>
                 </CardHeader>
-                <CardContent>
-                  <div className="text-3xl font-bold">{stats.median} <span className="text-sm font-normal text-muted-foreground">reps</span></div>
-                  <p className="text-xs text-muted-foreground">Top 50% percentile</p>
-                </CardContent>
               </Card>
-              <Card>
-                <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-                  <CardTitle className="text-sm font-medium">Top 10% (P90)</CardTitle>
-                  <TrendingUp className="w-4 h-4 text-green-500" />
+              <Card className="bg-gradient-to-br from-yellow-500/5 to-background border-none shadow-sm">
+                <CardHeader className="pb-2">
+                  <CardDescription className="text-xs font-bold uppercase tracking-wider">Top 10% (P90)</CardDescription>
+                  <CardTitle className="text-4xl font-headline text-yellow-500">{stats.p90} <span className="text-sm font-sans font-normal text-muted-foreground">reps</span></CardTitle>
                 </CardHeader>
-                <CardContent>
-                  <div className="text-3xl font-bold">{stats.p90} <span className="text-sm font-normal text-muted-foreground">reps</span></div>
-                  <p className="text-xs text-muted-foreground">Elite amateur level</p>
-                </CardContent>
               </Card>
-              <Card>
-                <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-                  <CardTitle className="text-sm font-medium">Top 1% (P99)</CardTitle>
-                  <Activity className="w-4 h-4 text-blue-500" />
+              <Card className="bg-gradient-to-br from-emerald-500/5 to-background border-none shadow-sm">
+                <CardHeader className="pb-2">
+                  <CardDescription className="text-xs font-bold uppercase tracking-wider">Top 1% (P99)</CardDescription>
+                  <CardTitle className="text-4xl font-headline text-emerald-500">{stats.p99} <span className="text-sm font-sans font-normal text-muted-foreground">reps</span></CardTitle>
                 </CardHeader>
-                <CardContent>
-                  <div className="text-3xl font-bold">{stats.p99} <span className="text-sm font-normal text-muted-foreground">reps</span></div>
-                  <p className="text-xs text-muted-foreground">Games athlete territory</p>
-                </CardContent>
               </Card>
-              <Card>
-                <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-                  <CardTitle className="text-sm font-medium">Avg BMI</CardTitle>
-                  <Scale className="w-4 h-4 text-muted-foreground" />
+              <Card className="bg-gradient-to-br from-blue-500/5 to-background border-none shadow-sm">
+                <CardHeader className="pb-2">
+                  <CardDescription className="text-xs font-bold uppercase tracking-wider">Sample Size</CardDescription>
+                  <CardTitle className="text-4xl font-headline text-blue-500">{stats.total} <span className="text-sm font-sans font-normal text-muted-foreground">athletes</span></CardTitle>
                 </CardHeader>
-                <CardContent>
-                  <div className="text-3xl font-bold">{stats.avgBMI.toFixed(1)}</div>
-                  <p className="text-xs text-muted-foreground">Across top athletes</p>
-                </CardContent>
               </Card>
             </div>
 
-            {/* Charts Section */}
+            {/* Main Graphs */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {/* Distribution Chart */}
-              <Card className="col-span-1">
+              <Card>
                 <CardHeader>
-                  <CardTitle>Score Distribution</CardTitle>
-                  <CardDescription>Number of athletes per rep range (Sample: {data.length})</CardDescription>
+                  <CardTitle className="flex items-center gap-2">
+                    <TrendingUp className="h-5 w-5 text-primary" /> Score Distribution
+                  </CardTitle>
+                  <CardDescription>Number of athletes per rep range</CardDescription>
                 </CardHeader>
                 <CardContent className="h-[300px]">
                   <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={stats.histogram}>
-                      <CartesianGrid strokeDasharray="3 3" vertical={false} opacity={0.1} />
-                      <XAxis dataKey="range" fontSize={10} axisLine={false} tickLine={false} />
-                      <YAxis hide />
+                    <BarChart data={stats.distribution}>
+                      <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--muted))" />
+                      <XAxis dataKey="range" axisLine={false} tickLine={false} tick={{fill: 'hsl(var(--muted-foreground))'}} />
+                      <YAxis axisLine={false} tickLine={false} tick={{fill: 'hsl(var(--muted-foreground))'}} />
                       <Tooltip 
-                        contentStyle={{ backgroundColor: 'hsl(var(--card))', borderColor: 'hsl(var(--border))' }}
-                        cursor={{ fill: 'hsl(var(--primary))', opacity: 0.1 }}
+                        contentStyle={{backgroundColor: 'hsl(var(--card))', border: '1px solid hsl(var(--border))'}} 
+                        cursor={{fill: 'hsl(var(--primary)/0.1)'}}
                       />
                       <Bar dataKey="count" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
                     </BarChart>
@@ -249,54 +349,69 @@ export default function OpenStatsPage() {
                 </CardContent>
               </Card>
 
-              {/* BMI vs Rank Scatter */}
-              <Card className="col-span-1">
+              <Card>
                 <CardHeader>
-                  <CardTitle>BMI vs Performance</CardTitle>
-                  <CardDescription>Correlation between BMI and World Rank</CardDescription>
+                  <CardTitle className="flex items-center gap-2">
+                    <Scale className="h-5 w-5 text-primary" /> BMI vs Performance
+                  </CardTitle>
+                  <CardDescription>Correlation between Body Mass Index and Reps</CardDescription>
                 </CardHeader>
                 <CardContent className="h-[300px]">
                   <ResponsiveContainer width="100%" height="100%">
                     <ScatterChart margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
-                      <CartesianGrid strokeDasharray="3 3" opacity={0.1} />
-                      <XAxis 
-                        type="number" 
-                        dataKey="bmi" 
-                        name="BMI" 
-                        unit="" 
-                        domain={['dataMin - 1', 'dataMax + 1']} 
-                        fontSize={10}
-                      />
-                      <YAxis 
-                        type="number" 
-                        dataKey="rank" 
-                        name="Rank" 
-                        reversed 
-                        fontSize={10}
-                      />
+                      <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--muted))" />
+                      <XAxis type="number" dataKey="bmi" name="BMI" domain={['dataMin - 2', 'dataMax + 2']} axisLine={false} tickLine={false} />
+                      <YAxis type="number" dataKey="score" name="Score" domain={['dataMin - 10', 'dataMax + 10']} axisLine={false} tickLine={false} />
+                      <ZAxis type="number" range={[50, 400]} />
                       <Tooltip cursor={{ strokeDasharray: '3 3' }} />
-                      <Scatter name="Athletes" data={data.filter(a => a.bmi)} fill="hsl(var(--primary))" opacity={0.6}>
-                        {data.map((entry, index) => (
-                          <Cell key={`cell-${index}`} fill={entry.rank < 100 ? "hsl(var(--primary))" : "hsl(var(--muted-foreground))"} />
-                        ))}
-                      </Scatter>
+                      <Scatter name="Athletes" data={stats.correlations} fill="hsl(var(--primary))" fillOpacity={0.6} />
                     </ScatterChart>
                   </ResponsiveContainer>
                 </CardContent>
               </Card>
             </div>
 
-            <div className="bg-muted/50 p-4 rounded-lg flex items-start gap-3 border border-border">
-              <Info className="w-5 h-5 text-blue-500 shrink-0 mt-0.5" />
-              <div className="text-sm text-muted-foreground">
-                <p className="font-semibold text-foreground mb-1">About this data</p>
-                Live CrossFit Open 2026 data fetched via public API. These analytics are based on a significant sample size of the top leaderboard. Data is refreshed daily.
-              </div>
-            </div>
+            {/* Cohort Insights */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Trophy className="h-5 w-5 text-yellow-500" /> Leaderboard Top 10 Insights
+                </CardTitle>
+                <CardDescription>Analyse des profils physiques des meilleurs mondiaux</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="overflow-x-auto">
+                  <table className="w-full text-sm text-left">
+                    <thead>
+                      <tr className="border-b text-muted-foreground uppercase text-[10px] tracking-widest font-bold">
+                        <th className="py-3 px-2">Rank</th>
+                        <th className="py-3 px-2">Athlete</th>
+                        <th className="py-3 px-2">Age</th>
+                        <th className="py-3 px-2">Weight</th>
+                        <th className="py-3 px-2 text-right">26.{activeWorkout} Reps</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {data.slice(0, 10).map((a) => (
+                        <tr key={a.name} className="border-b last:border-0 hover:bg-muted/30 transition-colors">
+                          <td className="py-3 px-2 font-bold text-primary">#{a.rank}</td>
+                          <td className="py-3 px-2 font-medium">{a.name}</td>
+                          <td className="py-3 px-2">{a.age}y</td>
+                          <td className="py-3 px-2">{a.weight > 0 ? `${a.weight}kg` : '--'}</td>
+                          <td className="py-3 px-2 text-right font-mono font-bold">
+                            {a.scores.find(s => s.workout === activeWorkout)?.reps || 0}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </CardContent>
+            </Card>
           </>
         ) : (
-          <div className="text-center py-20 text-muted-foreground">
-            No data available for this selection.
+          <div className="flex items-center justify-center p-12 text-muted-foreground">
+            Sélectionnez des filtres pour charger les analyses.
           </div>
         )}
       </main>
