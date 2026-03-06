@@ -11,11 +11,11 @@ import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, 
   ScatterChart, Scatter, Cell, ReferenceLine, Label as RechartsLabel
 } from 'recharts';
-import { LoaderCircle, Info, Users, BarChart3, Weight, Trophy, AlertTriangle, Calendar as CalendarIcon, Activity, Target, User } from 'lucide-react';
+import { LoaderCircle, Info, Users, BarChart3, Weight, Trophy, AlertTriangle, Calendar as CalendarIcon, Activity, Target, Gem, Lock } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
 import { useTranslations } from 'next-intl';
-import { cn } from '@/lib/utils';
+import Link from 'next/link';
 
 export default function OpenStatsPage() {
   const t = useTranslations('OpenStatsPage');
@@ -35,17 +35,10 @@ export default function OpenStatsPage() {
     setIsMounted(true);
   }, []);
 
+  // On récupère les données pour TOUT LE MONDE maintenant
   useEffect(() => {
-    if (!isUserLoading && (!user || !user.premium)) {
-      router.push('/premium');
-    }
-  }, [user, isUserLoading, router]);
-
-  useEffect(() => {
-    if (user?.premium) {
-      fetchLeaderboard(parseInt(year), parseInt(workout), parseInt(division), parseInt(region));
-    }
-  }, [user, year, workout, division, region, fetchLeaderboard]);
+    fetchLeaderboard(parseInt(year), parseInt(workout), parseInt(division), parseInt(region));
+  }, [year, workout, division, region, fetchLeaderboard]);
 
   const histogramData = useMemo(() => {
     if (!stats || stats.data.length === 0) return [];
@@ -114,9 +107,6 @@ export default function OpenStatsPage() {
                 <h1 className="text-2xl font-bold font-headline tracking-tight md:text-3xl text-primary">
                   {t('title')}
                 </h1>
-                <div className="bg-primary/20 text-primary text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-widest border border-primary/30">
-                  Premium
-                </div>
               </div>
               <p className="text-xs text-muted-foreground hidden md:block">{t('description')}</p>
             </div>
@@ -221,7 +211,16 @@ export default function OpenStatsPage() {
             </CardHeader>
           </Card>
           
-          <Card className="md:col-span-4 lg:col-span-1 bg-accent/10 border-accent/30 shadow-lg shadow-accent/5">
+          <Card className="md:col-span-4 lg:col-span-1 border-accent/30 shadow-lg relative overflow-hidden">
+            {!user?.premium && (
+              <div className="absolute inset-0 bg-background/60 backdrop-blur-[2px] z-10 flex flex-col items-center justify-center p-4 text-center">
+                <Lock className="h-6 w-6 text-muted-foreground mb-2" />
+                <p className="text-[10px] font-bold uppercase mb-2">Réservé Premium</p>
+                <Button asChild size="sm" className="h-7 text-[10px] px-2">
+                  <Link href="/premium"><Gem className="h-3 w-3 mr-1" /> Devenir Premium</Link>
+                </Button>
+              </div>
+            )}
             <CardHeader className="pb-2">
               <CardDescription className="flex items-center gap-2 text-xs uppercase tracking-wider font-bold text-accent-foreground">
                 <Target className="h-3 w-3" /> {t('userScore.title')}
@@ -232,6 +231,7 @@ export default function OpenStatsPage() {
                   value={userScoreInput}
                   onChange={(e) => setUserScoreInput(e.target.value)}
                   className="h-8 text-sm border-accent/50 bg-background/50 focus-visible:ring-accent"
+                  disabled={!user?.premium}
                 />
               </div>
             </CardHeader>
@@ -247,7 +247,7 @@ export default function OpenStatsPage() {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          <Card className="shadow-lg overflow-hidden min-h-[450px]">
+          <Card className="shadow-lg overflow-hidden">
             <CardHeader className="bg-muted/30 border-b">
               <CardTitle className="flex items-center gap-2 text-lg"><BarChart3 className="h-5 w-5 text-primary" /> {t('charts.distribution')}</CardTitle>
               <CardDescription>{t('charts.distributionSub')}</CardDescription>
@@ -291,7 +291,7 @@ export default function OpenStatsPage() {
             </CardContent>
           </Card>
 
-          <Card className="shadow-lg overflow-hidden min-h-[450px]">
+          <Card className="shadow-lg overflow-hidden">
             <CardHeader className="bg-muted/30 border-b">
               <CardTitle className="flex items-center gap-2 text-lg"><Weight className="h-5 w-5 text-primary" /> {t('charts.bmi')}</CardTitle>
               <CardDescription>{t('charts.bmiSub')}</CardDescription>
