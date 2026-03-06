@@ -27,7 +27,7 @@ const parseHeight = (h: string): number | null => {
   if (isNaN(val)) return null;
   if (h.toLowerCase().includes('cm')) return val;
   if (h.toLowerCase().includes('in')) return val * 2.54;
-  return val; // Assume cm if no unit
+  return val;
 };
 
 const parseWeight = (w: string): number | null => {
@@ -36,7 +36,7 @@ const parseWeight = (w: string): number | null => {
   if (isNaN(val)) return null;
   if (w.toLowerCase().includes('kg')) return val;
   if (w.toLowerCase().includes('lb')) return val * 0.453592;
-  return val; // Assume kg if no unit
+  return val;
 };
 
 export function useOpenStats() {
@@ -44,15 +44,14 @@ export function useOpenStats() {
   const [stats, setStats] = useState<StatsResult | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchLeaderboard = useCallback(async (division = 1, region = 0, scaled = 0, maxPages = 3) => {
+  const fetchLeaderboard = useCallback(async (year = 2026, workout = 0, division = 1, region = 0, scaled = 0, maxPages = 2) => {
     setIsLoading(true);
     setError(null);
     const allEntries: LeaderboardEntry[] = [];
 
     try {
-      // On boucle sur quelques pages pour avoir un échantillon statistique représentatif
       for (let page = 1; page <= maxPages; page++) {
-        const url = `/api/open-stats?division=${division}&region=${region}&scaled=${scaled}&page=${page}&sort=0`;
+        const url = `/api/open-stats?year=${year}&division=${division}&region=${region}&scaled=${scaled}&page=${page}&sort=${workout}`;
         const response = await fetch(url);
         
         if (!response.ok) break;
@@ -70,9 +69,16 @@ export function useOpenStats() {
           }
 
           const scoreObj = row.scores && row.scores[0];
-          // On essaie d'extraire les reps. Souvent formaté "337 reps" ou "12:30"
           const scoreStr = scoreObj?.scoreDisplay || '0';
-          const reps = parseInt(scoreStr) || 0;
+          
+          // Conversion intelligente pour AMRAP vs For Time
+          let reps = 0;
+          if (scoreStr.includes(':')) {
+            const [m, s] = scoreStr.split(':').map(Number);
+            reps = m * 60 + s; // On stocke les secondes pour le "For Time"
+          } else {
+            reps = parseInt(scoreStr) || 0;
+          }
 
           return {
             rank: parseInt(row.overallRank),
@@ -92,7 +98,7 @@ export function useOpenStats() {
       }
 
       if (allEntries.length === 0) {
-        throw new Error("No data found");
+        throw new Error("Aucune donnée trouvée pour cette sélection.");
       }
 
       const sortedReps = [...allEntries].map(e => e.reps).sort((a, b) => a - b);
@@ -110,7 +116,6 @@ export function useOpenStats() {
       });
     } catch (err: any) {
       setError(err.message || "Erreur lors de la récupération des données.");
-      console.error(err);
     } finally {
       setIsLoading(false);
     }

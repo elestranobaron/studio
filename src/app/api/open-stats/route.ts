@@ -3,13 +3,14 @@ import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
+  const year = searchParams.get('year') || '2026';
   const division = searchParams.get('division') || '1';
   const region = searchParams.get('region') || '0';
   const scaled = searchParams.get('scaled') || '0';
   const page = searchParams.get('page') || '1';
   const sort = searchParams.get('sort') || '0';
 
-  const targetUrl = `https://c3po.crossfit.com/api/competitions/v2/competitions/open/2026/leaderboards?division=${division}&region=${region}&scaled=${scaled}&page=${page}&sort=${sort}`;
+  const targetUrl = `https://c3po.crossfit.com/api/competitions/v2/competitions/open/${year}/leaderboards?division=${division}&region=${region}&scaled=${scaled}&page=${page}&sort=${sort}`;
 
   try {
     const response = await fetch(targetUrl, {

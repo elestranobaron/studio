@@ -16,10 +16,10 @@
     "timers": "Minuteurs",
     "goPremium": "Devenir Premium",
     "hallOfFame": "Hall of Fame",
-    "openStats": "Open Stats 2026"
+    "openStats": "Open Stats"
   },
   "OpenStatsPage": {
-    "title": "Open Stats 2026",
+    "title": "Open Stats",
     "description": "Données live CrossFit Open via API publique – refresh quotidien",
     "upgradeTitle": "Open Stats Premium",
     "upgradeDescription": "Comparez-vous aux meilleurs. Débloquez les analyses avancées pour les CrossFit Open 2026."
