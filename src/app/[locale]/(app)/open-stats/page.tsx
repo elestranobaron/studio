@@ -36,8 +36,10 @@ export default function OpenStatsPage() {
   }, []);
 
   useEffect(() => {
-    fetchLeaderboard(parseInt(year), parseInt(workout), parseInt(division), parseInt(region));
-  }, [year, workout, division, region, fetchLeaderboard]);
+    if (isMounted) {
+      fetchLeaderboard(parseInt(year), parseInt(workout), parseInt(division), parseInt(region));
+    }
+  }, [year, workout, division, region, fetchLeaderboard, isMounted]);
 
   const histogramData = useMemo(() => {
     if (!stats || !stats.data || stats.data.length === 0) return [];
@@ -251,7 +253,7 @@ export default function OpenStatsPage() {
               <CardTitle className="flex items-center gap-2 text-lg"><BarChart3 className="h-5 w-5 text-primary" /> {t('charts.distribution')}</CardTitle>
               <CardDescription>{t('charts.distributionSub')}</CardDescription>
             </CardHeader>
-            <CardContent className="pt-6 h-[350px]">
+            <CardContent className="pt-6" style={{ height: '350px' }}>
               <div className="h-full w-full">
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={histogramData} margin={{ top: 20, right: 10, left: -20, bottom: 0 }}>
@@ -291,7 +293,7 @@ export default function OpenStatsPage() {
               <CardTitle className="flex items-center gap-2 text-lg"><Weight className="h-5 w-5 text-primary" /> {t('charts.bmi')}</CardTitle>
               <CardDescription>{t('charts.bmiSub')}</CardDescription>
             </CardHeader>
-            <CardContent className="pt-6 h-[350px]">
+            <CardContent className="pt-6" style={{ height: '350px' }}>
               <div className="h-full w-full">
                 <ResponsiveContainer width="100%" height="100%">
                   <ScatterChart margin={{ top: 10, right: 10, bottom: 20, left: -20 }}>
