@@ -1,3 +1,4 @@
+
 "use client";
 
 import Link from "next/link";
@@ -10,6 +11,7 @@ import {
   Medal,
   Dice5,
   Trophy,
+  BarChart3,
 } from "lucide-react";
 import {
   SidebarMenu,
@@ -36,6 +38,7 @@ export function MainNav() {
   const secondaryLinks = [
     { href: "/premium", label: t("goPremium"), icon: Gem, className: "text-primary hover:text-primary" },
     { href: "/hall-of-fame", label: t("hallOfFame"), icon: Trophy, className: "text-yellow-400 hover:text-yellow-400" },
+    { href: "/open-stats", label: t("openStats"), icon: BarChart3, className: "text-blue-400 hover:text-blue-400 font-bold" },
   ];
 
   const handleLinkClick = (isAlreadyActive: boolean) => {
