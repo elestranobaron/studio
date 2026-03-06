@@ -1,113 +1,100 @@
+
 'use client';
 
 import { useState, useCallback } from 'react';
 
-export interface Athlete {
-  rank: number;
+export interface AthleteData {
+  id: string;
   name: string;
   age: number;
-  height: number | null; // in cm
-  weight: number | null; // in kg
+  heightCm: number | null;
+  weightKg: number | null;
   bmi: number | null;
+  rank: number;
+  score1: number | null;
+  score2: number | null;
   region: string;
+}
+
+interface LeaderboardParams {
   division: string;
-  scores: {
-    ordinal: number;
-    reps: number | null;
-    time: number | null; // in seconds
-    display: string;
-  }[];
+  region: string;
+  scaled: string;
 }
 
-export interface Stats {
-  total: number;
-  median: number;
-  p90: number;
-  p99: number;
-  distribution: { range: string; count: number }[];
-}
-
-export function useOpenStats() {
-  const [loading, setLoading] = useState(false);
-  const [data, setData] = useState<Athlete[]>([]);
+export function useOpenStatsData() {
+  const [data, setData] = useState<AthleteData[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [progress, setProgress] = useState(0);
 
-  const parseValue = (val: string, unit: 'cm' | 'kg') => {
+  const parseMetric = (val: string, unitType: 'height' | 'weight'): number | null => {
     if (!val) return null;
-    const num = parseFloat(val);
+    const num = parseFloat(val.replace(/[^0-9.]/g, ''));
     if (isNaN(num)) return null;
 
-    if (unit === 'cm') {
-      if (val.includes('in')) return num * 2.54;
-      return num;
+    if (unitType === 'height') {
+      if (val.toLowerCase().includes('in')) return num * 2.54;
+      return num; // assume cm
     } else {
-      if (val.includes('lb')) return num * 0.453592;
-      return num;
+      if (val.toLowerCase().includes('lb')) return num * 0.453592;
+      return num; // assume kg
     }
   };
 
-  const fetchStats = useCallback(async (params: {
-    division: string;
-    region: string;
-    scaled: string;
-    limit?: number;
-  }) => {
-    setLoading(true);
+  const calculateBMI = (heightCm: number | null, weightKg: number | null): number | null => {
+    if (!heightCm || !weightKg || heightCm === 0) return null;
+    const heightM = heightCm / 100;
+    return weightKg / (heightM * heightM);
+  };
+
+  const fetchStats = useCallback(async (params: LeaderboardParams, maxPages: number = 5) => {
+    setIsLoading(true);
     setError(null);
-    const athletes: Athlete[] = [];
-    const maxAthletes = params.limit || 500; // Limit for performance in UI
+    setProgress(0);
+    const allAthletes: AthleteData[] = [];
 
     try {
-      // Fetching first few pages to get a good sample size
-      for (let page = 1; athletes.length < maxAthletes; page++) {
+      for (let page = 1; page <= maxPages; page++) {
         const url = `https://c3po.crossfit.com/api/competitions/v2/competitions/open/2026/leaderboards?division=${params.division}&region=${params.region}&scaled=${params.scaled}&page=${page}`;
         
         const response = await fetch(url);
-        if (!response.ok) throw new Error('API Rate limit or network error');
+        if (!response.ok) throw new Error(`API Error: ${response.status}`);
         
         const json = await response.json();
         const rows = json.leaderboardRows || [];
         
-        if (rows.length === 0) break;
-
-        rows.forEach((row: any) => {
-          const h = parseValue(row.entrant.height, 'cm');
-          const w = parseValue(row.entrant.weight, 'kg');
-          let bmi = null;
-          if (h && w) {
-            bmi = w / Math.pow(h / 100, 2);
-          }
-
-          athletes.push({
-            rank: parseInt(row.overallRank),
+        const parsedRows = rows.map((row: any) => {
+          const h = parseMetric(row.entrant.height, 'height');
+          const w = parseMetric(row.entrant.weight, 'weight');
+          return {
+            id: row.entrant.competitorId,
             name: row.entrant.competitorName,
             age: parseInt(row.entrant.age),
-            height: h,
-            weight: w,
-            bmi: bmi,
+            heightCm: h,
+            weightKg: w,
+            bmi: calculateBMI(h, w),
+            rank: parseInt(row.overallRank),
+            score1: row.scores[0]?.score ? parseInt(row.scores[0].score) : null,
+            score2: row.scores[1]?.score ? parseInt(row.scores[1].score) : null,
             region: row.entrant.regionName,
-            division: row.entrant.divisionId,
-            scores: (row.scores || []).map((s: any) => ({
-              ordinal: s.ordinal,
-              reps: s.scoreDisplay.includes('reps') ? parseInt(s.scoreDisplay) : null,
-              time: s.time || null,
-              display: s.scoreDisplay
-            }))
-          });
+          };
         });
 
-        if (page >= json.pagination.totalPages) break;
-        // Simple rate limiting
-        await new Promise(r => setTimeout(r, 200));
-      }
+        allAthletes.push(...parsedRows);
+        setProgress((page / maxPages) * 100);
 
-      setData(athletes);
+        if (page >= json.pagination.totalPages) break;
+        // Respect rate limit
+        await new Promise(r => setTimeout(r, 500));
+      }
+      setData(allAthletes);
     } catch (err: any) {
       setError(err.message);
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   }, []);
 
-  return { data, loading, error, fetchStats };
+  return { data, isLoading, error, progress, fetchStats };
 }

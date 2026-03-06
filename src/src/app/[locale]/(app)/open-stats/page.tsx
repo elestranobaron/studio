@@ -1,240 +1,159 @@
+
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
-import { useUser } from '@/firebase';
-import { useRouter } from 'next/navigation';
+import { useUser } from '@/firebase/provider';
+import { useOpenStatsData, AthleteData } from '@/hooks/use-open-stats';
+import { useState, useMemo, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { useOpenStats, type Athlete } from '@/hooks/use-open-stats';
-import { 
-  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, 
-  ScatterChart, Scatter, ZAxis, Cell 
-} from 'recharts';
-import { LoaderCircle, BarChart3, Info, TrendingUp, Users, Scale } from 'lucide-react';
+import { Progress } from '@/components/ui/progress';
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, ScatterChart, Scatter, ZAxis, CartesianGrid } from 'recharts';
+import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
+import { BarChart3, LoaderCircle, Gem, Info, Filter } from 'lucide-react';
+import Link from 'next/link';
 import { useTranslations } from 'next-intl';
-import { SidebarTrigger, useSidebar } from '@/components/ui/sidebar';
 
 export default function OpenStatsPage() {
-  const t = useTranslations('OpenStatsPage');
   const { user, isUserLoading } = useUser();
-  const router = useRouter();
-  const { toggleSidebar } = useSidebar();
-  const { data, loading, error, fetchStats } = useOpenStats();
+  const t = useTranslations('OpenStatsPage');
+  const { data, isLoading, error, progress, fetchStats } = useOpenStatsData();
 
-  const [division, setDivision] = useState('1');
-  const [region, setRegion] = useState('0');
-  const [scaled, setScaled] = useState('0');
+  const [params, setParams] = useState({ division: '1', region: '0', scaled: '0' });
 
   useEffect(() => {
-    if (!isUserLoading && (!user || !user.premium)) {
-      router.push('/premium');
+    if (user?.premium && data.length === 0 && !isLoading) {
+      fetchStats(params, 10); // Fetch top 500
     }
-  }, [user, isUserLoading, router]);
-
-  useEffect(() => {
-    if (user?.premium) {
-      fetchStats({ division, region, scaled });
-    }
-  }, [division, region, scaled, user?.premium, fetchStats]);
+  }, [user?.premium, fetchStats, params, data.length, isLoading]);
 
   const stats = useMemo(() => {
     if (data.length === 0) return null;
-
-    const scores = data.map(a => a.scores[0]?.reps || 0).sort((a, b) => a - b);
-    const median = scores[Math.floor(scores.length / 2)];
-    const p90 = scores[Math.floor(scores.length * 0.9)];
-    const p99 = scores[Math.floor(scores.length * 0.99)];
-
-    // Distribution
-    const min = Math.min(...scores);
-    const max = Math.max(...scores);
-    const step = Math.ceil((max - min) / 10);
-    const distribution = Array.from({ length: 10 }, (_, i) => {
-      const start = min + i * step;
-      const end = start + step;
-      return {
-        range: `${start}-${end}`,
-        count: scores.filter(s => s >= start && s < end).length
-      };
+    const sortedAges = [...data].map(a => a.age).sort((a, b) => a - b);
+    const medianAge = sortedAges[Math.floor(sortedAges.length / 2)];
+    
+    // Percentiles logic
+    const getPercentileRank = (p: number) => Math.ceil((p / 100) * data.length);
+    
+    // Distribution for Histogram
+    const bins: Record<string, number> = {};
+    data.forEach(a => {
+      const bin = Math.floor(a.age / 5) * 5;
+      const label = `${bin}-${bin + 4}`;
+      bins[label] = (bins[label] || 0) + 1;
     });
+    const distribution = Object.entries(bins).map(([name, count]) => ({ name, count }));
 
-    // Correlation data
-    const scatterData = data
-      .filter(a => a.bmi && a.rank)
-      .map(a => ({ x: a.bmi, y: a.rank, name: a.name }));
-
-    return { median, p90, p99, distribution, scatterData };
+    return { medianAge, distribution, total: data.length };
   }, [data]);
 
-  if (isUserLoading || !user?.premium) {
+  if (isUserLoading) return <div className="p-8 flex justify-center"><LoaderCircle className="animate-spin" /></div>;
+
+  if (!user?.premium) {
     return (
-      <div className="flex h-screen w-full items-center justify-center">
-        <LoaderCircle className="h-8 w-8 animate-spin text-primary" />
+      <div className="flex flex-col items-center justify-center h-full p-6 text-center space-y-6">
+        <div className="bg-primary/10 p-6 rounded-full">
+          <Gem className="w-16 h-16 text-primary animate-pulse" />
+        </div>
+        <div className="max-w-md space-y-2">
+          <h1 className="text-3xl font-headline font-bold">{t('upgradeTitle')}</h1>
+          <p className="text-muted-foreground">{t('upgradeDescription')}</p>
+        </div>
+        <Button asChild size="lg">
+          <Link href="/premium">Go Premium</Link>
+        </Button>
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col h-full bg-background">
-      <header className="flex items-center justify-between p-4 border-b md:p-6 bg-card/50 backdrop-blur-md sticky top-0 z-30">
-        <div className="flex items-center gap-4">
-          <SidebarTrigger />
+    <div className="flex flex-col h-full overflow-y-auto">
+      <header className="p-4 border-b md:p-6 bg-background/50 backdrop-blur-md sticky top-0 z-10">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-bold tracking-tight font-headline flex items-center gap-2">
+            <h1 className="text-3xl font-bold font-headline flex items-center gap-3">
               <BarChart3 className="text-primary" /> {t('title')}
             </h1>
-            <p className="text-xs text-muted-foreground hidden md:block">
-              {t('description')}
-            </p>
+            <p className="text-sm text-muted-foreground mt-1">{t('description')}</p>
+          </div>
+          
+          <div className="flex items-center gap-2">
+            <Select value={params.division} onValueChange={(v) => setParams(p => ({...p, division: v}))}>
+              <SelectTrigger className="w-[140px]"><SelectValue placeholder="Division" /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="1">Men Rx</SelectItem>
+                <SelectItem value="2">Women Rx</SelectItem>
+                <SelectItem value="11">Teens (14-15)</SelectItem>
+              </SelectContent>
+            </Select>
+            <Button onClick={() => fetchStats(params, 10)} disabled={isLoading}>
+              {isLoading ? <LoaderCircle className="animate-spin h-4 w-4" /> : <Filter className="h-4 w-4" />}
+            </Button>
           </div>
         </div>
-        <div className="flex gap-2">
-          <Select value={division} onValueChange={setDivision}>
-            <SelectTrigger className="w-[120px] h-9">
-              <SelectValue placeholder="Division" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="1">Men Rx</SelectItem>
-              <SelectItem value="2">Women Rx</SelectItem>
-              <SelectItem value="18">Masters 35-39</SelectItem>
-            </SelectContent>
-          </Select>
-          <Select value={region} onValueChange={setRegion}>
-            <SelectTrigger className="w-[120px] h-9">
-              <SelectValue placeholder="Region" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="0">Worldwide</SelectItem>
-              <SelectItem value="29">Europe</SelectItem>
-              <SelectItem value="35">NA East</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
+        {isLoading && (
+          <div className="mt-4 space-y-1">
+            <Progress value={progress} className="h-1" />
+            <p className="text-[10px] text-center text-muted-foreground animate-pulse">Fetching pages... {Math.round(progress)}%</p>
+          </div>
+        )}
       </header>
 
-      <main className="flex-1 overflow-y-auto p-4 md:p-6 space-y-6">
-        {loading ? (
-          <div className="flex flex-col items-center justify-center py-20 gap-4">
-            <LoaderCircle className="h-12 w-12 animate-spin text-primary" />
-            <p className="text-muted-foreground animate-pulse">Analyzing Open Leaderboards...</p>
-          </div>
-        ) : error ? (
-          <Card className="border-destructive bg-destructive/10">
-            <CardContent className="pt-6 text-center text-destructive">
-              {error}
+      <main className="p-4 md:p-6 space-y-6">
+        {error && <div className="bg-destructive/10 text-destructive p-4 rounded-lg text-sm">{error}</div>}
+
+        <div className="grid gap-6 md:grid-cols-3">
+          <Card>
+            <CardHeader className="pb-2"><CardTitle className="text-sm font-medium">Sample Size</CardTitle></CardHeader>
+            <CardContent><div className="text-2xl font-bold text-primary">{stats?.total || 0} athletes</div></CardContent>
+          </Card>
+          <Card>
+            <CardHeader className="pb-2"><CardTitle className="text-sm font-medium">Median Age</CardTitle></CardHeader>
+            <CardContent><div className="text-2xl font-bold text-primary">{stats?.medianAge || '--'} years</div></CardContent>
+          </Card>
+          <Card>
+            <CardHeader className="pb-2"><CardTitle className="text-sm font-medium">Data Source</CardTitle></CardHeader>
+            <CardContent><div className="text-xs text-muted-foreground flex items-center gap-1"><Info className="h-3 w-3" /> Live CrossFit API</div></CardContent>
+          </Card>
+        </div>
+
+        <div className="grid gap-6 lg:grid-cols-2">
+          <Card className="min-h-[400px]">
+            <CardHeader>
+              <CardTitle>Age Distribution</CardTitle>
+              <CardDescription>Number of athletes per age group</CardDescription>
+            </CardHeader>
+            <CardContent className="h-[300px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={stats?.distribution}>
+                  <XAxis dataKey="name" stroke="#888888" fontSize={12} tickLine={false} axisLine={false} />
+                  <YAxis stroke="#888888" fontSize={12} tickLine={false} axisLine={false} />
+                  <Tooltip cursor={{fill: 'transparent'}} contentStyle={{ backgroundColor: 'hsl(var(--card))', border: '1px solid hsl(var(--border))' }} />
+                  <Bar dataKey="count" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
             </CardContent>
           </Card>
-        ) : (
-          <>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <Card className="bg-primary/5 border-primary/20">
-                <CardHeader className="pb-2">
-                  <CardDescription className="flex items-center gap-2">
-                    <Users className="h-4 w-4" /> Median Score
-                  </CardDescription>
-                  <CardTitle className="text-3xl font-headline">{stats?.median || 0} <span className="text-sm font-normal text-muted-foreground">reps</span></CardTitle>
-                </CardHeader>
-              </Card>
-              <Card className="bg-blue-500/5 border-blue-500/20">
-                <CardHeader className="pb-2">
-                  <CardDescription className="flex items-center gap-2">
-                    <TrendingUp className="h-4 w-4" /> 90th Percentile
-                  </CardDescription>
-                  <CardTitle className="text-3xl font-headline">{stats?.p90 || 0} <span className="text-sm font-normal text-muted-foreground">reps</span></CardTitle>
-                </CardHeader>
-              </Card>
-              <Card className="bg-yellow-500/5 border-yellow-500/20">
-                <CardHeader className="pb-2">
-                  <CardDescription className="flex items-center gap-2">
-                    <TrendingUp className="h-4 w-4" /> 99th Percentile
-                  </CardDescription>
-                  <CardTitle className="text-3xl font-headline text-yellow-500">{stats?.p99 || 0} <span className="text-sm font-normal text-muted-foreground">reps</span></CardTitle>
-                </CardHeader>
-              </Card>
-            </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-lg">Score Distribution (26.1)</CardTitle>
-                  <CardDescription>Frequency of scores in your current sample.</CardDescription>
-                </CardHeader>
-                <CardContent className="h-[300px]">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={stats?.distribution}>
-                      <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--muted))" />
-                      <XAxis dataKey="range" stroke="hsl(var(--muted-foreground))" fontSize={12} />
-                      <YAxis stroke="hsl(var(--muted-foreground))" fontSize={12} />
-                      <Tooltip 
-                        contentStyle={{ backgroundColor: 'hsl(var(--card))', borderRadius: '8px', border: '1px solid hsl(var(--border))' }}
-                        itemStyle={{ color: 'hsl(var(--primary))' }}
-                      />
-                      <Bar dataKey="count" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
-                    </BarChart>
-                  </ResponsiveContainer>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-lg">Rank vs. BMI Analysis</CardTitle>
-                  <CardDescription>Correlation between Body Mass Index and overall ranking.</CardDescription>
-                </CardHeader>
-                <CardContent className="h-[300px]">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <ScatterChart>
-                      <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--muted))" />
-                      <XAxis type="number" dataKey="x" name="BMI" stroke="hsl(var(--muted-foreground))" fontSize={12} unit="" domain={['auto', 'auto']} />
-                      <YAxis type="number" dataKey="y" name="Rank" stroke="hsl(var(--muted-foreground))" fontSize={12} reversed />
-                      <Tooltip cursor={{ strokeDasharray: '3 3' }} />
-                      <Scatter name="Athletes" data={stats?.scatterData} fill="hsl(var(--primary))">
-                        {stats?.scatterData.map((entry, index) => (
-                          <Cell key={`cell-${index}`} fillOpacity={0.6} />
-                        ))}
-                      </Scatter>
-                    </ScatterChart>
-                  </ResponsiveContainer>
-                </CardContent>
-              </Card>
-            </div>
-
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg flex items-center gap-2">
-                  <Scale className="text-primary" /> Advanced Cohort Analytics
-                </CardTitle>
-                <CardDescription>Sample of top performing athletes in this segment.</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="overflow-x-auto">
-                  <table className="w-full text-sm">
-                    <thead>
-                      <tr className="border-b text-muted-foreground">
-                        <th className="text-left py-2">Rank</th>
-                        <th className="text-left py-2">Name</th>
-                        <th className="text-left py-2">Age</th>
-                        <th className="text-left py-2">BMI</th>
-                        <th className="text-right py-2">Score</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {data.slice(0, 10).map((athlete) => (
-                        <tr key={athlete.name} className="border-b border-muted/50 hover:bg-muted/30 transition-colors">
-                          <td className="py-3 font-bold text-primary">#{athlete.rank}</td>
-                          <td className="py-3">{athlete.name}</td>
-                          <td className="py-3">{athlete.age}</td>
-                          <td className="py-3">{athlete.bmi?.toFixed(1) || '-'}</td>
-                          <td className="py-3 text-right font-mono">{athlete.scores[0]?.display || '-'}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </CardContent>
-            </Card>
-          </>
-        )}
+          <Card className="min-h-[400px]">
+            <CardHeader>
+              <CardTitle>BMI vs Performance</CardTitle>
+              <CardDescription>Correlation between Body Mass Index and Rank</CardDescription>
+            </CardHeader>
+            <CardContent className="h-[300px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <ScatterChart margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
+                  <CartesianGrid strokeDasharray="3 3" opacity={0.1} />
+                  <XAxis type="number" dataKey="bmi" name="BMI" unit="" stroke="#888888" fontSize={10} domain={['dataMin - 2', 'dataMax + 2']} />
+                  <YAxis type="number" dataKey="rank" name="Rank" stroke="#888888" fontSize={10} reversed />
+                  <ZAxis type="number" range={[50, 50]} />
+                  <Tooltip cursor={{ strokeDasharray: '3 3' }} contentStyle={{ backgroundColor: 'hsl(var(--card))' }} />
+                  <Scatter name="Athletes" data={data.filter(a => a.bmi)} fill="hsl(var(--primary))" opacity={0.6} />
+                </ScatterChart>
+              </ResponsiveContainer>
+            </CardContent>
+          </Card>
+        </div>
       </main>
     </div>
   );
