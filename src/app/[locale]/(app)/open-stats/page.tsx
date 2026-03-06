@@ -18,7 +18,13 @@ import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 
 export default function OpenStatsPage() {
+  // Utilisation de namespaces segmentés pour une résolution de clés 100% fiable
   const t = useTranslations('OpenStatsPage');
+  const tm = useTranslations('OpenStatsPage.metrics');
+  const tu = useTranslations('OpenStatsPage.userScore');
+  const tc = useTranslations('OpenStatsPage.charts');
+  const th = useTranslations('OpenStatsPage.methodology');
+
   const { user, isUserLoading } = useUser();
   const router = useRouter();
   const { fetchLeaderboard, stats, isLoading, error } = useOpenStats();
@@ -180,14 +186,14 @@ export default function OpenStatsPage() {
           <Card className="bg-primary/5 border-primary/20">
             <CardHeader className="pb-2">
               <CardDescription className="flex items-center gap-2 text-xs uppercase tracking-wider font-bold">
-                <Users className="h-3 w-3" /> {t('metrics.athletes')}
+                <Users className="h-3 w-3" /> {tm('athletes')}
               </CardDescription>
               <CardTitle className="text-3xl font-bold">{isLoading ? "..." : (stats?.totalCount || 0)}</CardTitle>
             </CardHeader>
           </Card>
           <Card>
             <CardHeader className="pb-2">
-              <CardDescription className="text-xs uppercase tracking-wider font-bold">{t('metrics.median')}</CardDescription>
+              <CardDescription className="text-xs uppercase tracking-wider font-bold">{tm('median')}</CardDescription>
               <CardTitle className="text-3xl font-bold text-blue-400">
                 {isLoading ? "..." : formatScore(stats?.median || 0)}
               </CardTitle>
@@ -196,7 +202,7 @@ export default function OpenStatsPage() {
           <Card>
             <CardHeader className="pb-2">
               <CardDescription className="flex items-center gap-2 text-xs uppercase tracking-wider font-bold">
-                <Trophy className="h-3 w-3 text-yellow-500" /> {t('metrics.top10')}
+                <Trophy className="h-3 w-3 text-yellow-500" /> {tm('top10')}
               </CardDescription>
               <CardTitle className="text-3xl font-bold text-yellow-500">
                 {isLoading ? "..." : formatScore(stats?.p90 || 0)}
@@ -205,7 +211,7 @@ export default function OpenStatsPage() {
           </Card>
           <Card className="bg-yellow-500/10 border-yellow-500/30">
             <CardHeader className="pb-2">
-              <CardDescription className="font-bold text-yellow-600 text-xs uppercase tracking-wider">{t('metrics.elite')}</CardDescription>
+              <CardDescription className="font-bold text-yellow-600 text-xs uppercase tracking-wider">{tm('elite')}</CardDescription>
               <CardTitle className="text-3xl font-bold text-yellow-600">
                 {isLoading ? "..." : formatScore(stats?.p99 || 0)}
               </CardTitle>
@@ -224,7 +230,7 @@ export default function OpenStatsPage() {
             )}
             <CardHeader className="pb-2">
               <CardDescription className="flex items-center gap-2 text-xs uppercase tracking-wider font-bold text-accent-foreground">
-                <Target className="h-3 w-3" /> {t('userScore.title')}
+                <Target className="h-3 w-3" /> {tu('title')}
               </CardDescription>
               <div className="flex items-center gap-2 mt-1">
                 <Input 
@@ -240,7 +246,7 @@ export default function OpenStatsPage() {
                {userPercentile !== null && (
                  <div className="flex flex-col items-center justify-center pt-1 animate-in fade-in slide-in-from-top-1">
                     <p className="text-2xl font-bold text-accent-foreground">{userPercentile}%</p>
-                    <p className="text-[10px] uppercase font-bold text-muted-foreground">{t('userScore.percentile')}</p>
+                    <p className="text-[10px] uppercase font-bold text-muted-foreground">{tu('percentile')}</p>
                  </div>
                )}
             </CardContent>
@@ -250,8 +256,8 @@ export default function OpenStatsPage() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           <Card className="shadow-lg overflow-hidden">
             <CardHeader className="bg-muted/30 border-b">
-              <CardTitle className="flex items-center gap-2 text-lg"><BarChart3 className="h-5 w-5 text-primary" /> {t('charts.distribution')}</CardTitle>
-              <CardDescription>{t('charts.distributionSub')}</CardDescription>
+              <CardTitle className="flex items-center gap-2 text-lg"><BarChart3 className="h-5 w-5 text-primary" /> {tc('distribution')}</CardTitle>
+              <CardDescription>{tc('distributionSub')}</CardDescription>
             </CardHeader>
             <CardContent className="pt-6" style={{ height: '350px' }}>
               <div className="h-full w-full">
@@ -296,8 +302,8 @@ export default function OpenStatsPage() {
 
           <Card className="shadow-lg overflow-hidden">
             <CardHeader className="bg-muted/30 border-b">
-              <CardTitle className="flex items-center gap-2 text-lg"><Weight className="h-5 w-5 text-primary" /> {t('charts.bmi')}</CardTitle>
-              <CardDescription>{t('charts.bmiSub')}</CardDescription>
+              <CardTitle className="flex items-center gap-2 text-lg"><Weight className="h-5 w-5 text-primary" /> {tc('bmi')}</CardTitle>
+              <CardDescription>{tc('bmiSub')}</CardDescription>
             </CardHeader>
             <CardContent className="pt-6" style={{ height: '350px' }}>
               <div className="h-full w-full">
@@ -331,8 +337,8 @@ export default function OpenStatsPage() {
         <div className="bg-muted/30 p-4 rounded-lg flex items-start gap-3 border border-border/50">
           <Info className="h-5 w-5 text-primary mt-0.5" />
           <div className="text-sm text-muted-foreground">
-            <p className="font-semibold text-foreground">{t('methodology.title')}</p>
-            <p>{t('methodology.description')}</p>
+            <p className="font-semibold text-foreground">{th('title')}</p>
+            <p>{th('description')}</p>
           </div>
         </div>
       </main>
