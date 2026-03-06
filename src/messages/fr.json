@@ -14,7 +14,14 @@
     "heroWods": "Hero WODs",
     "timers": "Minuteurs",
     "goPremium": "Devenir Premium",
-    "hallOfFame": "Hall of Fame"
+    "hallOfFame": "Hall of Fame",
+    "openStats": "Open Stats"
+  },
+  "OpenStatsPage": {
+    "title": "Open Stats 2026",
+    "description": "Données live CrossFit Open via API publique – refresh quotidien",
+    "upgradeTitle": "Open Stats Premium",
+    "upgradeDescription": "Comparez-vous aux meilleurs. Débloquez les analyses avancées pour les CrossFit Open 2026."
   },
   "DashboardPage": {
     "title": "Dashboard",
@@ -87,30 +94,6 @@
       "lifting": "Haltéro",
       "upper": "Haut",
       "lower": "Bas"
-    }
-  },
-  "GenerateWodPage": {
-    "title": "Générateur de WOD IA",
-    "cardTitle": "WODBot 3000",
-    "cardDescription": "Laissez notre Coach IA générer un entraînement pour vous.",
-    "generateButton": "Générer un WOD",
-    "generatingButton": "Génération...",
-    "freePlanAlert": {
-      "title": "Plan Gratuit",
-      "description": "Nombre de générations limité."
-    },
-    "premiumPlanMessage": "Générations illimitées activées.",
-    "generatingState": {
-      "title": "Génération en cours...",
-      "description": "Le coach IA s'échauffe."
-    },
-    "errorAlert": {
-      "title": "Échec",
-      "description": "Le coach IA se repose. Réessayez plus tard."
-    },
-    "result": {
-      "title": "Votre WOD Généré",
-      "savedMessage": "Sauvegardé sur votre dashboard."
     }
   }
 }

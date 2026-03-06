@@ -14,7 +14,14 @@
     "heroWods": "Hero WODs",
     "timers": "Timers",
     "goPremium": "Go Premium",
-    "hallOfFame": "Hall of Fame"
+    "hallOfFame": "Hall of Fame",
+    "openStats": "Open Stats"
+  },
+  "OpenStatsPage": {
+    "title": "Open Stats 2026",
+    "description": "Live CrossFit Open data via public API – daily refresh",
+    "upgradeTitle": "Open Stats Premium",
+    "upgradeDescription": "Compare yourself to the best. Unlock advanced analytics for the CrossFit Open 2026."
   },
   "DashboardPage": {
     "title": "Dashboard",
@@ -87,180 +94,6 @@
       "lifting": "Lifting",
       "upper": "Upper",
       "lower": "Lower"
-    }
-  },
-  "TimerClient": {
-    "workoutComplete": "Workout Complete!",
-    "totalTime": "Total Time",
-    "timeCompleted": "Time Completed",
-    "goAgain": "Go Again",
-    "shareResult": "Share Result",
-    "shareModal": {
-      "title": "WOD Result: {wodName}",
-      "description": "Your final time was {finalTime}. This card is ready for sharing.",
-      "finalTimeLabel": "FINAL TIME",
-      "screenshotReady": "Ready for screenshot!"
-    },
-    "timeCap": "Time Cap: {duration}:00",
-    "pause": "Pause",
-    "start": "Start",
-    "reset": "Reset",
-    "finish": "Finish",
-    "round": "Round {current} / {total}",
-    "totalTimeElapsed": "Total: {time}"
-  },
-  "TimerPage": {
-    "backToDashboard": "Back to Dashboard",
-    "viewWod": "View WOD",
-    "fullWodLabel": "Full WOD: {wodName}",
-    "startSection": "Start",
-    "accessRestricted": {
-      "title": "Access Restricted",
-      "description": "Please sign up or log in to view community WODs and use the timer.",
-      "button": "Sign Up / Log In"
-    }
-  },
-  "FileUploader": {
-    "dragAndDropPrompt": "Drag & drop your WOD image, or click to select",
-    "dragActivePrompt": "Drop the image here...",
-    "fileTypes": "PNG, JPG, or GIF (max 5MB)",
-    "analyzingTitle": "Analyzing WOD...",
-    "analyzingDescription": "The AI is warming up. This might take a moment.",
-    "analysisFailedTitle": "Analysis Failed",
-    "analysisFailedDescription": "The WOD image could not be analyzed. Please try again.",
-    "duplicateDialogTitle": "Duplicate WOD Detected",
-    "duplicateDialogDescription": "This workout seems identical to a WOD you've already saved.",
-    "duplicateDialogSavedOn": "Saved on {date}",
-    "duplicateDialogQuestion": "Do you want to save this new one anyway?",
-    "duplicateDialogCancel": "Cancel",
-    "duplicateDialogConfirm": "Save Anyway",
-    "saveFailedTitle": "Save Failed",
-    "saveFailedDescription": "An error occurred while saving the WOD.",
-    "wodSavedTitle": "WOD Saved!",
-    "wodSavedDescription": "Your new WOD has been added to your dashboard.",
-    "authErrorTitle": "Could not save",
-    "authErrorDescription": "Authentication services are not available.",
-    "wodPreviewAlt": "WOD preview",
-    "analyzeButton": "Analyze WOD",
-    "analysisResultTitle": "Analysis Result",
-    "wodNamePlaceholder": "WOD Name",
-    "wodTypePlaceholder": "WOD Type",
-    "durationPlaceholder": "Duration (minutes)",
-    "shareCheckbox": "Share with the Community",
-    "shareAnonymousHelp": "Sign up for an account to share your WODs with the community.",
-    "saveWodButton": "Save WOD",
-    "savingButton": "Saving..."
-  },
-  "LoginPage": {
-    "verifying": "Verifying...",
-    "confirmEmailTitle": "Confirm Your Identity",
-    "confirmEmailDescription": "Enter the 6-digit code we sent to your email address.",
-    "confirmEmailFailedTitle": "Login Failed",
-    "confirmEmailSignInButton": "Verify & Sign In",
-    "featureTitle": "Take it to the next level.",
-    "featureDescription": "Create a free account to unlock all features and never lose a WOD again.",
-    "featureManual": "Manual Creation",
-    "featureManualDescription": "Add your own WODs without needing a photo.",
-    "featureHistory": "Full History",
-    "featureHistoryDescription": "Save and find all your workouts at any time.",
-    "featureTracking": "Performance Tracking (Soon!)",
-    "featureTrackingDescription": "Analyze your progress and visualize your performance.",
-    "formTitle": "Login / Sign Up",
-    "formDescription": "Enter your email to receive a secure one-time code. No password required.",
-    "emailSentTitle": "Check your email!",
-    "emailSentDescription": "A 6-digit code has been sent to your email. Check your inbox.",
-    "sendLinkButton": "Send Code",
-    "authError": "Authentication service is not ready.",
-    "sendLinkError": "We couldn't send the code. Please try again.",
-    "linkSentToast": "Code Sent!",
-    "linkSentToastDescription": "Check your inbox for a 6-digit code.",
-    "signInSuccessToast": "Login Successful!",
-    "signInSuccessToastDescription": "You are now signed in.",
-    "genericError": "An error occurred. Please try again.",
-    "invalidLinkError": "The code is invalid or has expired."
-  },
-  "PremiumPage": {
-    "title": "Premium",
-    "alreadyPremium": {
-      "title": "YOU ARE PREMIUM !",
-      "subtitle": "Supporter Badge activated",
-      "description": "Thank you for supporting WODBurner ❤️",
-      "communityButton": "View community",
-      "dashboardButton": "Dashboard"
-    },
-    "headerTitle": "Unleash Your Full Potential",
-    "headerDescription": "Become a WODBurner Premium member to get unlimited access.",
-    "offer": "LIFETIME LAUNCH OFFER!",
-    "monthly": "Monthly",
-    "yearly": "Yearly",
-    "discount": "-20%",
-    "freePlan": {
-      "title": "Free",
-      "description": "For casual tracking",
-      "price": "$0",
-      "perMonth": "/month",
-      "currentPlan": "Current Plan"
-    },
-    "premiumPlan": {
-      "title": "Premium",
-      "description": "For dedicated athletes",
-      "priceMonthly": "$1.99",
-      "priceYearly": "$19.99",
-      "perMonth": "/month",
-      "perYear": "/year",
-      "billedAnnually": "Billed annually",
-      "goPremium": "Go Premium →",
-      "loading": "Loading..."
-    },
-    "features": {
-      "scans": "Unlimited WOD Scans",
-      "scansFree": "3 per month",
-      "reactions": "Unlimited Community Reactions",
-      "reactionsFree": "5 per day",
-      "comments": "Post Comments",
-      "commentsFree": "Read-only",
-      "favorites": "Unlimited Favorite WODs",
-      "favoritesFree": "Max 10",
-      "customs": "Unlimited Custom WODs",
-      "customsFree": "Max 3",
-      "search": "Advanced Search Filters",
-      "badge": "Exclusive Supporter Badge",
-      "unlimited": "Unlimited",
-      "notIncluded": "Not included"
-    },
-    "toasts": {
-      "welcomeTitle": "Welcome to Premium!",
-      "welcomeDescription": "Your badge is now active.",
-      "cancelTitle": "Payment Canceled",
-      "cancelDescription": "Try again when ready.",
-      "loginRequiredTitle": "Login Required",
-      "loginRequiredDescription": "Create account to upgrade.",
-      "paymentErrorTitle": "Payment Error",
-      "paymentErrorDescription": "Could not initiate checkout."
-    }
-  },
-  "GenerateWodPage": {
-    "title": "AI WOD Generator",
-    "cardTitle": "WODBot 3000",
-    "cardDescription": "Let our AI Coach generate a unique workout for you.",
-    "generateButton": "Generate a New WOD",
-    "generatingButton": "Generating...",
-    "freePlanAlert": {
-      "title": "Free Plan",
-      "description": "You have a limited number of daily generations."
-    },
-    "premiumPlanMessage": "Unlimited generations enabled.",
-    "generatingState": {
-      "title": "Generating your WOD...",
-      "description": "The AI Coach is warming up."
-    },
-    "errorAlert": {
-      "title": "Generation Failed",
-      "description": "The AI coach is resting. Please try again."
-    },
-    "result": {
-      "title": "Your Generated WOD",
-      "savedMessage": "This WOD has been saved to your dashboard."
     }
   }
 }
