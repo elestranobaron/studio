@@ -21,8 +21,26 @@
   "OpenStatsPage": {
     "title": "Open Stats",
     "description": "Live CrossFit Open data via public API – daily refresh",
-    "upgradeTitle": "Open Stats Premium",
-    "upgradeDescription": "Compare yourself to the best. Unlock advanced analytics for the CrossFit Open 2026."
+    "metrics": {
+      "athletes": "Athletes Analyzed",
+      "median": "Median",
+      "top10": "Top 10%",
+      "elite": "Elite (1%)"
+    },
+    "userScore": {
+      "title": "Compare my score",
+      "percentile": "Global Percentile"
+    },
+    "charts": {
+      "distribution": "Score Distribution",
+      "distributionSub": "Distribution over the analyzed sample",
+      "bmi": "BMI / Rank Correlation",
+      "bmiSub": "Impact of BMI on global ranking"
+    },
+    "methodology": {
+      "title": "Methodology",
+      "description": "Data retrieved in real-time via the CrossFit public API. Statistics are based on a representative sample of top worldwide athletes."
+    }
   },
   "DashboardPage": {
     "title": "Dashboard",

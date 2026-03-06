@@ -10,11 +10,13 @@ import { SidebarTrigger } from '@/components/ui/sidebar';
 import { useOpenStats } from '@/hooks/use-open-stats';
 import { 
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, 
-  ScatterChart, Scatter, Cell 
+  ScatterChart, Scatter, Cell, ReferenceLine, Label as RechartsLabel
 } from 'recharts';
-import { LoaderCircle, Info, Users, BarChart3, Weight, Trophy, AlertTriangle, Calendar as CalendarIcon, Activity } from 'lucide-react';
+import { LoaderCircle, Info, Users, BarChart3, Weight, Trophy, AlertTriangle, Calendar as CalendarIcon, Activity, Target, User } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Input } from '@/components/ui/input';
 import { useTranslations } from 'next-intl';
+import { cn } from '@/lib/utils';
 
 export default function OpenStatsPage() {
   const t = useTranslations('OpenStatsPage');
@@ -26,6 +28,13 @@ export default function OpenStatsPage() {
   const [workout, setWorkout] = useState("0");
   const [division, setDivision] = useState("1");
   const [region, setRegion] = useState("0");
+  
+  const [userScoreInput, setUserScoreInput] = useState("");
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   useEffect(() => {
     if (!isUserLoading && (!user || !user.premium)) {
@@ -52,8 +61,8 @@ export default function OpenStatsPage() {
       bins[bin] = (bins[bin] || 0) + 1;
     });
     return Object.entries(bins)
-      .map(([name, count]) => ({ name, count }))
-      .sort((a, b) => parseInt(a.name) - parseInt(b.name));
+      .map(([name, count]) => ({ name: parseInt(name), count }))
+      .sort((a, b) => a.name - b.name);
   }, [stats]);
 
   const scatterData = useMemo(() => {
@@ -63,7 +72,24 @@ export default function OpenStatsPage() {
       .map(e => ({ x: e.bmi, y: e.rank, name: e.name }));
   }, [stats]);
 
-  if (isUserLoading) {
+  const userNumericScore = useMemo(() => {
+    if (!userScoreInput) return null;
+    if (userScoreInput.includes(':')) {
+      const [m, s] = userScoreInput.split(':').map(Number);
+      return (m * 60) + (s || 0);
+    }
+    return parseInt(userScoreInput) || null;
+  }, [userScoreInput]);
+
+  const userPercentile = useMemo(() => {
+    if (!stats || userNumericScore === null) return null;
+    const scores = stats.data.map(e => e.reps).sort((a, b) => a - b);
+    const index = scores.findIndex(s => s >= userNumericScore);
+    if (index === -1) return 100;
+    return Math.round((index / scores.length) * 100);
+  }, [stats, userNumericScore]);
+
+  if (isUserLoading || !isMounted) {
     return (
       <div className="flex h-screen w-full items-center justify-center">
         <LoaderCircle className="h-12 w-12 animate-spin text-primary" />
@@ -85,9 +111,14 @@ export default function OpenStatsPage() {
           <div className="flex items-center gap-4">
             <SidebarTrigger />
             <div className="flex flex-col">
-              <h1 className="text-2xl font-bold font-headline tracking-tight md:text-3xl text-primary flex items-center gap-2">
-                {t('title')} <span className="text-muted-foreground/50">|</span> {year}
-              </h1>
+              <div className="flex items-center gap-2">
+                <h1 className="text-2xl font-bold font-headline tracking-tight md:text-3xl text-primary">
+                  {t('title')}
+                </h1>
+                <div className="bg-primary/20 text-primary text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-widest border border-primary/30">
+                  Premium
+                </div>
+              </div>
               <p className="text-xs text-muted-foreground hidden md:block">{t('description')}</p>
             </div>
           </div>
@@ -155,18 +186,18 @@ export default function OpenStatsPage() {
           </div>
         )}
 
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-4 lg:grid-cols-5 gap-4">
           <Card className="bg-primary/5 border-primary/20">
             <CardHeader className="pb-2">
               <CardDescription className="flex items-center gap-2 text-xs uppercase tracking-wider font-bold">
-                <Users className="h-3 w-3" /> Athlètes Analysés
+                <Users className="h-3 w-3" /> {t('metrics.athletes')}
               </CardDescription>
               <CardTitle className="text-3xl font-bold">{isLoading ? "..." : (stats?.totalCount || 0)}</CardTitle>
             </CardHeader>
           </Card>
           <Card>
             <CardHeader className="pb-2">
-              <CardDescription className="text-xs uppercase tracking-wider font-bold">Médiane</CardDescription>
+              <CardDescription className="text-xs uppercase tracking-wider font-bold">{t('metrics.median')}</CardDescription>
               <CardTitle className="text-3xl font-bold text-blue-400">
                 {isLoading ? "..." : formatScore(stats?.median || 0)}
               </CardTitle>
@@ -175,7 +206,7 @@ export default function OpenStatsPage() {
           <Card>
             <CardHeader className="pb-2">
               <CardDescription className="flex items-center gap-2 text-xs uppercase tracking-wider font-bold">
-                <Trophy className="h-3 w-3 text-yellow-500" /> Top 10%
+                <Trophy className="h-3 w-3 text-yellow-500" /> {t('metrics.top10')}
               </CardDescription>
               <CardTitle className="text-3xl font-bold text-yellow-500">
                 {isLoading ? "..." : formatScore(stats?.p90 || 0)}
@@ -184,19 +215,43 @@ export default function OpenStatsPage() {
           </Card>
           <Card className="bg-yellow-500/10 border-yellow-500/30">
             <CardHeader className="pb-2">
-              <CardDescription className="font-bold text-yellow-600 text-xs uppercase tracking-wider">Élite (1%)</CardDescription>
+              <CardDescription className="font-bold text-yellow-600 text-xs uppercase tracking-wider">{t('metrics.elite')}</CardDescription>
               <CardTitle className="text-3xl font-bold text-yellow-600">
                 {isLoading ? "..." : formatScore(stats?.p99 || 0)}
               </CardTitle>
             </CardHeader>
+          </Card>
+          
+          <Card className="md:col-span-4 lg:col-span-1 bg-accent/10 border-accent/30 shadow-lg shadow-accent/5">
+            <CardHeader className="pb-2">
+              <CardDescription className="flex items-center gap-2 text-xs uppercase tracking-wider font-bold text-accent-foreground">
+                <Target className="h-3 w-3" /> {t('userScore.title')}
+              </CardDescription>
+              <div className="flex items-center gap-2 mt-1">
+                <Input 
+                  placeholder={workout === "0" ? "Reps" : "MM:SS"}
+                  value={userScoreInput}
+                  onChange={(e) => setUserScoreInput(e.target.value)}
+                  className="h-8 text-sm border-accent/50 bg-background/50 focus-visible:ring-accent"
+                />
+              </div>
+            </CardHeader>
+            <CardContent>
+               {userPercentile !== null && (
+                 <div className="flex flex-col items-center justify-center pt-1 animate-in fade-in slide-in-from-top-1">
+                    <p className="text-2xl font-bold text-accent-foreground">{userPercentile}%</p>
+                    <p className="text-[10px] uppercase font-bold text-muted-foreground">{t('userScore.percentile')}</p>
+                 </div>
+               )}
+            </CardContent>
           </Card>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           <Card className="shadow-lg overflow-hidden min-h-[450px]">
             <CardHeader className="bg-muted/30 border-b">
-              <CardTitle className="flex items-center gap-2 text-lg"><BarChart3 className="h-5 w-5 text-primary" /> Distribution des scores</CardTitle>
-              <CardDescription>Répartition sur l'échantillon analysé</CardDescription>
+              <CardTitle className="flex items-center gap-2 text-lg"><BarChart3 className="h-5 w-5 text-primary" /> {t('charts.distribution')}</CardTitle>
+              <CardDescription>{t('charts.distributionSub')}</CardDescription>
             </CardHeader>
             <CardContent className="pt-6 h-[350px]">
               {isLoading ? (
@@ -205,7 +260,7 @@ export default function OpenStatsPage() {
                 </div>
               ) : (
                 <ResponsiveContainer width="100%" height="100%" minHeight={300}>
-                  <BarChart data={histogramData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                  <BarChart data={histogramData} margin={{ top: 20, right: 10, left: -20, bottom: 0 }}>
                     <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" />
                     <XAxis dataKey="name" stroke="hsl(var(--muted-foreground))" fontSize={10} tickLine={false} axisLine={false} />
                     <YAxis stroke="hsl(var(--muted-foreground))" fontSize={10} tickLine={false} axisLine={false} />
@@ -214,6 +269,23 @@ export default function OpenStatsPage() {
                       cursor={{ fill: 'hsl(var(--primary) / 0.1)' }}
                     />
                     <Bar dataKey="count" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
+                    
+                    {userNumericScore !== null && (
+                      <ReferenceLine 
+                        x={userNumericScore} 
+                        stroke="hsl(var(--accent-foreground))" 
+                        strokeWidth={3} 
+                        strokeDasharray="5 5"
+                      >
+                        <RechartsLabel 
+                          value="MOI" 
+                          position="top" 
+                          fill="hsl(var(--accent-foreground))" 
+                          fontSize={12} 
+                          fontWeight="bold"
+                        />
+                      </ReferenceLine>
+                    )}
                   </BarChart>
                 </ResponsiveContainer>
               )}
@@ -222,8 +294,8 @@ export default function OpenStatsPage() {
 
           <Card className="shadow-lg overflow-hidden min-h-[450px]">
             <CardHeader className="bg-muted/30 border-b">
-              <CardTitle className="flex items-center gap-2 text-lg"><Weight className="h-5 w-5 text-primary" /> Corrélation IMC / Rang</CardTitle>
-              <CardDescription>Impact de l'IMC sur le classement mondial</CardDescription>
+              <CardTitle className="flex items-center gap-2 text-lg"><Weight className="h-5 w-5 text-primary" /> {t('charts.bmi')}</CardTitle>
+              <CardDescription>{t('charts.bmiSub')}</CardDescription>
             </CardHeader>
             <CardContent className="pt-6 h-[350px]">
               {isLoading ? (
@@ -255,8 +327,8 @@ export default function OpenStatsPage() {
         <div className="bg-muted/30 p-4 rounded-lg flex items-start gap-3 border border-border/50">
           <Info className="h-5 w-5 text-primary mt-0.5" />
           <div className="text-sm text-muted-foreground">
-            <p className="font-semibold text-foreground">Méthodologie</p>
-            <p>Données récupérées en temps réel via l'API publique CrossFit. Les statistiques sont basées sur un échantillon représentatif des premiers athlètes mondiaux pour la division et la région sélectionnées.</p>
+            <p className="font-semibold text-foreground">{t('methodology.title')}</p>
+            <p>{t('methodology.description')}</p>
           </div>
         </div>
       </main>

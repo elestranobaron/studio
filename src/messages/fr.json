@@ -21,8 +21,26 @@
   "OpenStatsPage": {
     "title": "Open Stats",
     "description": "Données live CrossFit Open via API publique – refresh quotidien",
-    "upgradeTitle": "Open Stats Premium",
-    "upgradeDescription": "Comparez-vous aux meilleurs. Débloquez les analyses avancées pour les CrossFit Open 2026."
+    "metrics": {
+      "athletes": "Athlètes Analysés",
+      "median": "Médiane",
+      "top10": "Top 10%",
+      "elite": "Élite (1%)"
+    },
+    "userScore": {
+      "title": "Comparer mon score",
+      "percentile": "Percentile Mondial"
+    },
+    "charts": {
+      "distribution": "Distribution des scores",
+      "distributionSub": "Répartition sur l'échantillon analysé",
+      "bmi": "Corrélation IMC / Rang",
+      "bmiSub": "Impact de l'IMC sur le classement mondial"
+    },
+    "methodology": {
+      "title": "Méthodologie",
+      "description": "Données récupérées en temps réel via l'API publique CrossFit. Les statistiques sont basées sur un échantillon représentatif des premiers athlètes mondiaux pour la division et la région sélectionnées."
+    }
   },
   "DashboardPage": {
     "title": "Dashboard",
@@ -95,6 +113,45 @@
       "lifting": "Haltéro",
       "upper": "Haut",
       "lower": "Bas"
+    }
+  },
+  "TimerPage": {
+    "backToDashboard": "Retour au Dashboard",
+    "viewWod": "Voir le WOD",
+    "fullWodLabel": "WOD Complet : {wodName}",
+    "startSection": "Démarrer",
+    "accessRestricted": {
+      "title": "Accès restreint",
+      "description": "Veuillez vous inscrire ou vous connecter pour voir les WODs de la communauté.",
+      "button": "S'inscrire / Se connecter"
+    }
+  },
+  "GenericTimerPage": {
+    "backLink": "Retour aux timers",
+    "startButton": "Démarrer le timer",
+    "forTime": {
+      "title": "For Time",
+      "description": "Chronomètre simple. Optionnellement, définissez un temps limite.",
+      "timeCapLabel": "Temps limite (minutes, optionnel)",
+      "timeCapPlaceholder": "ex: 20"
+    },
+    "amrap": {
+      "title": "Timer AMRAP",
+      "description": "Fixez une durée et faites le maximum de tours.",
+      "durationLabel": "Durée (minutes)"
+    },
+    "emom": {
+      "title": "Timer EMOM",
+      "description": "Every Minute On the Minute. Réglez l'intervalle et le nombre de tours.",
+      "roundsLabel": "Nombre de tours",
+      "intervalLabel": "Durée de l'intervalle",
+      "intervalMinutes": "min",
+      "intervalSeconds": "sec"
+    },
+    "tabata": {
+      "title": "Timer Tabata",
+      "description": "Intervalles haute intensité : 20s travail, 10s repos.",
+      "roundsLabel": "Tours"
     }
   }
 }
