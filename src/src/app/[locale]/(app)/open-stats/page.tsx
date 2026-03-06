@@ -3,24 +3,23 @@
 
 import { useUser } from '@/firebase/provider';
 import { useRouter } from 'next/navigation';
-import { useOpenStats, LeaderboardRow } from '@/hooks/use-open-stats';
+import { useOpenStats } from '@/hooks/use-open-stats';
 import { useState, useMemo } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { SidebarTrigger, useSidebar } from '@/components/ui/sidebar';
+import { SidebarTrigger } from '@/components/ui/sidebar';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, BarChart3, Info, Loader2, TrendingUp, Users, Scale, Activity } from 'lucide-react';
+import { BarChart3, Info, Loader2, TrendingUp, Users, Scale, Activity } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { 
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, 
-  ScatterChart, Scatter, ZAxis, Cell, LineChart, Line 
+  ScatterChart, Scatter
 } from 'recharts';
 
 export default function OpenStatsPage() {
   const t = useTranslations('OpenStatsPage');
   const { user, isUserLoading } = useUser();
   const router = useRouter();
-  const { toggleSidebar } = useSidebar();
 
   const [division, setDivision] = useState('1');
   const [region, setRegion] = useState('0');
@@ -28,7 +27,6 @@ export default function OpenStatsPage() {
 
   const { rows, totalCompetitors, loading, error } = useOpenStats(division, region, scaled);
 
-  // Stats Calculations
   const stats = useMemo(() => {
     if (!rows.length) return null;
 
@@ -47,10 +45,10 @@ export default function OpenStatsPage() {
       return arr[index];
     };
 
-    // Distribution for Histogram
+    // Distribution
     const bins: Record<string, number> = {};
     workout1Scores.forEach(s => {
-      const bin = Math.floor(s / 1000000) * 10; // Simple grouping logic
+      const bin = Math.floor(s / 1000000) * 10;
       const label = `${bin} reps`;
       bins[label] = (bins[label] || 0) + 1;
     });
@@ -67,8 +65,6 @@ export default function OpenStatsPage() {
 
     return {
       median: getPercentile(workout1Scores, 50),
-      p90: getPercentile(workout1Scores, 90),
-      p99: getPercentile(workout1Scores, 99),
       avgBmi: bmis.length ? (bmis.reduce((a, b) => a + b, 0) / bmis.length).toFixed(1) : 'N/A',
       chartData,
       scatterData
@@ -105,7 +101,6 @@ export default function OpenStatsPage() {
       </header>
 
       <main className="flex-1 overflow-y-auto p-4 md:p-6 space-y-6">
-        {/* Filters */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <Card>
             <CardHeader className="py-3 px-4">
@@ -179,7 +174,6 @@ export default function OpenStatsPage() {
           <div className="p-8 text-center text-destructive">{error}</div>
         ) : (
           <>
-            {/* Quick Stats */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
               <Card className="bg-primary/5 border-primary/20">
                 <CardHeader className="p-4 pb-0">
@@ -219,21 +213,20 @@ export default function OpenStatsPage() {
               </Card>
             </div>
 
-            {/* Charts */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <Card>
                 <CardHeader>
                   <CardTitle className="text-lg flex items-center gap-2">
                     <TrendingUp className="w-5 h-5 text-primary" /> Rank vs. BMI Correlation
                   </CardTitle>
-                  <CardDescription>Analysis of body composition influence on rank (Top 500)</CardDescription>
+                  <CardDescription>Analysis of body composition influence on rank (Top 250 sample)</CardDescription>
                 </CardHeader>
                 <CardContent className="h-[300px]">
                   <ResponsiveContainer width="100%" height="100%">
                     <ScatterChart margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
                       <CartesianGrid strokeDasharray="3 3" opacity={0.1} />
                       <XAxis type="number" dataKey="bmi" name="BMI" unit="kg/m²" domain={['dataMin - 2', 'dataMax + 2']} />
-                      <YAxis type="number" dataKey="rank" name="Rank" reversed domain={[1, 500]} />
+                      <YAxis type="number" dataKey="rank" name="Rank" reversed domain={[1, 250]} />
                       <Tooltip cursor={{ strokeDasharray: '3 3' }} contentStyle={{ backgroundColor: 'hsl(var(--card))', borderColor: 'hsl(var(--border))' }} />
                       <Scatter name="Athletes" data={stats?.scatterData} fill="hsl(var(--primary))" opacity={0.6} />
                     </ScatterChart>
@@ -244,9 +237,9 @@ export default function OpenStatsPage() {
               <Card>
                 <CardHeader>
                   <CardTitle className="text-lg flex items-center gap-2">
-                    <TrendingUp className="w-5 h-5 text-blue-400" /> Score Consistency
+                    <TrendingUp className="w-5 h-5 text-blue-400" /> Score Distribution
                   </CardTitle>
-                  <CardDescription>Top percentiles rank stability across samples</CardDescription>
+                  <CardDescription>Frequency of scores in current sample</CardDescription>
                 </CardHeader>
                 <CardContent className="h-[300px]">
                   <ResponsiveContainer width="100%" height="100%">
