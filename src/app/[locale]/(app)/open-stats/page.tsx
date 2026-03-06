@@ -35,7 +35,6 @@ export default function OpenStatsPage() {
     setIsMounted(true);
   }, []);
 
-  // On récupère les données pour TOUT LE MONDE maintenant
   useEffect(() => {
     fetchLeaderboard(parseInt(year), parseInt(workout), parseInt(division), parseInt(region));
   }, [year, workout, division, region, fetchLeaderboard]);
@@ -81,7 +80,7 @@ export default function OpenStatsPage() {
     return Math.round((index / scores.length) * 100);
   }, [stats, userNumericScore]);
 
-  if (isUserLoading || !isMounted) {
+  if (!isMounted || isUserLoading) {
     return (
       <div className="flex h-screen w-full items-center justify-center">
         <LoaderCircle className="h-12 w-12 animate-spin text-primary" />

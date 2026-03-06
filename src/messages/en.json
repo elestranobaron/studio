@@ -365,7 +365,7 @@
   },
   "HeroWodsPage": {
     "title": "Hero WODs",
-    "description": \"Hero\" WODs are special workouts in CrossFit dedicated to men and women who have given their lives in the line of duty. They are an opportunity to reflect and honor their sacrifice.",
+    "description": "Hero WODs are special workouts in CrossFit dedicated to men and women who have given their lives in the line of duty. They are an opportunity to reflect and honor their sacrifice.",
     "premiumUpsell": {
       "title": "Unlock the Full Arsenal",
       "description": "Go Premium to access the full library of over {totalWodCount}+ Hero and Benchmark WODs, including {premiumWodCount} exclusive workouts.",
