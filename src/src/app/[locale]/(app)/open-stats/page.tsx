@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useUser } from '@/firebase/provider';
@@ -45,9 +44,10 @@ export default function OpenStatsPage() {
       return arr[index];
     };
 
-    // Distribution
+    // Distribution des scores
     const bins: Record<string, number> = {};
     workout1Scores.forEach(s => {
+      // On simplifie le score pour l'affichage (ex: reps)
       const bin = Math.floor(s / 1000000) * 10;
       const label = `${bin} reps`;
       bins[label] = (bins[label] || 0) + 1;
@@ -228,7 +228,7 @@ export default function OpenStatsPage() {
                       <XAxis type="number" dataKey="bmi" name="BMI" unit="kg/m²" domain={['dataMin - 2', 'dataMax + 2']} />
                       <YAxis type="number" dataKey="rank" name="Rank" reversed domain={[1, 250]} />
                       <Tooltip cursor={{ strokeDasharray: '3 3' }} contentStyle={{ backgroundColor: 'hsl(var(--card))', borderColor: 'hsl(var(--border))' }} />
-                      <Scatter name="Athletes" data={stats?.scatterData} fill="hsl(var(--primary))" opacity={0.6} />
+                      <Scatter name="Athletes" data={stats?.scatterData || []} fill="hsl(var(--primary))" opacity={0.6} />
                     </ScatterChart>
                   </ResponsiveContainer>
                 </CardContent>
@@ -243,7 +243,7 @@ export default function OpenStatsPage() {
                 </CardHeader>
                 <CardContent className="h-[300px]">
                   <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={stats?.chartData}>
+                    <BarChart data={stats?.chartData || []}>
                       <CartesianGrid strokeDasharray="3 3" opacity={0.1} />
                       <XAxis dataKey="name" />
                       <YAxis />

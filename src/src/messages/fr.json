@@ -1,4 +1,3 @@
-
 {
   "UserNav": {
     "signIn": "Se connecter",
@@ -22,7 +21,8 @@
     "title": "Open Stats 2026",
     "description": "Données live CrossFit Open via API publique – refresh quotidien",
     "upgradeTitle": "Open Stats Premium",
-    "upgradeDescription": "Comparez-vous aux meilleurs. Débloquez les analyses avancées pour les CrossFit Open 2026."
+    "upgradeDescription": "Comparez-vous aux meilleurs. Débloquez les analyses avancées pour les CrossFit Open 2026.",
+    "searchInputPlaceholder": "Rechercher des WODs..."
   },
   "DashboardPage": {
     "title": "Dashboard",

@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
@@ -72,7 +71,7 @@ export function useOpenStats(division: string = '1', region: string = '0', scale
     try {
       const rows: LeaderboardRow[] = [];
       let totalCompetitors = 0;
-      const pagesToFetch = 5; // Fetching 250 athletes for statistical significance
+      const pagesToFetch = 5; // On récupère 250 athlètes pour avoir un échantillon significatif
 
       for (let page = 1; page <= pagesToFetch; page++) {
         const url = `https://c3po.crossfit.com/api/competitions/v2/competitions/open/2026/leaderboards?division=${division}&region=${region}&scaled=${scaled}&page=${page}&sort=0`;
@@ -90,7 +89,7 @@ export function useOpenStats(division: string = '1', region: string = '0', scale
         rows.push(...processedRows);
         
         if (page >= json.pagination.totalPages) break;
-        // Basic rate limiting
+        // Petit délai pour le rate limit
         await new Promise(r => setTimeout(r, 200));
       }
 
