@@ -210,6 +210,7 @@ export default function OpenStatsPage() {
                 {isLoading ? "..." : formatScore(stats?.p99 || 0)}
               </CardTitle>
             </CardHeader>
+          </Card>
           
           <Card className="md:col-span-4 lg:col-span-1 border-accent/30 shadow-lg relative overflow-hidden">
             {!user?.premium && (
@@ -252,44 +253,46 @@ export default function OpenStatsPage() {
               <CardTitle className="flex items-center gap-2 text-lg"><BarChart3 className="h-5 w-5 text-primary" /> {t('charts.distribution')}</CardTitle>
               <CardDescription>{t('charts.distributionSub')}</CardDescription>
             </CardHeader>
-            <CardContent className="pt-6 h-[350px]">
-              {isLoading ? (
-                <div className="h-full w-full flex items-center justify-center bg-muted/10 rounded-md">
-                  <LoaderCircle className="h-8 w-8 animate-spin text-muted-foreground" />
-                </div>
-              ) : (
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={histogramData} margin={{ top: 20, right: 10, left: -20, bottom: 0 }}>
-                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" />
-                    <XAxis dataKey="name" stroke="hsl(var(--muted-foreground))" fontSize={10} tickLine={false} axisLine={false} />
-                    <YAxis stroke="hsl(var(--muted-foreground))" fontSize={10} tickLine={false} axisLine={false} />
-                    <Tooltip 
-                      contentStyle={{ backgroundColor: 'hsl(var(--card))', borderRadius: '8px', border: '1px solid hsl(var(--border))' }}
-                      itemStyle={{ color: 'hsl(var(--foreground))' }}
-                      labelStyle={{ color: 'hsl(var(--muted-foreground))' }}
-                      cursor={{ fill: 'hsl(var(--primary) / 0.1)' }}
-                    />
-                    <Bar dataKey="count" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
-                    
-                    {userNumericScore !== null && (
-                      <ReferenceLine 
-                        x={userNumericScore} 
-                        stroke="hsl(var(--accent-foreground))" 
-                        strokeWidth={3} 
-                        strokeDasharray="5 5"
-                      >
-                        <RechartsLabel 
-                          value="MOI" 
-                          position="top" 
-                          fill="hsl(var(--accent-foreground))" 
-                          fontSize={12} 
-                          fontWeight="bold"
-                        />
-                      </ReferenceLine>
-                    )}
-                  </BarChart>
-                </ResponsiveContainer>
-              )}
+            <CardContent className="pt-6">
+              <div className="h-[350px] w-full">
+                {isLoading ? (
+                  <div className="h-full w-full flex items-center justify-center bg-muted/10 rounded-md">
+                    <LoaderCircle className="h-8 w-8 animate-spin text-muted-foreground" />
+                  </div>
+                ) : (
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart data={histogramData} margin={{ top: 20, right: 10, left: -20, bottom: 0 }}>
+                      <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" />
+                      <XAxis dataKey="name" stroke="hsl(var(--muted-foreground))" fontSize={10} tickLine={false} axisLine={false} />
+                      <YAxis stroke="hsl(var(--muted-foreground))" fontSize={10} tickLine={false} axisLine={false} />
+                      <Tooltip 
+                        contentStyle={{ backgroundColor: 'hsl(var(--card))', borderRadius: '8px', border: '1px solid hsl(var(--border))' }}
+                        itemStyle={{ color: 'hsl(var(--foreground))' }}
+                        labelStyle={{ color: 'hsl(var(--muted-foreground))' }}
+                        cursor={{ fill: 'hsl(var(--primary) / 0.1)' }}
+                      />
+                      <Bar dataKey="count" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
+                      
+                      {userNumericScore !== null && (
+                        <ReferenceLine 
+                          x={userNumericScore} 
+                          stroke="hsl(var(--accent-foreground))" 
+                          strokeWidth={3} 
+                          strokeDasharray="5 5"
+                        >
+                          <RechartsLabel 
+                            value="MOI" 
+                            position="top" 
+                            fill="hsl(var(--accent-foreground))" 
+                            fontSize={12} 
+                            fontWeight="bold"
+                          />
+                        </ReferenceLine>
+                      )}
+                    </BarChart>
+                  </ResponsiveContainer>
+                )}
+              </div>
             </CardContent>
           </Card>
 
@@ -298,31 +301,33 @@ export default function OpenStatsPage() {
               <CardTitle className="flex items-center gap-2 text-lg"><Weight className="h-5 w-5 text-primary" /> {t('charts.bmi')}</CardTitle>
               <CardDescription>{t('charts.bmiSub')}</CardDescription>
             </CardHeader>
-            <CardContent className="pt-6 h-[350px]">
-              {isLoading ? (
-                <div className="h-full w-full flex items-center justify-center bg-muted/10 rounded-md">
-                  <LoaderCircle className="h-8 w-8 animate-spin text-muted-foreground" />
-                </div>
-              ) : (
-                <ResponsiveContainer width="100%" height="100%">
-                  <ScatterChart margin={{ top: 10, right: 10, bottom: 20, left: -20 }}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                    <XAxis type="number" dataKey="x" name="BMI" domain={[18, 35]} label={{ value: 'IMC', position: 'insideBottom', offset: -10, fontSize: 10 }} stroke="hsl(var(--muted-foreground))" fontSize={10} />
-                    <YAxis type="number" dataKey="y" name="Rank" reversed label={{ value: 'Rang', angle: -90, position: 'insideLeft', fontSize: 10 }} stroke="hsl(var(--muted-foreground))" fontSize={10} />
-                    <Tooltip 
-                      cursor={{ strokeDasharray: '3 3' }}
-                      contentStyle={{ backgroundColor: 'hsl(var(--card))', borderRadius: '8px', border: '1px solid hsl(var(--border))' }}
-                      itemStyle={{ color: 'hsl(var(--foreground))' }}
-                      labelStyle={{ color: 'hsl(var(--muted-foreground))' }}
-                    />
-                    <Scatter name="Athletes" data={scatterData}>
-                      {scatterData.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={entry.y <= 100 ? '#eab308' : 'hsl(var(--primary))'} />
-                      ))}
-                    </Scatter>
-                  </ScatterChart>
-                </ResponsiveContainer>
-              )}
+            <CardContent className="pt-6">
+              <div className="h-[350px] w-full">
+                {isLoading ? (
+                  <div className="h-full w-full flex items-center justify-center bg-muted/10 rounded-md">
+                    <LoaderCircle className="h-8 w-8 animate-spin text-muted-foreground" />
+                  </div>
+                ) : (
+                  <ResponsiveContainer width="100%" height="100%">
+                    <ScatterChart margin={{ top: 10, right: 10, bottom: 20, left: -20 }}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                      <XAxis type="number" dataKey="x" name="BMI" domain={[18, 35]} label={{ value: 'IMC', position: 'insideBottom', offset: -10, fontSize: 10, fill: 'hsl(var(--muted-foreground))' }} stroke="hsl(var(--muted-foreground))" fontSize={10} />
+                      <YAxis type="number" dataKey="y" name="Rank" reversed label={{ value: 'Rang', angle: -90, position: 'insideLeft', fontSize: 10, fill: 'hsl(var(--muted-foreground))' }} stroke="hsl(var(--muted-foreground))" fontSize={10} />
+                      <Tooltip 
+                        cursor={{ strokeDasharray: '3 3' }}
+                        contentStyle={{ backgroundColor: 'hsl(var(--card))', borderRadius: '8px', border: '1px solid hsl(var(--border))' }}
+                        itemStyle={{ color: 'hsl(var(--foreground))' }}
+                        labelStyle={{ color: 'hsl(var(--muted-foreground))' }}
+                      />
+                      <Scatter name="Athletes" data={scatterData}>
+                        {scatterData.map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={entry.y <= 100 ? '#eab308' : 'hsl(var(--primary))'} />
+                        ))}
+                      </Scatter>
+                    </ScatterChart>
+                  </ResponsiveContainer>
+                )}
+              </div>
             </CardContent>
           </Card>
         </div>
