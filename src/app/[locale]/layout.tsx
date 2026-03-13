@@ -1,4 +1,3 @@
-
 import { NextIntlClientProvider } from 'next-intl';
 import { getMessages, setRequestLocale } from 'next-intl/server';
 import { ReactNode } from 'react';
@@ -89,7 +88,10 @@ export default async function LocaleLayout({ children, params }: Props) {
         />
       </head>
       <body>
-        <NextIntlClientProvider locale={locale} messages={messages}>
+        <NextIntlClientProvider 
+            locale={locale} 
+            messages={messages}
+        >
           <FirebaseProvider>
             {children}
             <Toaster />

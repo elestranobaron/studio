@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
@@ -254,8 +253,8 @@ export default function OpenStatsPage() {
               <CardTitle className="flex items-center gap-2 text-lg"><BarChart3 className="h-5 w-5 text-primary" /> {t('charts.distribution')}</CardTitle>
               <CardDescription>{t('charts.distributionSub')}</CardDescription>
             </CardHeader>
-            <CardContent className="pt-6 h-[350px]">
-              <div className="h-full w-full">
+            <CardContent className="pt-6">
+              <div className="h-[350px] w-full min-h-[350px]">
                 {isLoading ? (
                   <div className="h-full w-full flex items-center justify-center bg-muted/10 rounded-md">
                     <LoaderCircle className="h-8 w-8 animate-spin text-muted-foreground" />
@@ -307,8 +306,8 @@ export default function OpenStatsPage() {
               <CardTitle className="flex items-center gap-2 text-lg"><Weight className="h-5 w-5 text-primary" /> {t('charts.bmi')}</CardTitle>
               <CardDescription>{t('charts.bmiSub')}</CardDescription>
             </CardHeader>
-            <CardContent className="pt-6 h-[350px]">
-              <div className="h-full w-full">
+            <CardContent className="pt-6">
+              <div className="h-[350px] w-full min-h-[350px]">
                 {isLoading ? (
                   <div className="h-full w-full flex items-center justify-center bg-muted/10 rounded-md">
                     <LoaderCircle className="h-8 w-8 animate-spin text-muted-foreground" />
