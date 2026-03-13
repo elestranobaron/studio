@@ -1,3 +1,4 @@
+
 import { NextIntlClientProvider } from 'next-intl';
 import { getMessages, setRequestLocale } from 'next-intl/server';
 import { ReactNode } from 'react';
@@ -28,7 +29,7 @@ const locales = [
 
 type Props = {
   children: ReactNode;
-  params: Promise<{ locale: string }>; // ← Important : Promise maintenant !
+  params: Promise<{ locale: string }>;
 };
 
 export function generateStaticParams() {
@@ -36,9 +37,8 @@ export function generateStaticParams() {
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { locale } = await params; // ← Await ici
+  const { locale } = await params;
 
-  // Validation simple de la locale (sécurité + 404 si invalide)
   if (!locales.includes(locale)) {
     notFound();
   }
@@ -65,9 +65,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function LocaleLayout({ children, params }: Props) {
-  const { locale } = await params; // ← Await ici aussi
+  const { locale } = await params;
 
-  // Si la locale n'est pas supportée → 404
   if (!locales.includes(locale)) {
     notFound();
   }
