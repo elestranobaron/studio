@@ -23,6 +23,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     '/settings',
     '/wod/new',
     '/hall-of-fame',
+    '/open-stats',
   ].flatMap((route) =>
     locales.map((locale) => ({
       url: `${baseUrl}/${locale}${route}`,
@@ -52,5 +53,3 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
   return [...rootRoutes, ...staticRoutes, ...heroWodRoutes];
 }
-
-    

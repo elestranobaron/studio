@@ -416,9 +416,7 @@
     "premiumPlanMessage": "Unlimited generations enabled.",
     "generatingState": {
       "title": "Generating your WOD...",
-      "description": "The AI Coach is warming up. This might take a moment.",
-      "title": "Generating your WOD...",
-      "description": "The AI coach is warming up. This might take a moment."
+      "description": "The AI Coach is warming up. This might take a moment."
     },
     "errorAlert": {
       "title": "Generation Failed",
