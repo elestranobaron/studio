@@ -36,8 +36,8 @@ export function MainNav() {
   ];
 
   const secondaryLinks = [
-    { href: "/premium", label: t("goPremium"), icon: Gem, className: "text-primary hover:text-primary" },
-    { href: "/hall-of-fame", label: t("hallOfFame"), icon: Trophy, className: "text-yellow-400 hover:text-yellow-400" },
+    { href: "/premium", label: t("goPremium"), icon: Gem, className: "text-primary hover:text-primary font-semibold" },
+    { href: "/hall-of-fame", label: t("hallOfFame"), icon: Trophy, className: "text-yellow-400 hover:text-yellow-400 font-semibold" },
     { href: "/open-stats", label: t("openStats"), icon: BarChart3, className: "text-blue-400 hover:text-blue-400 font-bold" },
   ];
 
@@ -50,7 +50,7 @@ export function MainNav() {
   };
 
   return (
-    <SidebarMenu>
+    <SidebarMenu className="gap-2">
       {links.map((link) => {
         const isCurrentPage = pathname.endsWith(link.href);
         const Comp = isCurrentPage ? "button" : Link;
@@ -61,7 +61,10 @@ export function MainNav() {
               asChild
               isActive={isCurrentPage}
               tooltip={{ children: link.label }}
-              className={cn(isCurrentPage && "cursor-pointer hover:bg-sidebar-accent/80")}
+              className={cn(
+                "h-11 px-4 text-base transition-all duration-200",
+                isCurrentPage && "bg-primary/10 text-primary cursor-pointer hover:bg-primary/20 shadow-sm"
+              )}
             >
               <Comp
                 href={isCurrentPage ? "#" : link.href}
@@ -70,13 +73,17 @@ export function MainNav() {
                   handleLinkClick(isCurrentPage);
                 }}
               >
-                <link.icon className="h-5 w-5" />
+                <link.icon className={cn("h-5 w-5", isCurrentPage && "text-primary")} />
                 <span>{link.label}</span>
               </Comp>
             </SidebarMenuButton>
           </SidebarMenuItem>
         );
       })}
+
+      <div className="my-4 px-4">
+        <div className="h-px bg-white/10 w-full" />
+      </div>
 
       {secondaryLinks.map((link) => {
         const isCurrentPage = pathname.endsWith(link.href);
@@ -88,7 +95,11 @@ export function MainNav() {
               asChild
               isActive={isCurrentPage}
               tooltip={{ children: link.label }}
-              className={cn(link.className, isCurrentPage && "cursor-pointer hover:bg-sidebar-accent/80")}
+              className={cn(
+                "h-11 px-4 text-base transition-all duration-200",
+                link.className, 
+                isCurrentPage && "bg-white/10 cursor-pointer hover:bg-white/20"
+              )}
             >
               <Comp
                 href={isCurrentPage ? "#" : link.href}
