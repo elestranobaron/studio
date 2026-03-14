@@ -382,7 +382,7 @@
     "emom": {
       "title": "EMOM",
       "description": "Chaque minute.",
-      "roundsLabel": "Rounds",
+      "roundsLabel": "Rondes",
       "intervalLabel": "Intervalle",
       "intervalMinutes": "min",
       "intervalSeconds": "sec"
@@ -390,7 +390,7 @@
     "tabata": {
       "title": "Tabata",
       "description": "20s travail / 10s repos.",
-      "roundsLabel": "Rounds"
+      "roundsLabel": "Rondes"
     }
   },
   "TimersPage": {
