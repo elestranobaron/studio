@@ -19,6 +19,10 @@
     "openStats": "Open Stats"
   },
   "OpenStatsPage": {
+    "seo": {
+      "title": "Open Stats | WODBurner - Statistiques CrossFit Open",
+      "description": "Consultez les statistiques en temps réel du CrossFit Open. Comparez vos scores et analysez les performances mondiales par division et région."
+    },
     "title": "Open Stats",
     "description": "Données live CrossFit Open via API publique – refresh quotidien",
     "metrics": {
@@ -43,6 +47,10 @@
     }
   },
   "DashboardPage": {
+    "seo": {
+      "title": "Tableau de Bord | WODBurner",
+      "description": "Gérez vos entraînements CrossFit, retrouvez vos WODs scannés et découvrez les entraînements de la communauté."
+    },
     "title": "Dashboard",
     "scanNewWod": "Scanner un WOD",
     "tabs": {
@@ -116,6 +124,10 @@
     }
   },
   "TimerPage": {
+    "seo": {
+      "title": "Minuteur WOD | WODBurner",
+      "description": "Lancez votre entraînement avec un minuteur intelligent configuré spécifiquement pour votre WOD."
+    },
     "backToDashboard": "Retour au Dashboard",
     "viewWod": "Voir le WOD",
     "fullWodLabel": "WOD Complet : {wodName}",
@@ -158,6 +170,10 @@
     "savingButton": "Enregistrement..."
   },
   "LoginPage": {
+    "seo": {
+      "title": "Connexion | WODBurner",
+      "description": "Connectez-vous à WODBurner pour sauvegarder vos entraînements et accéder aux fonctionnalités Premium."
+    },
     "verifying": "Vérification...",
     "confirmEmailTitle": "Confirmez votre e-mail",
     "confirmEmailDescription": "Pour terminer la connexion, veuillez saisir l'adresse e-mail où vous avez reçu le lien.",
@@ -186,6 +202,10 @@
     "invalidLinkError": "Le lien de connexion est invalide, a expiré ou l'e-mail est incorrect. Veuillez en demander un nouveau."
   },
   "PremiumPage": {
+    "seo": {
+      "title": "WODBurner Premium | Soutenez l'App",
+      "description": "Passez au niveau supérieur avec WODBurner Premium. Scans illimités, filtres avancés et accès exclusif au Saló de la Fama."
+    },
     "title": "Premium",
     "alreadyPremium": {
       "title": "VOUS ÊTES PREMIUM !",
@@ -282,6 +302,10 @@
     }
   },
   "ScanPage": {
+    "seo": {
+      "title": "Scanner un WOD | WODBurner",
+      "description": "Transformez vos photos de tableau blanc en entraînements interactifs grâce à notre IA."
+    },
     "title": "Scanner WOD",
     "manualButton": "Ajouter manuellement"
   },
@@ -353,6 +377,10 @@
     }
   },
   "TimersPage": {
+    "seo": {
+      "title": "Minuteurs CrossFit | WODBurner",
+      "description": "Minuteurs AMRAP, EMOM, Tabata et For Time configurables pour vos entraînements."
+    },
     "title": "Minuteurs intelligents",
     "forTime": "For Time",
     "forTimeDescription": "Un simple chronomètre pour mesurer votre entraînement.",
@@ -365,6 +393,10 @@
     "footer": "Ou sélectionnez un WOD sur le dashboard pour lancer un minuteur pré-configuré."
   },
   "HeroWodsPage": {
+    "seo": {
+      "title": "Hero WODs CrossFit | WODBurner",
+      "description": "Explorez la bibliothèque des Hero WODs officiels. Murph, Fran, Cindy et plus encore."
+    },
     "title": "Hero WODs",
     "description": "Les \"Hero\" WODs sont des entraînements spéciaux dans le CrossFit dédiés aux hommes et aux femmes qui ont donné leur vie en service. C'est l'occasion de réfléchir et d'honorer leur sacrifice.",
     "premiumUpsell": {
@@ -374,6 +406,10 @@
     }
   },
   "HallOfFamePage": {
+    "seo": {
+      "title": "Saló de la Fama | WODBurner OGs",
+      "description": "Découvrez les 300 premiers membres Premium de WODBurner, nos OGs à vie."
+    },
     "title": "Hall of Fame",
     "cardTitle": "Les 300 premiers OGs",
     "cardDescription": "Gratuit à vie. Une place permanente pour nos tous premiers soutiens.",
@@ -403,6 +439,10 @@
     "totalTimeElapsed": "Total : {time}"
   },
   "GenerateWodPage": {
+    "seo": {
+      "title": "Générateur de WOD IA | WODBurner",
+      "description": "Laissez notre IA concevoir votre prochain entraînement CrossFit personnalisé."
+    },
     "title": "Générateur de WOD IA",
     "cardTitle": "WODBot 3000",
     "cardDescription": "En manque d'inspiration ? Laissez notre coach IA vous générer un entraînement unique et stimulant.",

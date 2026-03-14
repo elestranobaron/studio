@@ -19,6 +19,10 @@
     "openStats": "Open Stats"
   },
   "OpenStatsPage": {
+    "seo": {
+      "title": "Open Stats | WODBurner - CrossFit Open Leaderboards",
+      "description": "Live CrossFit Open statistics. Compare your scores and analyze worldwide performance by division and region."
+    },
     "title": "Open Stats",
     "description": "Live CrossFit Open data via public API – daily refresh",
     "metrics": {
@@ -43,6 +47,10 @@
     }
   },
   "DashboardPage": {
+    "seo": {
+      "title": "Dashboard | WODBurner",
+      "description": "Manage your CrossFit workouts, find your scanned WODs, and discover community training."
+    },
     "title": "Dashboard",
     "scanNewWod": "Scan New WOD",
     "tabs": {
@@ -116,6 +124,10 @@
     }
   },
   "TimerPage": {
+    "seo": {
+      "title": "WOD Timer | WODBurner",
+      "description": "Start your workout with a smart timer configured specifically for your WOD."
+    },
     "backToDashboard": "Back to Dashboard",
     "viewWod": "View WOD",
     "fullWodLabel": "Full WOD: {wodName}",
@@ -158,6 +170,10 @@
     "savingButton": "Saving..."
   },
   "LoginPage": {
+    "seo": {
+      "title": "Sign In | WODBurner",
+      "description": "Sign in to WODBurner to save your workouts and access Premium features."
+    },
     "verifying": "Verifying...",
     "confirmEmailTitle": "Confirm Your Identity",
     "confirmEmailDescription": "Enter the 6-digit code we sent to your email address.",
@@ -186,6 +202,10 @@
     "invalidLinkError": "The code is invalid or has expired. Please request a new one."
   },
   "PremiumPage": {
+    "seo": {
+      "title": "WODBurner Premium | Support the App",
+      "description": "Level up with WODBurner Premium. Unlimited scans, advanced filters, and exclusive access to the Hall of Fame."
+    },
     "title": "Premium",
     "alreadyPremium": {
       "title": "YOU ARE PREMIUM !",
@@ -269,7 +289,7 @@
       "dialogDescription": "This action is irreversible. It will permanently delete your account and erase all of your data, including all your saved WODs, from our servers.",
       "dialogCancel": "Cancel",
       "dialogConfirm": "Yes, delete my account",
-      "helpText": "If you delete your account, all your data will be lost forever.\n"
+      "helpText": "If you delete your account, all your data will be lost forever."
     },
     "toasts": {
       "deleteError": "Could not delete account. User or Firebase services are not available.",
@@ -282,6 +302,10 @@
     }
   },
   "ScanPage": {
+    "seo": {
+      "title": "Scan a WOD | WODBurner",
+      "description": "Turn your whiteboard photos into interactive workouts using our AI Coach."
+    },
     "title": "Scan WOD",
     "manualButton": "Add Manually"
   },
@@ -353,6 +377,10 @@
     }
   },
   "TimersPage": {
+    "seo": {
+      "title": "CrossFit Timers | WODBurner",
+      "description": "Configurable AMRAP, EMOM, Tabata, and For Time timers for your training."
+    },
     "title": "Smart Timers",
     "forTime": "For Time",
     "forTimeDescription": "A simple stopwatch to time your workout.",
@@ -365,6 +393,10 @@
     "footer": "Or, select a WOD from the dashboard to launch a pre-configured timer."
   },
   "HeroWodsPage": {
+    "seo": {
+      "title": "CrossFit Hero WODs | WODBurner",
+      "description": "Explore the official Hero WODs library. Murph, Fran, Cindy and more."
+    },
     "title": "Hero WODs",
     "description": "\"Hero\" WODs are special workouts in CrossFit dedicated to men and women who have given their lives in the line of duty. They are an opportunity to reflect and honor their sacrifice.",
     "premiumUpsell": {
@@ -374,6 +406,10 @@
     }
   },
   "HallOfFamePage": {
+    "seo": {
+      "title": "Hall of Fame | WODBurner OGs",
+      "description": "Meet the first 300 Premium members of WODBurner, our lifetime OGs."
+    },
     "title": "Hall of Fame",
     "cardTitle": "The First 300 OGs",
     "cardDescription": "Free for life. A permanent spot for our earliest supporters.",
@@ -403,6 +439,10 @@
     "totalTimeElapsed": "Total: {time}"
   },
   "GenerateWodPage": {
+    "seo": {
+      "title": "AI WOD Generator | WODBurner",
+      "description": "Let our AI Coach design your next custom CrossFit workout."
+    },
     "title": "AI WOD Generator",
     "cardTitle": "WODBot 3000",
     "cardDescription": "Feeling uninspired? Let our AI Coach generate a unique and challenging workout for you.",
