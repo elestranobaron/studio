@@ -1,3 +1,4 @@
+
 {
   "RootLayout": {
     "seo": {
@@ -307,6 +308,180 @@
       "deleteFailedDescription": "Une erreur est survenue.",
       "deleteFailedRecentLogin": "Veuillez vous reconnecter.",
       "portalError": "Impossible d'ouvrir le portail."
+    }
+  },
+  "ScanPage": {
+    "seo": {
+      "title": "Scanner un WOD | Analyseur de Tableau",
+      "description": "Transformez vos photos de tableau CrossFit en entraînements interactifs."
+    },
+    "title": "Scanner WOD",
+    "manualButton": "Ajouter manuellement"
+  },
+  "NewWodPage": {
+    "seo": {
+      "title": "Nouveau WOD | Création Manuelle",
+      "description": "Créez et personnalisez votre propre WOD manuellement."
+    },
+    "title": "Créer un WOD manuellement",
+    "cardTitle": "Détails de l'entraînement",
+    "namePlaceholder": "Nom (ex: Fran)",
+    "typePlaceholder": "Type",
+    "durationPlaceholder": "Durée (min)",
+    "imageHintPlaceholder": "Indice d'image",
+    "descriptionPlaceholder": "Description...",
+    "saveButton": "Enregistrer",
+    "savingButton": "Enregistrement...",
+    "backLink": "Retour",
+    "duplicateDialog": {
+      "title": "Doublon",
+      "description": "Ce WOD existe déjà.",
+      "savedOn": "Enregistré le {date}",
+      "question": "Enregistrer quand même ?",
+      "cancel": "Annuler",
+      "confirm": "Oui"
+    },
+    "toasts": {
+      "saveSuccessTitle": "Enregistré!",
+      "saveSuccessDescription": "WOD ajouté.",
+      "saveFailedTitle": "Erreur",
+      "saveFailedDescription": "Impossible d'enregistrer."
+    }
+  },
+  "EditWodPage": {
+    "seo": {
+      "title": "Modifier WOD",
+      "description": "Modifiez les détails de votre entraînement."
+    },
+    "title": "Modifier WOD",
+    "cardTitle": "Détails",
+    "saveButton": "Enregistrer",
+    "savingButton": "Chargement...",
+    "backLink": "Dashboard",
+    "toasts": {
+      "updateSuccessTitle": "Mis à jour!",
+      "updateSuccessDescription": "Modifications sauvées.",
+      "updateFailedTitle": "Erreur",
+      "updateFailedDescription": "Échec."
+    }
+  },
+  "GenericTimerPage": {
+    "backLink": "Minuteurs",
+    "startButton": "Démarrer",
+    "forTime": {
+      "title": "For Time",
+      "description": "Chronomètre simple.",
+      "timeCapLabel": "Time Cap (min)",
+      "timeCapPlaceholder": "ex: 20"
+    },
+    "amrap": {
+      "title": "AMRAP",
+      "description": "Le plus de répétitions possible.",
+      "durationLabel": "Durée (min)"
+    },
+    "emom": {
+      "title": "EMOM",
+      "description": "Chaque minute.",
+      "roundsLabel": "Rounds",
+      "intervalLabel": "Intervalle",
+      "intervalMinutes": "min",
+      "intervalSeconds": "sec"
+    },
+    "tabata": {
+      "title": "Tabata",
+      "description": "20s travail / 10s repos.",
+      "roundsLabel": "Rounds"
+    }
+  },
+  "TimersPage": {
+    "seo": {
+      "title": "Minuteurs CrossFit",
+      "description": "Accédez à des minuteurs professionnels pour vos WODs."
+    },
+    "title": "Minuteurs Intelligents",
+    "forTime": "For Time",
+    "forTimeDescription": "Chronomètre simple.",
+    "amrap": "AMRAP",
+    "amrapDescription": "Max reps dans le temps.",
+    "emom": "EMOM",
+    "emomDescription": "Chaque minute.",
+    "tabata": "Tabata",
+    "tabataDescription": "Intervalles.",
+    "footer": "Ou choisissez un WOD sur votre dashboard."
+  },
+  "HeroWodsPage": {
+    "seo": {
+      "title": "Hero WODs",
+      "description": "Découvrez les WODs légendaires de la communauté."
+    },
+    "title": "Hero WODs",
+    "description": "En mémoire des héros tombés au combat.",
+    "premiumUpsell": {
+      "title": "Tout débloquer",
+      "description": "Passez Premium pour {totalWodCount}+ WODs.",
+      "button": "Devenir Premium"
+    }
+  },
+  "HallOfFamePage": {
+    "seo": {
+      "title": "Hall of Fame",
+      "description": "Les premiers contributeurs de WODBurner."
+    },
+    "title": "Hall of Fame",
+    "cardTitle": "Les 300 premiers OGs",
+    "cardDescription": "Accès à vie gratuit pour nos premiers supporters.",
+    "spotsRemaining": "Plus que {spotsLeft} places!",
+    "spotsFull": "La liste est complète.",
+    "claimSpotButton": "Réclamer ma place",
+    "emptyList": "Soyez le premier!"
+  },
+  "TimerClient": {
+    "workoutComplete": "Terminé!",
+    "totalTime": "Temps Total",
+    "timeCompleted": "Fait en",
+    "goAgain": "Recommencer",
+    "shareResult": "Partager",
+    "shareModal": {
+      "title": "Résultat WOD: {wodName}",
+      "description": "Vous avez fini en {finalTime}.",
+      "finalTimeLabel": "TEMPS",
+      "screenshotReady": "Prêt pour capture!"
+    },
+    "timeCap": "Time Cap: {duration}:00",
+    "pause": "Pause",
+    "start": "Départ",
+    "reset": "Reset",
+    "finish": "Fini",
+    "round": "Round {current} / {total}",
+    "totalTimeElapsed": "Total: {time}"
+  },
+  "GenerateWodPage": {
+    "seo": {
+      "title": "Générateur de WOD IA",
+      "description": "Laissez l'IA créer votre entraînement du jour."
+    },
+    "title": "Générateur de WOD IA",
+    "cardTitle": "WODBot 3000",
+    "cardDescription": "Pas d'inspiration ? Laissez l'IA créer votre WOD.",
+    "generateButton": "Générer",
+    "generatingButton": "Calcul...",
+    "freePlanAlert": {
+      "title": "Plan gratuit",
+      "description": "Limite quotidienne atteinte. {link} pour l'illimité.",
+      "link": "Devenir Premium"
+    },
+    "premiumPlanMessage": "Générations illimitées actives.",
+    "generatingState": {
+      "title": "Calcul...",
+      "description": "L'IA s'échauffe."
+    },
+    "errorAlert": {
+      "title": "Erreur",
+      "description": "Réessayez dans un instant."
+    },
+    "result": {
+      "title": "Votre WOD généré",
+      "savedMessage": "Enregistré sur votre dashboard."
     }
   }
 }

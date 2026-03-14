@@ -295,7 +295,7 @@ export default function OpenStatsClient() {
             </CardHeader>
             <CardContent className="pt-6 h-full">
               <div className="h-[300px] w-full">
-                {isLoading ? (
+                {!isMounted || isLoading ? (
                   <div className="h-full w-full flex items-center justify-center bg-muted/10 rounded-md">
                     <LoaderCircle className="h-8 w-8 animate-spin text-muted-foreground" />
                   </div>
@@ -350,7 +350,7 @@ export default function OpenStatsClient() {
             </CardHeader>
             <CardContent className="pt-6 h-full">
               <div className="h-[300px] w-full">
-                {isLoading ? (
+                {!isMounted || isLoading ? (
                   <div className="h-full w-full flex items-center justify-center bg-muted/10 rounded-md">
                     <LoaderCircle className="h-8 w-8 animate-spin text-muted-foreground" />
                   </div>
@@ -392,7 +392,7 @@ export default function OpenStatsClient() {
             </div>
           </CardHeader>
           <CardContent className="p-0">
-            {isLoading ? (
+            {!isMounted || isLoading ? (
               <div className="p-8 flex justify-center"><LoaderCircle className="animate-spin h-8 w-8 text-muted-foreground" /></div>
             ) : (
               <Table>
@@ -406,9 +406,8 @@ export default function OpenStatsClient() {
                 </TableHeader>
                 <TableBody>
                   {topTenAthletes.map((athlete, idx) => (
-                    <>
+                    <React.Fragment key={`row-group-${idx}`}>
                       <TableRow 
-                        key={`row-${idx}`} 
                         className="cursor-pointer hover:bg-muted/50"
                         onClick={() => setExpandedRow(expandedRow === athlete.name ? null : athlete.name)}
                       >
@@ -427,7 +426,7 @@ export default function OpenStatsClient() {
                         </TableCell>
                       </TableRow>
                       {expandedRow === athlete.name && (
-                        <TableRow key={`expand-${idx}`} className="bg-muted/30">
+                        <TableRow className="bg-muted/30">
                           <TableCell colSpan={4} className="p-4">
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 animate-in fade-in slide-in-from-top-2">
                               {athlete.scores.map((s) => (
@@ -459,7 +458,7 @@ export default function OpenStatsClient() {
                           </TableCell>
                         </TableRow>
                       )}
-                    </>
+                    </React.Fragment>
                   ))}
                 </TableBody>
               </Table>
