@@ -15,6 +15,5 @@ Disallow: /dashboard
 Disallow: /settings
 Disallow: /premium
 Disallow: /login
-Disallow: /*?        # bloque les params URL si tu veux éviter le duplicate content
 
 Sitemap: https://wodburner.app/sitemap.xml
