@@ -41,6 +41,12 @@
       "title": "Comparer mon score",
       "percentile": "Percentile mondial"
     },
+    "leaderboard": {
+      "title": "Top 10 Athlètes",
+      "rank": "Rang",
+      "name": "Nom",
+      "score": "Score"
+    },
     "charts": {
       "distribution": "Distribution des scores",
       "distributionSub": "Répartition sur l'échantillon analysé",
@@ -217,7 +223,7 @@
       "dashboardButton": "Dashboard"
     },
     "headerTitle": "Libérez tout votre potentiel",
-    "headerDescription": "Devenez membre WODBurner Premium pour obtenir un accès illimité à toutes les fonctionnalités et soutenir le développement de l'application.",
+    "headerDescription": "Devenez membre WODBurner Premium pour obtenir un accès illimitat à toutes les fonctionnalités et soutenir le développement de l'application.",
     "offer": "OFFRE DE LANCEMENT À VIE pour les 300 premiers membres !",
     "monthly": "Mensuel",
     "yearly": "Annuel",
@@ -305,181 +311,6 @@
       "deleteFailedDescription": "Une erreur est survenue. Veuillez réessayer.",
       "deleteFailedRecentLogin": "Cette opération est sensible et nécessite une authentification récente. Veuillez vous reconnecter avant de réessayer.",
       "portalError": "Impossible d'ouvrir la gestion de l'abonnement."
-    }
-  },
-  "ScanPage": {
-    "seo": {
-      "title": "Scanner un WOD | Analyseur de Tableau Blanc",
-      "description": "Transformez la photo du tableau blanc de votre salle en un entraînement interactif grâce à notre analyseur IA."
-    },
-    "title": "Scanner WOD",
-    "manualButton": "Ajouter manuellement"
-  },
-  "NewWodPage": {
-    "seo": {
-      "title": "Nouveau WOD | Saisie Manuelle",
-      "description": "Créez et personnalisez votre propre entraînement de CrossFit manuellement."
-    },
-    "title": "Créer un WOD manuellement",
-    "cardTitle": "Détails de l'entraînement",
-    "namePlaceholder": "Nom du WOD (ex: Fran)",
-    "typePlaceholder": "Type de WOD",
-    "durationPlaceholder": "Durée (minutes)",
-    "imageHintPlaceholder": "Indice d'image (ex: barre)",
-    "descriptionPlaceholder": "Description du WOD...",
-    "saveButton": "Enregistrer le WOD",
-    "savingButton": "Enregistrement...",
-    "backLink": "Retour au Scan",
-    "duplicateDialog": {
-      "title": "WOD en double détecté",
-      "description": "Cet entraînement semble identique à un WOD que vous avez déjà enregistré.",
-      "savedOn": "Enregistré le {date}",
-      "question": "Voulez-vous quand même enregistrer celui-ci ?",
-      "cancel": "Annuler",
-      "confirm": "Enregistrer quand même"
-    },
-    "toasts": {
-      "saveSuccessTitle": "WOD enregistré !",
-      "saveSuccessDescription": "Votre nouveau WOD a été ajouté à votre dashboard.",
-      "saveFailedTitle": "Échec de l'enregistrement",
-      "saveFailedDescription": "Une erreur est survenue lors de l'enregistrement du WOD."
-    }
-  },
-  "EditWodPage": {
-    "seo": {
-      "title": "Modifier le WOD | WODBurner",
-      "description": "Mettez à jour les détails de votre entraînement, son titre ou sa description."
-    },
-    "title": "Modifier le WOD",
-    "cardTitle": "Détails de l'entraînement",
-    "saveButton": "Enregistrer les modifications",
-    "savingButton": "Enregistrement...",
-    "backLink": "Retour au Dashboard",
-    "toasts": {
-      "updateSuccessTitle": "WOD mis à jour !",
-      "updateSuccessDescription": "Vos modifications ont été enregistrées.",
-      "updateFailedTitle": "Échec de la mise à jour",
-      "updateFailedDescription": "Une erreur est survenue lors de l'enregistrement de vos modifications."
-    }
-  },
-  "GenericTimerPage": {
-    "backLink": "Retour aux Minuteurs",
-    "startButton": "Démarrer le minuteur",
-    "forTime": {
-      "title": "For Time",
-      "description": "Un chronomètre simple pour mesurer votre entraînement. Optionnellement, fixez une limite de temps.",
-      "timeCapLabel": "Temps limite (minutes, optionnel)",
-      "timeCapPlaceholder": "ex: 20"
-    },
-    "amrap": {
-      "title": "Minuteur AMRAP",
-      "description": "Fixez une durée et voyez combien de tours ou de répétitions vous pouvez accomplir.",
-      "durationLabel": "Durée (minutes)"
-    },
-    "emom": {
-      "title": "Minuteur EMOM",
-      "description": "Chaque minute sur la minute. Fixez l'intervalle et le nombre de tours.",
-      "roundsLabel": "Nombre de tours",
-      "intervalLabel": "Durée de l'intervalle",
-      "intervalMinutes": "min",
-      "intervalSeconds": "sec"
-    },
-    "tabata": {
-      "title": "Minuteur Tabata",
-      "description": "Intervalles de haute intensité : 20s travail, 10s repos. Personnalisez les tours.",
-      "roundsLabel": "Tours"
-    }
-  },
-  "TimersPage": {
-    "seo": {
-      "title": "Minuteurs CrossFit | AMRAP, EMOM, Tabata",
-      "description": "Accédez à des minuteurs d'entraînement de qualité professionnelle pour vos WODs CrossFit."
-    },
-    "title": "Minuteurs Intelligents",
-    "forTime": "For Time",
-    "forTimeDescription": "Un chronomètre simple pour mesurer votre entraînement.",
-    "amrap": "AMRAP",
-    "amrapDescription": "Le maximum de tours/réps possible dans un temps imparti.",
-    "emom": "EMOM",
-    "emomDescription": "Chaque minute sur la minute, pendant un nombre défini de minutes.",
-    "tabata": "Tabata",
-    "tabataDescription": "Intervalles de haute intensité : 20s travail, 10s repos.",
-    "footer": "Ou sélectionnez un WOD dans le dashboard pour lancer un minuteur pré-configuré."
-  },
-  "HeroWodsPage": {
-    "seo": {
-      "title": "Bibliothèque de Hero WODs | Entraînements de Référence",
-      "description": "Découvrez la collection de Hero WODs CrossFit officiels et d'entraînements de référence comme Murph, Fran et Cindy."
-    },
-    "title": "Hero WODs",
-    "description": "Les WODs \"Hero\" sont des entraînements spéciaux dans le CrossFit dédiés aux hommes et aux femmes qui ont donné leur vie en service. C'est l'occasion de réfléchir et d'honorer leur sacrifice.",
-    "premiumUpsell": {
-      "title": "Débloquez tout l'arsenal",
-      "description": "Passez au Premium pour accéder à la bibliothèque complète de plus de {totalWodCount}+ Hero et Benchmark WODs, incluant {premiumWodCount} entraînements exclusifs.",
-      "button": "Devenir Premium"
-    }
-  },
-  "HallOfFamePage": {
-    "seo": {
-      "title": "Hall of Fame | Les OGs de WODBurner",
-      "description": "Le cercle d'élite de nos 300 premiers soutiens. Membres à vie."
-    },
-    "title": "Hall of Fame",
-    "cardTitle": "Les 300 Premiers OGs",
-    "cardDescription": "Gratuit à vie. Une place permanente pour nos tout premiers soutiens.",
-    "spotsRemaining": "Plus que {spotsLeft} places restantes !",
-    "spotsFull": "La liste est désormais close pour toujours.",
-    "claimSpotButton": "Réclamez votre place maintenant",
-    "emptyList": "Soyez le premier à réclamer une place !"
-  },
-  "TimerClient": {
-    "workoutComplete": "Entraînement Terminé !",
-    "totalTime": "Temps Total",
-    "timeCompleted": "Temps Accompli",
-    "goAgain": "Recommencer",
-    "shareResult": "Partager le résultat",
-    "shareModal": {
-      "title": "Résultat du WOD : {wodName}",
-      "description": "Votre temps final est de {finalTime}. Cette carte est prête à être partagée.",
-      "finalTimeLabel": "TEMPS FINAL",
-      "screenshotReady": "Prêt pour capture d'écran !"
-    },
-    "timeCap": "Time Cap : {duration}:00",
-    "pause": "Pause",
-    "start": "Démarrer",
-    "reset": "Reset",
-    "finish": "Terminer",
-    "round": "Tour {current} / {total}",
-    "totalTimeElapsed": "Total : {time}"
-  },
-  "GenerateWodPage": {
-    "seo": {
-      "title": "Générateur de WOD par IA | Nouveaux Entraînements Chaque Jour",
-      "description": "Laissez notre Coach IA générer des entraînements de CrossFit uniques et personnalisés pour vous."
-    },
-    "title": "Générateur de WOD IA",
-    "cardTitle": "WODBot 3000",
-    "cardDescription": "En manque d'inspiration ? Laissez notre Coach IA générer un entraînement unique et stimulant pour vous.",
-    "generateButton": "Générer un Nouveau WOD",
-    "generatingButton": "Génération...",
-    "freePlanAlert": {
-      "title": "Plan Gratuit",
-      "description": "Vous avez un nombre limité de générations quotidiennes. {link} pour un accès illimité.",
-      "link": "Passer au Premium"
-    },
-    "premiumPlanMessage": "Générations illimitées activées.",
-    "generatingState": {
-      "title": "Génération de votre WOD...",
-      "description": "Le Coach IA s'échauffe. Cela peut prendre un moment."
-    },
-    "errorAlert": {
-      "title": "Échec de la génération",
-      "description": "Le coach IA se repose. Veuillez réessayer dans un instant.",
-      "link": "Passer au Premium"
-    },
-    "result": {
-      "title": "Votre WOD Généré",
-      "savedMessage": "Ce WOD a été automatiquement enregistré dans votre dashboard."
     }
   }
 }

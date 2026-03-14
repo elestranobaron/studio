@@ -12,9 +12,16 @@ import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, 
   ScatterChart, Scatter, Cell, ReferenceLine, Label as RechartsLabel
 } from 'recharts';
-import { LoaderCircle, Info, Users, BarChart3, Weight, Trophy, AlertTriangle, Calendar as CalendarIcon, Activity, Target, Gem, Lock } from 'lucide-react';
+import { 
+  LoaderCircle, Info, Users, BarChart3, Weight, Trophy, AlertTriangle, 
+  Calendar as CalendarIcon, Activity, Target, Gem, Lock, User
+} from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
+import { 
+  Table, TableBody, TableCell, TableHead, TableHeader, TableRow 
+} from '@/components/ui/table';
+import { Skeleton } from '@/components/ui/skeleton';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 
@@ -49,6 +56,12 @@ export default function OpenStatsClient() {
     const s = val % 60;
     return `${m}:${s.toString().padStart(2, '0')}`;
   };
+
+  const top10 = useMemo(() => {
+    if (!stats || !stats.data) return [];
+    // On prend les 10 premiers de l'échantillon récupéré (déjà trié par l'API)
+    return stats.data.slice(0, 10);
+  }, [stats]);
 
   const histogramData = useMemo(() => {
     if (!stats || !stats.data || stats.data.length === 0) return [];
@@ -264,8 +277,57 @@ export default function OpenStatsClient() {
           </Card>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          <Card className="shadow-lg overflow-hidden">
+        <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
+          <Card className="xl:col-span-1 shadow-lg overflow-hidden flex flex-col">
+            <CardHeader className="bg-muted/30 border-b shrink-0">
+              <CardTitle className="flex items-center gap-2 text-lg">
+                <Trophy className="h-5 w-5 text-yellow-500" /> 
+                {t('leaderboard.title')}
+              </CardTitle>
+              <CardDescription>
+                Top 10 athlètes pour cette sélection
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="p-0 flex-1 overflow-auto">
+              <Table>
+                <TableHeader className="bg-muted/10 sticky top-0 z-10">
+                  <TableRow>
+                    <TableHead className="w-12 text-center">#</TableHead>
+                    <TableHead>{t('leaderboard.name')}</TableHead>
+                    <TableHead className="text-right">{t('leaderboard.score')}</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {isLoading ? (
+                    Array.from({ length: 10 }).map((_, i) => (
+                      <TableRow key={i}>
+                        <TableCell><Skeleton className="h-4 w-4 mx-auto"/></TableCell>
+                        <TableCell><Skeleton className="h-4 w-32"/></TableCell>
+                        <TableCell><Skeleton className="h-4 w-16 ml-auto"/></TableCell>
+                      </TableRow>
+                    ))
+                  ) : (
+                    top10.map((athlete, i) => (
+                      <TableRow key={i} className="hover:bg-muted/5">
+                        <TableCell className="text-center font-bold text-muted-foreground">{i + 1}</TableCell>
+                        <TableCell className="font-medium">
+                          <div className="flex items-center gap-2">
+                            <User className="h-3 w-3 text-muted-foreground shrink-0" />
+                            <span className="truncate max-w-[120px]">{athlete.name}</span>
+                          </div>
+                        </TableCell>
+                        <TableCell className="text-right font-mono font-bold text-primary">
+                          {athlete.scoreDisplay}
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  )}
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
+
+          <Card className="xl:col-span-2 shadow-lg overflow-hidden">
             <CardHeader className="bg-muted/30 border-b">
               <CardTitle className="flex items-center gap-2 text-lg">
                 <BarChart3 className="h-5 w-5 text-primary" /> 
@@ -347,7 +409,9 @@ export default function OpenStatsClient() {
               </div>
             </CardContent>
           </Card>
+        </div>
 
+        <div className="grid grid-cols-1 lg:grid-cols-1 gap-8">
           <Card className="shadow-lg overflow-hidden">
             <CardHeader className="bg-muted/30 border-b">
               <CardTitle className="flex items-center gap-2 text-lg"><Weight className="h-5 w-5 text-primary" /> {t('charts.bmi')}</CardTitle>
