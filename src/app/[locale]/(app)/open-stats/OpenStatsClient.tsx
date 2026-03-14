@@ -59,7 +59,6 @@ export default function OpenStatsClient() {
   const histogramData = useMemo(() => {
     if (!stats || !stats.data || stats.data.length === 0) return [];
     
-    // Filtrer pour n'avoir que des données cohérentes sur le graph
     const dataToGraph = stats.isTime ? stats.data.filter(e => e.isTime) : stats.data;
     if (dataToGraph.length === 0) return [];
 
@@ -95,7 +94,6 @@ export default function OpenStatsClient() {
 
   const topTenAthletes = useMemo(() => {
     if (!stats || !stats.data) return [];
-    // Toujours trier par rang réel fourni par l'API
     return [...stats.data]
       .sort((a, b) => a.rank - b.rank)
       .slice(0, 10);

@@ -19,7 +19,7 @@ export interface LeaderboardEntry {
   weightKg: number | null;
   bmi: number | null;
   reps: number; // Valeur numérique brute pour les calculs
-  scoreDisplay: string;
+  scoreDisplay: string; // Chaîne officielle (ex: "11:25 (354)")
   overallScore: string; // Points (somme des rangs)
   region: string;
   isTime: boolean;
@@ -97,29 +97,26 @@ export function useOpenStats() {
             ? null 
             : row.scores.find((s: any) => parseInt(s.ordinal) === workout);
           
-          const scoreStr = workout === 0 ? (row.overallScore || row.overallRank) : (scoreObj?.scoreDisplay || '0');
+          // Affichage officiel : points si Overall, scoreDisplay si workout
+          const officialScoreDisplay = workout === 0 ? (row.overallScore || "0") : (scoreObj?.scoreDisplay || '0');
           
-          let val = 0;
+          let numericVal = 0;
           let isTime = false;
 
-          // Parsing intelligent pour les statistiques
-          // Pour un workout comme 26.1, le score est "11:25 (354)"
-          // On veut le temps (685s) comme valeur numérique de comparaison pour le leaderboard
-          if (workout !== 0 && scoreStr.includes(':')) {
-            const parts = scoreStr.split('(')[0].trim().split(':');
+          // Parsing pour les statistiques (médiane, graphiques)
+          if (workout !== 0 && officialScoreDisplay.includes(':')) {
+            const parts = officialScoreDisplay.split('(')[0].trim().split(':');
             if (parts.length >= 2) {
                 const m = parseInt(parts[parts.length - 2]);
                 const s = parseInt(parts[parts.length - 1]);
-                val = m * 60 + s;
+                numericVal = m * 60 + s;
                 isTime = true;
                 isTimeDetected = true;
             }
           } else if (workout !== 0) {
-            // C'est probablement des reps (ex: "350 reps")
-            val = parseInt(scoreStr.replace(/[^0-9]/g, '')) || 0;
+            numericVal = parseInt(officialScoreDisplay.replace(/[^0-9]/g, '')) || 0;
           } else {
-            // Overall: on prend le rang mondial
-            val = parseInt(row.overallRank) || 0;
+            numericVal = parseInt(row.overallRank) || 0;
           }
 
           const currentRank = workout === 0 ? parseInt(row.overallRank) : (scoreObj ? parseInt(scoreObj.rank) : parseInt(row.overallRank));
@@ -141,8 +138,8 @@ export function useOpenStats() {
             heightCm: h,
             weightKg: w,
             bmi: bmi,
-            reps: val,
-            scoreDisplay: scoreStr,
+            reps: numericVal,
+            scoreDisplay: officialScoreDisplay,
             overallScore: row.overallScore || row.overallRank,
             region: row.entrant.regionName,
             isTime,
@@ -158,9 +155,6 @@ export function useOpenStats() {
         throw new Error("Aucune donnée trouvée.");
       }
 
-      // Filtrer les valeurs aberrantes pour les stats (ex: mélanges reps/temps)
-      // Si on a détecté que c'est une épreuve au temps, on ne garde que les "temps"
-      // Si un athlète a "350" (reps) au milieu de temps (ex: 600s), on le traite à part
       const validStatsEntries = isTimeDetected 
         ? allEntries.filter(e => e.isTime) 
         : allEntries;
