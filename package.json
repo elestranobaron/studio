@@ -69,6 +69,7 @@
     "postcss": "latest",
     "tailwindcss": "latest",
     "tailwindcss-animate": "latest",
-    "typescript": "latest"
+    "typescript": "latest",
+    "caniuse-lite": "latest"
   }
 }
