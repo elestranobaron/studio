@@ -103,6 +103,8 @@ export function useOpenStats() {
           let isTime = false;
 
           // Parsing intelligent pour les statistiques
+          // Pour un workout comme 26.1, le score est "11:25 (354)"
+          // On veut le temps (685s) comme valeur numérique de comparaison pour le leaderboard
           if (workout !== 0 && scoreStr.includes(':')) {
             const parts = scoreStr.split('(')[0].trim().split(':');
             if (parts.length >= 2) {
@@ -113,8 +115,10 @@ export function useOpenStats() {
                 isTimeDetected = true;
             }
           } else if (workout !== 0) {
+            // C'est probablement des reps (ex: "350 reps")
             val = parseInt(scoreStr.replace(/[^0-9]/g, '')) || 0;
           } else {
+            // Overall: on prend le rang mondial
             val = parseInt(row.overallRank) || 0;
           }
 
@@ -154,8 +158,14 @@ export function useOpenStats() {
         throw new Error("Aucune donnée trouvée.");
       }
 
-      // Trier les valeurs pour les percentiles (attention au sens si temps ou reps)
-      const sortedVals = [...allEntries].map(e => e.reps).sort((a, b) => a - b);
+      // Filtrer les valeurs aberrantes pour les stats (ex: mélanges reps/temps)
+      // Si on a détecté que c'est une épreuve au temps, on ne garde que les "temps"
+      // Si un athlète a "350" (reps) au milieu de temps (ex: 600s), on le traite à part
+      const validStatsEntries = isTimeDetected 
+        ? allEntries.filter(e => e.isTime) 
+        : allEntries;
+
+      const sortedVals = validStatsEntries.map(e => e.reps).sort((a, b) => a - b);
       
       const getPercentile = (p: number) => {
         const index = Math.floor(p * (sortedVals.length - 1));

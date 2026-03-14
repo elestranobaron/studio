@@ -58,8 +58,13 @@ export default function OpenStatsClient() {
 
   const histogramData = useMemo(() => {
     if (!stats || !stats.data || stats.data.length === 0) return [];
+    
+    // Filtrer pour n'avoir que des données cohérentes sur le graph
+    const dataToGraph = stats.isTime ? stats.data.filter(e => e.isTime) : stats.data;
+    if (dataToGraph.length === 0) return [];
+
     const bins: Record<string, number> = {};
-    const values = stats.data.map(e => e.reps);
+    const values = dataToGraph.map(e => e.reps);
     const min = Math.min(...values);
     const max = Math.max(...values);
     
@@ -67,7 +72,7 @@ export default function OpenStatsClient() {
     const range = max - min;
     const step = range > 0 ? Math.ceil(range / binCount) : 1;
 
-    stats.data.forEach(entry => {
+    dataToGraph.forEach(entry => {
       const bin = Math.floor(entry.reps / step) * step;
       bins[bin] = (bins[bin] || 0) + 1;
     });

@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useCallback, useEffect } from "react";
@@ -12,7 +13,7 @@ import { Textarea } from "./ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
 import { WodType, type WOD } from "@/lib/types";
 import { useFirebase } from "@/firebase";
-import { doc, collection, query, where, getDocs, setDoc, addDoc, updateDoc } from "firebase/firestore";
+import { doc, collection, query, where, getDocs, setDoc } from "firebase/firestore";
 import { useUser, useAuth } from "@/firebase/provider";
 import { cn } from "@/lib/utils";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "./ui/alert-dialog";
@@ -54,16 +55,19 @@ export function FileUploader() {
   const [isSaving, setIsSaving] = useState(false);
   const [analysisResult, setAnalysisResult] = useState<any | null>(null);
   const [duplicateWod, setDuplicateWod] = useState<WOD | null>(null);
-  const [shareToCommunity] = useState(false);
   const [saveIntent, setSaveIntent] = useState(false);
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
-  const [turnstileKey, setTurnstileKey] = useState(Date.now());
+  const [turnstileKey, setTurnstileKey] = useState(0);
 
   const { toast } = useToast();
   const router = useRouter();
   const { firestore } = useFirebase();
   const auth = useAuth();
   const { user, isUserLoading } = useUser();
+
+  useEffect(() => {
+    setTurnstileKey(Date.now());
+  }, []);
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
     if (acceptedFiles.length > 0) {
@@ -154,7 +158,7 @@ export function FileUploader() {
         setIsSaving(false);
         setDuplicateWod(null);
     }
-  }, [analysisResult, firestore, file, user, toast, router, t]);
+  }, [analysisResult, firestore, file, toast, router, t]);
 
   const handleSave = async () => {
     if (!analysisResult) return;
@@ -211,7 +215,9 @@ export function FileUploader() {
           {!analysisResult ? (
              <div className="flex flex-col items-center gap-4">
                 <Button onClick={handleAnalyze} disabled={isActionDisabled || !turnstileToken} className="w-full">{t('analyzeButton')}</Button>
-                <Turnstile key={turnstileKey} onSuccess={onTurnstileSuccess} onExpire={onTurnstileExpire} />
+                {turnstileKey > 0 && (
+                    <Turnstile key={turnstileKey} onSuccess={onTurnstileSuccess} onExpire={onTurnstileExpire} />
+                )}
             </div>
           ) : (
             <div className="space-y-4">

@@ -1,6 +1,7 @@
+
 'use client';
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { useUser, useFirebase } from "@/firebase";
 import { useRouter } from 'next/navigation';
 import { Button } from "@/components/ui/button";
@@ -45,13 +46,17 @@ export function GenerateClient() {
     const [isLoading, setIsLoading] = useState(false);
     const [generatedWod, setGeneratedWod] = useState<WOD | null>(null);
     const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
-    const [turnstileKey, setTurnstileKey] = useState(Date.now());
+    const [turnstileKey, setTurnstileKey] = useState(0);
 
     const { user, isUserLoading } = useUser();
     const { firestore, firebaseApp } = useFirebase();
     const router = useRouter();
     const { toast } = useToast();
     const { toggleSidebar } = useSidebar();
+
+    useEffect(() => {
+        setTurnstileKey(Date.now());
+    }, []);
 
     const handleGenerate = async () => {
         setIsLoading(true);
@@ -154,7 +159,9 @@ export function GenerateClient() {
                             >
                                 {isLoading ? t('generatingButton') : t('generateButton')}
                             </Button>
-                            <Turnstile key={turnstileKey} onSuccess={onTurnstileSuccess} onExpire={onTurnstileExpire} />
+                            {turnstileKey > 0 && (
+                                <Turnstile key={turnstileKey} onSuccess={onTurnstileSuccess} onExpire={onTurnstileExpire} />
+                            )}
                             
                             {!isUserLoading && (!user || user.isAnonymous) && (
                                 <Alert variant="default" className="border-blue-500/50 text-blue-500">
