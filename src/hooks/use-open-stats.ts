@@ -1,3 +1,4 @@
+
 import { useState, useCallback } from 'react';
 
 export interface LeaderboardEntry {
@@ -48,7 +49,7 @@ export function useOpenStats() {
   const [stats, setStats] = useState<StatsResult | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchLeaderboard = useCallback(async (year = 2025, workout = 0, division = 1, region = 0, scaled = 0, maxPages = 2) => {
+  const fetchLeaderboard = useCallback(async (year = 2026, workout = 0, division = 1, region = 0, scaled = 0, maxPages = 2) => {
     const cacheKey = `${year}-${workout}-${division}-${region}-${scaled}-${maxPages}`;
     
     if (statsCache.has(cacheKey)) {
@@ -117,12 +118,9 @@ export function useOpenStats() {
       }
 
       if (allEntries.length === 0) {
-        throw new Error("Aucune donnée trouvée.");
+        throw new Error("Aucune donnée trouvée pour l'année " + year);
       }
 
-      // Calcul des percentiles
-      // Pour le temps, on trie du plus petit au plus grand (plus court = mieux)
-      // Pour les reps ou le rang cumulé, on trie différemment
       const sortedVals = [...allEntries].map(e => e.reps).sort((a, b) => a - b);
       
       const getPercentile = (p: number) => {
