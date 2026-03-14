@@ -1,4 +1,3 @@
-
 import { useState, useCallback } from 'react';
 
 export interface LeaderboardEntry {
@@ -39,12 +38,23 @@ const parseWeight = (w: string): number | null => {
   return val;
 };
 
+// Cache en mémoire au niveau du module pour persister durant la session utilisateur
+const statsCache = new Map<string, StatsResult>();
+
 export function useOpenStats() {
   const [isLoading, setIsLoading] = useState(false);
   const [stats, setStats] = useState<StatsResult | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const fetchLeaderboard = useCallback(async (year = 2026, workout = 0, division = 1, region = 0, scaled = 0, maxPages = 2) => {
+    const cacheKey = `${year}-${workout}-${division}-${region}-${scaled}-${maxPages}`;
+    
+    // Si on a déjà les données en cache, on les utilise immédiatement
+    if (statsCache.has(cacheKey)) {
+      setStats(statsCache.get(cacheKey)!);
+      return;
+    }
+
     setIsLoading(true);
     setError(null);
     const allEntries: LeaderboardEntry[] = [];
@@ -71,11 +81,10 @@ export function useOpenStats() {
           const scoreObj = row.scores && row.scores[0];
           const scoreStr = scoreObj?.scoreDisplay || '0';
           
-          // Conversion intelligente pour AMRAP vs For Time
           let reps = 0;
           if (scoreStr.includes(':')) {
             const [m, s] = scoreStr.split(':').map(Number);
-            reps = m * 60 + s; // On stocke les secondes pour le "For Time"
+            reps = m * 60 + s;
           } else {
             reps = parseInt(scoreStr) || 0;
           }
@@ -107,13 +116,17 @@ export function useOpenStats() {
         return sortedReps[index] || 0;
       };
 
-      setStats({
+      const result: StatsResult = {
         median: getPercentile(0.5),
         p90: getPercentile(0.9),
         p99: getPercentile(0.99),
         data: allEntries,
         totalCount: allEntries.length
-      });
+      };
+
+      // Enregistrement dans le cache avant de mettre à jour l'état
+      statsCache.set(cacheKey, result);
+      setStats(result);
     } catch (err: any) {
       setError(err.message || "Erreur lors de la récupération des données.");
     } finally {

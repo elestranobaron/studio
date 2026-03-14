@@ -1,4 +1,3 @@
-
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(req: NextRequest) {
@@ -18,7 +17,8 @@ export async function GET(req: NextRequest) {
         'Accept': 'application/json',
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
       },
-      next: { revalidate: 3600 } // Cache d'une heure
+      // Cache de 24 heures sur le serveur pour limiter les appels API
+      next: { revalidate: 86400 }
     });
 
     if (!response.ok) {
