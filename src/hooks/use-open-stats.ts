@@ -7,9 +7,10 @@ export interface LeaderboardEntry {
   heightCm: number | null;
   weightKg: number | null;
   bmi: number | null;
-  reps: number;
+  reps: number; // Valeur numérique normalisée (secondes ou reps)
   scoreDisplay: string;
   region: string;
+  isTime: boolean; // Flag pour savoir si c'est un chrono
 }
 
 export interface StatsResult {
@@ -18,6 +19,7 @@ export interface StatsResult {
   p99: number;
   data: LeaderboardEntry[];
   totalCount: number;
+  isTime: boolean;
 }
 
 const parseHeight = (h: string): number | null => {
@@ -38,7 +40,7 @@ const parseWeight = (w: string): number | null => {
   return val;
 };
 
-// Cache en mémoire au niveau du module pour persister durant la session utilisateur
+// Cache en mémoire
 const statsCache = new Map<string, StatsResult>();
 
 export function useOpenStats() {
@@ -46,10 +48,9 @@ export function useOpenStats() {
   const [stats, setStats] = useState<StatsResult | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchLeaderboard = useCallback(async (year = 2026, workout = 0, division = 1, region = 0, scaled = 0, maxPages = 2) => {
+  const fetchLeaderboard = useCallback(async (year = 2025, workout = 0, division = 1, region = 0, scaled = 0, maxPages = 2) => {
     const cacheKey = `${year}-${workout}-${division}-${region}-${scaled}-${maxPages}`;
     
-    // Si on a déjà les données en cache, on les utilise immédiatement
     if (statsCache.has(cacheKey)) {
       setStats(statsCache.get(cacheKey)!);
       return;
@@ -60,6 +61,8 @@ export function useOpenStats() {
     const allEntries: LeaderboardEntry[] = [];
 
     try {
+      let isTimeDetected = false;
+
       for (let page = 1; page <= maxPages; page++) {
         const url = `/api/open-stats?year=${year}&division=${division}&region=${region}&scaled=${scaled}&page=${page}&sort=${workout}`;
         const response = await fetch(url);
@@ -78,15 +81,21 @@ export function useOpenStats() {
             bmi = w / (heightM * heightM);
           }
 
-          const scoreObj = row.scores && row.scores[0];
+          // Récupération du score spécifique au workout demandé
+          // Si workout=0 (Overall), on prend le rang global
+          const scoreObj = (workout === 0) ? { scoreDisplay: row.overallRank } : row.scores.find((s: any) => parseInt(s.ordinal) === workout) || row.scores[0];
           const scoreStr = scoreObj?.scoreDisplay || '0';
           
-          let reps = 0;
+          let val = 0;
+          let isTime = false;
+
           if (scoreStr.includes(':')) {
             const [m, s] = scoreStr.split(':').map(Number);
-            reps = m * 60 + s;
+            val = m * 60 + s;
+            isTime = true;
+            isTimeDetected = true;
           } else {
-            reps = parseInt(scoreStr) || 0;
+            val = parseInt(scoreStr.replace(/[^0-9]/g, '')) || 0;
           }
 
           return {
@@ -96,9 +105,10 @@ export function useOpenStats() {
             heightCm: h,
             weightKg: w,
             bmi: bmi,
-            reps: reps,
+            reps: val,
             scoreDisplay: scoreStr,
-            region: row.entrant.regionName
+            region: row.entrant.regionName,
+            isTime
           };
         });
 
@@ -107,28 +117,32 @@ export function useOpenStats() {
       }
 
       if (allEntries.length === 0) {
-        throw new Error("Aucune donnée trouvée pour cette sélection.");
+        throw new Error("Aucune donnée trouvée.");
       }
 
-      const sortedReps = [...allEntries].map(e => e.reps).sort((a, b) => a - b);
+      // Calcul des percentiles
+      // Pour le temps, on trie du plus petit au plus grand (plus court = mieux)
+      // Pour les reps ou le rang cumulé, on trie différemment
+      const sortedVals = [...allEntries].map(e => e.reps).sort((a, b) => a - b);
+      
       const getPercentile = (p: number) => {
-        const index = Math.floor(p * (sortedReps.length - 1));
-        return sortedReps[index] || 0;
+        const index = Math.floor(p * (sortedVals.length - 1));
+        return sortedVals[index] || 0;
       };
 
       const result: StatsResult = {
         median: getPercentile(0.5),
-        p90: getPercentile(0.9),
-        p99: getPercentile(0.99),
+        p90: isTimeDetected ? getPercentile(0.1) : getPercentile(0.9), // Top 10%
+        p99: isTimeDetected ? getPercentile(0.01) : getPercentile(0.99), // Elite 1%
         data: allEntries,
-        totalCount: allEntries.length
+        totalCount: allEntries.length,
+        isTime: isTimeDetected
       };
 
-      // Enregistrement dans le cache avant de mettre à jour l'état
       statsCache.set(cacheKey, result);
       setStats(result);
     } catch (err: any) {
-      setError(err.message || "Erreur lors de la récupération des données.");
+      setError(err.message || "Erreur réseau.");
     } finally {
       setIsLoading(false);
     }

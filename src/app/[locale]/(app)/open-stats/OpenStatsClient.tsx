@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
@@ -24,7 +23,7 @@ export default function OpenStatsClient() {
   const router = useRouter();
   const { fetchLeaderboard, stats, isLoading, error } = useOpenStats();
 
-  const [year, setYear] = useState("2026");
+  const [year, setYear] = useState("2025");
   const [workout, setWorkout] = useState("0");
   const [division, setDivision] = useState("1");
   const [region, setRegion] = useState("0");
@@ -42,22 +41,38 @@ export default function OpenStatsClient() {
     }
   }, [year, workout, division, region, fetchLeaderboard, isMounted]);
 
+  const formatScore = (val: number, isTime: boolean) => {
+    if (workout === "0") return `#${val}`;
+    if (!isTime) return `${val} reps`;
+    const m = Math.floor(val / 60);
+    const s = val % 60;
+    return `${m}:${s.toString().padStart(2, '0')}`;
+  };
+
   const histogramData = useMemo(() => {
     if (!stats || !stats.data || stats.data.length === 0) return [];
     const bins: Record<string, number> = {};
-    const scores = stats.data.map(e => e.reps);
-    const min = Math.min(...scores);
-    const max = Math.max(...scores);
-    const step = Math.ceil((max - min) / 15) || 1;
+    const values = stats.data.map(e => e.reps);
+    const min = Math.min(...values);
+    const max = Math.max(...values);
+    
+    // Nombre de barres dans le graphique
+    const binCount = 12;
+    const step = Math.ceil((max - min) / binCount) || 1;
 
     stats.data.forEach(entry => {
       const bin = Math.floor(entry.reps / step) * step;
       bins[bin] = (bins[bin] || 0) + 1;
     });
+
     return Object.entries(bins)
-      .map(([name, count]) => ({ name: parseInt(name), count }))
+      .map(([name, count]) => ({ 
+        name: parseInt(name), 
+        count,
+        label: formatScore(parseInt(name), stats.isTime)
+      }))
       .sort((a, b) => a.name - b.name);
-  }, [stats]);
+  }, [stats, workout]);
 
   const scatterData = useMemo(() => {
     if (!stats || !stats.data) return [];
@@ -78,9 +93,16 @@ export default function OpenStatsClient() {
   const userPercentile = useMemo(() => {
     if (!stats || !stats.data || userNumericScore === null) return null;
     const scores = stats.data.map(e => e.reps).sort((a, b) => a - b);
-    const index = scores.findIndex(s => s >= userNumericScore);
-    if (index === -1) return 100;
-    return Math.round((index / scores.length) * 100);
+    
+    let index = scores.findIndex(s => s >= userNumericScore);
+    if (index === -1) index = scores.length;
+
+    let percentile = Math.round((index / scores.length) * 100);
+    // Si c'est du temps, un score plus bas est meilleur (inversion)
+    if (stats.isTime) {
+        percentile = 100 - percentile;
+    }
+    return Math.max(1, Math.min(100, percentile));
   }, [stats, userNumericScore]);
 
   if (!isMounted || isUserLoading) {
@@ -90,13 +112,6 @@ export default function OpenStatsClient() {
       </div>
     );
   }
-
-  const formatScore = (val: number) => {
-    if (workout === "0") return `${val} reps`;
-    const m = Math.floor(val / 60);
-    const s = val % 60;
-    return `${m}:${s.toString().padStart(2, '0')}`;
-  };
 
   return (
     <div className="flex flex-col h-full bg-background">
@@ -110,7 +125,9 @@ export default function OpenStatsClient() {
                   {t('title')}
                 </h1>
               </div>
-              <p className="text-xs text-muted-foreground hidden md:block">{t('description')}</p>
+              <p className="text-xs text-muted-foreground hidden md:block">
+                {workout === "0" ? "Classement mondial cumulé" : `Statistiques de l'épreuve ${year}.${workout}`}
+              </p>
             </div>
           </div>
           <div className="flex items-center gap-2">
@@ -190,7 +207,7 @@ export default function OpenStatsClient() {
             <CardHeader className="pb-2">
               <CardDescription className="text-xs uppercase tracking-wider font-bold">{t('metrics.median')}</CardDescription>
               <CardTitle className="text-3xl font-bold text-blue-400">
-                {isLoading ? "..." : formatScore(stats?.median || 0)}
+                {isLoading ? "..." : formatScore(stats?.median || 0, stats?.isTime || false)}
               </CardTitle>
             </CardHeader>
           </Card>
@@ -200,7 +217,7 @@ export default function OpenStatsClient() {
                 <Trophy className="h-3 w-3 text-yellow-500" /> {t('metrics.top10')}
               </CardDescription>
               <CardTitle className="text-3xl font-bold text-yellow-500">
-                {isLoading ? "..." : formatScore(stats?.p90 || 0)}
+                {isLoading ? "..." : formatScore(stats?.p90 || 0, stats?.isTime || false)}
               </CardTitle>
             </CardHeader>
           </Card>
@@ -208,7 +225,7 @@ export default function OpenStatsClient() {
             <CardHeader className="pb-2">
               <CardDescription className="font-bold text-yellow-600 text-xs uppercase tracking-wider">{t('metrics.elite')}</CardDescription>
               <CardTitle className="text-3xl font-bold text-yellow-600">
-                {isLoading ? "..." : formatScore(stats?.p99 || 0)}
+                {isLoading ? "..." : formatScore(stats?.p99 || 0, stats?.isTime || false)}
               </CardTitle>
             </CardHeader>
           </Card>
@@ -229,7 +246,7 @@ export default function OpenStatsClient() {
               </CardDescription>
               <div className="flex items-center gap-2 mt-1">
                 <Input 
-                  placeholder={workout === "0" ? "Reps" : "MM:SS"}
+                  placeholder={workout === "0" ? "Rang" : (stats?.isTime ? "MM:SS" : "Reps")}
                   value={userScoreInput}
                   onChange={(e) => setUserScoreInput(e.target.value)}
                   className="h-8 text-sm border-accent/50 bg-background/50 focus-visible:ring-accent"
@@ -251,8 +268,15 @@ export default function OpenStatsClient() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           <Card className="shadow-lg overflow-hidden">
             <CardHeader className="bg-muted/30 border-b">
-              <CardTitle className="flex items-center gap-2 text-lg"><BarChart3 className="h-5 w-5 text-primary" /> {t('charts.distribution')}</CardTitle>
-              <CardDescription>{t('charts.distributionSub')}</CardDescription>
+              <CardTitle className="flex items-center gap-2 text-lg">
+                <BarChart3 className="h-5 w-5 text-primary" /> 
+                {workout === "0" ? "Distribution des rangs" : t('charts.distribution')}
+              </CardTitle>
+              <CardDescription>
+                {workout === "0" 
+                  ? "Aperçu de la position relative des athlètes dans l'échantillon." 
+                  : "Fréquence des scores obtenus par les athlètes analysés."}
+              </CardDescription>
             </CardHeader>
             <CardContent className="pt-6">
               <div className="h-[350px] min-h-[350px] w-full">
@@ -264,7 +288,13 @@ export default function OpenStatsClient() {
                   <ResponsiveContainer width="100%" height="100%" minHeight={350}>
                     <BarChart data={histogramData} margin={{ top: 20, right: 10, left: -20, bottom: 0 }}>
                       <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" />
-                      <XAxis dataKey="name" stroke="hsl(var(--muted-foreground))" fontSize={10} tickLine={false} axisLine={false} />
+                      <XAxis 
+                        dataKey="label" 
+                        stroke="hsl(var(--muted-foreground))" 
+                        fontSize={10} 
+                        tickLine={false} 
+                        axisLine={false} 
+                      />
                       <YAxis stroke="hsl(var(--muted-foreground))" fontSize={10} tickLine={false} axisLine={false} />
                       <Tooltip 
                         contentStyle={{ backgroundColor: 'hsl(var(--card))', borderRadius: '8px', border: '1px solid hsl(var(--border))' }}
@@ -276,7 +306,7 @@ export default function OpenStatsClient() {
                       
                       {userNumericScore !== null && (
                         <ReferenceLine 
-                          x={userNumericScore} 
+                          x={histogramData.find(b => userNumericScore >= b.name && userNumericScore < (b.name + 10))?.label} 
                           stroke="hsl(var(--accent-foreground))" 
                           strokeWidth={3} 
                           strokeDasharray="5 5"
@@ -336,8 +366,14 @@ export default function OpenStatsClient() {
         <div className="bg-muted/30 p-4 rounded-lg flex items-start gap-3 border border-border/50">
           <Info className="h-5 w-5 text-primary mt-0.5" />
           <div className="text-sm text-muted-foreground">
-            <p className="font-semibold text-foreground">{t('methodology.title')}</p>
-            <p>{t('methodology.description')}</p>
+            <p className="font-semibold text-foreground">Aide à la lecture</p>
+            <p className="mb-2">
+              <strong>Overall</strong> : Représente votre rang mondial cumulé. Un nombre bas signifie une meilleure régularité sur l'ensemble des épreuves.
+            </p>
+            <p>
+              <strong>Distribution</strong> : Pour un workout spécifique, montre si vous êtes dans la "bosse" (la moyenne) ou dans les extrémités (élite ou débutant). 
+              {stats?.isTime ? " Plus le chrono est bas, plus vous êtes vers la gauche." : " Plus le nombre de reps est haut, plus vous êtes vers la droite."}
+            </p>
           </div>
         </div>
       </main>
