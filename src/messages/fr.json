@@ -1,4 +1,3 @@
-
 {
   "RootLayout": {
     "seo": {
@@ -178,7 +177,7 @@
     },
     "verifying": "Vérification...",
     "confirmEmailTitle": "Confirmez votre e-mail",
-    "confirmEmailDescription": "Pour finaliser la connexion sur cet appareil, saisissez le code à 6 chiffres envoyé à votre adresse e-mail.",
+    "confirmEmailDescription": "Saisissez le code à 6 chiffres envoyé à votre adresse e-mail.",
     "confirmEmailFailedTitle": "La connexion a échoué",
     "confirmEmailSignInButton": "Se connecter",
     "featureTitle": "Passez au niveau supérieur.",
