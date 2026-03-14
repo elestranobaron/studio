@@ -1,6 +1,16 @@
 
 import { useState, useCallback } from 'react';
 
+export interface WorkoutScoreDetail {
+  ordinal: number;
+  rank: number;
+  scoreDisplay: string;
+  breakdown?: string;
+  time?: string;
+  judge?: string;
+  affiliate?: string;
+}
+
 export interface LeaderboardEntry {
   rank: number;
   name: string;
@@ -10,8 +20,10 @@ export interface LeaderboardEntry {
   bmi: number | null;
   reps: number; // Valeur numérique normalisée (secondes ou reps)
   scoreDisplay: string;
+  overallScore: string; // Points (somme des rangs)
   region: string;
-  isTime: boolean; // Flag pour savoir si c'est un chrono
+  isTime: boolean;
+  scores: WorkoutScoreDetail[]; // Détails de tous les workouts
 }
 
 export interface StatsResult {
@@ -41,7 +53,6 @@ const parseWeight = (w: string): number | null => {
   return val;
 };
 
-// Cache en mémoire
 const statsCache = new Map<string, StatsResult>();
 
 export function useOpenStats() {
@@ -82,9 +93,10 @@ export function useOpenStats() {
             bmi = w / (heightM * heightM);
           }
 
-          // Récupération du score spécifique au workout demandé
-          // Si workout=0 (Overall), on prend le rang global
-          const scoreObj = (workout === 0) ? { scoreDisplay: row.overallRank } : row.scores.find((s: any) => parseInt(s.ordinal) === workout) || row.scores[0];
+          const scoreObj = (workout === 0) 
+            ? row.scores[0] // Fallback
+            : row.scores.find((s: any) => parseInt(s.ordinal) === workout) || row.scores[0];
+          
           const scoreStr = scoreObj?.scoreDisplay || '0';
           
           let val = 0;
@@ -99,6 +111,17 @@ export function useOpenStats() {
             val = parseInt(scoreStr.replace(/[^0-9]/g, '')) || 0;
           }
 
+          // Mapper les scores détaillés
+          const detailedScores = row.scores.map((s: any) => ({
+            ordinal: parseInt(s.ordinal),
+            rank: parseInt(s.rank),
+            scoreDisplay: s.scoreDisplay,
+            breakdown: s.breakdown,
+            time: s.time,
+            judge: s.judgeName,
+            affiliate: s.affiliateName
+          }));
+
           return {
             rank: parseInt(row.overallRank),
             name: row.entrant.competitorName,
@@ -108,8 +131,10 @@ export function useOpenStats() {
             bmi: bmi,
             reps: val,
             scoreDisplay: scoreStr,
+            overallScore: row.overallScore || row.overallRank, // Points
             region: row.entrant.regionName,
-            isTime
+            isTime,
+            scores: detailedScores
           };
         });
 
@@ -118,7 +143,7 @@ export function useOpenStats() {
       }
 
       if (allEntries.length === 0) {
-        throw new Error("Aucune donnée trouvée pour l'année " + year);
+        throw new Error("Aucune donnée trouvée.");
       }
 
       const sortedVals = [...allEntries].map(e => e.reps).sort((a, b) => a - b);
@@ -130,8 +155,8 @@ export function useOpenStats() {
 
       const result: StatsResult = {
         median: getPercentile(0.5),
-        p90: isTimeDetected ? getPercentile(0.1) : getPercentile(0.9), // Top 10%
-        p99: isTimeDetected ? getPercentile(0.01) : getPercentile(0.99), // Elite 1%
+        p90: isTimeDetected ? getPercentile(0.1) : getPercentile(0.9),
+        p99: isTimeDetected ? getPercentile(0.01) : getPercentile(0.99),
         data: allEntries,
         totalCount: allEntries.length,
         isTime: isTimeDetected

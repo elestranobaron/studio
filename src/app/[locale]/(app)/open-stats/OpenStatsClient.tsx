@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
@@ -6,20 +7,21 @@ import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { SidebarTrigger } from '@/components/ui/sidebar';
-import { useOpenStats, type LeaderboardEntry } from '@/hooks/use-open-stats';
+import { useOpenStats, type LeaderboardEntry, type WorkoutScoreDetail } from '@/hooks/use-open-stats';
 import { 
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, 
   ScatterChart, Scatter, Cell, ReferenceLine, Label as RechartsLabel
 } from 'recharts';
 import { 
   LoaderCircle, Info, Users, BarChart3, Weight, Trophy, 
-  AlertTriangle, Calendar as CalendarIcon, Activity, Target, Gem, Lock, ListOrdered 
+  AlertTriangle, Calendar as CalendarIcon, Activity, Target, Gem, Lock, ListOrdered, ChevronDown, ChevronUp 
 } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
+import { cn } from '@/lib/utils';
 
 export default function OpenStatsClient() {
   const t = useTranslations('OpenStatsPage');
@@ -34,6 +36,7 @@ export default function OpenStatsClient() {
   
   const [userScoreInput, setUserScoreInput] = useState("");
   const [isMounted, setIsMounted] = useState(false);
+  const [expandedRow, setExpandedRow] = useState<string | null>(null);
 
   useEffect(() => {
     setIsMounted(true);
@@ -86,8 +89,6 @@ export default function OpenStatsClient() {
 
   const topTenAthletes = useMemo(() => {
     if (!stats || !stats.data) return [];
-    // Trier par reps desc (si reps) ou reps asc (si temps)
-    // Sauf si workout 0, alors trier par rank asc
     return [...stats.data]
       .sort((a, b) => {
         if (workout === "0") return a.rank - b.rank;
@@ -140,7 +141,7 @@ export default function OpenStatsClient() {
                 </h1>
               </div>
               <p className="text-xs text-muted-foreground hidden md:block">
-                {workout === "0" ? "Classement mondial cumulé" : `Statistiques de l'épreuve ${year}.${workout}`}
+                {workout === "0" ? "Classement mondial (Points)" : `Statistiques de l'épreuve ${year}.${workout}`}
               </p>
             </div>
           </div>
@@ -386,7 +387,7 @@ export default function OpenStatsClient() {
                 {t('leaderboard.title')}
               </CardTitle>
               <CardDescription>
-                Top 10 des athlètes pour cette catégorie.
+                {workout === "0" ? "Top 10 du classement mondial par points (somme des rangs)." : `Top 10 des athlètes pour l'épreuve ${year}.${workout}.`}
               </CardDescription>
             </div>
           </CardHeader>
@@ -397,22 +398,68 @@ export default function OpenStatsClient() {
               <Table>
                 <TableHeader>
                   <TableRow>
+                    <TableHead className="w-[50px]"></TableHead>
                     <TableHead className="w-[100px]">{t('leaderboard.rank')}</TableHead>
                     <TableHead>{t('leaderboard.name')}</TableHead>
-                    <TableHead className="text-right">{t('leaderboard.score')}</TableHead>
+                    <TableHead className="text-right">{workout === "0" ? "Points" : t('leaderboard.score')}</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {topTenAthletes.map((athlete, idx) => (
-                    <TableRow key={idx}>
-                      <TableCell className="font-bold">
-                        {athlete.rank === 1 ? '🥇' : athlete.rank === 2 ? '🥈' : athlete.rank === 3 ? '🥉' : `#${athlete.rank}`}
-                      </TableCell>
-                      <TableCell className="font-medium uppercase">{athlete.name}</TableCell>
-                      <TableCell className="text-right font-mono text-primary font-bold">
-                        {athlete.scoreDisplay}
-                      </TableCell>
-                    </TableRow>
+                    <>
+                      <TableRow 
+                        key={`row-${idx}`} 
+                        className="cursor-pointer hover:bg-muted/50"
+                        onClick={() => setExpandedRow(expandedRow === athlete.name ? null : athlete.name)}
+                      >
+                        <TableCell>
+                          {expandedRow === athlete.name ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+                        </TableCell>
+                        <TableCell className="font-bold">
+                          {athlete.rank === 1 ? '🥇' : athlete.rank === 2 ? '🥈' : athlete.rank === 3 ? '🥉' : `#${athlete.rank}`}
+                        </TableCell>
+                        <TableCell className="font-medium uppercase">
+                          {athlete.name}
+                          <p className="text-[10px] text-muted-foreground font-normal">{athlete.region}</p>
+                        </TableCell>
+                        <TableCell className="text-right font-mono text-primary font-bold">
+                          {workout === "0" ? athlete.overallScore : athlete.scoreDisplay}
+                        </TableCell>
+                      </TableRow>
+                      {expandedRow === athlete.name && (
+                        <TableRow key={`expand-${idx}`} className="bg-muted/30">
+                          <TableCell colSpan={4} className="p-4">
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 animate-in fade-in slide-in-from-top-2">
+                              {athlete.scores.map((s) => (
+                                <div key={s.ordinal} className={cn("p-3 rounded-md border", s.ordinal === parseInt(workout) ? "bg-primary/10 border-primary/30" : "bg-card/50")}>
+                                  <p className="text-[10px] font-bold uppercase text-muted-foreground mb-1">{year.slice(2)}.{s.ordinal}</p>
+                                  <div className="flex justify-between items-end">
+                                    <div>
+                                      <p className="text-sm font-bold">{s.scoreDisplay}</p>
+                                      <p className="text-[10px] text-muted-foreground">Rang: #{s.rank}</p>
+                                    </div>
+                                  </div>
+                                  {s.breakdown && (
+                                    <div className="mt-2 text-[10px] text-foreground leading-tight whitespace-pre-wrap border-t pt-2 border-border/50">
+                                      {s.breakdown}
+                                    </div>
+                                  )}
+                                  {s.time && (
+                                    <p className="mt-1 text-[10px] text-accent-foreground font-semibold">Tiebreak: {s.time}</p>
+                                  )}
+                                  {(s.affiliate || s.judge) && (
+                                    <div className="mt-2 space-y-0.5 opacity-70">
+                                      {s.affiliate && <p className="text-[9px]">At: {s.affiliate}</p>}
+                                      {s.judge && <p className="text-[9px]">Judge: {s.judge}</p>}
+                                    </div>
+                                  )}
+                                </div>
+                              ))}
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      )}
+                    </>
                   ))}
                 </TableBody>
               </Table>
@@ -425,7 +472,7 @@ export default function OpenStatsClient() {
           <div className="text-sm text-muted-foreground">
             <p className="font-semibold text-foreground">Aide à la lecture</p>
             <p className="mb-2">
-              <strong>Overall</strong> : Représente votre rang mondial cumulé. Un nombre bas signifie une meilleure régularité sur l'ensemble des épreuves.
+              <strong>Overall</strong> : Le score affiché correspond au total des points (somme des places). James Sprague avec 31 points signifie qu'il a été extrêmement régulier sur les 3 épreuves.
             </p>
             <p>
               <strong>Distribution</strong> : Pour un workout spécifique, montre si vous êtes dans la "bosse" (la moyenne) ou dans les extrémités (élite ou débutant). 
