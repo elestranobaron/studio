@@ -1,18 +1,20 @@
 User-agent: *
-Allow: /                       # Autorise la homepage et pages statiques
-Allow: /hero-wods             # Si tu as une page liste Hero WODs publique
-Allow: /hall-of-fame          # Idem
-Allow: /community-timer/      # Très important : tes pages Hero timers communautaires (Murph, Fran, etc.)
-Allow: /timers/               # Si tes timers standards sont publics
-Allow: /timer/                # Idem
+Allow: /
+Allow: /scan
+Allow: /generate
+Allow: /hero-wods
+Allow: /hall-of-fame
+Allow: /timers
+Allow: /timer
+Allow: /community-timer/
+Allow: /open-stats
+Allow: /sitemap.xml
 
-Disallow: /dashboard          # Garde bloqué : privé
-Disallow: /settings           # Privé
-Disallow: /scan               # Si c'est une feature login-required
-Disallow: /generate           # Idem (génération WOD)
-Disallow: /wod/               # Si /wod/new est derrière login
-Disallow: /premium            # Privé
-Disallow: /login              # Privé
-Disallow: /*?                 # Optionnel : bloque paramètres URL si tu en as
+# Bloque uniquement les vraies parties privées
+Disallow: /dashboard
+Disallow: /settings
+Disallow: /premium
+Disallow: /login
+Disallow: /*?        # bloque les params URL si tu veux éviter le duplicate content
 
 Sitemap: https://wodburner.app/sitemap.xml
