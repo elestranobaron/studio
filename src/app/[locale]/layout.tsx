@@ -1,5 +1,5 @@
 import { NextIntlClientProvider } from 'next-intl';
-import { getMessages, setRequestLocale } from 'next-intl/server';
+import { getMessages, setRequestLocale, getTranslations } from 'next-intl/server';
 import { ReactNode } from 'react';
 import { FirebaseProvider } from '@/firebase/provider';
 import { Toaster } from '@/components/ui/toaster';
@@ -42,8 +42,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     notFound();
   }
 
-  const rawBaseUrl =
-    process.env.NEXT_PUBLIC_APP_URL || 'https://wodburner.app';
+  const t = await getTranslations({ locale, namespace: 'RootLayout.seo' });
+  const rawBaseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://wodburner.app';
   const baseUrl = rawBaseUrl.replace(/\/$/, '');
 
   const languages = locales.reduce((acc, loc) => {
@@ -53,6 +53,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   return {
     metadataBase: new URL(baseUrl),
+    title: {
+      template: `%s | WODBurner`,
+      default: t('title'),
+    },
+    description: t('description'),
     alternates: {
       canonical: './',
       languages: {
