@@ -309,7 +309,7 @@ export default function OpenStatsClient() {
                         fontSize={10} 
                         tickLine={false} 
                         axisLine={false}
-                        label={{ value: 'Score / Rang', position: 'insideBottom', offset: -10, fontSize: 10, fill: 'hsl(var(--muted-foreground))' }}
+                        label={{ value: workout === "0" ? 'Rang Mondial' : 'Score (Reps/Temps)', position: 'insideBottom', offset: -10, fontSize: 10, fill: 'hsl(var(--muted-foreground))' }}
                       />
                       <YAxis stroke="hsl(var(--muted-foreground))" fontSize={10} tickLine={false} axisLine={false} label={{ value: 'Nb Athlètes', angle: -90, position: 'insideLeft', fontSize: 10, fill: 'hsl(var(--muted-foreground))' }} />
                       <Tooltip 
@@ -359,7 +359,7 @@ export default function OpenStatsClient() {
                     <ScatterChart margin={{ top: 10, right: 10, bottom: 20, left: -20 }}>
                       <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
                       <XAxis type="number" dataKey="x" name="BMI" domain={[18, 35]} label={{ value: 'IMC (BMI)', position: 'insideBottom', offset: -10, fontSize: 10, fill: 'hsl(var(--muted-foreground))' }} stroke="hsl(var(--muted-foreground))" fontSize={10} />
-                      <YAxis type="number" dataKey="y" name="Rank" reversed label={{ value: 'Rang Mondial', angle: -90, position: 'insideLeft', fontSize: 10, fill: 'hsl(var(--muted-foreground))' }} stroke="hsl(var(--muted-foreground))" fontSize={10} />
+                      <YAxis type="number" dataKey="y" name="Rank" reversed domain={['auto', 'auto']} label={{ value: 'Rang (1 = Meilleur)', angle: -90, position: 'insideLeft', fontSize: 10, fill: 'hsl(var(--muted-foreground))' }} stroke="hsl(var(--muted-foreground))" fontSize={10} />
                       <Tooltip 
                         cursor={{ strokeDasharray: '3 3' }}
                         contentStyle={{ backgroundColor: 'hsl(var(--card))', borderRadius: '8px', border: '1px solid hsl(var(--border))', color: 'hsl(var(--foreground))' }}

@@ -93,16 +93,17 @@ export function useOpenStats() {
             bmi = w / (heightM * heightM);
           }
 
+          // Trouver le score spécifique à l'épreuve
           const scoreObj = (workout === 0) 
-            ? row.scores[0] // Fallback
-            : row.scores.find((s: any) => parseInt(s.ordinal) === workout) || row.scores[0];
+            ? null 
+            : row.scores.find((s: any) => parseInt(s.ordinal) === workout);
           
-          const scoreStr = scoreObj?.scoreDisplay || '0';
+          const scoreStr = workout === 0 ? (row.overallScore || row.overallRank) : (scoreObj?.scoreDisplay || '0');
           
           let val = 0;
           let isTime = false;
 
-          if (scoreStr.includes(':')) {
+          if (workout !== 0 && scoreStr.includes(':')) {
             const [m, s] = scoreStr.split(':').map(Number);
             val = m * 60 + s;
             isTime = true;
@@ -111,7 +112,9 @@ export function useOpenStats() {
             val = parseInt(scoreStr.replace(/[^0-9]/g, '')) || 0;
           }
 
-          // Mapper les scores détaillés
+          // Rang à utiliser pour les graphiques (soit Overall, soit spécifique à l'épreuve)
+          const currentRank = workout === 0 ? parseInt(row.overallRank) : (scoreObj ? parseInt(scoreObj.rank) : parseInt(row.overallRank));
+
           const detailedScores = row.scores.map((s: any) => ({
             ordinal: parseInt(s.ordinal),
             rank: parseInt(s.rank),
@@ -123,7 +126,7 @@ export function useOpenStats() {
           }));
 
           return {
-            rank: parseInt(row.overallRank),
+            rank: currentRank,
             name: row.entrant.competitorName,
             age: parseInt(row.entrant.age),
             heightCm: h,
@@ -131,7 +134,7 @@ export function useOpenStats() {
             bmi: bmi,
             reps: val,
             scoreDisplay: scoreStr,
-            overallScore: row.overallScore || row.overallRank, // Points
+            overallScore: row.overallScore || row.overallRank,
             region: row.entrant.regionName,
             isTime,
             scores: detailedScores
