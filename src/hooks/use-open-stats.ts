@@ -18,12 +18,12 @@ export interface LeaderboardEntry {
   heightCm: number | null;
   weightKg: number | null;
   bmi: number | null;
-  reps: number; // Valeur numérique normalisée (secondes ou reps)
+  reps: number; // Valeur numérique brute pour les calculs
   scoreDisplay: string;
   overallScore: string; // Points (somme des rangs)
   region: string;
   isTime: boolean;
-  scores: WorkoutScoreDetail[]; // Détails de tous les workouts
+  scores: WorkoutScoreDetail[];
 }
 
 export interface StatsResult {
@@ -93,7 +93,6 @@ export function useOpenStats() {
             bmi = w / (heightM * heightM);
           }
 
-          // Trouver le score spécifique à l'épreuve
           const scoreObj = (workout === 0) 
             ? null 
             : row.scores.find((s: any) => parseInt(s.ordinal) === workout);
@@ -103,16 +102,22 @@ export function useOpenStats() {
           let val = 0;
           let isTime = false;
 
+          // Parsing intelligent pour les statistiques
           if (workout !== 0 && scoreStr.includes(':')) {
-            const [m, s] = scoreStr.split(':').map(Number);
-            val = m * 60 + s;
-            isTime = true;
-            isTimeDetected = true;
-          } else {
+            const parts = scoreStr.split('(')[0].trim().split(':');
+            if (parts.length >= 2) {
+                const m = parseInt(parts[parts.length - 2]);
+                const s = parseInt(parts[parts.length - 1]);
+                val = m * 60 + s;
+                isTime = true;
+                isTimeDetected = true;
+            }
+          } else if (workout !== 0) {
             val = parseInt(scoreStr.replace(/[^0-9]/g, '')) || 0;
+          } else {
+            val = parseInt(row.overallRank) || 0;
           }
 
-          // Rang à utiliser pour les graphiques (soit Overall, soit spécifique à l'épreuve)
           const currentRank = workout === 0 ? parseInt(row.overallRank) : (scoreObj ? parseInt(scoreObj.rank) : parseInt(row.overallRank));
 
           const detailedScores = row.scores.map((s: any) => ({
@@ -149,6 +154,7 @@ export function useOpenStats() {
         throw new Error("Aucune donnée trouvée.");
       }
 
+      // Trier les valeurs pour les percentiles (attention au sens si temps ou reps)
       const sortedVals = [...allEntries].map(e => e.reps).sort((a, b) => a - b);
       
       const getPercentile = (p: number) => {

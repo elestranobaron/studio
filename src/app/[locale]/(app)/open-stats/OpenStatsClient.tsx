@@ -64,7 +64,8 @@ export default function OpenStatsClient() {
     const max = Math.max(...values);
     
     const binCount = 12;
-    const step = Math.ceil((max - min) / binCount) || 1;
+    const range = max - min;
+    const step = range > 0 ? Math.ceil(range / binCount) : 1;
 
     stats.data.forEach(entry => {
       const bin = Math.floor(entry.reps / step) * step;
@@ -89,19 +90,19 @@ export default function OpenStatsClient() {
 
   const topTenAthletes = useMemo(() => {
     if (!stats || !stats.data) return [];
+    // Toujours trier par rang réel fourni par l'API
     return [...stats.data]
-      .sort((a, b) => {
-        if (workout === "0") return a.rank - b.rank;
-        return stats.isTime ? a.reps - b.reps : b.reps - a.reps;
-      })
+      .sort((a, b) => a.rank - b.rank)
       .slice(0, 10);
-  }, [stats, workout]);
+  }, [stats]);
 
   const userNumericScore = useMemo(() => {
     if (!userScoreInput) return null;
     if (userScoreInput.includes(':')) {
-      const [m, s] = userScoreInput.split(':').map(Number);
-      return (m * 60) + (s || 0);
+      const parts = userScoreInput.split(':');
+      const m = parseInt(parts[0]);
+      const s = parseInt(parts[1]) || 0;
+      return (m * 60) + s;
     }
     return parseInt(userScoreInput) || null;
   }, [userScoreInput]);
