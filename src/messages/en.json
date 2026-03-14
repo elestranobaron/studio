@@ -1,9 +1,8 @@
-
 {
   "RootLayout": {
     "seo": {
-      "title": "WODBurner - Your CrossFit Whiteboard & Smart Timer",
-      "description": "Scan your CrossFit workouts from photos, generate new WODs with AI, and access smart timers. Join the community and track your performance."
+      "title": "WODBurner - AI CrossFit Whiteboard & Smart Timers",
+      "description": "The ultimate CrossFit companion. Scan whiteboard photos, generate AI workouts, access pro timers, and analyze Open stats."
     }
   },
   "UserNav": {
@@ -26,8 +25,8 @@
   },
   "OpenStatsPage": {
     "seo": {
-      "title": "Open Stats | CrossFit Open Leaderboards Statistics",
-      "description": "Live CrossFit Open statistics. Compare your scores and analyze worldwide performance."
+      "title": "Open Stats | Live CrossFit Open Leaderboards",
+      "description": "Analyze 2026 CrossFit Open results. Top 10 rankings, BMI/Rank correlations, and global score distributions."
     },
     "title": "Open Stats",
     "description": "Live CrossFit Open data via public API – daily refresh",
@@ -60,8 +59,8 @@
   },
   "DashboardPage": {
     "seo": {
-      "title": "Dashboard | Manage your CrossFit WODs",
-      "description": "Manage your workouts and find your scanned WODs."
+      "title": "Dashboard | My CrossFit Workouts",
+      "description": "Manage your workout history, access your scanned WODs, and share your performances with the community."
     },
     "title": "Dashboard",
     "scanNewWod": "Scan New WOD",
@@ -75,7 +74,7 @@
     },
     "CommunityWodList": {
       "joinTitle": "Join the Community!",
-      "joinDescription": "Create a free account to view and share WODs.",
+      "joinDescription": "Create a free account to view, share, and get inspired by workouts.",
       "joinButton": "Sign Up / Log In",
       "errorTitle": "An error occurred",
       "errorDescription": "Could not load community WODs.",
@@ -176,8 +175,8 @@
   },
   "LoginPage": {
     "seo": {
-      "title": "Sign In | WODBurner",
-      "description": "Log in to your account."
+      "title": "Sign In | Access your WODs",
+      "description": "Log in to save your whiteboard scans, generate new workouts, and join the CrossFit community."
     },
     "verifying": "Verifying...",
     "confirmEmailTitle": "Confirm Email",
@@ -208,8 +207,8 @@
   },
   "PremiumPage": {
     "seo": {
-      "title": "Premium | Support WODBurner",
-      "description": "Unlock unlimited scans and exclusive features."
+      "title": "WODBurner Premium | Unlimited Scans & Advanced Filters",
+      "description": "Go pro with WODBurner Premium. Unlimited scans, advanced stats, and exclusive supporter badge."
     },
     "title": "Premium",
     "alreadyPremium": {
@@ -272,8 +271,8 @@
   },
   "SettingsPage": {
     "seo": {
-      "title": "Settings",
-      "description": "Manage your profile."
+      "title": "Settings | Manage My WODBurner Account",
+      "description": "Update your profile, subscription, and email preferences."
     },
     "title": "Settings",
     "profile": {
@@ -312,16 +311,16 @@
   },
   "ScanPage": {
     "seo": {
-      "title": "Scan WOD",
-      "description": "Scan your whiteboard."
+      "title": "Scan WOD | AI Whiteboard Analyzer",
+      "description": "Turn your whiteboard photo into an interactive timer in seconds."
     },
     "title": "Scan WOD",
     "manualButton": "Add manually"
   },
   "NewWodPage": {
     "seo": {
-      "title": "New WOD",
-      "description": "Create manually."
+      "title": "New Workout | Manual Entry",
+      "description": "Add your custom CrossFit workouts manually and start training."
     },
     "title": "Create WOD manually",
     "cardTitle": "Workout Details",
@@ -350,8 +349,8 @@
   },
   "EditWodPage": {
     "seo": {
-      "title": "Edit WOD",
-      "description": "Update your workout."
+      "title": "Edit WOD | WODBurner",
+      "description": "Update your workout details, title, or description."
     },
     "title": "Edit WOD",
     "cardTitle": "Details",
@@ -395,8 +394,8 @@
   },
   "TimersPage": {
     "seo": {
-      "title": "Timers",
-      "description": "Professional timers."
+      "title": "CrossFit Timers | For Time, AMRAP, EMOM, Tabata",
+      "description": "Professional training timers for your workouts. Highly visible and easy to use."
     },
     "title": "Smart Timers",
     "forTime": "For Time",
@@ -411,8 +410,8 @@
   },
   "HeroWodsPage": {
     "seo": {
-      "title": "Hero WODs",
-      "description": "Legendary workouts."
+      "title": "Hero WODs & Benchmarks | The Legendary Library",
+      "description": "Find Murph, Fran, Cindy and all the legendary CrossFit workouts."
     },
     "title": "Hero WODs",
     "description": "In memory of fallen heroes.",
@@ -424,8 +423,8 @@
   },
   "HallOfFamePage": {
     "seo": {
-      "title": "Hall of Fame",
-      "description": "The OGs."
+      "title": "Hall of Fame | WODBurner Early Adopters",
+      "description": "The restricted circle of our first 300 supporters."
     },
     "title": "Hall of Fame",
     "cardTitle": "First 300 OGs",
@@ -457,8 +456,8 @@
   },
   "GenerateWodPage": {
     "seo": {
-      "title": "AI WOD Generator",
-      "description": "AI creates your workout."
+      "title": "AI WOD Generator | New Workouts Every Day",
+      "description": "Lacking inspiration? Let our AI coach create a custom CrossFit training for you."
     },
     "title": "AI WOD Generator",
     "cardTitle": "WODBot 3000",

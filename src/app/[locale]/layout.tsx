@@ -58,11 +58,54 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       default: t('title'),
     },
     description: t('description'),
+    keywords: ["CrossFit", "WOD", "Workout", "Timer", "AI", "Fitness", "Whiteboard Scanner"],
+    authors: [{ name: "WODBurner Team" }],
+    creator: "WODBurner",
+    publisher: "WODBurner",
+    formatDetection: {
+      email: false,
+      address: false,
+      telephone: false,
+    },
     alternates: {
       canonical: './',
       languages: {
         'x-default': `${baseUrl}/`,
         ...languages,
+      },
+    },
+    openGraph: {
+      title: t('title'),
+      description: t('description'),
+      url: baseUrl,
+      siteName: 'WODBurner',
+      images: [
+        {
+          url: 'https://images.unsplash.com/photo-1517836357463-d25dfeac3438?q=80&w=1200&h=630&fit=crop',
+          width: 1200,
+          height: 630,
+          alt: 'WODBurner - CrossFit Companion',
+        },
+      ],
+      locale: locale,
+      type: 'website',
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: t('title'),
+      description: t('description'),
+      images: ['https://images.unsplash.com/photo-1517836357463-d25dfeac3438?q=80&w=1200&h=630&fit=crop'],
+      creator: '@wodburner',
+    },
+    robots: {
+      index: true,
+      follow: true,
+      googleBot: {
+        index: true,
+        follow: true,
+        'max-video-preview': -1,
+        'max-image-preview': 'large',
+        'max-snippet': -1,
       },
     },
   };

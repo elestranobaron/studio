@@ -1,4 +1,3 @@
-
 import { Metadata } from 'next';
 import { getTranslations } from 'next-intl/server';
 import OpenStatsClient from './OpenStatsClient';
@@ -14,6 +13,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: t('title'),
     description: t('description'),
+    openGraph: {
+      title: t('title'),
+      description: t('description'),
+      images: ['https://images.unsplash.com/photo-1599058917233-35808dfcbd12?q=80&w=1200&h=630&fit=crop'],
+      type: 'article',
+    },
   };
 }
 
