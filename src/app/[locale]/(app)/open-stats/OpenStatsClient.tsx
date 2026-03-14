@@ -478,7 +478,7 @@ export default function OpenStatsClient() {
               <strong>Unification des scores</strong> : Pour permettre une comparaison visuelle cohérente sur les épreuves mixtes (temps + répétitions), tous les scores sont convertis en répétitions totales. Les athlètes ayant terminé l'épreuve sont regroupés à l'extrémité droite du graphique.
             </p>
             <p>
-              <strong>Overall</strong> : Le score correspond à la somme des rangs obtenus. Un score faible indique une meilleure performance globale.
+              <strong>Overall</strong> : Le score correspond à la somme des rangs obtenus. Un score faible indique une meilleure performance globale...
             </p>
           </div>
         </div>
