@@ -6,14 +6,18 @@ import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { SidebarTrigger } from '@/components/ui/sidebar';
-import { useOpenStats } from '@/hooks/use-open-stats';
+import { useOpenStats, type LeaderboardEntry } from '@/hooks/use-open-stats';
 import { 
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, 
   ScatterChart, Scatter, Cell, ReferenceLine, Label as RechartsLabel
 } from 'recharts';
-import { LoaderCircle, Info, Users, BarChart3, Weight, Trophy, AlertTriangle, Calendar as CalendarIcon, Activity, Target, Gem, Lock } from 'lucide-react';
+import { 
+  LoaderCircle, Info, Users, BarChart3, Weight, Trophy, 
+  AlertTriangle, Calendar as CalendarIcon, Activity, Target, Gem, Lock, ListOrdered 
+} from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 
@@ -23,7 +27,7 @@ export default function OpenStatsClient() {
   const router = useRouter();
   const { fetchLeaderboard, stats, isLoading, error } = useOpenStats();
 
-  const [year, setYear] = useState("2025");
+  const [year, setYear] = useState("2026");
   const [workout, setWorkout] = useState("0");
   const [division, setDivision] = useState("1");
   const [region, setRegion] = useState("0");
@@ -56,7 +60,6 @@ export default function OpenStatsClient() {
     const min = Math.min(...values);
     const max = Math.max(...values);
     
-    // Nombre de barres dans le graphique
     const binCount = 12;
     const step = Math.ceil((max - min) / binCount) || 1;
 
@@ -81,6 +84,18 @@ export default function OpenStatsClient() {
       .map(e => ({ x: e.bmi, y: e.rank, name: e.name }));
   }, [stats]);
 
+  const topTenAthletes = useMemo(() => {
+    if (!stats || !stats.data) return [];
+    // Trier par reps desc (si reps) ou reps asc (si temps)
+    // Sauf si workout 0, alors trier par rank asc
+    return [...stats.data]
+      .sort((a, b) => {
+        if (workout === "0") return a.rank - b.rank;
+        return stats.isTime ? a.reps - b.reps : b.reps - a.reps;
+      })
+      .slice(0, 10);
+  }, [stats, workout]);
+
   const userNumericScore = useMemo(() => {
     if (!userScoreInput) return null;
     if (userScoreInput.includes(':')) {
@@ -98,7 +113,6 @@ export default function OpenStatsClient() {
     if (index === -1) index = scores.length;
 
     let percentile = Math.round((index / scores.length) * 100);
-    // Si c'est du temps, un score plus bas est meilleur (inversion)
     if (stats.isTime) {
         percentile = 100 - percentile;
     }
@@ -266,7 +280,7 @@ export default function OpenStatsClient() {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          <Card className="shadow-lg overflow-hidden">
+          <Card className="shadow-lg overflow-hidden h-[450px]">
             <CardHeader className="bg-muted/30 border-b">
               <CardTitle className="flex items-center gap-2 text-lg">
                 <BarChart3 className="h-5 w-5 text-primary" /> 
@@ -278,26 +292,27 @@ export default function OpenStatsClient() {
                   : "Fréquence des scores obtenus par les athlètes analysés."}
               </CardDescription>
             </CardHeader>
-            <CardContent className="pt-6">
-              <div className="h-[350px] min-h-[350px] w-full">
+            <CardContent className="pt-6 h-full">
+              <div className="h-[300px] w-full">
                 {isLoading ? (
                   <div className="h-full w-full flex items-center justify-center bg-muted/10 rounded-md">
                     <LoaderCircle className="h-8 w-8 animate-spin text-muted-foreground" />
                   </div>
                 ) : (
-                  <ResponsiveContainer width="100%" height="100%" minHeight={350}>
-                    <BarChart data={histogramData} margin={{ top: 20, right: 10, left: -20, bottom: 0 }}>
+                  <ResponsiveContainer width="100%" height="100%" minHeight={300}>
+                    <BarChart data={histogramData} margin={{ top: 20, right: 10, left: -20, bottom: 20 }}>
                       <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" />
                       <XAxis 
                         dataKey="label" 
                         stroke="hsl(var(--muted-foreground))" 
                         fontSize={10} 
                         tickLine={false} 
-                        axisLine={false} 
+                        axisLine={false}
+                        label={{ value: 'Score / Rang', position: 'insideBottom', offset: -10, fontSize: 10, fill: 'hsl(var(--muted-foreground))' }}
                       />
-                      <YAxis stroke="hsl(var(--muted-foreground))" fontSize={10} tickLine={false} axisLine={false} />
+                      <YAxis stroke="hsl(var(--muted-foreground))" fontSize={10} tickLine={false} axisLine={false} label={{ value: 'Nb Athlètes', angle: -90, position: 'insideLeft', fontSize: 10, fill: 'hsl(var(--muted-foreground))' }} />
                       <Tooltip 
-                        contentStyle={{ backgroundColor: 'hsl(var(--card))', borderRadius: '8px', border: '1px solid hsl(var(--border))' }}
+                        contentStyle={{ backgroundColor: 'hsl(var(--card))', borderRadius: '8px', border: '1px solid hsl(var(--border))', color: 'hsl(var(--foreground))' }}
                         itemStyle={{ color: 'hsl(var(--foreground))' }}
                         labelStyle={{ color: 'hsl(var(--muted-foreground))' }}
                         cursor={{ fill: 'hsl(var(--primary) / 0.1)' }}
@@ -327,26 +342,26 @@ export default function OpenStatsClient() {
             </CardContent>
           </Card>
 
-          <Card className="shadow-lg overflow-hidden">
+          <Card className="shadow-lg overflow-hidden h-[450px]">
             <CardHeader className="bg-muted/30 border-b">
               <CardTitle className="flex items-center gap-2 text-lg"><Weight className="h-5 w-5 text-primary" /> {t('charts.bmi')}</CardTitle>
               <CardDescription>{t('charts.bmiSub')}</CardDescription>
             </CardHeader>
-            <CardContent className="pt-6">
-              <div className="h-[350px] min-h-[350px] w-full">
+            <CardContent className="pt-6 h-full">
+              <div className="h-[300px] w-full">
                 {isLoading ? (
                   <div className="h-full w-full flex items-center justify-center bg-muted/10 rounded-md">
                     <LoaderCircle className="h-8 w-8 animate-spin text-muted-foreground" />
                   </div>
                 ) : (
-                  <ResponsiveContainer width="100%" height="100%" minHeight={350}>
+                  <ResponsiveContainer width="100%" height="100%" minHeight={300}>
                     <ScatterChart margin={{ top: 10, right: 10, bottom: 20, left: -20 }}>
                       <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                      <XAxis type="number" dataKey="x" name="BMI" domain={[18, 35]} label={{ value: 'IMC', position: 'insideBottom', offset: -10, fontSize: 10, fill: 'hsl(var(--muted-foreground))' }} stroke="hsl(var(--muted-foreground))" fontSize={10} />
-                      <YAxis type="number" dataKey="y" name="Rank" reversed label={{ value: 'Rang', angle: -90, position: 'insideLeft', fontSize: 10, fill: 'hsl(var(--muted-foreground))' }} stroke="hsl(var(--muted-foreground))" fontSize={10} />
+                      <XAxis type="number" dataKey="x" name="BMI" domain={[18, 35]} label={{ value: 'IMC (BMI)', position: 'insideBottom', offset: -10, fontSize: 10, fill: 'hsl(var(--muted-foreground))' }} stroke="hsl(var(--muted-foreground))" fontSize={10} />
+                      <YAxis type="number" dataKey="y" name="Rank" reversed label={{ value: 'Rang Mondial', angle: -90, position: 'insideLeft', fontSize: 10, fill: 'hsl(var(--muted-foreground))' }} stroke="hsl(var(--muted-foreground))" fontSize={10} />
                       <Tooltip 
                         cursor={{ strokeDasharray: '3 3' }}
-                        contentStyle={{ backgroundColor: 'hsl(var(--card))', borderRadius: '8px', border: '1px solid hsl(var(--border))' }}
+                        contentStyle={{ backgroundColor: 'hsl(var(--card))', borderRadius: '8px', border: '1px solid hsl(var(--border))', color: 'hsl(var(--foreground))' }}
                         itemStyle={{ color: 'hsl(var(--foreground))' }}
                         labelStyle={{ color: 'hsl(var(--muted-foreground))' }}
                       />
@@ -362,6 +377,48 @@ export default function OpenStatsClient() {
             </CardContent>
           </Card>
         </div>
+
+        <Card className="shadow-lg overflow-hidden">
+          <CardHeader className="bg-muted/30 border-b flex flex-row items-center justify-between">
+            <div>
+              <CardTitle className="flex items-center gap-2 text-lg">
+                <ListOrdered className="h-5 w-5 text-primary" /> 
+                {t('leaderboard.title')}
+              </CardTitle>
+              <CardDescription>
+                Top 10 des athlètes pour cette catégorie.
+              </CardDescription>
+            </div>
+          </CardHeader>
+          <CardContent className="p-0">
+            {isLoading ? (
+              <div className="p-8 flex justify-center"><LoaderCircle className="animate-spin h-8 w-8 text-muted-foreground" /></div>
+            ) : (
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="w-[100px]">{t('leaderboard.rank')}</TableHead>
+                    <TableHead>{t('leaderboard.name')}</TableHead>
+                    <TableHead className="text-right">{t('leaderboard.score')}</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {topTenAthletes.map((athlete, idx) => (
+                    <TableRow key={idx}>
+                      <TableCell className="font-bold">
+                        {athlete.rank === 1 ? '🥇' : athlete.rank === 2 ? '🥈' : athlete.rank === 3 ? '🥉' : `#${athlete.rank}`}
+                      </TableCell>
+                      <TableCell className="font-medium uppercase">{athlete.name}</TableCell>
+                      <TableCell className="text-right font-mono text-primary font-bold">
+                        {athlete.scoreDisplay}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            )}
+          </CardContent>
+        </Card>
 
         <div className="bg-muted/30 p-4 rounded-lg flex items-start gap-3 border border-border/50">
           <Info className="h-5 w-5 text-primary mt-0.5" />

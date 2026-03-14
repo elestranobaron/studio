@@ -1,4 +1,3 @@
-
 {
   "RootLayout": {
     "seo": {
@@ -27,7 +26,7 @@
   "OpenStatsPage": {
     "seo": {
       "title": "Open Stats | CrossFit Open Leaderboards Statistics",
-      "description": "Live CrossFit Open statistics. Compare your scores and analyze worldwide performance by division and region."
+      "description": "Live CrossFit Open statistics. Compare your scores and analyze worldwide performance."
     },
     "title": "Open Stats",
     "description": "Live CrossFit Open data via public API – daily refresh",
@@ -55,13 +54,13 @@
     },
     "methodology": {
       "title": "Methodology",
-      "description": "Data retrieved in real-time via the CrossFit public API. Statistics are based on a representative sample of top worldwide athletes for the selected division and region."
+      "description": "Data retrieved in real-time via the CrossFit public API."
     }
   },
   "DashboardPage": {
     "seo": {
       "title": "Dashboard | Manage your CrossFit WODs",
-      "description": "Manage your CrossFit workouts, find your scanned WODs, and discover community training."
+      "description": "Manage your workouts and find your scanned WODs."
     },
     "title": "Dashboard",
     "scanNewWod": "Scan New WOD",
@@ -70,28 +69,25 @@
       "community": "Community"
     },
     "PersonalWodList": {
-      "emptyTitle": "No WODs found here.",
+      "emptyTitle": "No WODs found.",
       "emptyDescription": "Scan your first WOD to get started!"
     },
     "CommunityWodList": {
       "joinTitle": "Join the Community!",
-      "joinDescription": "Create a free account to view, share, and get inspired by WODs from the entire community.",
+      "joinDescription": "Create a free account to view and share WODs.",
       "joinButton": "Sign Up / Log In",
       "errorTitle": "An error occurred",
-      "errorDescription": "Could not load community WODs. Please try again later.",
-      "searchInputPlaceholder": "Search community WODs...",
+      "errorDescription": "Could not load community WODs.",
+      "searchInputPlaceholder": "Search WODs...",
       "sortByLabel": "Sort by",
       "sort": {
         "recent": "Most Recent",
         "popular": "Most Popular",
-        "alphabetical": "Alphabetical (A-Z)"
+        "alphabetical": "Alphabetical"
       },
-      "emptySearchTitle": "No WODs match your search.",
-      "emptySearchDescription": "Try a different search term.",
+      "emptySearchTitle": "No results.",
+      "emptySearchDescription": "Try another search.",
       "emptyCommunityTitle": "Be the first to share one!"
-    },
-    "ScrollTop": {
-      "label": "Scroll to top"
     }
   },
   "WelcomeEmptyState": {
@@ -100,7 +96,7 @@
     "scanButton": "Scan a WOD from a photo",
     "generateButton": "Generate a random WOD",
     "heroButton": "Try a Hero WOD",
-    "communityLink": "Or, explore the <communityLink>community</communityLink> to see what others are burning today."
+    "communityLink": "Or, explore the <communityLink>community</communityLink>."
   },
   "WodCard": {
     "optionsAlt": "WOD options",
@@ -111,19 +107,19 @@
     "sharedToastTitle": "WOD Shared!",
     "sharedToastDescription": "Your WOD is now visible to the community.",
     "unsharedToastTitle": "WOD Unshared",
-    "unsharedToastDescription": "Your WOD has been removed from the community.",
+    "unsharedToastDescription": "Your WOD has been removed.",
     "shareErrorToastTitle": "Action Failed",
     "shareErrorToastDescription": "Could not update the share status.",
-    "deleteDialogTitle": "Are you absolutely sure?",
-    "deleteDialogDescription": "This action cannot be undone. This will permanently delete your WOD{isShared, select, true { and remove it from the community} other {}}.",
+    "deleteDialogTitle": "Are you sure?",
+    "deleteDialogDescription": "This action cannot be undone.",
     "deleteDialogCancel": "Cancel",
     "deleteDialogConfirm": "Delete",
     "deleteToastTitle": "WOD Deleted",
-    "deleteToastDescription": "Your WOD has been successfully removed.",
+    "deleteToastDescription": "Your WOD has been removed.",
     "deleteErrorToastTitle": "Deletion Failed",
     "deleteErrorToastDescription": "Could not delete the WOD.",
     "reactionErrorToastTitle": "Oops!",
-    "reactionErrorToastDescription": "Could not save your reaction.",
+    "reactionErrorToastDescription": "Could not save reaction.",
     "viewImageAlt": "{wodName} - Original Image",
     "viewWodDescription": "{type} - {date}",
     "viewWodSharedBy": "Shared by {displayName}",
@@ -134,47 +130,5 @@
       "upper": "Upper",
       "lower": "Lower"
     }
-  },
-  "TimerPage": {
-    "backToDashboard": "Back to Dashboard",
-    "viewWod": "View WOD",
-    "fullWodLabel": "Full WOD: {wodName}",
-    "startSection": "Start",
-    "accessRestricted": {
-      "title": "Access Restricted",
-      "description": "Please sign up or log in to view community WODs and use the timer.",
-      "button": "Sign Up / Log In"
-    }
-  },
-  "FileUploader": {
-    "dragAndDropPrompt": "Drag & drop your WOD image, or click to select",
-    "dragActivePrompt": "Drop the image here...",
-    "fileTypes": "PNG, JPG, or GIF (max 5MB)",
-    "analyzingTitle": "Analyzing WOD...",
-    "analyzingDescription": "The AI is warming up. This might take a moment.",
-    "analysisFailedTitle": "Analysis Failed",
-    "analysisFailedDescription": "The WOD image could not be analyzed. Please try again.",
-    "duplicateDialogTitle": "Duplicate WOD Detected",
-    "duplicateDialogDescription": "This workout seems identical to a WOD you've already saved.",
-    "duplicateDialogSavedOn": "Saved on {date}",
-    "duplicateDialogQuestion": "Do you want to save this new one anyway?",
-    "duplicateDialogCancel": "Cancel",
-    "duplicateDialogConfirm": "Save Anyway",
-    "saveFailedTitle": "Save Failed",
-    "saveFailedDescription": "An error occurred while saving the WOD.",
-    "wodSavedTitle": "WOD Saved!",
-    "wodSavedDescription": "Your new WOD has been added to your dashboard.",
-    "authErrorTitle": "Could not save",
-    "authErrorDescription": "Authentication services are not available.",
-    "wodPreviewAlt": "WOD preview",
-    "analyzeButton": "Analyze WOD",
-    "analysisResultTitle": "Analysis Result",
-    "wodNamePlaceholder": "WOD Name",
-    "wodTypePlaceholder": "WOD Type",
-    "durationPlaceholder": "Duration (minutes)",
-    "shareCheckbox": "Share with the Community",
-    "shareAnonymousHelp": "Sign up for an account to share your WODs with the community.",
-    "saveWodButton": "Save WOD",
-    "savingButton": "Saving..."
   }
 }

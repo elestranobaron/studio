@@ -1,4 +1,3 @@
-
 {
   "RootLayout": {
     "seo": {
@@ -27,7 +26,7 @@
   "OpenStatsPage": {
     "seo": {
       "title": "Open Stats | Statistiques CrossFit Open en Temps Réel",
-      "description": "Consultez les statistiques en temps réel du CrossFit Open. Comparez vos scores et analysez les performances mondiales par division et région."
+      "description": "Consultez les statistiques en temps réel du CrossFit Open. Comparez vos scores et analysez les performances mondiales."
     },
     "title": "Open Stats",
     "description": "Données live CrossFit Open via API publique – refresh quotidien",
@@ -55,12 +54,12 @@
     },
     "methodology": {
       "title": "Méthodologie",
-      "description": "Données récupérées en temps réel via l'API publique CrossFit. Les statistiques sont basées sur un échantillon représentatif des premiers athlètes mondiaux pour la division et la région sélectionnées."
+      "description": "Données récupérées en temps réel via l'API publique CrossFit."
     }
   },
   "DashboardPage": {
     "seo": {
-      "title": "Tableau de Bord | Gérez vos WODs CrossFit",
+      "title": "Dashboard | Gérez vos WODs CrossFit",
       "description": "Gérez vos entraînements CrossFit, retrouvez vos WODs scannés et découvrez les entraînements de la communauté."
     },
     "title": "Dashboard",
@@ -89,9 +88,6 @@
       "emptySearchTitle": "Aucun WOD ne correspond à votre recherche.",
       "emptySearchDescription": "Essayez un autre terme de recherche.",
       "emptyCommunityTitle": "Soyez le premier à en partager un !"
-    },
-    "ScrollTop": {
-      "label": "Remonter en haut"
     }
   },
   "WelcomeEmptyState": {
@@ -115,7 +111,7 @@
     "shareErrorToastTitle": "L'action a échoué",
     "shareErrorToastDescription": "Impossible de mettre à jour le statut de partage.",
     "deleteDialogTitle": "Êtes-vous absolument sûr ?",
-    "deleteDialogDescription": "Cette action est irréversible. Cela supprimera définitivement votre WOD{isShared, select, true { et le retirera de la communauté} other {}}.",
+    "deleteDialogDescription": "Cette action est irréversible. Cela supprimera définitivement votre WOD.",
     "deleteDialogCancel": "Annuler",
     "deleteDialogConfirm": "Supprimer",
     "deleteToastTitle": "WOD Supprimé",
@@ -198,21 +194,21 @@
     "formTitle": "Se connecter / S'inscrire",
     "formDescription": "Saisissez votre e-mail pour recevoir un code de connexion sécurisé. Aucun mot de passe requis.",
     "emailSentTitle": "Vérifiez vos e-mails !",
-    "emailSentDescription": "Un code à 6 chiffres a été envoyé à <bold>{email}</bold>. Vérifiez votre boîte de réception (et vos spams).",
+    "emailSentDescription": "Un code à 6 chiffres a été envoyé à <bold>{email}</bold>.",
     "sendLinkButton": "Envoyer le Code",
     "authError": "Le service d'authentification n'est pas prêt.",
     "sendLinkError": "Nous n'avons pas pu envoyer le code. Veuillez réessayer.",
     "linkSentToast": "Code Envoyé !",
-    "linkSentToastDescription": "Vérifiez votre boîte de réception pour un code à 6 chiffres. Si vous ne le voyez pas, vérifiez vos spams.",
+    "linkSentToastDescription": "Vérifiez votre boîte de réception pour un code à 6 chiffres.",
     "signInSuccessToast": "Connexion réussie !",
     "signInSuccessToastDescription": "Vous êtes maintenant connecté.",
     "genericError": "Une erreur est survenue. Veuillez réessayer.",
-    "invalidLinkError": "Le code est invalide ou a expiré. Veuillez en demander un nouveau."
+    "invalidLinkError": "Le code est invalide ou a expiré."
   },
   "PremiumPage": {
     "seo": {
       "title": "Abonnement Premium | Soutenez WODBurner",
-      "description": "Débloquez les scans de WOD illimités, les filtres avancés et les fonctionnalités exclusives. Soutenez le développement de l'application."
+      "description": "Débloquez les scans de WOD illimités, les filtres avancés et les fonctionnalités exclusives."
     },
     "title": "Premium",
     "alreadyPremium": {
@@ -223,7 +219,7 @@
       "dashboardButton": "Dashboard"
     },
     "headerTitle": "Libérez tout votre potentiel",
-    "headerDescription": "Devenez membre WODBurner Premium pour obtenir un accès illimitat à toutes les fonctionnalités et soutenir le développement de l'application.",
+    "headerDescription": "Devenez membre WODBurner Premium pour obtenir un accès illimité.",
     "offer": "OFFRE DE LANCEMENT À VIE pour les 300 premiers membres !",
     "monthly": "Mensuel",
     "yearly": "Annuel",
@@ -255,7 +251,7 @@
       "commentsFree": "Lecture seule",
       "favorites": "WODs favoris illimités",
       "favoritesFree": "Max 10",
-      "customs": "WODs personnalisés illimités",
+      "customs": "WOD personnalisés illimités",
       "customsFree": "Max 3",
       "search": "Filtres de recherche avancés",
       "badge": "Badge contributeur exclusif",
@@ -263,7 +259,7 @@
       "notIncluded": "Non inclus"
     },
     "toasts": {
-      "welcomeTitle": "Bienvenue sur WODBurner Premium !",
+      "welcomeTitle": "Bienvenue sur WODBurner Premium!",
       "welcomeDescription": "Votre badge de contributeur est maintenant actif.",
       "cancelTitle": "Paiement annulé",
       "cancelDescription": "Vous pouvez réessayer quand vous serez prêt.",
@@ -276,7 +272,7 @@
   "SettingsPage": {
     "seo": {
       "title": "Paramètres | Gestion de Compte",
-      "description": "Gérez votre profil, vos préférences d'e-mail et vos paramètres d'abonnement."
+      "description": "Gérez votre profil et vos réglages."
     },
     "title": "Paramètres",
     "profile": {
@@ -286,7 +282,7 @@
       "email": "E-mail : {email}",
       "emailNotSpecified": "Non spécifié",
       "accountType": "Type de compte : {type}",
-      "typeAnonymous": "Anonyme (Temporaire)",
+      "typeAnonymous": "Anonyme",
       "typePremium": "Premium",
       "typeStandard": "Standard",
       "manageSubscription": "Gérer mon abonnement",
@@ -294,23 +290,23 @@
     },
     "dangerZone": {
       "title": "Zone de danger",
-      "description": "Ces actions sont permanentes et ne peuvent pas être annulées.",
+      "description": "Ces actions sont permanentes.",
       "deleteButton": "Supprimer mon compte",
       "deletingButton": "Suppression...",
       "dialogTitle": "Êtes-vous sûr ?",
-      "dialogDescription": "Cette action est irréversible. Elle supprimera définitivement votre compte et effacera toutes vos données de nos serveurs.",
+      "dialogDescription": "Cette action est irréversible.",
       "dialogCancel": "Annuler",
       "dialogConfirm": "Oui, supprimer mon compte",
-      "helpText": "Si vous supprimez votre compte, toutes vos données seront perdues à jamais."
+      "helpText": "Toutes vos données seront perdues."
     },
     "toasts": {
-      "deleteError": "Échec de la suppression du compte. Utilisateur ou services Firebase indisponibles.",
+      "deleteError": "Échec de la suppression.",
       "deleteSuccessTitle": "Compte supprimé",
-      "deleteSuccessDescription": "Votre compte et toutes vos données ont été supprimés avec succès.",
+      "deleteSuccessDescription": "Au revoir!",
       "deleteFailedTitle": "Échec",
-      "deleteFailedDescription": "Une erreur est survenue. Veuillez réessayer.",
-      "deleteFailedRecentLogin": "Cette opération est sensible et nécessite une authentification récente. Veuillez vous reconnecter avant de réessayer.",
-      "portalError": "Impossible d'ouvrir la gestion de l'abonnement."
+      "deleteFailedDescription": "Une erreur est survenue.",
+      "deleteFailedRecentLogin": "Veuillez vous reconnecter.",
+      "portalError": "Impossible d'ouvrir le portail."
     }
   }
 }
