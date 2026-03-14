@@ -1,5 +1,11 @@
 
 {
+  "RootLayout": {
+    "seo": {
+      "title": "WODBurner - Seu Quadro Branco CrossFit e Smart Timer",
+      "description": "Escaneie seus treinos de CrossFit a partir de fotos, gere novos WODs com IA e acesse timers inteligentes."
+    }
+  },
   "UserNav": {
     "signIn": "Entrar",
     "signOut": "Sair",
@@ -15,9 +21,42 @@
     "heroWods": "Hero WODs",
     "timers": "Cronômetros",
     "goPremium": "Seja Premium",
-    "hallOfFame": "Hall da Fama"
+    "hallOfFame": "Hall da Fama",
+    "openStats": "Open Stats"
+  },
+  "OpenStatsPage": {
+    "seo": {
+      "title": "Open Stats | Estatísticas Leaderboard CrossFit Open",
+      "description": "Estatísticas em tempo real do CrossFit Open. Compare seus resultados e analise o desempenho mundial."
+    },
+    "title": "Open Stats",
+    "description": "Dados ao vivo do CrossFit Open via API pública",
+    "metrics": {
+      "athletes": "Atletas Analisados",
+      "median": "Mediana",
+      "top10": "Top 10%",
+      "elite": "Elite (1%)"
+    },
+    "userScore": {
+      "title": "Comparar meu resultado",
+      "percentile": "Percentil global"
+    },
+    "charts": {
+      "distribution": "Distribuição de resultados",
+      "distributionSub": "Distribuição sobre a amostra analisada",
+      "bmi": "Correlação IMC / Rango",
+      "bmiSub": "Impacto do IMC no ranking global"
+    },
+    "methodology": {
+      "title": "Metodologia",
+      "description": "Dados recuperados em tempo real através da API pública do CrossFit."
+    }
   },
   "DashboardPage": {
+    "seo": {
+      "title": "Painel | Gerencie seus WODs de CrossFit",
+      "description": "Gerencie seus treinos de CrossFit, encontre seus WODs escaneados e descubra treinos da comunidade."
+    },
     "title": "Painel",
     "scanNewWod": "Escanear Novo WOD",
     "tabs": {
@@ -96,7 +135,7 @@
     "fullWodLabel": "WOD Completo: {wodName}",
     "startSection": "Iniciar",
     "accessRestricted": {
-      "title": "Acesso Restrito",
+      "title": "Accesso Restrito",
       "description": "Por favor, cadastre-se ou faça login para ver os WODs da comunidade e usar o cronômetro.",
       "button": "Cadastre-se / Entrar"
     }
@@ -133,6 +172,10 @@
     "savingButton": "Salvando..."
   },
   "LoginPage": {
+    "seo": {
+      "title": "Entrar | WODBurner",
+      "description": "Entre na sua conta do WODBurner para salvar seus treinos e acessar recursos avançados."
+    },
     "verifying": "Verificando...",
     "confirmEmailTitle": "Confirmar E-mail",
     "confirmEmailDescription": "Para concluir o login neste dispositivo, por favor, forneça o endereço de e-mail onde você recebeu o link.",
@@ -161,6 +204,10 @@
     "invalidLinkError": "O link de login é inválido, expirou ou o e-mail está incorreto. Por favor, solicite um novo."
   },
   "PremiumPage": {
+    "seo": {
+      "title": "Assinatura Premium | Apoie o WODBurner",
+      "description": "Desbloqueie escaneamentos de WOD ilimitados, filtros avançados e funções exclusivas."
+    },
     "title": "Premium",
     "alreadyPremium": {
       "title": "VOCÊ É PREMIUM!",
@@ -172,7 +219,7 @@
     "headerTitle": "Liberte Todo o Seu Potencial",
     "headerDescription": "Torne-se um membro WODBurner Premium para obter acesso ilimitado a todos os recursos e apoiar o desenvolvimento do aplicativo.",
     "offer": "OFERTA DE LANÇAMENTO VITALÍCIA para os primeiros 300 membros!",
-    "monthly": "Mensal",
+    "monthly": "Mensual",
     "yearly": "Anual",
     "discount": "-20%",
     "freePlan": {
@@ -221,6 +268,10 @@
     }
   },
   "SettingsPage": {
+    "seo": {
+      "title": "Configurações | Gestão da Conta",
+      "description": "Gerencie seu perfil, suas preferências de e-mail e as configurações da assinatura."
+    },
     "title": "Configurações",
     "profile": {
       "title": "Perfil",
@@ -241,7 +292,7 @@
       "deleteButton": "Excluir Minha Conta",
       "deletingButton": "Excluindo...",
       "dialogTitle": "Você tem certeza absoluta?",
-      "dialogDescription": "Esta ação é irreversível. Ela excluirá permanentemente sua conta e apagará todos os seus dados, incluindo todos os seus WODs salvos, de nossos servidores.",
+      "dialogDescription": "Esta ação é irreversível. Ela excluirá permanentemente sua conta e apagará todos os seus dadas, incluindo todos os seus WODs salvos, de nossos servidores.",
       "dialogCancel": "Cancelar",
       "dialogConfirm": "Sim, exclua minha conta",
       "helpText": "Se você excluir sua conta, todos os seus dados serão perdidos para sempre."
@@ -257,10 +308,18 @@
     }
   },
   "ScanPage": {
+    "seo": {
+      "title": "Escanear um WOD | Analisador de Quadro",
+      "description": "Transforme a foto do quadro da sua academia num treino interactivo com o nosso analisador IA."
+    },
     "title": "Escanear WOD",
     "manualButton": "Adicionar Manualmente"
   },
   "NewWodPage": {
+    "seo": {
+      "title": "Novo WOD | Entrada Manual",
+      "description": "Crie e personalize o seu próprio treino de CrossFit manualmente."
+    },
     "title": "Criar WOD Manualmente",
     "cardTitle": "Detalhes do Treino",
     "namePlaceholder": "Nome do WOD (ex: Fran)",
@@ -287,6 +346,10 @@
     }
   },
   "EditWodPage": {
+    "seo": {
+      "title": "Editar WOD | WODBurner",
+      "description": "Atualize os detalhes do seu treino, o título ou a descrição."
+    },
     "title": "Editar WOD",
     "cardTitle": "Detalhes do Treino",
     "saveButton": "Salvar Alterações",
@@ -328,6 +391,10 @@
     }
   },
   "TimersPage": {
+    "seo": {
+      "title": "Cronômetros CrossFit | AMRAP, EMOM, Tabata",
+      "description": "Aceda a cronómetros de treino profissionais para os seus WODs de CrossFit."
+    },
     "title": "Cronômetros Inteligentes",
     "forTime": "For Time",
     "forTimeDescription": "Um cronômetro simples para cronometrar seu treino.",
@@ -340,6 +407,10 @@
     "footer": "Ou selecione um WOD no painel para iniciar um cronômetro pré-configurado."
   },
   "HeroWodsPage": {
+    "seo": {
+      "title": "Biblioteca de Hero WODs | Treinos de Referência",
+      "description": "Descubra a coleção de Hero WODs oficiais de CrossFit e treinos de referência como Murph, Fran e Cindy."
+    },
     "title": "Hero WODs",
     "description": "Os \"Hero\" WODs são treinos especiais no CrossFit dedicados a homens e mulheres que deram suas vidas em serviço. Eles são uma oportunidade para refletir e honrar seu sacrifício.",
     "premiumUpsell": {
@@ -349,6 +420,10 @@
     }
   },
   "HallOfFamePage": {
+    "seo": {
+      "title": "Hall da Fama | Os OGs de WODBurner",
+      "description": "O círculo de elite dos nossos primeiros 300 apoiantes. Membros vitalícios."
+    },
     "title": "Hall da Fama",
     "cardTitle": "Os Primeiros 300 OGs",
     "cardDescription": "Grátis para sempre. Um lugar permanente para nossos primeiros apoiadores.",
@@ -378,6 +453,10 @@
     "totalTimeElapsed": "Total: {time}"
   },
   "GenerateWodPage": {
+    "seo": {
+      "title": "Gerador de WOD com IA | Novos Treinos Cada Dia",
+      "description": "Deixe o nosso Coach de IA gerar treinos de CrossFit únicos e personalizados para si."
+    },
     "title": "Gerador de WOD com IA",
     "cardTitle": "WODBot 3000",
     "cardDescription": "Sentindo-se sem inspiração? Deixe nosso Coach de IA gerar um treino único e desafiador para você.",

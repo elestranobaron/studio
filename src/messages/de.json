@@ -1,5 +1,11 @@
 
 {
+  "RootLayout": {
+    "seo": {
+      "title": "WODBurner - Dein CrossFit Whiteboard & Smart Timer",
+      "description": "Scanne deine CrossFit-Workouts von Fotos, generiere neue WODs mit KI und greife auf smarte Timer zu."
+    }
+  },
   "UserNav": {
     "signIn": "Anmelden",
     "signOut": "Abmelden",
@@ -15,9 +21,42 @@
     "heroWods": "Hero WODs",
     "timers": "Timer",
     "goPremium": "Premium werden",
-    "hallOfFame": "Hall of Fame"
+    "hallOfFame": "Hall of Fame",
+    "openStats": "Open Stats"
+  },
+  "OpenStatsPage": {
+    "seo": {
+      "title": "Open Stats | CrossFit Open Leaderboards Statistiken",
+      "description": "Live CrossFit Open Statistiken. Vergleiche deine Ergebnisse und analysiere die weltweite Leistung."
+    },
+    "title": "Open Stats",
+    "description": "Live CrossFit Open Daten via öffentlicher API",
+    "metrics": {
+      "athletes": "Analysierte Athleten",
+      "median": "Median",
+      "top10": "Top 10%",
+      "elite": "Elite (1%)"
+    },
+    "userScore": {
+      "title": "Mein Ergebnis vergleichen",
+      "percentile": "Globales Perzentil"
+    },
+    "charts": {
+      "distribution": "Ergebnisverteilung",
+      "distributionSub": "Verteilung über die analysierte Stichprobe",
+      "bmi": "BMI / Rang Korrelation",
+      "bmiSub": "Auswirkung des BMI auf das globale Ranking"
+    },
+    "methodology": {
+      "title": "Methodik",
+      "description": "Daten werden in Echtzeit über die öffentliche CrossFit-API abgerufen."
+    }
   },
   "DashboardPage": {
+    "seo": {
+      "title": "Dashboard | Verwalte deine CrossFit WODs",
+      "description": "Verwalte deine CrossFit-Workouts, finde deine gescannten WODs und entdecke das Community-Training."
+    },
     "title": "Dashboard",
     "scanNewWod": "Neues WOD scannen",
     "tabs": {
@@ -133,6 +172,10 @@
     "savingButton": "Wird gespeichert..."
   },
   "LoginPage": {
+    "seo": {
+      "title": "Anmelden | WODBurner",
+      "description": "Melde dich bei deinem WODBurner-Konto an, um deine Workouts zu speichern und auf erweiterte Funktionen zuzugreifen."
+    },
     "verifying": "Wird überprüft...",
     "confirmEmailTitle": "E-Mail bestätigen",
     "confirmEmailDescription": "Um die Anmeldung auf diesem Gerät abzuschließen, gib bitte die E-Mail-Adresse an, an die du den Link erhalten hast.",
@@ -161,6 +204,10 @@
     "invalidLinkError": "Der Anmeldelink ist ungültig, abgelaufen oder die E-Mail ist falsch. Bitte fordere einen neuen an."
   },
   "PremiumPage": {
+    "seo": {
+      "title": "Premium-Mitgliedschaft | Unterstütze WODBurner",
+      "description": "Schalte unbegrenzte WOD-Scans, erweiterte Filter und exklusive Funktionen frei. Unterstütze die Entwicklung deiner Lieblings-App."
+    },
     "title": "Premium",
     "alreadyPremium": {
       "title": "DU BIST PREMIUM!",
@@ -221,6 +268,10 @@
     }
   },
   "SettingsPage": {
+    "seo": {
+      "title": "Einstellungen | Kontoverwaltung",
+      "description": "Verwalte dein Profil, deine E-Mail-Einstellungen und deine Abonnementeinstellungen."
+    },
     "title": "Einstellungen",
     "profile": {
       "title": "Profil",
@@ -257,13 +308,21 @@
     }
   },
   "ScanPage": {
+    "seo": {
+      "title": "WOD scannen | Whiteboard-Analysator",
+      "description": "Verwandle das Foto des Whiteboards deines Fitnessstudios mit unserem KI-Analysator in ein interaktives Workout."
+    },
     "title": "WOD scannen",
     "manualButton": "Manuell hinzufügen"
   },
   "NewWodPage": {
+    "seo": {
+      "title": "Neues WOD | Manuelle Eingabe",
+      "description": "Erstelle und personalisiere dein eigenes CrossFit-Workout manuell."
+    },
     "title": "WOD manuell erstellen",
     "cardTitle": "Workout-Details",
-    "namePlaceholder": "WOD-Name (z.B. Fran)",
+    "namePlaceholder": "WOD Name (z.B. Fran)",
     "typePlaceholder": "WOD-Typ",
     "durationPlaceholder": "Dauer (Minuten)",
     "imageHintPlaceholder": "Bildhinweis (z.B. Langhantel)",
@@ -287,6 +346,10 @@
     }
   },
   "EditWodPage": {
+    "seo": {
+      "title": "WOD bearbeiten | WODBurner",
+      "description": "Aktualisiere deine Workout-Details, den Titel oder die Beschreibung."
+    },
     "title": "WOD bearbeiten",
     "cardTitle": "Workout-Details",
     "saveButton": "Änderungen speichern",
@@ -328,6 +391,10 @@
     }
   },
   "TimersPage": {
+    "seo": {
+      "title": "CrossFit-Timer | AMRAP, EMOM, Tabata",
+      "description": "Greife auf professionelle Trainings-Timer für deine CrossFit-Workouts zu."
+    },
     "title": "Intelligente Timer",
     "forTime": "For Time",
     "forTimeDescription": "Eine einfache Stoppuhr, um dein Training zu stoppen.",
@@ -340,6 +407,10 @@
     "footer": "Oder wähle ein WOD vom Dashboard, um einen vorkonfigurierten Timer zu starten."
   },
   "HeroWodsPage": {
+    "seo": {
+      "title": "Hero WODs Bibliothek | Benchmark-Workouts",
+      "description": "Entdecke die Sammlung offizieller CrossFit Hero WODs und Benchmark-Workouts wie Murph, Fran und Cindy."
+    },
     "title": "Hero WODs",
     "description": "\"Hero\" WODs sind spezielle Workouts im CrossFit, die Männern und Frauen gewidmet sind, die im Dienst ihr Leben gegeben haben. Sie sind eine Gelegenheit, über ihr Opfer nachzudenken und es zu ehren.",
     "premiumUpsell": {
@@ -349,6 +420,10 @@
     }
   },
   "HallOfFamePage": {
+    "seo": {
+      "title": "Hall of Fame | WODBurner OGs",
+      "description": "Der exklusive Kreis unserer ersten 300 frühen Unterstützer. Mitglieder auf Lebenszeit."
+    },
     "title": "Hall of Fame",
     "cardTitle": "Die ersten 300 OGs",
     "cardDescription": "Lebenslang kostenlos. Ein dauerhafter Platz für unsere frühesten Unterstützer.",
@@ -378,6 +453,10 @@
     "totalTimeElapsed": "Gesamt: {time}"
   },
   "GenerateWodPage": {
+    "seo": {
+      "title": "KI-WOD-Generator | Jeden Tag neue Workouts",
+      "description": "Lass unseren KI-Coach einzigartige und personalisierte CrossFit-Workouts für dich generieren."
+    },
     "title": "KI-WOD-Generator",
     "cardTitle": "WODBot 3000",
     "cardDescription": "Fühlst du dich uninspiriert? Lass unseren KI-Coach ein einzigartiges und herausforderndes Workout für dich generieren.",

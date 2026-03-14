@@ -1,3 +1,4 @@
+
 {
   "RootLayout": {
     "seo": {
@@ -473,7 +474,8 @@
     },
     "errorAlert": {
       "title": "Échec de la génération",
-      "description": "Le coach IA se repose. Veuillez réessayer dans un instant."
+      "description": "Le coach IA se repose. Veuillez réessayer dans un instant.",
+      "link": "Passer au Premium"
     },
     "result": {
       "title": "Votre WOD Généré",

@@ -1,5 +1,11 @@
 
 {
+  "RootLayout": {
+    "seo": {
+      "title": "WODBurner - あなたのCrossFitホワイトボード＆スマートタイマー",
+      "description": "写真からCrossFitワークアウトをスキャンし、AIで新しいWODを生成し、スマートタイマーにアクセスします。"
+    }
+  },
   "UserNav": {
     "signIn": "サインイン",
     "signOut": "サインアウト",
@@ -15,9 +21,42 @@
     "heroWods": "ヒーローWOD",
     "timers": "タイマー",
     "goPremium": "プレミアムに登録",
-    "hallOfFame": "殿堂"
+    "hallOfFame": "殿堂",
+    "openStats": "Open Stats"
+  },
+  "OpenStatsPage": {
+    "seo": {
+      "title": "Open Stats | CrossFit Open リーダーボード統計",
+      "description": "ライブのCrossFit Open統計。あなたのスコアを比較し、世界中のパフォーマンスを分析します。"
+    },
+    "title": "Open Stats",
+    "description": "パブリックAPIによるライブCrossFit Openデータ",
+    "metrics": {
+      "athletes": "分析されたアスリート",
+      "median": "中央値",
+      "top10": "トップ 10%",
+      "elite": "エリート (1%)"
+    },
+    "userScore": {
+      "title": "スコアを比較する",
+      "percentile": "グローバルパーセンタイル"
+    },
+    "charts": {
+      "distribution": "スコア分布",
+      "distributionSub": "分析サンプルの分布",
+      "bmi": "BMI / ランクの相関",
+      "bmiSub": "BMIがグローバルランキングに与える影響"
+    },
+    "methodology": {
+      "title": "方法論",
+      "description": "CrossFitパブリックAPIを介してリアルタイムで取得されたデータ。"
+    }
   },
   "DashboardPage": {
+    "seo": {
+      "title": "ダッシュボード | CrossFit WODの管理",
+      "description": "CrossFitワークアウトを管理し、スキャンしたWODを見つけ、コミュニティのトレーニングを発見します。"
+    },
     "title": "ダッシュボード",
     "scanNewWod": "新しいWODをスキャン",
     "tabs": {
@@ -133,6 +172,10 @@
     "savingButton": "保存中..."
   },
   "LoginPage": {
+    "seo": {
+      "title": "サインイン | WODBurner",
+      "description": "ワークアウトを保存し、高度な機能にアクセスするために、WODBurnerアカウントにログインしてください。"
+    },
     "verifying": "確認中...",
     "confirmEmailTitle": "メールを確認",
     "confirmEmailDescription": "このデバイスでのサインインを完了するには、リンクを受け取ったメールアドレスを入力してください。",
@@ -161,6 +204,10 @@
     "invalidLinkError": "サインインリンクが無効、期限切れ、またはメールが間違っています。新しいものをリクエストしてください。"
   },
   "PremiumPage": {
+    "seo": {
+      "title": "プレミアムメンバーシップ | WODBurnerをサポート",
+      "description": "無制限のWODスキャン、高度なフィルター、限定機能のロックを解除します。"
+    },
     "title": "プレミアム",
     "alreadyPremium": {
       "title": "あなたはプレミアムです！",
@@ -221,6 +268,10 @@
     }
   },
   "SettingsPage": {
+    "seo": {
+      "title": "設定 | アカウント管理",
+      "description": "プロファイル、メール設定、サブスクリプション設定を管理します。"
+    },
     "title": "設定",
     "profile": {
       "title": "プロファイル",
@@ -257,10 +308,18 @@
     }
   },
   "ScanPage": {
+    "seo": {
+      "title": "WODをスキャン | ホワイトボードアナライザー",
+      "description": "ジムのホワイトボードの写真をAIアナライザーでインタラクティブなワークアウトに変えましょう。"
+    },
     "title": "WODをスキャン",
     "manualButton": "手動で追加"
   },
   "NewWodPage": {
+    "seo": {
+      "title": "新しいWOD | 手動入力",
+      "description": "独自のCrossFitワークアウトを手動で作成し、カスタマイズします。"
+    },
     "title": "WODを手動で作成",
     "cardTitle": "ワークアウトの詳細",
     "namePlaceholder": "WOD名（例：Fran）",
@@ -287,6 +346,10 @@
     }
   },
   "EditWodPage": {
+    "seo": {
+      "title": "WODを編集 | WODBurner",
+      "description": "ワークアウトの詳細、タイトル、または説明を更新します。"
+    },
     "title": "WODを編集",
     "cardTitle": "ワークアウトの詳細",
     "saveButton": "変更を保存",
@@ -328,6 +391,10 @@
     }
   },
   "TimersPage": {
+    "seo": {
+      "title": "CrossFitタイマー | AMRAP, EMOM, Tabata",
+      "description": "CrossFitワークアウト用のプロ仕様のトレーニングタイマーにアクセスします。"
+    },
     "title": "スマートタイマー",
     "forTime": "For Time",
     "forTimeDescription": "ワークアウトを計時するためのシンプルなストップウォッチ。",
@@ -340,6 +407,10 @@
     "footer": "または、ダッシュボードからWODを選択して、事前設定されたタイマーを起動します。"
   },
   "HeroWodsPage": {
+    "seo": {
+      "title": "ヒーローWODライブラリ | ベンチマークワークアウト",
+      "description": "公式のCrossFit Hero WODとMurph、Fran、Cindyなどのベンチマークワークアウトのコレクションをご覧ください。"
+    },
     "title": "ヒーローWOD",
     "description": "「ヒーロー」WODは、職務中に命を捧げた男女に捧げられたCrossFitの特別なワークアウトです。彼らの犠牲を振り返り、敬意を表する機会です。",
     "premiumUpsell": {
@@ -349,6 +420,10 @@
     }
   },
   "HallOfFamePage": {
+    "seo": {
+      "title": "殿堂 | WODBurner OGs",
+      "description": "最初の300人の初期サポーターのエリートサークル。生涯メンバー。"
+    },
     "title": "殿堂",
     "cardTitle": "最初の300人のOG",
     "cardDescription": "生涯無料。最も初期のサポーターのための恒久的な場所。",
@@ -378,6 +453,10 @@
     "totalTimeElapsed": "合計: {time}"
   },
   "GenerateWodPage": {
+    "seo": {
+      "title": "AI WODジェネレーター | 毎日新しいワークアウト",
+      "description": "AIコーチにユニークでパーソナライズされたCrossFitワークアウトを生成させましょう。"
+    },
     "title": "AI WODジェネレーター",
     "cardTitle": "WODBot 3000",
     "cardDescription": "インスピレーションが湧きませんか？AIコーチにユニークで挑戦的なワークアウトを生成させましょう。",

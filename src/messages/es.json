@@ -1,5 +1,11 @@
 
 {
+  "RootLayout": {
+    "seo": {
+      "title": "WODBurner - Tu Pizarra CrossFit y Smart Timer",
+      "description": "Escanea tus entrenamientos de CrossFit a partir de fotos, genera nuevos WOD con IA y accede a cronómetros inteligentes."
+    }
+  },
   "UserNav": {
     "signIn": "Iniciar sesión",
     "signOut": "Cerrar sesión",
@@ -15,9 +21,42 @@
     "heroWods": "Hero WODs",
     "timers": "Temporizadores",
     "goPremium": "Hazte Premium",
-    "hallOfFame": "Salón de la Fama"
+    "hallOfFame": "Salón de la Fama",
+    "openStats": "Open Stats"
+  },
+  "OpenStatsPage": {
+    "seo": {
+      "title": "Open Stats | Estadísticas CrossFit Open en Vivo",
+      "description": "Consulta las estadísticas en tiempo real del CrossFit Open. Compara tus puntuaciones y analiza el rendimiento mundial."
+    },
+    "title": "Open Stats",
+    "description": "Datos en vivo del CrossFit Open vía API pública",
+    "metrics": {
+      "athletes": "Atletas Analizados",
+      "median": "Mediana",
+      "top10": "Top 10%",
+      "elite": "Élite (1%)"
+    },
+    "userScore": {
+      "title": "Comparar mi puntuación",
+      "percentile": "Percentil mundial"
+    },
+    "charts": {
+      "distribution": "Distribución de puntuación",
+      "distributionSub": "Distribución sobre la muestra analizada",
+      "bmi": "Correlación IMC / Rango",
+      "bmiSub": "Impacto del IMC en la clasificación global"
+    },
+    "methodology": {
+      "title": "Metodología",
+      "description": "Datos recuperados en tiempo real a través de la API pública de CrossFit."
+    }
   },
   "DashboardPage": {
+    "seo": {
+      "title": "Dashboard | Gestiona tus WODs de CrossFit",
+      "description": "Gestiona tus entrenamientos de CrossFit, encuentra tus WODs escaneados y descubre el entrenamiento de la comunidad."
+    },
     "title": "Dashboard",
     "scanNewWod": "Escanear nuevo WOD",
     "tabs": {
@@ -133,6 +172,10 @@
     "savingButton": "Guardando..."
   },
   "LoginPage": {
+    "seo": {
+      "title": "Iniciar Sesión | WODBurner",
+      "description": "Inicia sesión en tu cuenta de WODBurner para guardar tus entrenamientos y acceder a funciones avanzadas."
+    },
     "verifying": "Verificando...",
     "confirmEmailTitle": "Confirmar correo electrónico",
     "confirmEmailDescription": "Para completar el inicio de sesión en este dispositivo, proporciona la dirección de correo electrónico donde recibiste el enlace.",
@@ -161,6 +204,10 @@
     "invalidLinkError": "El enlace de inicio de sesión no es válido, ha caducado o el correo electrónico es incorrecto. Por favor, solicita uno nuevo."
   },
   "PremiumPage": {
+    "seo": {
+      "title": "Membresía Premium | Apoya a WODBurner",
+      "description": "Desbloquea escaneos de WOD ilimitados, filtros avanzados y funciones exclusivas. Apoya el desarrollo de tu compañero de CrossFit favorito."
+    },
     "title": "Premium",
     "alreadyPremium": {
       "title": "¡ERES PREMIUM!",
@@ -221,6 +268,10 @@
     }
   },
   "SettingsPage": {
+    "seo": {
+      "title": "Ajustes | Gestión de Cuenta",
+      "description": "Gestiona tu perfil, tus preferencias de correo electrónico y tus ajustes de suscripción."
+    },
     "title": "Ajustes",
     "profile": {
       "title": "Perfil",
@@ -257,10 +308,18 @@
     }
   },
   "ScanPage": {
+    "seo": {
+      "title": "Escanear un WOD | Analizador de Pizarra",
+      "description": "Transforma la foto de la pizarra de tu gimnasio en un entrenamiento interactivo con nuestro analizador de IA."
+    },
     "title": "Escanear WOD",
     "manualButton": "Añadir manualmente"
   },
   "NewWodPage": {
+    "seo": {
+      "title": "Nuevo WOD | Entrada Manual",
+      "description": "Crea y personaliza tu propio entrenamiento de CrossFit manualmente."
+    },
     "title": "Crear WOD manualmente",
     "cardTitle": "Detalles del entrenamiento",
     "namePlaceholder": "Nombre del WOD (p. ej., Fran)",
@@ -287,6 +346,10 @@
     }
   },
   "EditWodPage": {
+    "seo": {
+      "title": "Editar WOD | WODBurner",
+      "description": "Actualiza los detalles de tu entrenamiento, su título o su descripción."
+    },
     "title": "Editar WOD",
     "cardTitle": "Detalles del entrenamiento",
     "saveButton": "Guardar cambios",
@@ -328,6 +391,10 @@
     }
   },
   "TimersPage": {
+    "seo": {
+      "title": "Temporizadores CrossFit | AMRAP, EMOM, Tabata",
+      "description": "Accede a temporizadores de entrenamiento de calidad profesional para tus WODs de CrossFit."
+    },
     "title": "Temporizadores inteligentes",
     "forTime": "For Time",
     "forTimeDescription": "Un cronómetro simple para medir tu entrenamiento.",
@@ -340,6 +407,10 @@
     "footer": "O selecciona un WOD del dashboard para iniciar un temporizador preconfigurado."
   },
   "HeroWodsPage": {
+    "seo": {
+      "title": "Biblioteca de Hero WODs | Entrenamientos de Referencia",
+      "description": "Descubre la colección de Hero WODs oficiales de CrossFit y entrenamientos de referencia como Murph, Fran y Cindy."
+    },
     "title": "Hero WODs",
     "description": "Los \"Hero\" WODs son entrenamientos especiales en CrossFit dedicados a hombres y mujeres que han dado su vida en el cumplimiento del deber. Son una oportunidad para reflexionar y honrar su sacrificio.",
     "premiumUpsell": {
@@ -349,6 +420,10 @@
     }
   },
   "HallOfFamePage": {
+    "seo": {
+      "title": "Salón de la Fama | Los OGs de WODBurner",
+      "description": "El círculo de élite de nuestros primeros 300 seguidores. Miembros de por vida."
+    },
     "title": "Salón de la Fama",
     "cardTitle": "Los primeros 300 OGs",
     "cardDescription": "Gratis de por vida. Un lugar permanente para nuestros primeros seguidores.",
@@ -378,6 +453,10 @@
     "totalTimeElapsed": "Total: {time}"
   },
   "GenerateWodPage": {
+    "seo": {
+      "title": "Generador de WOD con IA | Nuevos Entrenamientos Cada Día",
+      "description": "Deja que nuestro Coach de IA genere entrenamientos de CrossFit únicos y personalizados para ti."
+    },
     "title": "Generador de WOD con IA",
     "cardTitle": "WODBot 3000",
     "cardDescription": "¿Te sientes sin inspiración? Deja que nuestro entrenador de IA te genere un entrenamiento único y desafiante.",
@@ -391,7 +470,7 @@
     "premiumPlanMessage": "Generaciones ilimitadas activadas.",
     "generatingState": {
       "title": "Generando tu WOD...",
-      "description": "El entrenador de IA se está calentando. Esto может tardar un momento."
+      "description": "El entrenador de IA se está calentando. Esto puede tardar un momento."
     },
     "errorAlert": {
       "title": "Error de generación",

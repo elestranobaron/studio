@@ -1,5 +1,11 @@
 
 {
+  "RootLayout": {
+    "seo": {
+      "title": "WODBurner - La tua Lavagna CrossFit e Smart Timer",
+      "description": "Scansiona i tuoi allenamenti CrossFit dalle foto, genera nuovi WOD con l'IA e accedi a timer intelligenti."
+    }
+  },
   "UserNav": {
     "signIn": "Accedi",
     "signOut": "Esci",
@@ -15,9 +21,42 @@
     "heroWods": "Hero WODs",
     "timers": "Timer",
     "goPremium": "Passa a Premium",
-    "hallOfFame": "Hall of Fame"
+    "hallOfFame": "Hall of Fame",
+    "openStats": "Open Stats"
+  },
+  "OpenStatsPage": {
+    "seo": {
+      "title": "Open Stats | Statistiche Leaderboard CrossFit Open",
+      "description": "Statistiche CrossFit Open in tempo reale. Confronta i tuoi punteggi e analizza le prestazioni mondiali."
+    },
+    "title": "Open Stats",
+    "description": "Dati live CrossFit Open tramite API pubblica",
+    "metrics": {
+      "athletes": "Atleti Analizzati",
+      "median": "Mediana",
+      "top10": "Top 10%",
+      "elite": "Elite (1%)"
+    },
+    "userScore": {
+      "title": "Confronta il mio punteggio",
+      "percentile": "Percentile globale"
+    },
+    "charts": {
+      "distribution": "Distribuzione punteggi",
+      "distributionSub": "Distribuzione sul campione analizzato",
+      "bmi": "Correlazione BMI / Rango",
+      "bmiSub": "Impatto del BMI sulla classifica globale"
+    },
+    "methodology": {
+      "title": "Metodologia",
+      "description": "Dati recuperati in tempo reale tramite l'API pubblica di CrossFit."
+    }
   },
   "DashboardPage": {
+    "seo": {
+      "title": "Dashboard | Gestisci i tuoi WOD di CrossFit",
+      "description": "Gestisci i tuoi allenamenti di CrossFit, trova i tuoi WOD scansionati e scopri l'allenamento della comunità."
+    },
     "title": "Dashboard",
     "scanNewWod": "Scansiona nuovo WOD",
     "tabs": {
@@ -120,7 +159,7 @@
     "wodSavedTitle": "WOD salvato!",
     "wodSavedDescription": "Il tuo nuovo WOD è stato aggiunto alla tua dashboard.",
     "authErrorTitle": "Impossibile salvare",
-    "authErrorDescription": "I servizi di autenticazione non sono disponibili.",
+    "authErrorDescription": "I servizi di autenticación non sono disponibili.",
     "wodPreviewAlt": "Anteprima WOD",
     "analyzeButton": "Analizza WOD",
     "analysisResultTitle": "Risultato dell'analisi",
@@ -133,6 +172,10 @@
     "savingButton": "Salvataggio..."
   },
   "LoginPage": {
+    "seo": {
+      "title": "Accedi | WODBurner",
+      "description": "Accedi al tuo account WODBurner per salvare i tuoi allenamenti e accedere a funzioni avanzate."
+    },
     "verifying": "Verifica in corso...",
     "confirmEmailTitle": "Conferma e-mail",
     "confirmEmailDescription": "Per completare l'accesso su questo dispositivo, fornisci l'indirizzo e-mail in cui hai ricevuto il link.",
@@ -154,13 +197,17 @@
     "authError": "Il servizio di autenticazione non è pronto.",
     "sendLinkError": "Impossibile inviare il link. Riprova.",
     "linkSentToast": "Link inviato!",
-    "linkSentToastDescription": "Controlla la tua casella di posta per un link di accesso. Se non lo vedi, controlla la cartella spam.",
+    "linkSentToastDescription": "Controlla la tua casella di posta per un link de accesso. Se non lo vedi, controlla la cartella spam.",
     "signInSuccessToast": "Accesso riuscito!",
     "signInSuccessToastDescription": "Ora sei connesso.",
     "genericError": "Si è verificato un errore. Riprova.",
     "invalidLinkError": "Il link di accesso non è valido, è scaduto o l'e-mail non è corretta. Richiedine uno nuovo."
   },
   "PremiumPage": {
+    "seo": {
+      "title": "Abbonamento Premium | Sostieni WODBurner",
+      "description": "Sblocca scansioni WOD illimitate, filtri avanzati e funzioni esclusive. Sostieni lo sviluppo del tuo compagno CrossFit preferito."
+    },
     "title": "Premium",
     "alreadyPremium": {
       "title": "SEI PREMIUM!",
@@ -221,6 +268,10 @@
     }
   },
   "SettingsPage": {
+    "seo": {
+      "title": "Impostazioni | Gestione Account",
+      "description": "Gestisci il tuo profilo, le tue preferenze e-mail e le impostazioni dell'abbonamento."
+    },
     "title": "Impostazioni",
     "profile": {
       "title": "Profilo",
@@ -257,10 +308,18 @@
     }
   },
   "ScanPage": {
+    "seo": {
+      "title": "Scansiona un WOD | Analizzatore Lavagna",
+      "description": "Trasforma la foto della lavagna della tua palestra in un allenamento interattivo con il nostro analizzatore IA."
+    },
     "title": "Scansiona WOD",
     "manualButton": "Aggiungi manualmente"
   },
   "NewWodPage": {
+    "seo": {
+      "title": "Nuovo WOD | Inserimento Manuale",
+      "description": "Crea e personalizza il tuo allenamento CrossFit manualmente."
+    },
     "title": "Crea WOD manualmente",
     "cardTitle": "Dettagli allenamento",
     "namePlaceholder": "Nome WOD (es. Fran)",
@@ -287,6 +346,10 @@
     }
   },
   "EditWodPage": {
+    "seo": {
+      "title": "Modifica WOD | WODBurner",
+      "description": "Aggiorna i dettagli del tuo allenamento, il titolo o la descrizione."
+    },
     "title": "Modifica WOD",
     "cardTitle": "Dettagli allenamento",
     "saveButton": "Salva modifiche",
@@ -328,6 +391,10 @@
     }
   },
   "TimersPage": {
+    "seo": {
+      "title": "Timer CrossFit | AMRAP, EMOM, Tabata",
+      "description": "Accedi a timer di allenamento professionali per i tuoi WOD CrossFit."
+    },
     "title": "Timer intelligenti",
     "forTime": "For Time",
     "forTimeDescription": "Un semplice cronometro per cronometrare il tuo allenamento.",
@@ -340,6 +407,10 @@
     "footer": "Oppure, seleziona un WOD dalla dashboard per avviare un timer preconfigurato."
   },
   "HeroWodsPage": {
+    "seo": {
+      "title": "Libreria Hero WODs | Allenamenti Benchmark",
+      "description": "Scopri la collezione ufficiale di Hero WOD CrossFit e allenamenti benchmark come Murph, Fran e Cindy."
+    },
     "title": "Hero WODs",
     "description": "Gli \"Hero\" WOD sono allenamenti speciali nel CrossFit dedicati a uomini e donne che hanno dato la vita in servizio. Sono un'opportunità per riflettere e onorare il loro sacrificio.",
     "premiumUpsell": {
@@ -349,6 +420,10 @@
     }
   },
   "HallOfFamePage": {
+    "seo": {
+      "title": "Hall of Fame | Gli OGs di WODBurner",
+      "description": "Il cerchio d'élite dei nostri primi 300 sostenitori. Membri a vita."
+    },
     "title": "Hall of Fame",
     "cardTitle": "I primi 300 OG",
     "cardDescription": "Gratis a vita. Un posto permanente per i nostri primi sostenitori.",
@@ -378,6 +453,10 @@
     "totalTimeElapsed": "Totale: {time}"
   },
   "GenerateWodPage": {
+    "seo": {
+      "title": "Generatore WOD IA | Nuovi Allenamenti Ogni Giorno",
+      "description": "Lascia che il nostro coach IA generi per te allenamenti CrossFit unici e personalizzati."
+    },
     "title": "Generatore WOD IA",
     "cardTitle": "WODBot 3000",
     "cardDescription": "Ti senti poco ispirato? Lascia che il nostro coach IA generi per te un allenamento unico e stimolante.",
@@ -399,7 +478,7 @@
     },
     "result": {
       "title": "Il tuo WOD generato",
-      "savedMessage": "Questo WOD è stato salvato automatically nella tua dashboard."
+      "savedMessage": "Questo WOD è stato salvato automaticamente nella tua dashboard."
     }
   }
 }

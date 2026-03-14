@@ -1,0 +1,91 @@
+
+{
+  "RootLayout": {
+    "seo": {
+      "title": "WODBurner - आपका CrossFit व्हाइटबोर्ड और स्मार्ट टाइमर",
+      "description": "तस्वीरों से अपने CrossFit वर्कआउट को स्कैन करें, AI के साथ नए WOD उत्पन्न करें, और स्मार्ट टाइमर तक पहुँचें।"
+    }
+  },
+  "UserNav": {
+    "signIn": "साइन इन करें",
+    "signOut": "साइन आउट",
+    "loading": "लोड हो रहा है...",
+    "anonymousUser": "अनाम उपयोगकर्ता",
+    "temporaryProfile": "अस्थायी प्रोफ़ाइल",
+    "settingsTooltip": "सेटिंग्स"
+  },
+  "MainNav": {
+    "dashboard": "डैशबोर्ड",
+    "scanWod": "WOD स्कैन करें",
+    "generateWod": "WOD उत्पन्न करें",
+    "heroWods": "हीरो WODs",
+    "timers": "टाइमर",
+    "goPremium": "प्रीमियम बनें",
+    "hallOfFame": "हॉल ऑफ फेम",
+    "openStats": "ओपन आँकड़े"
+  },
+  "OpenStatsPage": {
+    "seo": {
+      "title": "Open Stats | CrossFit Open लीडरबोर्ड आँकड़े",
+      "description": "लाइव CrossFit Open आँकड़े। अपने स्कोर की तुलना करें और दुनिया भर के प्रदर्शन का विश्लेषण करें।"
+    },
+    "title": "Open Stats",
+    "description": "सार्वजनिक API के माध्यम से लाइव CrossFit Open डेटा",
+    "metrics": {
+      "athletes": "विश्लेषण किए गए एथलीट",
+      "median": "मध्यिका",
+      "top10": "शीर्ष 10%",
+      "elite": "एलीट (1%)"
+    },
+    "userScore": {
+      "title": "मेरे स्कोर की तुलना करें",
+      "percentile": "वैश्विक पर्सेंटाइल"
+    },
+    "charts": {
+      "distribution": "स्कोर वितरण",
+      "distributionSub": "विश्लेषण किए गए नमूने पर वितरण",
+      "bmi": "BMI / रैंक सहसंबंध",
+      "bmiSub": "वैश्विक रैंकिंग पर BMI का प्रभाव"
+    },
+    "methodology": {
+      "title": "कार्यप्रणाली",
+      "description": "CrossFit सार्वजनिक API के माध्यम से वास्तविक समय में प्राप्त डेटा।"
+    }
+  },
+  "DashboardPage": {
+    "seo": {
+      "title": "डैशबोर्ड | अपने CrossFit WOD प्रबंधित करें",
+      "description": "अपने CrossFit वर्कआउट प्रबंधित करें, अपने स्कैन किए गए WOD ढूंढें और सामुदायिक प्रशिक्षण खोजें।"
+    },
+    "title": "Dashboard",
+    "scanNewWod": "नया WOD स्कैन करें",
+    "tabs": {
+      "personal": "मेरे WODs",
+      "community": "समुदाय"
+    },
+    "PersonalWodList": {
+      "emptyTitle": "यहाँ कोई WOD नहीं मिला।",
+      "emptyDescription": "शुरू करने के लिए अपना पहला WOD स्कैन करें!"
+    },
+    "CommunityWodList": {
+      "joinTitle": "समुदाय में शामिल हों!",
+      "joinDescription": "पूरे समुदाय के WOD देखने, साझा करने और प्रेरणा लेने के लिए एक निःशुल्क खाता बनाएँ।",
+      "joinButton": "साइन अप / लॉग इन",
+      "errorTitle": "एक त्रुटि हुई",
+      "errorDescription": "सामुदायिक WOD लोड नहीं हो सके। कृपया बाद में पुनः प्रयास करें।",
+      "searchInputPlaceholder": "सामुदायिक WOD खोजें...",
+      "sortByLabel": "इसके द्वारा क्रमबद्ध करें",
+      "sort": {
+        "recent": "सबसे हाल के",
+        "popular": "सबसे लोकप्रिय",
+        "alphabetical": "वर्णमाला (A-Z)"
+      },
+      "emptySearchTitle": "आपकी खोज से मेल खाने वाला कोई WOD नहीं मिला।",
+      "emptySearchDescription": "कोई अन्य खोज शब्द आज़माएँ।",
+      "emptyCommunityTitle": "साझा करने वाले पहले व्यक्ति बनें!"
+    },
+    "ScrollTop": {
+      "label": "शीर्ष पर स्क्रॉल करें"
+    }
+  }
+}

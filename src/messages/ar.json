@@ -1,0 +1,91 @@
+
+{
+  "RootLayout": {
+    "seo": {
+      "title": "WODBurner - سبورتك الذكية لتمارين الكروس فت",
+      "description": "قم بمسح تمارين الكروس فت الخاصة بك من الصور، وأنشئ تمارين جديدة بالذكاء الاصطناعي."
+    }
+  },
+  "UserNav": {
+    "signIn": "تسجيل الدخول",
+    "signOut": "تسجيل الخروج",
+    "loading": "جاري التحميل...",
+    "anonymousUser": "مستخدم مجهول",
+    "temporaryProfile": "ملف شخصي مؤقت",
+    "settingsTooltip": "الإعدادات"
+  },
+  "MainNav": {
+    "dashboard": "لوحة التحكم",
+    "scanWod": "مسح WOD",
+    "generateWod": "إنشاء WOD",
+    "heroWods": "تمارين الأبطال",
+    "timers": "المؤقتات",
+    "goPremium": "اشترك في بريميوم",
+    "hallOfFame": "قاعة المشاهير",
+    "openStats": "إحصائيات المفتوحة"
+  },
+  "OpenStatsPage": {
+    "seo": {
+      "title": "Open Stats | إحصائيات لوحة المتصدرين لكروس فت أوبن",
+      "description": "إحصائيات مباشرة لكروس فت أوبن. قارن نتائجك وحلل الأداء العالمي."
+    },
+    "title": "Open Stats",
+    "description": "بيانات مباشرة لكروس فت أوبن عبر API عام",
+    "metrics": {
+      "athletes": "الرياضيين الذين تم تحليلهم",
+      "median": "الوسيط",
+      "top10": "أعلى 10%",
+      "elite": "النخبة (1%)"
+    },
+    "userScore": {
+      "title": "قارن نتيجتي",
+      "percentile": "النسبة المئوية العالمية"
+    },
+    "charts": {
+      "distribution": "توزيع الدرجات",
+      "distributionSub": "التوزيع على العينة التي تم تحليلها",
+      "bmi": "ارتباط BMI / الترتيب",
+      "bmiSub": "تأثير مؤشر كتلة الجسم على الترتيب العالمي"
+    },
+    "methodology": {
+      "title": "المنهجية",
+      "description": "تم استرداد البيانات في الوقت الفعلي عبر CrossFit public API."
+    }
+  },
+  "DashboardPage": {
+    "seo": {
+      "title": "لوحة التحكم | إدارة تمارين WOD الخاصة بك",
+      "description": "إدارة تمارين الكروس فت الخاصة بك، والعثور على التمارين الممسوحة ضوئياً."
+    },
+    "title": "لوحة التحكم",
+    "scanNewWod": "مسح WOD جديد",
+    "tabs": {
+      "personal": "تماريني",
+      "community": "المجتمع"
+    },
+    "PersonalWodList": {
+      "emptyTitle": "لم يتم العثور على تمارين هنا.",
+      "emptyDescription": "امسح أول تمرين لك للبدء!"
+    },
+    "CommunityWodList": {
+      "joinTitle": "انضم للمجتمع!",
+      "joinDescription": "أنشئ حساباً مجانياً لمشاهدة ومشاركة التمارين مع المجتمع بأكمله.",
+      "joinButton": "سجل الآن / تسجيل دخول",
+      "errorTitle": "حدث خطأ ما",
+      "errorDescription": "تعذر تحميل تمارين المجتمع. يرجى المحاولة لاحقاً.",
+      "searchInputPlaceholder": "ابحث في تمارين المجتمع...",
+      "sortByLabel": "ترتيب حسب",
+      "sort": {
+        "recent": "الأحدث",
+        "popular": "الأكثر شهرة",
+        "alphabetical": "أبجدياً (A-Z)"
+      },
+      "emptySearchTitle": "لا توجد تمارين تطابق بحثك.",
+      "emptySearchDescription": "جرب كلمة بحث أخرى.",
+      "emptyCommunityTitle": "كن أول من يشارك تمريناً!"
+    },
+    "ScrollTop": {
+      "label": "الرجوع للأعلى"
+    }
+  }
+}

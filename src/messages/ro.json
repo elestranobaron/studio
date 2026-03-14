@@ -1,0 +1,91 @@
+
+{
+  "RootLayout": {
+    "seo": {
+      "title": "WODBurner - Tabloul tău CrossFit și Smart Timer",
+      "description": "Scanează-ți antrenamentele CrossFit din fotografii, generează WOD-uri noi cu AI și accesează timere inteligente."
+    }
+  },
+  "UserNav": {
+    "signIn": "Autentificare",
+    "signOut": "Deconectare",
+    "loading": "Se încarcă...",
+    "anonymousUser": "Utilizator Anonim",
+    "temporaryProfile": "Profil Temporar",
+    "settingsTooltip": "Setări"
+  },
+  "MainNav": {
+    "dashboard": "Panou",
+    "scanWod": "Scanează WOD",
+    "generateWod": "Generează WOD",
+    "heroWods": "Hero WODs",
+    "timers": "Timere",
+    "goPremium": "Treci la Premium",
+    "hallOfFame": "Hall of Fame",
+    "openStats": "Statistici Open"
+  },
+  "OpenStatsPage": {
+    "seo": {
+      "title": "Open Stats | Statistici Leaderboard CrossFit Open",
+      "description": "Statistici CrossFit Open în timp real. Compară scorurile tale și analizează performanța mondială."
+    },
+    "title": "Open Stats",
+    "description": "Date live CrossFit Open via API public",
+    "metrics": {
+      "athletes": "Atleți Analizați",
+      "median": "Mediană",
+      "top10": "Top 10%",
+      "elite": "Elită (1%)"
+    },
+    "userScore": {
+      "title": "Compară scorul meu",
+      "percentile": "Percentila globală"
+    },
+    "charts": {
+      "distribution": "Distribuția scorurilor",
+      "distributionSub": "Distribuția pe eșantionul analizat",
+      "bmi": "Corelație IMC / Loc",
+      "bmiSub": "Impactul IMC asupra clasamentului global"
+    },
+    "methodology": {
+      "title": "Metodologie",
+      "description": "Date recuperate în timp real prin API-ul public CrossFit."
+    }
+  },
+  "DashboardPage": {
+    "seo": {
+      "title": "Panou | Gestionează-ți WOD-urile CrossFit",
+      "description": "Gestionează-ți antrenamentele CrossFit, găsește WOD-urile scanate și descoperă antrenamentele comunității."
+    },
+    "title": "Panou",
+    "scanNewWod": "Scanează WOD nou",
+    "tabs": {
+      "personal": "WOD-urile mele",
+      "community": "Comunitate"
+    },
+    "PersonalWodList": {
+      "emptyTitle": "Nu s-au găsit WOD-uri aici.",
+      "emptyDescription": "Scanează primul tău WOD pentru a începe!"
+    },
+    "CommunityWodList": {
+      "joinTitle": "Alătură-te Comunității!",
+      "joinDescription": "Creează un cont gratuit pentru a vedea, distribui și a te inspira din WOD-urile întregii comunități.",
+      "joinButton": "Înregistrare / Autentificare",
+      "errorTitle": "A apărut o eroare",
+      "errorDescription": "Nu s-au putut încărca WOD-urile comunității. Te rugăm să încerci din nou mai târziu.",
+      "searchInputPlaceholder": "Caută WOD-uri în comunitate...",
+      "sortByLabel": "Sortează după",
+      "sort": {
+        "recent": "Cele mai recente",
+        "popular": "Cele mai populare",
+        "alphabetical": "Alfabetic (A-Z)"
+      },
+      "emptySearchTitle": "Niciun WOD nu se potrivește căutării tale.",
+      "emptySearchDescription": "Încearcă un alt termen de căutare.",
+      "emptyCommunityTitle": "Fii primul care distribuie unul!"
+    },
+    "ScrollTop": {
+      "label": "Înapoi sus"
+    }
+  }
+}
