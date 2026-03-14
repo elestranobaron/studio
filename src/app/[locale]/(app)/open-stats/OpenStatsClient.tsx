@@ -473,13 +473,12 @@ export default function OpenStatsClient() {
         <div className="bg-muted/30 p-4 rounded-lg flex items-start gap-3 border border-border/50">
           <Info className="h-5 w-5 text-primary mt-0.5" />
           <div className="text-sm text-muted-foreground">
-            <p className="font-semibold text-foreground">Aide à la lecture</p>
+            <p className="font-semibold text-foreground">Méthodologie des graphiques</p>
             <p className="mb-2">
-              <strong>Overall</strong> : Le score affiché correspond au total des points (somme des places). James Sprague avec 31 points signifie qu'il a été extrêmement régulier sur les 3 épreuves.
+              <strong>Unification des scores</strong> : Pour permettre une comparaison visuelle cohérente sur les épreuves mixtes (temps + répétitions), tous les scores sont convertis en répétitions totales. Les athlètes ayant terminé l'épreuve sont regroupés à l'extrémité droite du graphique.
             </p>
             <p>
-              <strong>Distribution</strong> : Pour un workout spécifique, montre si vous êtes dans la "bosse" (la moyenne) ou dans les extrémités (élite ou débutant). 
-              {stats?.isTime ? " Plus le chrono est bas, plus vous êtes vers la gauche." : " Plus le nombre de reps est haut, plus vous êtes vers la droite."}
+              <strong>Overall</strong> : Le score correspond à la somme des rangs obtenus. Un score faible indique une meilleure performance globale.
             </p>
           </div>
         </div>
