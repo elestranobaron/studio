@@ -103,29 +103,36 @@ export function useOpenStats() {
           let finished = false;
 
           if (workout !== 0) {
-            // Extraction des répétitions : soit "354 reps", soit dans les parenthèses "11:25 (354)"
-            const repsMatch = officialScoreDisplay.match(/\((\d+)\)/) || officialScoreDisplay.match(/^(\d+)\s*reps/);
-            if (repsMatch) {
-              reps = parseInt(repsMatch[1]);
-            } else {
-              // Fallback si juste un nombre est présent
-              reps = parseInt(officialScoreDisplay.replace(/[^0-9]/g, '')) || 0;
+            // 1. Extraction robuste des répétitions
+            const parenMatch = officialScoreDisplay.match(/\((\d+)\)/);
+            const repsSuffixMatch = officialScoreDisplay.match(/^(\d+)\s*reps/i);
+            
+            if (parenMatch) {
+              reps = parseInt(parenMatch[1]);
+            } else if (repsSuffixMatch) {
+              reps = parseInt(repsSuffixMatch[1]);
             }
 
-            // Extraction du temps si présent
+            // 2. Extraction du temps
             if (officialScoreDisplay.includes(':')) {
               const timePart = officialScoreDisplay.split('(')[0].trim();
-              const parts = timePart.split(':');
+              const parts = timePart.split(':').map(p => parseInt(p));
               if (parts.length >= 2) {
-                const m = parseInt(parts[parts.length - 2]);
-                const s = parseInt(parts[parts.length - 1]);
-                seconds = m * 60 + s;
+                const s = parts.pop() || 0;
+                const m = parts.pop() || 0;
+                const h = parts.pop() || 0;
+                seconds = (h * 3600) + (m * 60) + s;
                 finished = true;
               }
             }
-          } else {
-            // Pour l'overall, le "score" est le rang cumulé
-            reps = parseInt(row.overallRank) || 0;
+
+            // 3. Fallback si c'est juste un nombre (AMRAP pur)
+            if (reps === 0 && !finished) {
+                const simpleNum = parseInt(officialScoreDisplay.trim());
+                if (!isNaN(simpleNum)) {
+                    reps = simpleNum;
+                }
+            }
           }
 
           const currentRank = workout === 0 ? parseInt(row.overallRank) : (scoreObj ? parseInt(scoreObj.rank) : parseInt(row.overallRank));
@@ -166,10 +173,20 @@ export function useOpenStats() {
       }
 
       // Règle d'homogénéité : Si tout le monde a fini, on peut utiliser le temps.
-      // Sinon (si au moins une personne n'a pas fini), on utilise les répétitions pour tout le monde.
       const isWorkoutView = workout !== 0;
       const allFinished = isWorkoutView && allEntries.every(e => e.finished);
       const isTime = isWorkoutView && allFinished;
+
+      // Correction de la règle demandée : 
+      // Si c'est hétérogène (Reps), on attribue le maxReps de l'échantillon à ceux qui ont fini par le temps
+      if (!isTime && isWorkoutView) {
+          const maxReps = Math.max(...allEntries.map(e => e.reps));
+          allEntries.forEach(e => {
+              if (e.finished && e.reps === 0) {
+                  e.reps = maxReps;
+              }
+          });
+      }
 
       // Valeurs pour les calculs statistiques (médiane, percentiles)
       const sortedVals = allEntries
