@@ -99,13 +99,14 @@ export function useOpenStats() {
             : row.scores.find((s: any) => parseInt(s.ordinal) === workout);
           
           const officialScoreDisplay = workout === 0 ? (row.overallScore || "0") : (scoreObj?.scoreDisplay || '0');
+          const breakdownStr = scoreObj?.breakdown || "";
           
           let reps = 0;
           let seconds: number | null = null;
           let finished = false;
 
           if (workout !== 0) {
-            // Détection du chronomètre
+            // 1. Détection du temps (ex: "12:30")
             if (officialScoreDisplay.includes(':')) {
               const timePart = officialScoreDisplay.split('(')[0].trim();
               const parts = timePart.split(':').map(p => parseInt(p));
@@ -118,12 +119,15 @@ export function useOpenStats() {
               }
             }
 
-            // Extraction des répétitions
+            // 2. Extraction des répétitions (Priorité aux parenthèses ou au breakdown)
             const parenMatch = officialScoreDisplay.match(/\((\d+)\)/);
+            const breakdownMatch = breakdownStr.match(/(\d+)\s*reps/i);
             const repsSuffixMatch = officialScoreDisplay.match(/^(\d+)\s*reps/i);
             
             if (parenMatch) {
               reps = parseInt(parenMatch[1]);
+            } else if (breakdownMatch) {
+              reps = parseInt(breakdownMatch[1]);
             } else if (repsSuffixMatch) {
               reps = parseInt(repsSuffixMatch[1]);
             } else if (!finished) {
@@ -171,15 +175,25 @@ export function useOpenStats() {
         throw new Error("Aucune donnée trouvée.");
       }
 
-      // Analyse de l'échantillon
+      // --- Analyse de l'échantillon pour déduire les métadonnées ---
       const isWorkoutView = workout !== 0;
-      const anyRepScore = isWorkoutView && allEntries.some(e => !e.finished && e.reps > 0);
-      const isTime = isWorkoutView && !anyRepScore;
-
-      // Calcul des répétitions max réelles dans l'échantillon
-      const maxRepsInSample = Math.max(...allEntries.map(e => e.reps));
       
-      // Si workout mixte, on attribue les max reps aux finishers
+      // On regarde si certains n'ont pas fini (WOD mixte)
+      const anyNonFinisher = isWorkoutView && allEntries.some(e => !e.finished && e.reps > 0);
+      const isTime = isWorkoutView && !anyNonFinisher;
+
+      // Déduction du Max Reps : On prend le max trouvé dans les répétitions réelles
+      let maxRepsInSample = Math.max(...allEntries.map(e => e.reps));
+      
+      // Si c'est un WOD au temps (ex: 26.2), on cherche les reps dans le breakdown du 1er athlète
+      if (isTime && allEntries.length > 0) {
+          const topAthlete = allEntries[0];
+          if (topAthlete.reps > 0) {
+              maxRepsInSample = topAthlete.reps;
+          }
+      }
+
+      // Attribution du score max aux finishers en mode mixte (ex: 26.1, 26.3)
       if (!isTime && isWorkoutView) {
           allEntries.forEach(e => {
               if (e.finished && e.reps < maxRepsInSample) {
@@ -188,13 +202,17 @@ export function useOpenStats() {
           });
       }
 
-      // Inférence du Time Cap (le temps le plus élevé ou arrondi)
+      // Inférence du Time Cap (le temps le plus élevé de l'échantillon arrondi à la minute supérieure)
       let inferredTimeCap = null;
       if (isWorkoutView) {
-          const maxSeconds = Math.max(...allEntries.filter(e => e.seconds !== null).map(e => e.seconds!));
-          if (maxSeconds > 0) {
+          const finishedAthletes = allEntries.filter(e => e.seconds !== null);
+          if (finishedAthletes.length > 0) {
+              const maxSeconds = Math.max(...finishedAthletes.map(e => e.seconds!));
               const minutes = Math.ceil(maxSeconds / 60);
               inferredTimeCap = `${minutes}:00`;
+          } else {
+              // Si personne n'a fini, on ne peut pas vraiment déduire le cap proprement sans données externes
+              inferredTimeCap = "N/A";
           }
       }
 

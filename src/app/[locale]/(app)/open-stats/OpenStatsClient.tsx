@@ -69,15 +69,15 @@ export default function OpenStatsClient() {
 
     const values = stats.data.map(e => stats.isTime ? (e.seconds || 0) : e.reps);
     
-    // Pour le Top 100, on regroupe par valeurs réelles pour éviter les scores "fantômes"
+    // Regroupement par valeurs réelles pour éviter les scores inexistants
     const counts: Record<number, number> = {};
     values.forEach(v => {
         counts[v] = (counts[v] || 0) + 1;
     });
 
-    // Si on a trop de valeurs uniques (> 15), on fait un binning intelligent
     const uniqueValues = Object.keys(counts).map(Number).sort((a, b) => a - b);
     
+    // Si trop de valeurs uniques (> 15), on fait un binning logique (pas aléatoire)
     if (uniqueValues.length <= 15) {
         return uniqueValues.map(v => ({
             name: v,
@@ -86,15 +86,12 @@ export default function OpenStatsClient() {
         }));
     }
 
-    // Sinon binning classique mais basé sur les min/max réels
-    const min = uniqueValues[0];
-    const max = uniqueValues[uniqueValues.length - 1];
-    const binCount = 10;
-    const step = Math.max(1, Math.ceil((max - min) / binCount));
-    
+    // Binning par tranches de 30s (temps) ou 5 reps (repetitions)
+    const step = stats.isTime ? 30 : 5;
     const bins: Record<number, number> = {};
+    
     values.forEach(val => {
-      const bin = Math.floor((val - min) / step) * step + min;
+      const bin = Math.floor(val / step) * step;
       bins[bin] = (bins[bin] || 0) + 1;
     });
 
@@ -109,14 +106,15 @@ export default function OpenStatsClient() {
 
   const scatterData = useMemo(() => {
     if (!stats || !stats.data) return [];
+    // Nettoyage strict des outliers pour garder un graphique propre
     return stats.data
       .map(e => {
         let xValue: number | null = null;
         switch(scatterMetric) {
-          case 'age': xValue = (e.age > 5 && e.age < 95) ? e.age : null; break;
-          case 'height': xValue = (e.heightCm && e.heightCm > 100 && e.heightCm < 250) ? e.heightCm : null; break;
-          case 'weight': xValue = (e.weightKg && e.weightKg > 30 && e.weightKg < 250) ? e.weightKg : null; break;
-          case 'bmi': default: xValue = (e.bmi && e.bmi > 15 && e.bmi < 50) ? e.bmi : null; break;
+          case 'age': xValue = (e.age > 10 && e.age < 90) ? e.age : null; break;
+          case 'height': xValue = (e.heightCm && e.heightCm > 120 && e.heightCm < 230) ? e.heightCm : null; break;
+          case 'weight': xValue = (e.weightKg && e.weightKg > 35 && e.weightKg < 200) ? e.weightKg : null; break;
+          case 'bmi': default: xValue = (e.bmi && e.bmi > 15 && e.bmi < 45) ? e.bmi : null; break;
         }
         return { x: xValue, y: e.rank, name: e.name };
       })
@@ -347,7 +345,7 @@ export default function OpenStatsClient() {
               <div className="flex items-center gap-2">
                 <InfoIcon className="h-4 w-4 text-primary" />
                 <span className="text-sm font-semibold">{t('recap.maxReps')}:</span>
-                <Badge variant="secondary" className="bg-primary/10 text-primary">{stats.maxRepsInSample} reps</Badge>
+                <Badge variant="secondary" className="bg-primary/10 text-primary">{stats.maxRepsInSample || "N/A"} reps</Badge>
               </div>
               {stats.inferredTimeCap && (
                 <div className="flex items-center gap-2">
