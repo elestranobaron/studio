@@ -141,7 +141,7 @@ export const createCheckout = onCall({ cors: true }, async (request) => {
     const stripeKey = process.env.STRIPE_SECRET_KEY;
     if (!stripeKey) throw new HttpsError("failed-precondition", "Stripe key missing");
 
-    const stripe = new Stripe(stripeKey, { apiVersion: "2024-12-18.acacia" });
+    const stripe = new Stripe(stripeKey, { apiVersion: "2026-02-25.clover" });
     const priceId = yearly ? process.env.STRIPE_YEARLY_PRICE_ID : process.env.STRIPE_MONTHLY_PRICE_ID;
     if (!priceId) throw new HttpsError("failed-precondition", "Price ID missing");
 
@@ -170,7 +170,7 @@ export const createCustomerPortal = onCall({ cors: true }, async (request) => {
     const customerId = userDoc.data()?.stripeCustomerId;
     if (!customerId) throw new HttpsError("not-found", "Stripe customer not found");
 
-    const stripe = new Stripe(stripeKey, { apiVersion: "2024-12-18.acacia" });
+    const stripe = new Stripe(stripeKey, { apiVersion: "2026-02-25.clover" });
     const portalSession = await stripe.billingPortal.sessions.create({
         customer: customerId,
         return_url: `${process.env.NEXT_PUBLIC_APP_URL || 'https://wodburner.app'}/settings`,
@@ -182,7 +182,7 @@ export const stripeWebhook = onRequest(async (req, res) => {
     const sig = req.headers["stripe-signature"] as string;
     const stripeKey = process.env.STRIPE_SECRET_KEY || "";
     const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET || "";
-    const stripe = new Stripe(stripeKey, { apiVersion: "2024-12-18.acacia" });
+    const stripe = new Stripe(stripeKey, { apiVersion: "2026-02-25.clover" });
     
     try {
         const event = stripe.webhooks.constructEvent(req.rawBody, sig, webhookSecret);
