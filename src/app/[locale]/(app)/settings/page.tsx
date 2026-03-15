@@ -47,7 +47,8 @@ export default function SettingsPage() {
     setIsPortalLoading(true);
     try {
       const functions = getFunctions();
-      const createCustomerPortal = httpsCallable(functions, 'api-createCustomerPortal');
+      // Correction du nom de la fonction pour correspondre à l'export dans functions/src/index.ts
+      const createCustomerPortal = httpsCallable(functions, 'createCustomerPortal');
       const { data } = await createCustomerPortal();
       const portalUrl = (data as { url: string }).url;
       if (portalUrl) {
