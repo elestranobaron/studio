@@ -18,11 +18,12 @@ export interface LeaderboardEntry {
   heightCm: number | null;
   weightKg: number | null;
   bmi: number | null;
-  reps: number; // Valeur numérique brute pour les calculs
+  reps: number; // Nombre de répétitions (toujours présent)
+  seconds: number | null; // Temps en secondes si fini, sinon null
+  finished: boolean; // Si l'athlète a fini le WOD (chrono présent)
   scoreDisplay: string; // Chaîne officielle (ex: "11:25 (354)")
   overallScore: string; // Points (somme des rangs)
   region: string;
-  isTime: boolean;
   scores: WorkoutScoreDetail[];
 }
 
@@ -32,7 +33,7 @@ export interface StatsResult {
   p99: number;
   data: LeaderboardEntry[];
   totalCount: number;
-  isTime: boolean;
+  isTime: boolean; // True seulement si 100% de l'échantillon a fini
 }
 
 const parseHeight = (h: string): number | null => {
@@ -73,8 +74,6 @@ export function useOpenStats() {
     const allEntries: LeaderboardEntry[] = [];
 
     try {
-      let isTimeDetected = false;
-
       for (let page = 1; page <= maxPages; page++) {
         const url = `/api/open-stats?year=${year}&division=${division}&region=${region}&scaled=${scaled}&page=${page}&sort=${workout}`;
         const response = await fetch(url);
@@ -97,26 +96,36 @@ export function useOpenStats() {
             ? null 
             : row.scores.find((s: any) => parseInt(s.ordinal) === workout);
           
-          // Affichage officiel : points si Overall, scoreDisplay si workout
           const officialScoreDisplay = workout === 0 ? (row.overallScore || "0") : (scoreObj?.scoreDisplay || '0');
           
-          let numericVal = 0;
-          let isTime = false;
+          let reps = 0;
+          let seconds: number | null = null;
+          let finished = false;
 
-          // Parsing pour les statistiques (médiane, graphiques)
-          if (workout !== 0 && officialScoreDisplay.includes(':')) {
-            const parts = officialScoreDisplay.split('(')[0].trim().split(':');
-            if (parts.length >= 2) {
+          if (workout !== 0) {
+            // Extraction des répétitions : soit "354 reps", soit dans les parenthèses "11:25 (354)"
+            const repsMatch = officialScoreDisplay.match(/\((\d+)\)/) || officialScoreDisplay.match(/^(\d+)\s*reps/);
+            if (repsMatch) {
+              reps = parseInt(repsMatch[1]);
+            } else {
+              // Fallback si juste un nombre est présent
+              reps = parseInt(officialScoreDisplay.replace(/[^0-9]/g, '')) || 0;
+            }
+
+            // Extraction du temps si présent
+            if (officialScoreDisplay.includes(':')) {
+              const timePart = officialScoreDisplay.split('(')[0].trim();
+              const parts = timePart.split(':');
+              if (parts.length >= 2) {
                 const m = parseInt(parts[parts.length - 2]);
                 const s = parseInt(parts[parts.length - 1]);
-                numericVal = m * 60 + s;
-                isTime = true;
-                isTimeDetected = true;
+                seconds = m * 60 + s;
+                finished = true;
+              }
             }
-          } else if (workout !== 0) {
-            numericVal = parseInt(officialScoreDisplay.replace(/[^0-9]/g, '')) || 0;
           } else {
-            numericVal = parseInt(row.overallRank) || 0;
+            // Pour l'overall, le "score" est le rang cumulé
+            reps = parseInt(row.overallRank) || 0;
           }
 
           const currentRank = workout === 0 ? parseInt(row.overallRank) : (scoreObj ? parseInt(scoreObj.rank) : parseInt(row.overallRank));
@@ -138,11 +147,12 @@ export function useOpenStats() {
             heightCm: h,
             weightKg: w,
             bmi: bmi,
-            reps: numericVal,
+            reps,
+            seconds,
+            finished,
             scoreDisplay: officialScoreDisplay,
             overallScore: row.overallScore || row.overallRank,
             region: row.entrant.regionName,
-            isTime,
             scores: detailedScores
           };
         });
@@ -155,11 +165,16 @@ export function useOpenStats() {
         throw new Error("Aucune donnée trouvée.");
       }
 
-      const validStatsEntries = isTimeDetected 
-        ? allEntries.filter(e => e.isTime) 
-        : allEntries;
+      // Règle d'homogénéité : Si tout le monde a fini, on peut utiliser le temps.
+      // Sinon (si au moins une personne n'a pas fini), on utilise les répétitions pour tout le monde.
+      const isWorkoutView = workout !== 0;
+      const allFinished = isWorkoutView && allEntries.every(e => e.finished);
+      const isTime = isWorkoutView && allFinished;
 
-      const sortedVals = validStatsEntries.map(e => e.reps).sort((a, b) => a - b);
+      // Valeurs pour les calculs statistiques (médiane, percentiles)
+      const sortedVals = allEntries
+        .map(e => isTime ? (e.seconds || 0) : e.reps)
+        .sort((a, b) => a - b);
       
       const getPercentile = (p: number) => {
         const index = Math.floor(p * (sortedVals.length - 1));
@@ -168,11 +183,11 @@ export function useOpenStats() {
 
       const result: StatsResult = {
         median: getPercentile(0.5),
-        p90: isTimeDetected ? getPercentile(0.1) : getPercentile(0.9),
-        p99: isTimeDetected ? getPercentile(0.01) : getPercentile(0.99),
+        p90: isTime ? getPercentile(0.1) : getPercentile(0.9), // En temps, plus bas est meilleur
+        p99: isTime ? getPercentile(0.01) : getPercentile(0.99),
         data: allEntries,
         totalCount: allEntries.length,
-        isTime: isTimeDetected
+        isTime
       };
 
       statsCache.set(cacheKey, result);

@@ -62,20 +62,21 @@ export default function OpenStatsClient() {
   const histogramData = useMemo(() => {
     if (!stats || !stats.data || stats.data.length === 0) return [];
     
-    const dataToGraph = stats.data;
-    if (dataToGraph.length === 0) return [];
+    // On utilise soit les secondes (si 100% finishers) soit les répétitions (si mixte)
+    const values = stats.data.map(e => stats.isTime ? (e.seconds || 0) : e.reps);
+    if (values.length === 0) return [];
 
-    const bins: Record<string, number> = {};
-    const values = dataToGraph.map(e => e.reps);
     const min = Math.min(...values);
     const max = Math.max(...values);
+    const range = max - min;
     
     const binCount = 12;
-    const range = max - min;
     const step = range > 0 ? Math.ceil(range / binCount) : 1;
 
-    dataToGraph.forEach(entry => {
-      const bin = Math.floor(entry.reps / step) * step;
+    const bins: Record<number, number> = {};
+    
+    values.forEach(val => {
+      const bin = Math.floor(val / step) * step;
       bins[bin] = (bins[bin] || 0) + 1;
     });
 
@@ -86,7 +87,7 @@ export default function OpenStatsClient() {
         label: formatScore(parseInt(name), stats.isTime)
       }))
       .sort((a, b) => a.name - b.name);
-  }, [stats, workout]);
+  }, [stats]);
 
   const scatterData = useMemo(() => {
     if (!stats || !stats.data) return [];
@@ -94,11 +95,19 @@ export default function OpenStatsClient() {
       .map(e => {
         let xValue: number | null = null;
         switch(scatterMetric) {
-          case 'age': xValue = e.age; break;
-          case 'height': xValue = e.heightCm; break;
-          case 'weight': xValue = e.weightKg; break;
+          case 'age': 
+            xValue = (e.age > 5 && e.age < 95) ? e.age : null; 
+            break;
+          case 'height': 
+            xValue = (e.heightCm && e.heightCm > 100 && e.heightCm < 250) ? e.heightCm : null; 
+            break;
+          case 'weight': 
+            xValue = (e.weightKg && e.weightKg > 30 && e.weightKg < 250) ? e.weightKg : null; 
+            break;
           case 'bmi': 
-          default: xValue = e.bmi; break;
+          default: 
+            xValue = (e.bmi && e.bmi > 15 && e.bmi < 55) ? e.bmi : null; 
+            break;
         }
         return { x: xValue, y: e.rank, name: e.name };
       })
@@ -125,12 +134,12 @@ export default function OpenStatsClient() {
 
   const userPercentile = useMemo(() => {
     if (!stats || !stats.data || userNumericScore === null) return null;
-    const scores = stats.data.map(e => e.reps).sort((a, b) => a - b);
+    const values = stats.data.map(e => stats.isTime ? (e.seconds || 0) : e.reps).sort((a, b) => a - b);
     
-    let index = scores.findIndex(s => s >= userNumericScore);
-    if (index === -1) index = scores.length;
+    let index = values.findIndex(s => s >= userNumericScore);
+    if (index === -1) index = values.length;
 
-    let percentile = Math.round((index / scores.length) * 100);
+    let percentile = Math.round((index / values.length) * 100);
     if (stats.isTime) {
         percentile = 100 - percentile;
     }
@@ -309,7 +318,7 @@ export default function OpenStatsClient() {
             <CardHeader className="bg-muted/30 border-b">
               <CardTitle className="flex items-center gap-2 text-lg">
                 <BarChart3 className="h-5 w-5 text-primary" /> 
-                {workout === "0" ? "Distribution des points" : t('charts.distribution')}
+                {stats?.isTime ? t('charts.distribution') : "Distribution (Reps)"}
               </CardTitle>
               <CardDescription>
                 {t('charts.distributionSub')}
@@ -340,29 +349,12 @@ export default function OpenStatsClient() {
                         cursor={{ fill: 'hsl(var(--primary) / 0.1)' }}
                       />
                       <Bar dataKey="count" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
-                      
-                      {userNumericScore !== null && (
-                        <ReferenceLine 
-                          x={histogramData.find(b => userNumericScore >= b.name && userNumericScore < (b.name + 10))?.label} 
-                          stroke="hsl(var(--accent-foreground))" 
-                          strokeWidth={3} 
-                          strokeDasharray="5 5"
-                        >
-                          <RechartsLabel 
-                            value="MOI" 
-                            position="top" 
-                            fill="hsl(var(--accent-foreground))" 
-                            fontSize={12} 
-                            fontWeight="bold"
-                          />
-                        </ReferenceLine>
-                      )}
                     </BarChart>
                   </ResponsiveContainer>
                 )}
               </div>
               <div className="text-center text-[10px] text-muted-foreground mt-2 uppercase font-bold tracking-widest">
-                {workout === "0" ? "Points cumulés" : "Score (Reps)"}
+                {stats?.isTime ? "Score (Temps)" : "Score (Répétitions)"}
               </div>
             </CardContent>
           </Card>
