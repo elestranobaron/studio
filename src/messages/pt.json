@@ -1,4 +1,3 @@
-
 {
   "RootLayout": {
     "seo": {
@@ -32,17 +31,50 @@
     "title": "Open Stats",
     "description": "Dados ao vivo do CrossFit Open via API pública",
     "metrics": {
-      "athletes": "Atletas Analisados",
+      "athletes": "Atletas Analizados",
       "median": "Mediana",
       "top10": "Top 10%",
-      "elite": "Elite (1%)",
+      "elite": "Elite (1%)"
+    },
+    "filters": {
+      "label": "Filtros",
+      "year": "Ano",
+      "workout": "Prova",
+      "division": "Divisão",
+      "region": "Região",
+      "scaled": "Tipo de prova",
+      "allWorkouts": "Geral",
       "selector": {
-        "label": "Métrica",
         "bmi": "IMC",
         "age": "Idade",
         "height": "Altura",
         "weight": "Peso"
+      },
+      "divisions": {
+        "men": "Homens Rx",
+        "women": "Mulheres Rx",
+        "teens1415": "Ados (14-15)",
+        "masters3539": "Masters (35-39)"
+      },
+      "regions": {
+        "worldwide": "Mundo",
+        "africa": "África",
+        "asia": "Ásia",
+        "europe": "Europa",
+        "naEast": "AN Leste",
+        "naWest": "AN Oeste",
+        "oceania": "Oceania",
+        "southAmerica": "América do Sul"
+      },
+      "scaledTypes": {
+        "rxd": "Rx'd",
+        "scaled": "Scaled",
+        "foundations": "Foundations"
       }
+    },
+    "recap": {
+      "maxReps": "Reps Máx",
+      "timeCap": "Time Cap"
     },
     "userScore": {
       "title": "Comparar meu resultado",
@@ -52,7 +84,9 @@
       "title": "Top 10 Atletas",
       "rank": "Posição",
       "name": "Nome",
-      "score": "Resultado"
+      "score": "Resultado",
+      "descriptionOverall": "Top 10 do ranking mundial por pontos (soma das posições).",
+      "descriptionWorkout": "Top 10 dos atletas para a prova {year}.{workout}."
     },
     "charts": {
       "distribution": "Distribuição de resultados",
@@ -110,7 +144,7 @@
     "scanButton": "Escanear um WOD de uma foto",
     "generateButton": "Gerar um WOD aleatório",
     "heroButton": "Experimente um Hero WOD",
-    "communityLink": "Ou explore a <communityLink>comunidade</communityLink>."
+    "communityLink": "Ou explore a comunidade."
   },
   "WodCard": {
     "optionsAlt": "Opções do WOD",
@@ -235,7 +269,7 @@
     "headerTitle": "Liberte Todo o Seu Potencial",
     "headerDescription": "Torne-se um membro Premium para apoiar o app.",
     "offer": "OFERTA VITALÍCIA para os primeiros 300 membros!",
-    "monthly": "Mensual",
+    "monthly": "Mensal",
     "yearly": "Anual",
     "discount": "-20%",
     "freePlan": {

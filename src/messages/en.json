@@ -1,4 +1,3 @@
-
 {
   "RootLayout": {
     "seo": {
@@ -30,19 +29,52 @@
       "description": "Analyze 2026 CrossFit Open results. Top 10 rankings, BMI/Rank correlations, and global score distributions."
     },
     "title": "Open Stats",
-    "description": "Live CrossFit Open data via public API – daily refresh",
+    "description": "Live CrossFit Open data via public API",
     "metrics": {
       "athletes": "Athletes Analyzed",
       "median": "Median",
       "top10": "Top 10%",
-      "elite": "Elite (1%)",
+      "elite": "Elite (1%)"
+    },
+    "filters": {
+      "label": "Filters",
+      "year": "Year",
+      "workout": "Workout",
+      "division": "Division",
+      "region": "Region",
+      "scaled": "Workout Type",
+      "allWorkouts": "Overall",
       "selector": {
-        "label": "Metric",
         "bmi": "BMI",
         "age": "Age",
         "height": "Height",
         "weight": "Weight"
+      },
+      "divisions": {
+        "men": "Men Rx",
+        "women": "Women Rx",
+        "teens1415": "Teens (14-15)",
+        "masters3539": "Masters (35-39)"
+      },
+      "regions": {
+        "worldwide": "Worldwide",
+        "africa": "Africa",
+        "asia": "Asia",
+        "europe": "Europe",
+        "naEast": "NA East",
+        "naWest": "NA West",
+        "oceania": "Oceania",
+        "southAmerica": "South America"
+      },
+      "scaledTypes": {
+        "rxd": "Rx'd",
+        "scaled": "Scaled",
+        "foundations": "Foundations"
       }
+    },
+    "recap": {
+      "maxReps": "Max Reps",
+      "timeCap": "Time Cap"
     },
     "userScore": {
       "title": "Compare my score",
@@ -52,13 +84,15 @@
       "title": "Top 10 Athletes",
       "rank": "Rank",
       "name": "Name",
-      "score": "Score"
+      "score": "Score",
+      "descriptionOverall": "Top 10 global leaderboard by points (sum of ranks).",
+      "descriptionWorkout": "Top 10 athletes for the event {year}.{workout}."
     },
     "charts": {
       "distribution": "Score Distribution",
       "distributionSub": "Distribution over the analyzed sample",
       "bmi": "Performance Correlation",
-      "bmiSub": "Correlation between physique and global ranking"
+      "bmiSub": "Correlation between physical profile and global ranking"
     },
     "methodology": {
       "title": "Charts Methodology",

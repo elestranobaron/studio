@@ -1,4 +1,3 @@
-
 {
   "RootLayout": {
     "seo": {
@@ -35,14 +34,47 @@
       "athletes": "Athlètes Analysés",
       "median": "Médiane",
       "top10": "Top 10%",
-      "elite": "Élite (1%)",
+      "elite": "Élite (1%)"
+    },
+    "filters": {
+      "label": "Filtres",
+      "year": "Année",
+      "workout": "Épreuve",
+      "division": "Division",
+      "region": "Région",
+      "scaled": "Type d'épreuve",
+      "allWorkouts": "Classement Général",
       "selector": {
-        "label": "Métrique",
         "bmi": "IMC",
         "age": "Âge",
         "height": "Taille",
         "weight": "Poids"
+      },
+      "divisions": {
+        "men": "Hommes Rx",
+        "women": "Femmes Rx",
+        "teens1415": "Ados (14-15)",
+        "masters3539": "Masters (35-39)"
+      },
+      "regions": {
+        "worldwide": "Monde entier",
+        "africa": "Afrique",
+        "asia": "Asie",
+        "europe": "Europe",
+        "naEast": "AN Est",
+        "naWest": "AN Ouest",
+        "oceania": "Océanie",
+        "southAmerica": "Amérique du Sud"
+      },
+      "scaledTypes": {
+        "rxd": "Rx'd",
+        "scaled": "Scaled",
+        "foundations": "Foundations"
       }
+    },
+    "recap": {
+      "maxReps": "Reps Max",
+      "timeCap": "Time Cap"
     },
     "userScore": {
       "title": "Comparer mon score",
@@ -52,7 +84,9 @@
       "title": "Top 10 Athlètes",
       "rank": "Rang",
       "name": "Nom",
-      "score": "Score"
+      "score": "Score",
+      "descriptionOverall": "Top 10 du classement mondial par points (somme des rangs).",
+      "descriptionWorkout": "Top 10 des athlètes pour l'épreuve {year}.{workout}."
     },
     "charts": {
       "distribution": "Distribution des scores",
@@ -265,7 +299,7 @@
       "commentsFree": "Lecture seule",
       "favorites": "WODs favoris illimités",
       "favoritesFree": "Max 10",
-      "customs": "WOD personnalisés illimités",
+      "customs": "WOD personnalisé illimités",
       "customsFree": "Max 3",
       "search": "Filtres de recherche avancés",
       "badge": "Badge contributeur exclusif",

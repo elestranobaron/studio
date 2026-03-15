@@ -1,4 +1,3 @@
-
 {
   "RootLayout": {
     "seo": {
@@ -35,14 +34,47 @@
       "athletes": "Atletes Analitzats",
       "median": "Mediana",
       "top10": "Top 10%",
-      "elite": "Èlit (1%)",
+      "elite": "Èlit (1%)"
+    },
+    "filters": {
+      "label": "Filtres",
+      "year": "Any",
+      "workout": "Prova",
+      "division": "Divisió",
+      "region": "Regió",
+      "scaled": "Tipus de prova",
+      "allWorkouts": "Classificació General",
       "selector": {
-        "label": "Mètrica",
         "bmi": "IMC",
         "age": "Edat",
         "height": "Altura",
         "weight": "Pes"
+      },
+      "divisions": {
+        "men": "Homes Rx",
+        "women": "Dones Rx",
+        "teens1415": "Ados (14-15)",
+        "masters3539": "Masters (35-39)"
+      },
+      "regions": {
+        "worldwide": "Món",
+        "africa": "Àfrica",
+        "asia": "Àsia",
+        "europe": "Europa",
+        "naEast": "AN Est",
+        "naWest": "AN Oest",
+        "oceania": "Oceania",
+        "southAmerica": "Amèrica del Sud"
+      },
+      "scaledTypes": {
+        "rxd": "Rx'd",
+        "scaled": "Scaled",
+        "foundations": "Foundations"
       }
+    },
+    "recap": {
+      "maxReps": "Reps Màx",
+      "timeCap": "Time Cap"
     },
     "userScore": {
       "title": "Comparar la meva puntuació",
@@ -52,7 +84,9 @@
       "title": "Top 10 Atletes",
       "rank": "Posició",
       "name": "Nom",
-      "score": "Puntuació"
+      "score": "Puntuació",
+      "descriptionOverall": "Top 10 de la classificació mundial per punts (suma de posicions).",
+      "descriptionWorkout": "Top 10 dels atletes per a la prova {year}.{workout}."
     },
     "charts": {
       "distribution": "Distribució de puntuació",
@@ -202,7 +236,7 @@
     "featureManual": "Creació manual",
     "featureManualDescription": "Afegeix els teus propis WODs sense necessitat d'una foto.",
     "featureHistory": "Historial complet",
-    "featureHistoryDescription": "Desa i troba tots els teus entrenaments en qualsevol moment.",
+    "featureHistoryDescription": "Desa i troba tots els teus entrenamientos en qualsevol moment.",
     "featureTracking": "Seguiment (Properament!)",
     "featureTrackingDescription": "Analitza el teu progrés.",
     "formTitle": "Inicia sessió / Registra't",
@@ -367,7 +401,9 @@
     "startButton": "Inicia",
     "forTime": {
       "title": "For Time",
-      "description": "Cronòmetre simple."
+      "description": "Cronòmetre simple.",
+      "timeCapLabel": "Time Cap (min)",
+      "timeCapPlaceholder": "ex: 20"
     },
     "amrap": {
       "title": "AMRAP",

@@ -1,4 +1,3 @@
-
 import { useState, useCallback } from 'react';
 
 export interface WorkoutScoreDetail {
@@ -18,11 +17,11 @@ export interface LeaderboardEntry {
   heightCm: number | null;
   weightKg: number | null;
   bmi: number | null;
-  reps: number; // Nombre de répétitions (toujours présent)
-  seconds: number | null; // Temps en secondes si fini, sinon null
-  finished: boolean; // Si l'athlète a fini le WOD (chrono présent)
-  scoreDisplay: string; // Chaîne officielle (ex: "11:25 (354)")
-  overallScore: string; // Points (somme des rangs)
+  reps: number;
+  seconds: number | null;
+  finished: boolean;
+  scoreDisplay: string;
+  overallScore: string;
   region: string;
   scores: WorkoutScoreDetail[];
 }
@@ -33,7 +32,7 @@ export interface StatsResult {
   p99: number;
   data: LeaderboardEntry[];
   totalCount: number;
-  isTime: boolean; // True seulement si 100% de l'échantillon a fini
+  isTime: boolean;
 }
 
 const parseHeight = (h: string): number | null => {
@@ -103,7 +102,6 @@ export function useOpenStats() {
           let finished = false;
 
           if (workout !== 0) {
-            // 1. Extraction robuste des répétitions
             const parenMatch = officialScoreDisplay.match(/\((\d+)\)/);
             const repsSuffixMatch = officialScoreDisplay.match(/^(\d+)\s*reps/i);
             
@@ -113,7 +111,6 @@ export function useOpenStats() {
               reps = parseInt(repsSuffixMatch[1]);
             }
 
-            // 2. Extraction du temps
             if (officialScoreDisplay.includes(':')) {
               const timePart = officialScoreDisplay.split('(')[0].trim();
               const parts = timePart.split(':').map(p => parseInt(p));
@@ -126,7 +123,6 @@ export function useOpenStats() {
               }
             }
 
-            // 3. Fallback si c'est juste un nombre (AMRAP pur)
             if (reps === 0 && !finished) {
                 const simpleNum = parseInt(officialScoreDisplay.trim());
                 if (!isNaN(simpleNum)) {
@@ -172,13 +168,10 @@ export function useOpenStats() {
         throw new Error("Aucune donnée trouvée.");
       }
 
-      // Règle d'homogénéité : Si tout le monde a fini, on peut utiliser le temps.
       const isWorkoutView = workout !== 0;
       const allFinished = isWorkoutView && allEntries.every(e => e.finished);
       const isTime = isWorkoutView && allFinished;
 
-      // Correction de la règle demandée : 
-      // Si c'est hétérogène (Reps), on attribue le maxReps de l'échantillon à ceux qui ont fini par le temps
       if (!isTime && isWorkoutView) {
           const maxReps = Math.max(...allEntries.map(e => e.reps));
           allEntries.forEach(e => {
@@ -188,7 +181,6 @@ export function useOpenStats() {
           });
       }
 
-      // Valeurs pour les calculs statistiques (médiane, percentiles)
       const sortedVals = allEntries
         .map(e => isTime ? (e.seconds || 0) : e.reps)
         .sort((a, b) => a - b);
@@ -200,7 +192,7 @@ export function useOpenStats() {
 
       const result: StatsResult = {
         median: getPercentile(0.5),
-        p90: isTime ? getPercentile(0.1) : getPercentile(0.9), // En temps, plus bas est meilleur
+        p90: isTime ? getPercentile(0.1) : getPercentile(0.9),
         p99: isTime ? getPercentile(0.01) : getPercentile(0.99),
         data: allEntries,
         totalCount: allEntries.length,

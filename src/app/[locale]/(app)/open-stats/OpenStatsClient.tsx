@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useEffect, useMemo, useState } from 'react';
@@ -7,14 +6,14 @@ import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { SidebarTrigger } from '@/components/ui/sidebar';
-import { useOpenStats, type LeaderboardEntry, type WorkoutScoreDetail } from '@/hooks/use-open-stats';
+import { useOpenStats } from '@/hooks/use-open-stats';
 import { 
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, 
-  ScatterChart, Scatter, Cell, ReferenceLine, Label as RechartsLabel
+  ScatterChart, Scatter, Cell
 } from 'recharts';
 import { 
   LoaderCircle, Info, Users, BarChart3, Weight, Trophy, 
-  AlertTriangle, Calendar as CalendarIcon, Activity, Target, Gem, Lock, ListOrdered, ChevronDown, ChevronUp, Scale, Ruler, UserCircle2
+  AlertTriangle, Calendar as CalendarIcon, Activity, Target, Gem, Lock, ListOrdered, ChevronDown, ChevronUp, Scale, Ruler, UserCircle2, Filter, Info as InfoIcon
 } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
@@ -22,8 +21,22 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
+import { Badge } from '@/components/ui/badge';
 
 type ScatterMetric = 'bmi' | 'age' | 'height' | 'weight';
+
+const WORKOUT_METADATA: Record<string, Record<string, { maxReps: number; timeCap: string }>> = {
+  "2026": {
+    "1": { maxReps: 354, timeCap: "15:00" },
+    "2": { maxReps: 288, timeCap: "19:00" },
+    "3": { maxReps: 288, timeCap: "15:00" },
+  },
+  "2025": {
+    "1": { maxReps: 210, timeCap: "15:00" },
+    "2": { maxReps: 300, timeCap: "20:00" },
+    "3": { maxReps: 180, timeCap: "12:00" },
+  }
+};
 
 export default function OpenStatsClient() {
   const t = useTranslations('OpenStatsPage');
@@ -35,6 +48,7 @@ export default function OpenStatsClient() {
   const [workout, setWorkout] = useState("0");
   const [division, setDivision] = useState("1");
   const [region, setRegion] = useState("0");
+  const [scaled, setScaled] = useState("0");
   const [scatterMetric, setScatterMetric] = useState<ScatterMetric>('bmi');
   
   const [userScoreInput, setUserScoreInput] = useState("");
@@ -47,9 +61,9 @@ export default function OpenStatsClient() {
 
   useEffect(() => {
     if (isMounted) {
-      fetchLeaderboard(parseInt(year), parseInt(workout), parseInt(division), parseInt(region));
+      fetchLeaderboard(parseInt(year), parseInt(workout), parseInt(division), parseInt(region), parseInt(scaled));
     }
-  }, [year, workout, division, region, fetchLeaderboard, isMounted]);
+  }, [year, workout, division, region, scaled, fetchLeaderboard, isMounted]);
 
   const formatScore = (val: number, isTime: boolean) => {
     if (workout === "0") return val.toString();
@@ -59,10 +73,14 @@ export default function OpenStatsClient() {
     return `${m}:${s.toString().padStart(2, '0')}`;
   };
 
+  const currentWorkoutRecap = useMemo(() => {
+    if (workout === "0") return null;
+    return WORKOUT_METADATA[year]?.[workout] || null;
+  }, [year, workout]);
+
   const histogramData = useMemo(() => {
     if (!stats || !stats.data || stats.data.length === 0) return [];
     
-    // On utilise soit les secondes (si 100% finishers) soit les répétitions (si mixte)
     const values = stats.data.map(e => stats.isTime ? (e.seconds || 0) : e.reps);
     if (values.length === 0) return [];
 
@@ -87,7 +105,7 @@ export default function OpenStatsClient() {
         label: formatScore(parseInt(name), stats.isTime)
       }))
       .sort((a, b) => a.name - b.name);
-  }, [stats]);
+  }, [stats, workout]);
 
   const scatterData = useMemo(() => {
     if (!stats || !stats.data) return [];
@@ -95,19 +113,10 @@ export default function OpenStatsClient() {
       .map(e => {
         let xValue: number | null = null;
         switch(scatterMetric) {
-          case 'age': 
-            xValue = (e.age > 5 && e.age < 95) ? e.age : null; 
-            break;
-          case 'height': 
-            xValue = (e.heightCm && e.heightCm > 100 && e.heightCm < 250) ? e.heightCm : null; 
-            break;
-          case 'weight': 
-            xValue = (e.weightKg && e.weightKg > 30 && e.weightKg < 250) ? e.weightKg : null; 
-            break;
-          case 'bmi': 
-          default: 
-            xValue = (e.bmi && e.bmi > 15 && e.bmi < 55) ? e.bmi : null; 
-            break;
+          case 'age': xValue = (e.age > 5 && e.age < 95) ? e.age : null; break;
+          case 'height': xValue = (e.heightCm && e.heightCm > 100 && e.heightCm < 250) ? e.heightCm : null; break;
+          case 'weight': xValue = (e.weightKg && e.weightKg > 30 && e.weightKg < 250) ? e.weightKg : null; break;
+          case 'bmi': default: xValue = (e.bmi && e.bmi > 15 && e.bmi < 50) ? e.bmi : null; break;
         }
         return { x: xValue, y: e.rank, name: e.name };
       })
@@ -155,11 +164,13 @@ export default function OpenStatsClient() {
   }
 
   const scatterConfig = {
-    bmi: { domain: ['auto', 'auto'], label: t('metrics.selector.bmi'), icon: Weight },
-    age: { domain: ['auto', 'auto'], label: t('metrics.selector.age'), icon: UserCircle2 },
-    height: { domain: ['auto', 'auto'], label: t('metrics.selector.height'), icon: Ruler },
-    weight: { domain: ['auto', 'auto'], label: t('metrics.selector.weight'), icon: Scale },
+    bmi: { domain: ['auto', 'auto'], label: t('filters.selector.bmi'), icon: Weight },
+    age: { domain: ['auto', 'auto'], label: t('filters.selector.age'), icon: UserCircle2 },
+    height: { domain: ['auto', 'auto'], label: t('filters.selector.height'), icon: Ruler },
+    weight: { domain: ['auto', 'auto'], label: t('filters.selector.weight'), icon: Scale },
   };
+
+  const yearsRange = Array.from({ length: 2026 - 2007 + 1 }, (_, i) => (2026 - i).toString());
 
   return (
     <div className="flex flex-col h-full bg-background">
@@ -174,7 +185,7 @@ export default function OpenStatsClient() {
                 </h1>
               </div>
               <p className="text-xs text-muted-foreground hidden md:block">
-                {workout === "0" ? "Classement mondial (Points)" : `Statistiques de l'épreuve ${year}.${workout}`}
+                {workout === "0" ? t('description') : `${year}.${workout}`}
               </p>
             </div>
           </div>
@@ -182,50 +193,69 @@ export default function OpenStatsClient() {
             <Select value={year} onValueChange={setYear} disabled={isLoading}>
               <SelectTrigger className="w-[100px] h-9 border-primary/20 bg-primary/5">
                 <CalendarIcon className="h-3 w-3 mr-2" />
-                <SelectValue placeholder="Year" />
+                <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="2026">2026</SelectItem>
-                <SelectItem value="2025">2025</SelectItem>
-                <SelectItem value="2024">2024</SelectItem>
+                {yearsRange.map(y => (
+                  <SelectItem key={y} value={y}>{y}</SelectItem>
+                ))}
               </SelectContent>
             </Select>
             <Select value={workout} onValueChange={setWorkout} disabled={isLoading}>
               <SelectTrigger className="w-[120px] h-9">
                 <Activity className="h-3 w-3 mr-2" />
-                <SelectValue placeholder="Workout" />
+                <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="0">Overall</SelectItem>
+                <SelectItem value="0">{t('filters.allWorkouts')}</SelectItem>
                 <SelectItem value="1">{year.slice(2)}.1</SelectItem>
                 <SelectItem value="2">{year.slice(2)}.2</SelectItem>
                 <SelectItem value="3">{year.slice(2)}.3</SelectItem>
+                <SelectItem value="4">{year.slice(2)}.4</SelectItem>
               </SelectContent>
             </Select>
           </div>
         </div>
         
         <div className="flex items-center gap-4 px-4 pb-3 md:px-6 overflow-x-auto no-scrollbar border-t pt-3 bg-muted/20">
+          <div className="flex items-center gap-2 shrink-0">
+            <Filter className="h-3 w-3 text-muted-foreground" />
+            <span className="text-[10px] uppercase font-bold text-muted-foreground mr-2">{t('filters.label')}</span>
+          </div>
           <Select value={division} onValueChange={setDivision} disabled={isLoading}>
             <SelectTrigger className="w-[140px] h-8 text-xs shrink-0">
-              <SelectValue placeholder="Division" />
+              <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="1">Men Rx</SelectItem>
-              <SelectItem value="2">Women Rx</SelectItem>
-              <SelectItem value="11">Teens (14-15)</SelectItem>
-              <SelectItem value="18">Masters (35-39)</SelectItem>
+              <SelectItem value="1">{t('filters.divisions.men')}</SelectItem>
+              <SelectItem value="2">{t('filters.divisions.women')}</SelectItem>
+              <SelectItem value="11">{t('filters.divisions.teens1415')}</SelectItem>
+              <SelectItem value="18">{t('filters.divisions.masters3539')}</SelectItem>
             </SelectContent>
           </Select>
           <Select value={region} onValueChange={setRegion} disabled={isLoading}>
             <SelectTrigger className="w-[140px] h-8 text-xs shrink-0">
-              <SelectValue placeholder="Region" />
+              <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="0">Worldwide</SelectItem>
-              <SelectItem value="29">Europe</SelectItem>
-              <SelectItem value="35">NA East</SelectItem>
-              <SelectItem value="34">NA West</SelectItem>
+              <SelectItem value="0">{t('filters.regions.worldwide')}</SelectItem>
+              <SelectItem value="30">{t('filters.regions.africa')}</SelectItem>
+              <SelectItem value="28">{t('filters.regions.asia')}</SelectItem>
+              <SelectItem value="29">{t('filters.regions.europe')}</SelectItem>
+              <SelectItem value="35">{t('filters.regions.naEast')}</SelectItem>
+              <SelectItem value="34">{t('filters.regions.naWest')}</SelectItem>
+              <SelectItem value="32">{t('filters.regions.oceania')}</SelectItem>
+              <SelectItem value="33">{t('filters.regions.southAmerica')}</SelectItem>
+            </SelectContent>
+          </Select>
+          <Select value={scaled} onValueChange={setScaled} disabled={isLoading}>
+            <SelectTrigger className="w-[140px] h-8 text-xs shrink-0">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="0">{t('filters.scaledTypes.rxd')}</SelectItem>
+              <SelectItem value="1">{t('filters.scaledTypes.scaled')}</SelectItem>
+              <SelectItem value="2">{t('filters.scaledTypes.foundations')}</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -236,7 +266,7 @@ export default function OpenStatsClient() {
           <div className="bg-destructive/10 border border-destructive/20 p-4 rounded-lg flex items-center gap-3 text-destructive">
             <AlertTriangle className="h-5 w-5" />
             <p>{error}</p>
-            <Button variant="outline" size="sm" onClick={() => fetchLeaderboard(parseInt(year), parseInt(workout), parseInt(division), parseInt(region))} className="ml-auto">
+            <Button variant="outline" size="sm" onClick={() => fetchLeaderboard(parseInt(year), parseInt(workout), parseInt(division), parseInt(region), parseInt(scaled))} className="ml-auto">
               Réessayer
             </Button>
           </div>
@@ -313,6 +343,23 @@ export default function OpenStatsClient() {
           </Card>
         </div>
 
+        {currentWorkoutRecap && (
+          <Card className="bg-muted/30 border-dashed">
+            <CardContent className="flex items-center justify-center gap-8 py-4">
+              <div className="flex items-center gap-2">
+                <InfoIcon className="h-4 w-4 text-primary" />
+                <span className="text-sm font-semibold">{t('recap.maxReps')}:</span>
+                <Badge variant="secondary" className="bg-primary/10 text-primary">{currentWorkoutRecap.maxReps} reps</Badge>
+              </div>
+              <div className="flex items-center gap-2">
+                <CalendarIcon className="h-4 w-4 text-primary" />
+                <span className="text-sm font-semibold">{t('recap.timeCap')}:</span>
+                <Badge variant="secondary" className="bg-primary/10 text-primary">{currentWorkoutRecap.timeCap}</Badge>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           <Card className="shadow-lg overflow-hidden h-[450px]">
             <CardHeader className="bg-muted/30 border-b">
@@ -379,10 +426,10 @@ export default function OpenStatsClient() {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="bmi">{t('metrics.selector.bmi')}</SelectItem>
-                    <SelectItem value="age">{t('metrics.selector.age')}</SelectItem>
-                    <SelectItem value="height">{t('metrics.selector.height')}</SelectItem>
-                    <SelectItem value="weight">{t('metrics.selector.weight')}</SelectItem>
+                    <SelectItem value="bmi">{t('filters.selector.bmi')}</SelectItem>
+                    <SelectItem value="age">{t('filters.selector.age')}</SelectItem>
+                    <SelectItem value="height">{t('filters.selector.height')}</SelectItem>
+                    <SelectItem value="weight">{t('filters.selector.weight')}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -437,7 +484,7 @@ export default function OpenStatsClient() {
                 {t('leaderboard.title')}
               </CardTitle>
               <CardDescription>
-                {workout === "0" ? "Top 10 du classement mondial par points (somme des rangs)." : `Top 10 des athlètes pour l'épreuve ${year}.${workout}.`}
+                {workout === "0" ? t('leaderboard.descriptionOverall') : t('leaderboard.descriptionWorkout', { year, workout })}
               </CardDescription>
             </div>
           </CardHeader>
@@ -517,7 +564,7 @@ export default function OpenStatsClient() {
         </Card>
 
         <div className="bg-muted/30 p-4 rounded-lg flex items-start gap-3 border border-border/50">
-          <Info className="h-5 w-5 text-primary mt-0.5" />
+          <InfoIcon className="h-5 w-5 text-primary mt-0.5" />
           <div className="text-sm text-muted-foreground">
             <p className="font-semibold text-foreground">{t('methodology.title')}</p>
             <p className="mb-2">

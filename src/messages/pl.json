@@ -1,4 +1,3 @@
-
 {
   "RootLayout": {
     "seo": {
@@ -35,14 +34,47 @@
       "athletes": "Przeanalizowani sportowcy",
       "median": "Mediana",
       "top10": "Top 10%",
-      "elite": "Elita (1%)",
+      "elite": "Elita (1%)"
+    },
+    "filters": {
+      "label": "Filtry",
+      "year": "Rok",
+      "workout": "Trening",
+      "division": "Dywizja",
+      "region": "Region",
+      "scaled": "Typ WOD",
+      "allWorkouts": "Ogólne",
       "selector": {
-        "label": "Metryka",
         "bmi": "BMI",
         "age": "Wiek",
         "height": "Wzrost",
         "weight": "Waga"
+      },
+      "divisions": {
+        "men": "Mężczyźni Rx",
+        "women": "Kobiety Rx",
+        "teens1415": "Nastolatki (14-15)",
+        "masters3539": "Masters (35-39)"
+      },
+      "regions": {
+        "worldwide": "Cały świat",
+        "africa": "Afryka",
+        "asia": "Azja",
+        "europe": "Europa",
+        "naEast": "AP Wschód",
+        "naWest": "AP Zachód",
+        "oceania": "Oceania",
+        "southAmerica": "Ameryka Południowa"
+      },
+      "scaledTypes": {
+        "rxd": "Rx'd",
+        "scaled": "Scaled",
+        "foundations": "Foundations"
       }
+    },
+    "recap": {
+      "maxReps": "Max powt.",
+      "timeCap": "Time Cap"
     },
     "userScore": {
       "title": "Porównaj mój wynik",
@@ -52,7 +84,9 @@
       "title": "Top 10 atleci",
       "rank": "Pozycja",
       "name": "Imię",
-      "score": "Wynik"
+      "score": "Wynik",
+      "descriptionOverall": "Top 10 globalnej listy liderów według punktów (suma miejsc).",
+      "descriptionWorkout": "Top 10 sportowców dla konkurencji {year}.{workout}."
     },
     "charts": {
       "distribution": "Rozkład wyników",
@@ -407,9 +441,9 @@
     "title": "Galeria Sław",
     "cardTitle": "Pierwszych 300",
     "cardDescription": "Dożywocie dla pierwszych.",
-    "spotsRemaining": "{spotsLeft} miejsc!",
+    "spotsRemaining": "Tylko {spotsLeft} miejsc!",
     "spotsFull": "Lista pełna.",
-    "claimSpotButton": "Bierz miejsce",
+    "claimSpotButton": "Zajmij miejsce",
     "emptyList": "Bądź pierwszy!"
   },
   "TimerClient": {

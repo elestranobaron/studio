@@ -1,4 +1,3 @@
-
 {
   "RootLayout": {
     "seo": {
@@ -35,14 +34,47 @@
       "athletes": "Atleti Analizzati",
       "median": "Mediana",
       "top10": "Top 10%",
-      "elite": "Elite (1%)",
+      "elite": "Elite (1%)"
+    },
+    "filters": {
+      "label": "Filtri",
+      "year": "Anno",
+      "workout": "Prova",
+      "division": "Divisione",
+      "region": "Regione",
+      "scaled": "Tipo di prova",
+      "allWorkouts": "Classifica Generale",
       "selector": {
-        "label": "Metrica",
         "bmi": "IMC",
         "age": "Età",
         "height": "Altezza",
         "weight": "Peso"
+      },
+      "divisions": {
+        "men": "Uomini Rx",
+        "women": "Donne Rx",
+        "teens1415": "Ados (14-15)",
+        "masters3539": "Masters (35-39)"
+      },
+      "regions": {
+        "worldwide": "Mondo",
+        "africa": "Africa",
+        "asia": "Asia",
+        "europe": "Europa",
+        "naEast": "AN Est",
+        "naWest": "AN Ovest",
+        "oceania": "Oceania",
+        "southAmerica": "Sud America"
+      },
+      "scaledTypes": {
+        "rxd": "Rx'd",
+        "scaled": "Scaled",
+        "foundations": "Foundations"
       }
+    },
+    "recap": {
+      "maxReps": "Reps Max",
+      "timeCap": "Time Cap"
     },
     "userScore": {
       "title": "Confronta il mio punteggio",
@@ -52,7 +84,9 @@
       "title": "Top 10 Atleti",
       "rank": "Posizione",
       "name": "Nome",
-      "score": "Punteggio"
+      "score": "Punteggio",
+      "descriptionOverall": "Top 10 della classifica mondiale per punti (somma dei ranghi).",
+      "descriptionWorkout": "Top 10 degli atleti per l'evento {year}.{workout}."
     },
     "charts": {
       "distribution": "Distribuzione punteggi",
@@ -110,7 +144,7 @@
     "scanButton": "Scansiona un WOD da una foto",
     "generateButton": "Genera un WOD casuale",
     "heroButton": "Prova un Hero WOD",
-    "communityLink": "Oppure esplora la <communityLink>comunità</communityLink>."
+    "communityLink": "Oppure esplora la comunità."
   },
   "WodCard": {
     "optionsAlt": "Opzioni WOD",

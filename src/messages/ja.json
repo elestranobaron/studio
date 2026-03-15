@@ -1,4 +1,3 @@
-
 {
   "RootLayout": {
     "seo": {
@@ -35,14 +34,47 @@
       "athletes": "分析されたアスリート",
       "median": "中央値",
       "top10": "トップ 10%",
-      "elite": "エリート (1%)",
+      "elite": "エリート (1%)"
+    },
+    "filters": {
+      "label": "フィルター",
+      "year": "年",
+      "workout": "競技",
+      "division": "ディビジョン",
+      "region": "地域",
+      "scaled": "WODタイプ",
+      "allWorkouts": "総合順位",
       "selector": {
-        "label": "指標",
         "bmi": "BMI",
         "age": "年齢",
         "height": "身長",
         "weight": "体重"
+      },
+      "divisions": {
+        "men": "男子 Rx",
+        "women": "女子 Rx",
+        "teens1415": "10代 (14-15)",
+        "masters3539": "マスターズ (35-39)"
+      },
+      "regions": {
+        "worldwide": "世界中",
+        "africa": "アフリカ",
+        "asia": "アジア",
+        "europe": "ヨーロッパ",
+        "naEast": "北米東",
+        "naWest": "北米西",
+        "oceania": "オセアニア",
+        "southAmerica": "南米"
+      },
+      "scaledTypes": {
+        "rxd": "Rx'd",
+        "scaled": "Scaled",
+        "foundations": "Foundations"
       }
+    },
+    "recap": {
+      "maxReps": "最大レップ",
+      "timeCap": "タイムキャップ"
     },
     "userScore": {
       "title": "スコアを比較する",
@@ -52,7 +84,9 @@
       "title": "トップ10アスリート",
       "rank": "順位",
       "name": "名前",
-      "score": "スコア"
+      "score": "スコア",
+      "descriptionOverall": "ポイント別のトップ10グローバルリーダーボード（ランクの合計）。",
+      "descriptionWorkout": "イベント{year}.{workout}のトップ10アスリート。"
     },
     "charts": {
       "distribution": "スコア分布",

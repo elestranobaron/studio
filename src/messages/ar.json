@@ -1,4 +1,3 @@
-
 {
   "RootLayout": {
     "seo": {
@@ -35,14 +34,47 @@
       "athletes": "الرياضيين الذين تم تحليلهم",
       "median": "الوسيط",
       "top10": "أعلى 10%",
-      "elite": "النخبة (1%)",
+      "elite": "النخبة (1%)"
+    },
+    "filters": {
+      "label": "الفلاتر",
+      "year": "السنة",
+      "workout": "التمرين",
+      "division": "الفئة",
+      "region": "المنطقة",
+      "scaled": "نوع التمرين",
+      "allWorkouts": "الترتيب العام",
       "selector": {
-        "label": "المقياس",
         "bmi": "BMI",
         "age": "العمر",
         "height": "الطول",
         "weight": "الوزن"
+      },
+      "divisions": {
+        "men": "الرجال Rx",
+        "women": "النساء Rx",
+        "teens1415": "المراهقين (14-15)",
+        "masters3539": "الماسترز (35-39)"
+      },
+      "regions": {
+        "worldwide": "عالمي",
+        "africa": "أفريقيا",
+        "asia": "آسيا",
+        "europe": "أوروبا",
+        "naEast": "ش أمريكا شرق",
+        "naWest": "ش أمريكا غرب",
+        "oceania": "أوقيانوسيا",
+        "southAmerica": "أمريكا الجنوبية"
+      },
+      "scaledTypes": {
+        "rxd": "Rx'd",
+        "scaled": "Scaled",
+        "foundations": "Foundations"
       }
+    },
+    "recap": {
+      "maxReps": "أقصى تكرار",
+      "timeCap": "الوقت المحدد"
     },
     "userScore": {
       "title": "قارن نتيجتي",
@@ -52,7 +84,9 @@
       "title": "أفضل 10 رياضيين",
       "rank": "الترتيب",
       "name": "الاسم",
-      "score": "النتيجة"
+      "score": "النتيجة",
+      "descriptionOverall": "أفضل 10 في لوحة المتصدرين العالمية حسب النقاط (مجموع الرتب).",
+      "descriptionWorkout": "أفضل 10 رياضيين للحدث {year}.{workout}."
     },
     "charts": {
       "distribution": "توزيع الدرجات",

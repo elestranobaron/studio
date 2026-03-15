@@ -1,4 +1,3 @@
-
 {
   "RootLayout": {
     "seo": {
@@ -35,14 +34,47 @@
       "athletes": "विश्लेषण किए गए एथलीट",
       "median": "मध्यिका",
       "top10": "शीर्ष 10%",
-      "elite": "एलीट (1%)",
+      "elite": "एलीट (1%)"
+    },
+    "filters": {
+      "label": "फ़िल्टर",
+      "year": "वर्ष",
+      "workout": "कसरत",
+      "division": "डिवीजन",
+      "region": "क्षेत्र",
+      "scaled": "WOD प्रकार",
+      "allWorkouts": "समग्र",
       "selector": {
-        "label": "मीट्रिक",
         "bmi": "BMI",
         "age": "आयु",
         "height": "ऊंचाई",
         "weight": "वजन"
+      },
+      "divisions": {
+        "men": "पुरुष Rx",
+        "women": "महिला Rx",
+        "teens1415": "किशोर (14-15)",
+        "masters3539": "मास्टर्स (35-39)"
+      },
+      "regions": {
+        "worldwide": "दुनिया भर में",
+        "africa": "अफ्रीका",
+        "asia": "एशिया",
+        "europe": "यूरोप",
+        "naEast": "NA पूर्व",
+        "naWest": "NA पश्चिम",
+        "oceania": "ओशिनिया",
+        "southAmerica": "दक्षिण अमेरिका"
+      },
+      "scaledTypes": {
+        "rxd": "Rx'd",
+        "scaled": "Scaled",
+        "foundations": "Foundations"
       }
+    },
+    "recap": {
+      "maxReps": "अधिकतम रेप्स",
+      "timeCap": "समय सीमा"
     },
     "userScore": {
       "title": "मेरे स्कोर की तुलना करें",
@@ -52,7 +84,9 @@
       "title": "शीर्ष 10 एथलीट",
       "rank": "रैंक",
       "name": "नाम",
-      "score": "स्कोर"
+      "score": "स्कोर",
+      "descriptionOverall": "अंकों (रैंकों का योग) के अनुसार शीर्ष 10 वैश्विक लीडरबोर्ड।",
+      "descriptionWorkout": "इवेंट {year}.{workout} के लिए शीर्ष 10 एथलीट।"
     },
     "charts": {
       "distribution": "स्कोर वितरण",
@@ -149,7 +183,7 @@
     "backToDashboard": "डैशबोर्ड पर वापस",
     "viewWod": "WOD देखें",
     "fullWodLabel": "पूरा WOD: {wodName}",
-    "startSection": "शुरू करें",
+    "startSection": "شुरू करें",
     "accessRestricted": {
       "title": "पहुंच प्रतिबंधित",
       "description": "सामुदायिक WOD देखने के लिए कृपया साइन अप करें।",
@@ -367,24 +401,24 @@
     "startButton": "टाइमर शुरू करें",
     "forTime": {
       "title": "समय के लिए",
-      "description": "साधारण स्टॉपवॉच。"
+      "description": "साधारण स्टॉपवॉच।"
     },
     "amrap": {
       "title": "AMRAP",
-      "description": "समय में अधिकतम रेप्स。"
+      "description": "समय में अधिकतम रेप्स।"
     },
     "emom": {
       "title": "EMOM",
-      "description": "हर मिनट。"
+      "description": "हर मिनट।"
     },
     "tabata": {
       "title": "Tabata",
-      "description": "20s काम / 10s आराम。"
+      "description": "20s काम / 10s आराम।"
     }
   },
   "TimersPage": {
     "title": "स्मार्ट टाइमर",
-    "forTime": "समय के लिए",
+    "forTime": "For Time",
     "forTimeDescription": "साधारण स्टॉपवॉच।",
     "amrap": "AMRAP",
     "amrapDescription": "समय में अधिकतम रेप्स।",
@@ -425,7 +459,7 @@
       "screenshotReady": "स्क्रीनशॉट के लिए तैयार!"
     },
     "timeCap": "समय सीमा: {duration}:00",
-    "pause": "पausa",
+    "pause": "विराम",
     "start": "शुरू",
     "reset": "रीसेट",
     "finish": "समाप्त",

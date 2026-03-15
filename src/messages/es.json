@@ -1,4 +1,3 @@
-
 {
   "RootLayout": {
     "seo": {
@@ -35,14 +34,47 @@
       "athletes": "Atletas Analizados",
       "median": "Mediana",
       "top10": "Top 10%",
-      "elite": "Élite (1%)",
+      "elite": "Élite (1%)"
+    },
+    "filters": {
+      "label": "Filtros",
+      "year": "Año",
+      "workout": "Prueba",
+      "division": "División",
+      "region": "Región",
+      "scaled": "Tipo de prueba",
+      "allWorkouts": "Clasificación General",
       "selector": {
-        "label": "Métrica",
         "bmi": "IMC",
         "age": "Edad",
         "height": "Altura",
         "weight": "Peso"
+      },
+      "divisions": {
+        "men": "Hombres Rx",
+        "women": "Mujeres Rx",
+        "teens1415": "Adolescentes (14-15)",
+        "masters3539": "Masters (35-39)"
+      },
+      "regions": {
+        "worldwide": "Todo el mundo",
+        "africa": "África",
+        "asia": "Asia",
+        "europe": "Europa",
+        "naEast": "NA Este",
+        "naWest": "NA Oeste",
+        "oceania": "Oceanía",
+        "southAmerica": "América del Sur"
+      },
+      "scaledTypes": {
+        "rxd": "Rx'd",
+        "scaled": "Scaled",
+        "foundations": "Foundations"
       }
+    },
+    "recap": {
+      "maxReps": "Reps Máx",
+      "timeCap": "Time Cap"
     },
     "userScore": {
       "title": "Comparar mi puntuación",
@@ -52,7 +84,9 @@
       "title": "Top 10 Atletas",
       "rank": "Rango",
       "name": "Nombre",
-      "score": "Puntuación"
+      "score": "Puntuación",
+      "descriptionOverall": "Top 10 de la clasificación mundial por puntos (suma de rangos).",
+      "descriptionWorkout": "Top 10 de atletas para el evento {year}.{workout}."
     },
     "charts": {
       "distribution": "Distribución de puntuación",
@@ -63,7 +97,7 @@
     "methodology": {
       "title": "Metodología de los gráficos",
       "unificationTitle": "Unificación de puntuaciones",
-      "unificationDesc": "Para permitir una comparación visual coherente en pruebas mixtas (tiempo + repeticiones), todas las puntuaciones se convierten en repeticiones totales. Los atletas que terminaron la prueba se agrupan en el extremo derecho del gráfico.",
+      "unificationDesc": "Para permitir una comparación visual coherente en pruebas mixtes (tiempo + repeticiones), todas las puntuaciones se convierten en repeticiones totales. Los atletas que terminaron la prueba se agrupan en el extremo derecho del gráfico.",
       "overallTitle": "Overall",
       "overallDesc": "La puntuación corresponde a la suma de los rangos obtenidos. Una puntuación baja indica un mejor rendimiento general."
     }
@@ -85,7 +119,7 @@
     },
     "CommunityWodList": {
       "joinTitle": "¡Únete a la comunidad!",
-      "joinDescription": "Crea una cuenta gratuita para ver, compartir e inspirarte con los WODs de toda la comunidad.",
+      "joinDescription": "Crea un cuenta gratuita para ver, compartir e inspirarte con los WODs de toda la comunidad.",
       "joinButton": "Registrarse / Iniciar sesión",
       "errorTitle": "Ocurrió un error",
       "errorDescription": "No se pudieron cargar los WODs de la comunidad. Por favor, inténtalo de nuevo más tarde.",
@@ -110,7 +144,7 @@
     "scanButton": "Escanear un WOD desde una foto",
     "generateButton": "Generar un WOD aleatorio",
     "heroButton": "Prueba un Hero WOD",
-    "communityLink": "O explora la <communityLink>comunidad</communityLink> para ver lo que otros están quemando hoy."
+    "communityLink": "O explora la <communityLink>comunidad</communityLink>."
   },
   "WodCard": {
     "optionsAlt": "Opciones de WOD",
@@ -198,7 +232,7 @@
     "confirmEmailFailedTitle": "Error de inicio de sesión",
     "confirmEmailSignInButton": "Iniciar sesión",
     "featureTitle": "Llévalo al siguiente nivel.",
-    "featureDescription": "Crea una cuenta gratuita para desbloquear todas las funciones.",
+    "featureDescription": "Crea un cuenta gratuita para desbloquear todas las funciones.",
     "featureManual": "Creación manual",
     "featureManualDescription": "Añade tus propios WODs sin necesidad de una foto.",
     "featureHistory": "Historial completo",
@@ -284,10 +318,6 @@
     }
   },
   "SettingsPage": {
-    "seo": {
-      "title": "Ajustes | Gestión de Cuenta",
-      "description": "Gestiona tu perfil y suscripción."
-    },
     "title": "Ajustes",
     "profile": {
       "title": "Perfil",
@@ -324,18 +354,10 @@
     }
   },
   "ScanPage": {
-    "seo": {
-      "title": "Escanear WOD | WODBurner",
-      "description": "Escanear fotos de pizarras."
-    },
     "title": "Escanear WOD",
     "manualButton": "Añadir manualmente"
   },
   "NewWodPage": {
-    "seo": {
-      "title": "Nuevo WOD | Entrada Manual",
-      "description": "Crea tu entrenamiento manualmente."
-    },
     "title": "Crear WOD manualmente",
     "cardTitle": "Detalles",
     "namePlaceholder": "Nombre",
@@ -362,10 +384,6 @@
     }
   },
   "EditWodPage": {
-    "seo": {
-      "title": "Editar WOD | WODBurner",
-      "description": "Actualiza tu entrenamiento."
-    },
     "title": "Editar WOD",
     "cardTitle": "Detalles",
     "saveButton": "Guardar cambios",
@@ -383,34 +401,22 @@
     "startButton": "Iniciar",
     "forTime": {
       "title": "For Time",
-      "description": "Cronómetro simple.",
-      "timeCapLabel": "Límite (min)",
-      "timeCapPlaceholder": "ej. 20"
+      "description": "Cronómetro simple."
     },
     "amrap": {
       "title": "AMRAP",
-      "description": "Máximas reps.",
-      "durationLabel": "Duración (min)"
+      "description": "Máximas reps."
     },
     "emom": {
       "title": "EMOM",
-      "description": "Cada minuto.",
-      "roundsLabel": "Rondas",
-      "intervalLabel": "Intervalo",
-      "intervalMinutes": "min",
-      "intervalSeconds": "seg"
+      "description": "Cada minuto."
     },
     "tabata": {
       "title": "Tabata",
-      "description": "20s trabajo / 10s descanso.",
-      "roundsLabel": "Rondas"
+      "description": "20s trabajo / 10s descanso."
     }
   },
   "TimersPage": {
-    "seo": {
-      "title": "Cronómetros CrossFit | WODBurner",
-      "description": "Timers profesionales."
-    },
     "title": "Cronómetros",
     "forTime": "For Time",
     "forTimeDescription": "Cronómetro simple.",
@@ -423,10 +429,6 @@
     "footer": "O elige un WOD de tu dashboard."
   },
   "HeroWodsPage": {
-    "seo": {
-      "title": "Librería Hero WODs | Benchmarks",
-      "description": "Murph, Fran, Cindy."
-    },
     "title": "Hero WODs",
     "description": "En memoria de los caídos.",
     "premiumUpsell": {
@@ -436,10 +438,6 @@
     }
   },
   "HallOfFamePage": {
-    "seo": {
-      "title": "Salón de la Fama | Pioneros",
-      "description": "Nuestros primeros 300 apoyos."
-    },
     "title": "Salón de la Fama",
     "cardTitle": "Primeros 300 OG",
     "cardDescription": "Gratis de por vida.",
@@ -469,10 +467,6 @@
     "totalTimeElapsed": "Total: {time}"
   },
   "GenerateWodPage": {
-    "seo": {
-      "title": "Generador de WOD IA | WODBurner",
-      "description": "Entrenamientos nuevos."
-    },
     "title": "Generador de WOD IA",
     "cardTitle": "WODBot 3000",
     "cardDescription": "IA crea tu entrenamiento.",

@@ -1,4 +1,3 @@
-
 {
   "RootLayout": {
     "seo": {
@@ -35,14 +34,47 @@
       "athletes": "분석된 선수",
       "median": "중앙값",
       "top10": "상위 10%",
-      "elite": "엘리트 (1%)",
+      "elite": "엘리트 (1%)"
+    },
+    "filters": {
+      "label": "필터",
+      "year": "연도",
+      "workout": "운동",
+      "division": "부문",
+      "region": "지역",
+      "scaled": "WOD 유형",
+      "allWorkouts": "종합",
       "selector": {
-        "label": "지표",
         "bmi": "BMI",
         "age": "연령",
         "height": "키",
         "weight": "몸무게"
+      },
+      "divisions": {
+        "men": "남성 Rx",
+        "women": "여성 Rx",
+        "teens1415": "청소년 (14-15)",
+        "masters3539": "마스터즈 (35-39)"
+      },
+      "regions": {
+        "worldwide": "전 세계",
+        "africa": "아프리카",
+        "asia": "아시아",
+        "europe": "유럽",
+        "naEast": "북미 동부",
+        "naWest": "북미 서부",
+        "oceania": "오세아니아",
+        "southAmerica": "남미"
+      },
+      "scaledTypes": {
+        "rxd": "Rx'd",
+        "scaled": "Scaled",
+        "foundations": "Foundations"
       }
+    },
+    "recap": {
+      "maxReps": "최대 반복",
+      "timeCap": "타임 캡"
     },
     "userScore": {
       "title": "내 점수 비교하기",
@@ -52,7 +84,9 @@
       "title": "상위 10위 선수",
       "rank": "순위",
       "name": "이름",
-      "score": "점수"
+      "score": "점수",
+      "descriptionOverall": "포인트별 상위 10위 글로벌 리더보드 (순위 합계).",
+      "descriptionWorkout": "이벤트 {year}.{workout}의 상위 10위 선수."
     },
     "charts": {
       "distribution": "점수 분포",
@@ -367,25 +401,25 @@
     "startButton": "시작",
     "forTime": {
       "title": "For Time",
-      "description": "간단한 스톱워치。"
+      "description": "간단한 스톱워치"
     },
     "amrap": {
       "title": "AMRAP",
-      "description": "최대 반복。"
+      "description": "최대 반복"
     },
     "emom": {
       "title": "EMOM",
-      "description": "매 분마다。"
+      "description": "매 분마다"
     },
     "tabata": {
       "title": "Tabata",
-      "description": "20초 운동 / 10초 휴식。"
+      "description": "20초 운동 / 10초 휴식"
     }
   },
   "TimersPage": {
     "title": "스마트 타이머",
     "forTime": "For Time",
-    "forTimeDescription": "간단한 스톱워치。",
+    "forTimeDescription": "간단한 스톱워치",
     "amrap": "AMRAP",
     "amrapDescription": "정해진 시간 내 최대 반복.",
     "emom": "EMOM",
@@ -407,7 +441,7 @@
     "title": "명예의 전당",
     "cardTitle": "초기 300명",
     "cardDescription": "초기 지원자에게는 평생 무료.",
-    "spotsRemaining": "{spotsLeft}석 남음!",
+    "spotsRemaining": "단 {spotsLeft}석 남음!",
     "spotsFull": "마감되었습니다.",
     "claimSpotButton": "내 자리 확보하기",
     "emptyList": "첫 번째가 되어보세요!"
@@ -429,7 +463,7 @@
     "start": "시작",
     "reset": "초기화",
     "finish": "종료",
-    "round": "{current} / {total} 라운드",
+    "round": "라운드 {current} / {total}",
     "totalTimeElapsed": "합계: {time}"
   },
   "GenerateWodPage": {

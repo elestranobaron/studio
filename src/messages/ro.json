@@ -1,4 +1,3 @@
-
 {
   "RootLayout": {
     "seo": {
@@ -22,7 +21,7 @@
     "timers": "Timere",
     "goPremium": "Treci la Premium",
     "hallOfFame": "Hall of Fame",
-    "openStats": "Statistici Open"
+    "openStats": "Open Stats"
   },
   "OpenStatsPage": {
     "seo": {
@@ -35,14 +34,47 @@
       "athletes": "Atleți Analizați",
       "median": "Mediană",
       "top10": "Top 10%",
-      "elite": "Elită (1%)",
+      "elite": "Elită (1%)"
+    },
+    "filters": {
+      "label": "Filtre",
+      "year": "An",
+      "workout": "Antrenament",
+      "division": "Divizie",
+      "region": "Regiune",
+      "scaled": "Tip WOD",
+      "allWorkouts": "General",
       "selector": {
-        "label": "Metrică",
         "bmi": "IMC",
         "age": "Vârstă",
         "height": "Înălțime",
         "weight": "Greutate"
+      },
+      "divisions": {
+        "men": "Bărbați Rx",
+        "women": "Femei Rx",
+        "teens1415": "Ados (14-15)",
+        "masters3539": "Masters (35-39)"
+      },
+      "regions": {
+        "worldwide": "Toată lumea",
+        "africa": "Africa",
+        "asia": "Asia",
+        "europe": "Europa",
+        "naEast": "AN Est",
+        "naWest": "AN Vest",
+        "oceania": "Oceania",
+        "southAmerica": "America de Sud"
+      },
+      "scaledTypes": {
+        "rxd": "Rx'd",
+        "scaled": "Scaled",
+        "foundations": "Foundations"
       }
+    },
+    "recap": {
+      "maxReps": "Reps Max",
+      "timeCap": "Time Cap"
     },
     "userScore": {
       "title": "Compară scorul meu",
@@ -52,7 +84,9 @@
       "title": "Top 10 Atleți",
       "rank": "Loc",
       "name": "Nume",
-      "score": "Scor"
+      "score": "Scor",
+      "descriptionOverall": "Top 10 clasament mondial după puncte (suma locurilor).",
+      "descriptionWorkout": "Top 10 atleți pentru evenimentul {year}.{workout}."
     },
     "charts": {
       "distribution": "Distribuția scorurilor",
@@ -407,10 +441,10 @@
     "title": "Hall of Fame",
     "cardTitle": "Primii 300",
     "cardDescription": "Gratis pe viață primilor.",
-    "spotsRemaining": "Plus que {spotsLeft} places!",
-    "spotsFull": "La liste est complète.",
-    "claimSpotButton": "Réclamer ma place",
-    "emptyList": "Soyez le premier!"
+    "spotsRemaining": "Doar {spotsLeft} locuri!",
+    "spotsFull": "Lista este plină.",
+    "claimSpotButton": "Revendică-ți locul",
+    "emptyList": "Fii primul!"
   },
   "TimerClient": {
     "workoutComplete": "Gata!",

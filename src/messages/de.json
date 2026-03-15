@@ -1,4 +1,3 @@
-
 {
   "RootLayout": {
     "seo": {
@@ -35,14 +34,47 @@
       "athletes": "Analysierte Athleten",
       "median": "Median",
       "top10": "Top 10%",
-      "elite": "Elite (1%)",
+      "elite": "Elite (1%)"
+    },
+    "filters": {
+      "label": "Filter",
+      "year": "Jahr",
+      "workout": "Workout",
+      "division": "Division",
+      "region": "Region",
+      "scaled": "Workout-Typ",
+      "allWorkouts": "Gesamtwertung",
       "selector": {
-        "label": "Metrik",
         "bmi": "BMI",
         "age": "Alter",
         "height": "Größe",
         "weight": "Gewicht"
+      },
+      "divisions": {
+        "men": "Männer Rx",
+        "women": "Frauen Rx",
+        "teens1415": "Teens (14-15)",
+        "masters3539": "Masters (35-39)"
+      },
+      "regions": {
+        "worldwide": "Weltweit",
+        "africa": "Afrika",
+        "asia": "Asien",
+        "europe": "Europa",
+        "naEast": "NA Ost",
+        "naWest": "NA West",
+        "oceania": "Ozeanien",
+        "southAmerica": "Südamerika"
+      },
+      "scaledTypes": {
+        "rxd": "Rx'd",
+        "scaled": "Scaled",
+        "foundations": "Foundations"
       }
+    },
+    "recap": {
+      "maxReps": "Max Reps",
+      "timeCap": "Time Cap"
     },
     "userScore": {
       "title": "Mein Ergebnis vergleichen",
@@ -52,7 +84,9 @@
       "title": "Top 10 Athleten",
       "rank": "Rang",
       "name": "Name",
-      "score": "Ergebnis"
+      "score": "Ergebnis",
+      "descriptionOverall": "Top 10 Weltrangliste nach Punkten (Summe der Ränge).",
+      "descriptionWorkout": "Top 10 Athleten für das Workout {year}.{workout}."
     },
     "charts": {
       "distribution": "Ergebnisverteilung",
@@ -110,7 +144,7 @@
     "scanButton": "Ein WOD von einem Foto scannen",
     "generateButton": "Ein zufälliges WOD generieren",
     "heroButton": "Ein Hero WOD ausprobieren",
-    "communityLink": "Oder erkunde die <communityLink>Community</communityLink>."
+    "communityLink": "Oder erkunde die Community."
   },
   "WodCard": {
     "optionsAlt": "WOD-Optionen",
@@ -264,9 +298,9 @@
       "comments": "Kommentare posten",
       "commentsFree": "Nur Lesen",
       "favorites": "Unbegrenzte Lieblings-WODs",
-      "favoritesFree": "Max. 10",
+      "favoritesFree": "Max 10",
       "customs": "Unbegrenzte benutzerdefinierte WODs",
-      "customsFree": "Max. 3",
+      "customsFree": "Max 3",
       "search": "Erweiterte Suchfilter",
       "badge": "Exklusives Unterstützer-Abzeichen",
       "unlimited": "Unbegrenzt",
@@ -284,10 +318,6 @@
     }
   },
   "SettingsPage": {
-    "seo": {
-      "title": "Einstellungen | Kontoverwaltung",
-      "description": "Verwalte dein Profil und Abonnementeinstellungen."
-    },
     "title": "Einstellungen",
     "profile": {
       "title": "Profil",
@@ -324,18 +354,10 @@
     }
   },
   "ScanPage": {
-    "seo": {
-      "title": "WOD scannen | Whiteboard-Analysator",
-      "description": "Verwandle Whiteboard-Fotos in interaktive Workouts."
-    },
     "title": "WOD scannen",
     "manualButton": "Manuell hinzufügen"
   },
   "NewWodPage": {
-    "seo": {
-      "title": "Neues WOD | Manuelle Eingabe",
-      "description": "Erstelle dein eigenes CrossFit-Workout manuell."
-    },
     "title": "WOD manuell erstellen",
     "cardTitle": "Workout-Details",
     "namePlaceholder": "Name (z.B. Fran)",
@@ -362,10 +384,6 @@
     }
   },
   "EditWodPage": {
-    "seo": {
-      "title": "WOD bearbeiten | WODBurner",
-      "description": "Aktualisiere deine Workout-Details."
-    },
     "title": "WOD bearbeiten",
     "cardTitle": "Workout-Details",
     "saveButton": "Änderungen speichern",
@@ -383,34 +401,22 @@
     "startButton": "Timer starten",
     "forTime": {
       "title": "For Time",
-      "description": "Stoppuhr.",
-      "timeCapLabel": "Zeitbegrenzung (min)",
-      "timeCapPlaceholder": "z.B. 20"
+      "description": "Stoppuhr."
     },
     "amrap": {
       "title": "AMRAP",
-      "description": "Maximale Wiederholungen.",
-      "durationLabel": "Dauer (min)"
+      "description": "Maximale Wiederholungen."
     },
     "emom": {
       "title": "EMOM",
-      "description": "Jede Minute.",
-      "roundsLabel": "Runden",
-      "intervalLabel": "Intervall",
-      "intervalMinutes": "Min",
-      "intervalSeconds": "Sek"
+      "description": "Jede Minute."
     },
     "tabata": {
       "title": "Tabata",
-      "description": "20s Arbeit / 10s Pause.",
-      "roundsLabel": "Runden"
+      "description": "20s Arbeit / 10s Pause."
     }
   },
   "TimersPage": {
-    "seo": {
-      "title": "CrossFit-Timer | WODBurner",
-      "description": "Professionelle Trainingstimer."
-    },
     "title": "Intelligente Timer",
     "forTime": "For Time",
     "forTimeDescription": "Stoppuhr.",
@@ -423,10 +429,6 @@
     "footer": "Oder wähle ein WOD vom Dashboard."
   },
   "HeroWodsPage": {
-    "seo": {
-      "title": "Hero WODs Bibliothek | Benchmark-Workouts",
-      "description": "Entdecke Murph, Fran, Cindy und mehr."
-    },
     "title": "Hero WODs",
     "description": "Zum Gedenken an gefallene Helden.",
     "premiumUpsell": {
@@ -436,10 +438,6 @@
     }
   },
   "HallOfFamePage": {
-    "seo": {
-      "title": "Hall of Fame | WODBurner OGs",
-      "description": "Unsere ersten 300 Unterstützer."
-    },
     "title": "Hall of Fame",
     "cardTitle": "Die ersten 300 OGs",
     "cardDescription": "Lebenslang kostenlos für unsere ersten Unterstützer.",
@@ -469,10 +467,6 @@
     "totalTimeElapsed": "Gesamt: {time}"
   },
   "GenerateWodPage": {
-    "seo": {
-      "title": "KI-WOD-Generator | WODBurner",
-      "description": "Lass die KI dein Workout erstellen."
-    },
     "title": "KI-WOD-Generator",
     "cardTitle": "WODBot 3000",
     "cardDescription": "Keine Inspiration? Lass die KI dein WOD erstellen.",
