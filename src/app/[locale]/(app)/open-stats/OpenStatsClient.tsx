@@ -28,8 +28,8 @@ type ScatterMetric = 'bmi' | 'age' | 'height' | 'weight';
 
 const WORKOUT_METADATA: Record<string, Record<string, { maxReps: number; timeCap: string }>> = {
   "2026": {
-    "1": { maxReps: 354, timeCap: "15:00" },
-    "2": { maxReps: 288, timeCap: "19:00" },
+    "1": { maxReps: 354, timeCap: "12:00" },
+    "2": { maxReps: 132, timeCap: "15:00" },
     "3": { maxReps: 288, timeCap: "15:00" },
   },
   "2025": {
@@ -87,13 +87,12 @@ export default function OpenStatsClient() {
 
     const min = Math.min(...values);
     const max = Math.max(...values);
-    const range = max - min;
     
-    const binCount = 12;
-    const step = range > 0 ? Math.ceil(range / binCount) : 1;
-
+    // Pour les épreuves mixtes (reps), on veut s'assurer que le Max Reps est bien représenté
     const bins: Record<number, number> = {};
-    
+    const binCount = 10;
+    const step = Math.max(1, Math.ceil((max - min) / binCount));
+
     values.forEach(val => {
       const bin = Math.floor(val / step) * step;
       bins[bin] = (bins[bin] || 0) + 1;
@@ -400,7 +399,7 @@ export default function OpenStatsClient() {
                 )}
               </div>
               <div className="text-center text-[10px] text-muted-foreground mt-2 uppercase font-bold tracking-widest">
-                {stats?.isTime ? "Score (Temps)" : "Score (Répétitions)"}
+                {stats?.isTime ? "Nb Athlètes (Score)" : "Nb Athlètes (Répétitions)"}
               </div>
             </CardContent>
           </Card>

@@ -1,3 +1,4 @@
+
 import { useState, useCallback } from 'react';
 
 export interface WorkoutScoreDetail {
@@ -102,6 +103,7 @@ export function useOpenStats() {
           let finished = false;
 
           if (workout !== 0) {
+            // Priorité absolue aux répétitions entre parenthèses
             const parenMatch = officialScoreDisplay.match(/\((\d+)\)/);
             const repsSuffixMatch = officialScoreDisplay.match(/^(\d+)\s*reps/i);
             
@@ -111,6 +113,7 @@ export function useOpenStats() {
               reps = parseInt(repsSuffixMatch[1]);
             }
 
+            // Détection du chronomètre
             if (officialScoreDisplay.includes(':')) {
               const timePart = officialScoreDisplay.split('(')[0].trim();
               const parts = timePart.split(':').map(p => parseInt(p));
@@ -123,6 +126,7 @@ export function useOpenStats() {
               }
             }
 
+            // Si c'est juste un chiffre (WOD purement reps)
             if (reps === 0 && !finished) {
                 const simpleNum = parseInt(officialScoreDisplay.trim());
                 if (!isNaN(simpleNum)) {
@@ -168,14 +172,18 @@ export function useOpenStats() {
         throw new Error("Aucune donnée trouvée.");
       }
 
+      // RÈGLE D'HOMOGÉNÉITÉ : Détection si l'échantillon est 100% au temps
       const isWorkoutView = workout !== 0;
       const allFinished = isWorkoutView && allEntries.every(e => e.finished);
       const isTime = isWorkoutView && allFinished;
 
+      // Si le WOD est mixte (reps + finishers), on convertit tout en reps
       if (!isTime && isWorkoutView) {
           const maxReps = Math.max(...allEntries.map(e => e.reps));
           allEntries.forEach(e => {
               if (e.finished && e.reps === 0) {
+                  // Si l'athlète a fini mais n'a pas de reps entre parenthèses, 
+                  // on lui donne le max reps théorique
                   e.reps = maxReps;
               }
           });
