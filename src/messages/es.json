@@ -98,7 +98,10 @@
       },
       "emptySearchTitle": "Ningún WOD coincide con tu búsqueda.",
       "emptySearchDescription": "Prueba con otro término de búsqueda.",
-      "emptyCommunityTitle": "¡Sé el primero en compartir uno!"
+      "emptyCommunityTitle": "¡Sé el primero en compartir uno!",
+      "ScrollTop": {
+        "label": "Subir"
+      }
     }
   },
   "WelcomeEmptyState": {
@@ -119,7 +122,7 @@
     "sharedToastDescription": "Tu WOD ahora es visible para la comunidad.",
     "unsharedToastTitle": "WOD no compartido",
     "unsharedToastDescription": "Tu WOD ha sido eliminado de la comunidad.",
-    "shareErrorToastTitle": "Action Failed",
+    "shareErrorToastTitle": "Error",
     "shareErrorToastDescription": "No se pudo actualizar el estado de compartir.",
     "deleteDialogTitle": "¿Estás seguro?",
     "deleteDialogDescription": "Esta acción no se puede deshacer.",

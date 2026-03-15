@@ -52,7 +52,7 @@ export default function OpenStatsClient() {
   }, [year, workout, division, region, fetchLeaderboard, isMounted]);
 
   const formatScore = (val: number, isTime: boolean) => {
-    if (workout === "0") return `#${val}`;
+    if (workout === "0") return val.toString();
     if (!isTime) return `${val} reps`;
     const m = Math.floor(val / 60);
     const s = val % 60;
@@ -146,10 +146,10 @@ export default function OpenStatsClient() {
   }
 
   const scatterConfig = {
-    bmi: { domain: [18, 35], label: t('metrics.selector.bmi'), icon: Weight },
-    age: { domain: [14, 65], label: t('metrics.selector.age'), icon: UserCircle2 },
-    height: { domain: [140, 210], label: t('metrics.selector.height'), icon: Ruler },
-    weight: { domain: [45, 130], label: t('metrics.selector.weight'), icon: Scale },
+    bmi: { domain: ['auto', 'auto'], label: t('metrics.selector.bmi'), icon: Weight },
+    age: { domain: ['auto', 'auto'], label: t('metrics.selector.age'), icon: UserCircle2 },
+    height: { domain: ['auto', 'auto'], label: t('metrics.selector.height'), icon: Ruler },
+    weight: { domain: ['auto', 'auto'], label: t('metrics.selector.weight'), icon: Scale },
   };
 
   return (
@@ -285,7 +285,7 @@ export default function OpenStatsClient() {
               </CardDescription>
               <div className="flex items-center gap-2 mt-1">
                 <Input 
-                  placeholder={workout === "0" ? "Rang" : (stats?.isTime ? "MM:SS" : "Reps")}
+                  placeholder={workout === "0" ? "Points" : (stats?.isTime ? "MM:SS" : "Reps")}
                   value={userScoreInput}
                   onChange={(e) => setUserScoreInput(e.target.value)}
                   className="h-8 text-sm border-accent/50 bg-background/50 focus-visible:ring-accent"
@@ -309,7 +309,7 @@ export default function OpenStatsClient() {
             <CardHeader className="bg-muted/30 border-b">
               <CardTitle className="flex items-center gap-2 text-lg">
                 <BarChart3 className="h-5 w-5 text-primary" /> 
-                {workout === "0" ? "Distribution des rangs" : t('charts.distribution')}
+                {workout === "0" ? "Distribution des points" : t('charts.distribution')}
               </CardTitle>
               <CardDescription>
                 {t('charts.distributionSub')}
@@ -331,9 +331,8 @@ export default function OpenStatsClient() {
                         fontSize={10} 
                         tickLine={false} 
                         axisLine={false}
-                        label={{ value: workout === "0" ? 'Rang Mondial' : 'Score', position: 'insideBottom', offset: -10, fontSize: 10, fill: 'hsl(var(--muted-foreground))' }}
                       />
-                      <YAxis stroke="hsl(var(--muted-foreground))" fontSize={10} tickLine={false} axisLine={false} label={{ value: 'Nb Athlètes', angle: -90, position: 'insideLeft', fontSize: 10, fill: 'hsl(var(--muted-foreground))' }} />
+                      <YAxis stroke="hsl(var(--muted-foreground))" fontSize={10} tickLine={false} axisLine={false} />
                       <Tooltip 
                         contentStyle={{ backgroundColor: 'hsl(var(--card))', borderRadius: '8px', border: '1px solid hsl(var(--border))', color: 'hsl(var(--foreground))' }}
                         itemStyle={{ color: 'hsl(var(--foreground))' }}
@@ -361,6 +360,9 @@ export default function OpenStatsClient() {
                     </BarChart>
                   </ResponsiveContainer>
                 )}
+              </div>
+              <div className="text-center text-[10px] text-muted-foreground mt-2 uppercase font-bold tracking-widest">
+                {workout === "0" ? "Points cumulés" : "Score (Reps)"}
               </div>
             </CardContent>
           </Card>
@@ -407,12 +409,11 @@ export default function OpenStatsClient() {
                         type="number" 
                         dataKey="x" 
                         name={scatterMetric} 
-                        domain={scatterConfig[scatterMetric].domain} 
-                        label={{ value: scatterConfig[scatterMetric].label, position: 'insideBottom', offset: -10, fontSize: 10, fill: 'hsl(var(--muted-foreground))' }} 
+                        domain={scatterConfig[scatterMetric].domain as any} 
                         stroke="hsl(var(--muted-foreground))" 
                         fontSize={10} 
                       />
-                      <YAxis type="number" dataKey="y" name="Rank" reversed domain={['auto', 'auto']} label={{ value: 'Rang (1 = Meilleur)', angle: -90, position: 'insideLeft', fontSize: 10, fill: 'hsl(var(--muted-foreground))' }} stroke="hsl(var(--muted-foreground))" fontSize={10} />
+                      <YAxis type="number" dataKey="y" name="Rank" reversed domain={['auto', 'auto']} stroke="hsl(var(--muted-foreground))" fontSize={10} />
                       <Tooltip 
                         cursor={{ strokeDasharray: '3 3' }}
                         contentStyle={{ backgroundColor: 'hsl(var(--card))', borderRadius: '8px', border: '1px solid hsl(var(--border))', color: 'hsl(var(--foreground))' }}
@@ -427,6 +428,10 @@ export default function OpenStatsClient() {
                     </ScatterChart>
                   </ResponsiveContainer>
                 )}
+              </div>
+              <div className="flex justify-between px-10 text-[10px] text-muted-foreground uppercase font-bold tracking-widest mt-2">
+                <span>{scatterConfig[scatterMetric].label}</span>
+                <span>{workout === "0" ? "Rang Global" : "Rang Workout"}</span>
               </div>
             </CardContent>
           </Card>

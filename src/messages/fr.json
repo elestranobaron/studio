@@ -98,7 +98,10 @@
       },
       "emptySearchTitle": "Aucun WOD ne correspond à votre recherche.",
       "emptySearchDescription": "Essayez un autre terme de recherche.",
-      "emptyCommunityTitle": "Soyez le premier à en partager un !"
+      "emptyCommunityTitle": "Soyez le premier à en partager un !",
+      "ScrollTop": {
+        "label": "Haut de page"
+      }
     }
   },
   "WelcomeEmptyState": {

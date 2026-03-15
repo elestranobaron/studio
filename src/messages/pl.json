@@ -98,7 +98,10 @@
       },
       "emptySearchTitle": "Brak wyników.",
       "emptySearchDescription": "Spróbuj innego hasła.",
-      "emptyCommunityTitle": "Bądź pierwszy i udostępnij trening!"
+      "emptyCommunityTitle": "Bądź pierwszy i udostępnij trening!",
+      "ScrollTop": {
+        "label": "Góra"
+      }
     }
   },
   "WelcomeEmptyState": {
@@ -302,7 +305,7 @@
       "deletingButton": "Usuwanie...",
       "dialogTitle": "Na pewno?",
       "dialogDescription": "To usunie wszystkie dane.",
-      "dialogCancel": "Nie",
+      "dialogCancel": "Anuluj",
       "dialogConfirm": "Tak",
       "helpText": "Dane przepadną."
     },
@@ -430,7 +433,7 @@
     "totalTimeElapsed": "Suma: {time}"
   },
   "GenerateWodPage": {
-    "title": "Generuj WOD",
+    "title": "AI WOD Generator",
     "cardTitle": "WODBot 3000",
     "cardDescription": "Brak weny? AI pomoże.",
     "generateButton": "Generuj",

@@ -35,21 +35,37 @@
       "athletes": "Atleti Analizzati",
       "median": "Mediana",
       "top10": "Top 10%",
-      "elite": "Elite (1%)"
+      "elite": "Elite (1%)",
+      "selector": {
+        "label": "Metrica",
+        "bmi": "IMC",
+        "age": "Età",
+        "height": "Altezza",
+        "weight": "Peso"
+      }
     },
     "userScore": {
       "title": "Confronta il mio punteggio",
       "percentile": "Percentile globale"
     },
+    "leaderboard": {
+      "title": "Top 10 Atleti",
+      "rank": "Posizione",
+      "name": "Nome",
+      "score": "Punteggio"
+    },
     "charts": {
       "distribution": "Distribuzione punteggi",
       "distributionSub": "Distribuzione sul campione analizzato",
-      "bmi": "Correlazione BMI / Rango",
+      "bmi": "Correlazione BMI / Posizione",
       "bmiSub": "Impatto del BMI sulla classifica globale"
     },
     "methodology": {
-      "title": "Metodologia",
-      "description": "Dati recuperati in tempo reale tramite l'API pubblica di CrossFit."
+      "title": "Metodologia dei grafici",
+      "unificationTitle": "Unificazione dei punteggi",
+      "unificationDesc": "Per consentire un confronto visivo coerente su eventi misti (tempo + ripetizioni), tutti i punteggi vengono convertiti in ripetizioni totali. Gli atleti che hanno terminato l'evento sono raggruppati all'estremità destra del grafico.",
+      "overallTitle": "Overall",
+      "overallDesc": "Il punteggio corrisponde alla somma dei ranghi ottenuti. Un punteggio basso indica una migliore performance globale."
     }
   },
   "DashboardPage": {
@@ -82,10 +98,10 @@
       },
       "emptySearchTitle": "Nessun WOD corrisponde alla tua ricerca.",
       "emptySearchDescription": "Prova un termine di ricerca diverso.",
-      "emptyCommunityTitle": "Sii il primo a condividerne uno!"
-    },
-    "ScrollTop": {
-      "label": "Scorri in alto"
+      "emptyCommunityTitle": "Sii il primo a condividerne uno!",
+      "ScrollTop": {
+        "label": "Torna su"
+      }
     }
   },
   "WelcomeEmptyState": {
@@ -94,7 +110,7 @@
     "scanButton": "Scansiona un WOD da una foto",
     "generateButton": "Genera un WOD casuale",
     "heroButton": "Prova un Hero WOD",
-    "communityLink": "Oppure esplora la <communityLink>comunità</communityLink> per vedere cosa stanno bruciando gli altri oggi."
+    "communityLink": "Oppure esplora la <communityLink>comunità</communityLink>."
   },
   "WodCard": {
     "optionsAlt": "Opzioni WOD",
@@ -106,10 +122,10 @@
     "sharedToastDescription": "Il tuo WOD è ora visibile alla comunità.",
     "unsharedToastTitle": "WOD non più condiviso",
     "unsharedToastDescription": "Il tuo WOD è stato rimosso dalla comunità.",
-    "shareErrorToastTitle": "Azione non riuscita",
+    "shareErrorToastTitle": "Errore",
     "shareErrorToastDescription": "Impossibile aggiornare lo stato di condivisione.",
-    "deleteDialogTitle": "Sei absolutely sicuro?",
-    "deleteDialogDescription": "Questa azione non può essere annullata. Questo eliminerà permanentemente il tuo WOD{isShared, select, true { e lo rimuoverà dalla comunità} other {}}.",
+    "deleteDialogTitle": "Sei sicuro?",
+    "deleteDialogDescription": "Questa azione non può essere annullata.",
     "deleteDialogCancel": "Annulla",
     "deleteDialogConfirm": "Elimina",
     "deleteToastTitle": "WOD eliminato",
@@ -136,7 +152,7 @@
     "startSection": "Inizia",
     "accessRestricted": {
       "title": "Accesso limitato",
-      "description": "Registrati o accedi per visualizzare i WOD della comunità e utilizzare il timer.",
+      "description": "Registrati o accedi per visualizzare i WOD della comunità.",
       "button": "Registrati / Accedi"
     }
   },
@@ -159,7 +175,7 @@
     "wodSavedTitle": "WOD salvato!",
     "wodSavedDescription": "Il tuo nuovo WOD è stato aggiunto alla tua dashboard.",
     "authErrorTitle": "Impossibile salvare",
-    "authErrorDescription": "I servizi di autenticación non sono disponibili.",
+    "authErrorDescription": "I servizi di autenticazione non sono disponibili.",
     "wodPreviewAlt": "Anteprima WOD",
     "analyzeButton": "Analizza WOD",
     "analysisResultTitle": "Risultato dell'analisi",
@@ -167,46 +183,46 @@
     "wodTypePlaceholder": "Tipo di WOD",
     "durationPlaceholder": "Durata (minuti)",
     "shareCheckbox": "Condividi con la comunità",
-    "shareAnonymousHelp": "Registrati per un account per condividere i tuoi WOD con la comunità.",
+    "shareAnonymousHelp": "Registrati per condividere i tuoi WOD.",
     "saveWodButton": "Salva WOD",
     "savingButton": "Salvataggio..."
   },
   "LoginPage": {
     "seo": {
       "title": "Accedi | WODBurner",
-      "description": "Accedi al tuo account WODBurner per salvare i tuoi allenamenti e accedere a funzioni avanzate."
+      "description": "Accedi al tuo account WODBurner per salvare i tuoi allenamenti."
     },
     "verifying": "Verifica in corso...",
     "confirmEmailTitle": "Conferma e-mail",
-    "confirmEmailDescription": "Per completare l'accesso su questo dispositivo, fornisci l'indirizzo e-mail in cui hai ricevuto il link.",
+    "confirmEmailDescription": "Inserisci il codice a 6 cifre ricevuto via e-mail.",
     "confirmEmailFailedTitle": "Accesso non riuscito",
     "confirmEmailSignInButton": "Accedi",
     "featureTitle": "Portalo al livello successivo.",
-    "featureDescription": "Crea un account gratuito per sbloccare tutte le funzionalità e non perdere mai più un WOD.",
+    "featureDescription": "Crea un account gratuito per sbloccare tutte le funzionalità.",
     "featureManual": "Creazione manuale",
     "featureManualDescription": "Aggiungi i tuoi WOD senza bisogno di una foto.",
     "featureHistory": "Cronologia completa",
     "featureHistoryDescription": "Salva e trova tutti i tuoi allenamenti in qualsiasi momento.",
-    "featureTracking": "Monitoraggio delle prestazioni (presto!)",
-    "featureTrackingDescription": "Analizza i tuoi progressi e visualizza le tue prestazioni.",
+    "featureTracking": "Analisi (presto!)",
+    "featureTrackingDescription": "Monitora i tuoi progressi.",
     "formTitle": "Accedi / Registrati",
-    "formDescription": "Inserisci la tua e-mail per ricevere un link di accesso sicuro. Nessuna password richiesta.",
+    "formDescription": "Inserisci la tua e-mail per ricevere un codice di accesso sicuro.",
     "emailSentTitle": "Controlla la tua e-mail!",
-    "emailSentDescription": "Un link di accesso è stato inviato a <bold>{email}</bold>. Controlla la tua casella di posta (e spam).",
-    "sendLinkButton": "Invia Magic Link",
-    "authError": "Il servizio di autenticazione non è pronto.",
-    "sendLinkError": "Impossibile inviare il link. Riprova.",
-    "linkSentToast": "Link inviato!",
-    "linkSentToastDescription": "Controlla la tua casella di posta per un link de accesso. Se non lo vedi, controlla la cartella spam.",
+    "emailSentDescription": "Un codice è stato inviato a <bold>{email}</bold>.",
+    "sendLinkButton": "Invia Codice",
+    "authError": "Servizio non pronto.",
+    "sendLinkError": "Impossibile inviare il codice.",
+    "linkSentToast": "Codice inviato!",
+    "linkSentToastDescription": "Controlla la tua casella di posta.",
     "signInSuccessToast": "Accesso riuscito!",
     "signInSuccessToastDescription": "Ora sei connesso.",
-    "genericError": "Si è verificato un errore. Riprova.",
-    "invalidLinkError": "Il link di accesso non è valido, è scaduto o l'e-mail non è corretta. Richiedine uno nuovo."
+    "genericError": "Si è verificato un errore.",
+    "invalidLinkError": "Codice non valido o scaduto."
   },
   "PremiumPage": {
     "seo": {
       "title": "Abbonamento Premium | Sostieni WODBurner",
-      "description": "Sblocca scansioni WOD illimitate, filtri avanzati e funzioni esclusive. Sostieni lo sviluppo del tuo compagno CrossFit preferito."
+      "description": "Sblocca scansioni WOD illimitate e filtri avanzati."
     },
     "title": "Premium",
     "alreadyPremium": {
@@ -217,14 +233,14 @@
       "dashboardButton": "Dashboard"
     },
     "headerTitle": "Scatena il tuo pieno potenziale",
-    "headerDescription": "Diventa un membro WODBurner Premium per ottenere l'accesso illimitato a tutte le funzionalità e supportare lo sviluppo dell'app.",
-    "offer": "OFFERTA DI LANCIO A VITA per i primi 300 membri!",
+    "headerDescription": "Diventa un membro Premium per supportare l'app.",
+    "offer": "OFFERTA A VITA per i primi 300 membri!",
     "monthly": "Mensile",
     "yearly": "Annuale",
     "discount": "-20%",
     "freePlan": {
       "title": "Gratuito",
-      "description": "Per un monitoraggio occasionale",
+      "description": "Per uso occasionale",
       "price": "0€",
       "perMonth": "/mese",
       "currentPlan": "Piano attuale"
@@ -243,7 +259,7 @@
     "features": {
       "scans": "Scansioni WOD illimitate",
       "scansFree": "3 al mese",
-      "reactions": "Reazioni della comunità illimitate",
+      "reactions": "Reazioni illimitate",
       "reactionsFree": "5 al giorno",
       "comments": "Pubblica commenti",
       "commentsFree": "Sola lettura",
@@ -257,10 +273,10 @@
       "notIncluded": "Non incluso"
     },
     "toasts": {
-      "welcomeTitle": "Benvenuto in WODBurner Premium!",
-      "welcomeDescription": "Il tuo distintivo di sostenitore è ora attivo.",
+      "welcomeTitle": "Benvenuto in Premium!",
+      "welcomeDescription": "Il tuo distintivo è ora attivo.",
       "cancelTitle": "Pagamento annullato",
-      "cancelDescription": "Puoi riprovare quando sei pronto.",
+      "cancelDescription": "Riprova quando sei pronto.",
       "loginRequiredTitle": "Accesso richiesto",
       "loginRequiredDescription": "Crea un account per passare a Premium.",
       "paymentErrorTitle": "Errore di pagamento",
@@ -268,217 +284,177 @@
     }
   },
   "SettingsPage": {
-    "seo": {
-      "title": "Impostazioni | Gestione Account",
-      "description": "Gestisci il tuo profilo, le tue preferenze e-mail e le impostazioni dell'abbonamento."
-    },
     "title": "Impostazioni",
     "profile": {
       "title": "Profilo",
-      "description": "Informazioni sul tuo account.",
-      "loading": "Caricamento profilo...",
+      "description": "Info account.",
+      "loading": "Caricamento...",
       "email": "E-mail: {email}",
       "emailNotSpecified": "Non specificata",
-      "accountType": "Tipo di account: {type}",
-      "typeAnonymous": "Anonimo (temporaneo)",
+      "accountType": "Tipo: {type}",
+      "typeAnonymous": "Anonimo",
       "typePremium": "Premium",
       "typeStandard": "Standard",
-      "manageSubscription": "Gestisci il mio abbonamento",
+      "manageSubscription": "Gestisci abbonamento",
       "userNotFound": "Utente non trovato."
     },
     "dangerZone": {
       "title": "Zona di pericolo",
-      "description": "Queste azioni sono permanenti e non possono essere annullate.",
-      "deleteButton": "Elimina il mio account",
+      "description": "Azioni permanenti.",
+      "deleteButton": "Elimina account",
       "deletingButton": "Eliminazione...",
-      "dialogTitle": "Sei absolutely sicuro?",
-      "dialogDescription": "Questa azione è irreversibile. Eliminerà permanentemente il tuo account e cancellerà tutti i tuoi dati, inclusi tutti i tuoi WOD salvati, dai nostri server.",
+      "dialogTitle": "Sei sicuro?",
+      "dialogDescription": "Tutti i tuoi dati andranno persi.",
       "dialogCancel": "Annulla",
-      "dialogConfirm": "Sì, elimina il mio account",
-      "helpText": "Se elimini il tuo account, tutti i tuoi dati andranno persi per sempre."
+      "dialogConfirm": "Sì, elimina",
+      "helpText": "Operazione irreversibile."
     },
     "toasts": {
-      "deleteError": "Impossibile eliminare l'account. Utente o servizi Firebase non disponibili.",
+      "deleteError": "Impossibile eliminare l'account.",
       "deleteSuccessTitle": "Account eliminato",
-      "deleteSuccessDescription": "Il tuo account e tutti i tuoi dati sono stati eliminati con successo.",
-      "deleteFailedTitle": "Eliminazione non riuscita",
-      "deleteFailedDescription": "Si è verificato un errore. Riprova.",
-      "deleteFailedRecentLogin": "Questa operazione è sensibile e richiede un'autenticazione recente. Accedi di nuovo prima di riprovare.",
-      "portalError": "Impossibile aprire la gestione dell'abbonamento."
+      "deleteSuccessDescription": "Addio!",
+      "deleteFailedTitle": "Errore",
+      "deleteFailedDescription": "Riprova più tardi.",
+      "deleteFailedRecentLogin": "Autenticazione recente richiesta.",
+      "portalError": "Errore portale."
     }
   },
   "ScanPage": {
-    "seo": {
-      "title": "Scansiona un WOD | Analizzatore Lavagna",
-      "description": "Trasforma la foto della lavagna della tua palestra in un allenamento interattivo con il nostro analizzatore IA."
-    },
     "title": "Scansiona WOD",
     "manualButton": "Aggiungi manualmente"
   },
   "NewWodPage": {
-    "seo": {
-      "title": "Nuovo WOD | Inserimento Manuale",
-      "description": "Crea e personalizza il tuo allenamento CrossFit manualmente."
-    },
     "title": "Crea WOD manualmente",
     "cardTitle": "Dettagli allenamento",
-    "namePlaceholder": "Nome WOD (es. Fran)",
-    "typePlaceholder": "Tipo di WOD",
-    "durationPlaceholder": "Durata (minuti)",
-    "imageHintPlaceholder": "Suggerimento immagine (es. bilanciere)",
-    "descriptionPlaceholder": "Descrizione WOD...",
+    "namePlaceholder": "Nome",
+    "typePlaceholder": "Tipo",
+    "durationPlaceholder": "Durata (min)",
+    "imageHintPlaceholder": "Suggerimento immagine",
+    "descriptionPlaceholder": "Descrizione...",
     "saveButton": "Salva WOD",
     "savingButton": "Salvataggio...",
-    "backLink": "Torna alla scansione",
+    "backLink": "Indietro",
     "duplicateDialog": {
-      "title": "WOD duplicato rilevato",
-      "description": "Questo allenamento sembra identico a un WOD che hai già salvato.",
+      "title": "Duplicato",
+      "description": "Hai già salvato questo WOD.",
       "savedOn": "Salvato il {date}",
-      "question": "Vuoi salvare comunque questo nuovo?",
-      "cancel": "Annulla",
-      "confirm": "Salva comunque"
+      "question": "Salvare comunque?",
+      "cancel": "No",
+      "confirm": "Sì"
     },
     "toasts": {
-      "saveSuccessTitle": "WOD salvato!",
-      "saveSuccessDescription": "Il tuo nuovo WOD è stato aggiunto alla tua dashboard.",
-      "saveFailedTitle": "Salvataggio non riuscito",
-      "saveFailedDescription": "Si è verificato un errore durante il salvataggio del WOD."
+      "saveSuccessTitle": "Salvato!",
+      "saveSuccessDescription": "WOD aggiunto.",
+      "saveFailedTitle": "Errore",
+      "saveFailedDescription": "Impossibile salvare."
     }
   },
   "EditWodPage": {
-    "seo": {
-      "title": "Modifica WOD | WODBurner",
-      "description": "Aggiorna i dettagli del tuo allenamento, il titolo o la descrizione."
-    },
     "title": "Modifica WOD",
-    "cardTitle": "Dettagli allenamento",
+    "cardTitle": "Dettagli",
     "saveButton": "Salva modifiche",
-    "savingButton": "Salvataggio modifiche...",
-    "backLink": "Torna alla Dashboard",
+    "savingButton": "Salvataggio...",
+    "backLink": "Dashboard",
     "toasts": {
-      "updateSuccessTitle": "WOD aggiornato!",
-      "updateSuccessDescription": "Le tue modifiche sono state salvate.",
-      "updateFailedTitle": "Aggiornamento non riuscito",
-      "updateFailedDescription": "Si è verificato un errore durante il salvataggio delle modifiche."
+      "updateSuccessTitle": "Aggiornato!",
+      "updateSuccessDescription": "Modifiche salvate.",
+      "updateFailedTitle": "Errore",
+      "updateFailedDescription": "Salvataggio fallito."
     }
   },
   "GenericTimerPage": {
-    "backLink": "Torna ai timer",
+    "backLink": "Timer",
     "startButton": "Avvia timer",
     "forTime": {
       "title": "For Time",
-      "description": "Un semplice cronometro per cronometrare il tuo allenamento. Imposta facoltativamente un limite di tempo.",
-      "timeCapLabel": "Limite di tempo (minuti, facoltativo)",
-      "timeCapPlaceholder": "es. 20"
+      "description": "Cronometro semplice."
     },
     "amrap": {
-      "title": "Timer AMRAP",
-      "description": "Imposta una durata e vedi quanti round o ripetizioni riesci a completare.",
-      "durationLabel": "Durata (minuti)"
+      "title": "AMRAP",
+      "description": "Massime ripetizioni."
     },
     "emom": {
-      "title": "Timer EMOM",
-      "description": "Every Minute On the Minute. Imposta l'intervallo e il numero di round.",
-      "roundsLabel": "Numero di round",
-      "intervalLabel": "Durata intervallo",
-      "intervalMinutes": "min",
-      "intervalSeconds": "sec"
+      "title": "EMOM",
+      "description": "Ogni minuto."
     },
     "tabata": {
-      "title": "Timer Tabata",
-      "description": "Intervalli ad alta intensità di 20s di lavoro, 10s di riposo. Personalizza i round.",
-      "roundsLabel": "Round"
+      "title": "Tabata",
+      "description": "20s lavoro / 10s riposo."
     }
   },
   "TimersPage": {
-    "seo": {
-      "title": "Timer CrossFit | AMRAP, EMOM, Tabata",
-      "description": "Accedi a timer di allenamento professionali per i tuoi WOD CrossFit."
-    },
-    "title": "Timer intelligenti",
+    "title": "Timer Intelligenti",
     "forTime": "For Time",
-    "forTimeDescription": "Un semplice cronometro per cronometrare il tuo allenamento.",
+    "forTimeDescription": "Cronometro semplice.",
     "amrap": "AMRAP",
-    "amrapDescription": "Quanti più round/ripetizioni possibili in un tempo stabilito.",
+    "amrapDescription": "Max ripetizioni nel tempo.",
     "emom": "EMOM",
-    "emomDescription": "Ogni minuto al minuto, per un numero stabilito di minuti.",
+    "emomDescription": "Ogni minuto.",
     "tabata": "Tabata",
-    "tabataDescription": "Intervalli ad alta intensità di 20s di lavoro, 10s di riposo.",
-    "footer": "Oppure, seleziona un WOD dalla dashboard per avviare un timer preconfigurato."
+    "tabataDescription": "Intervalli.",
+    "footer": "O seleziona un WOD dal dashboard."
   },
   "HeroWodsPage": {
-    "seo": {
-      "title": "Libreria Hero WODs | Allenamenti Benchmark",
-      "description": "Scopri la collezione ufficiale di Hero WOD CrossFit e allenamenti benchmark come Murph, Fran e Cindy."
-    },
     "title": "Hero WODs",
-    "description": "Gli \"Hero\" WOD sono allenamenti speciali nel CrossFit dedicati a uomini e donne che hanno dato la vita in servizio. Sono un'opportunità per riflettere e onorare il loro sacrificio.",
+    "description": "In memoria degli eroi.",
     "premiumUpsell": {
-      "title": "Sblocca l'arsenale completo",
-      "description": "Passa a Premium per accedere alla libreria completa di oltre {totalWodCount}+ Hero e Benchmark WOD, inclusi {premiumWodCount} allenamenti esclusivi.",
+      "title": "Sblocca tutto",
+      "description": "Passa a Premium per {totalWodCount}+ WOD.",
       "button": "Passa a Premium"
     }
   },
   "HallOfFamePage": {
-    "seo": {
-      "title": "Hall of Fame | Gli OGs di WODBurner",
-      "description": "Il cerchio d'élite dei nostri primi 300 sostenitori. Membri a vita."
-    },
     "title": "Hall of Fame",
     "cardTitle": "I primi 300 OG",
-    "cardDescription": "Gratis a vita. Un posto permanente per i nostri primi sostenitori.",
+    "cardDescription": "Gratis a vita per i primi sostenitori.",
     "spotsRemaining": "Solo {spotsLeft} posti rimasti!",
-    "spotsFull": "La lista è ora chiusa per sempre.",
-    "claimSpotButton": "Richiedi il tuo posto ora",
-    "emptyList": "Sii il primo a richiedere un posto!"
+    "spotsFull": "Lista chiusa.",
+    "claimSpotButton": "Richiedi il tuo posto",
+    "emptyList": "Sii il primo!"
   },
   "TimerClient": {
-    "workoutComplete": "Allenamento completato!",
+    "workoutComplete": "Finito!",
     "totalTime": "Tempo totale",
-    "timeCompleted": "Tempo completato",
-    "goAgain": "Di nuovo",
-    "shareResult": "Condividi risultato",
+    "timeCompleted": "Fatto in",
+    "goAgain": "Ancora",
+    "shareResult": "Condividi",
     "shareModal": {
-      "title": "Risultato WOD: {wodName}",
-      "description": "Il tuo tempo finale è stato {finalTime}. Questa scheda è pronta per la condivisione.",
-      "finalTimeLabel": "TEMPO FINALE",
+      "title": "Risultato: {wodName}",
+      "description": "Finito in {finalTime}.",
+      "finalTimeLabel": "TEMPO",
       "screenshotReady": "Pronto per lo screenshot!"
     },
-    "timeCap": "Limite di tempo: {duration}:00",
+    "timeCap": "Limite: {duration}:00",
     "pause": "Pausa",
     "start": "Inizia",
-    "reset": "Ripristina",
+    "reset": "Reset",
     "finish": "Fine",
     "round": "Round {current} / {total}",
     "totalTimeElapsed": "Totale: {time}"
   },
   "GenerateWodPage": {
-    "seo": {
-      "title": "Generatore WOD IA | Nuovi Allenamenti Ogni Giorno",
-      "description": "Lascia che il nostro coach IA generi per te allenamenti CrossFit unici e personalizzati."
-    },
     "title": "Generatore WOD IA",
     "cardTitle": "WODBot 3000",
-    "cardDescription": "Ti senti poco ispirato? Lascia che il nostro coach IA generi per te un allenamento unico e stimolante.",
-    "generateButton": "Genera un nuovo WOD",
+    "cardDescription": "Senza ispirazione? Lascia che l'IA crei il tuo WOD.",
+    "generateButton": "Genera",
     "generatingButton": "Generazione...",
     "freePlanAlert": {
       "title": "Piano gratuito",
-      "description": "Hai un numero limitato di generazioni giornaliere. {link} per un accesso illimitato.",
+      "description": "Limite giornaliero raggiunto. {link} per illimitato.",
       "link": "Passa a Premium"
     },
-    "premiumPlanMessage": "Generazioni illimitate abilitate.",
+    "premiumPlanMessage": "Generazione illimitata attiva.",
     "generatingState": {
-      "title": "Generazione del tuo WOD...",
-      "description": "Il coach IA si sta riscaldando. Potrebbe volerci un momento."
+      "title": "Generazione...",
+      "description": "L'IA si sta scaldando."
     },
     "errorAlert": {
-      "title": "Generazione non riuscita",
-      "description": "Il coach IA sta riposando. Riprova tra un momento."
+      "title": "Errore",
+      "description": "Riprova tra un momento."
     },
     "result": {
-      "title": "Il tuo WOD generato",
-      "savedMessage": "Questo WOD è stato salvato automaticamente nella tua dashboard."
+      "title": "Allenamento IA",
+      "savedMessage": "Salvato nel dashboard."
     }
   }
 }

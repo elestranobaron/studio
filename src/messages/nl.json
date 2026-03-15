@@ -35,21 +35,37 @@
       "athletes": "Geanalyseerde Atleten",
       "median": "Mediaan",
       "top10": "Top 10%",
-      "elite": "Elite (1%)"
+      "elite": "Elite (1%)",
+      "selector": {
+        "label": "Meting",
+        "bmi": "BMI",
+        "age": "Leeftijd",
+        "height": "Lengte",
+        "weight": "Gewicht"
+      }
     },
     "userScore": {
       "title": "Mijn score vergelijken",
       "percentile": "Globaal Percentiel"
     },
+    "leaderboard": {
+      "title": "Top 10 Atleten",
+      "rank": "Rang",
+      "name": "Naam",
+      "score": "Score"
+    },
     "charts": {
       "distribution": "Scoreverdeling",
       "distributionSub": "Verdeling over de geanalyseerde steekproef",
-      "bmi": "BMI / Rang Correlatie",
-      "bmiSub": "Impact van BMI op de globale ranglijst"
+      "bmi": "Prestatiecorrelatie",
+      "bmiSub": "Impact van fysiek profiel op de globale ranglijst"
     },
     "methodology": {
-      "title": "Methodologie",
-      "description": "Data in real-time opgehaald via de CrossFit publieke API."
+      "title": "Grafiekmethode",
+      "unificationTitle": "Score-unificatie",
+      "unificationDesc": "Om een consistente visuele vergelijking mogelijk te maken bij gemengde evenementen (tijd + herhalingen), worden alle scores omgezet naar totale herhalingen. Atleten die het evenement hebben voltooid, worden gegroepeerd aan de rechterkant van de grafiek.",
+      "overallTitle": "Overall",
+      "overallDesc": "De score komt overeen met de som van de behaalde rangen. Een lage score duidt op een betere algehele prestatie."
     }
   },
   "DashboardPage": {
@@ -82,11 +98,19 @@
       },
       "emptySearchTitle": "Geen resultaten.",
       "emptySearchDescription": "Probeer een andere zoekterm.",
-      "emptyCommunityTitle": "Deel als eerste een workout!"
-    },
-    "ScrollTop": {
-      "label": "Omhoog scrollen"
+      "emptyCommunityTitle": "Deel als eerste een workout!",
+      "ScrollTop": {
+        "label": "Bovenaan"
+      }
     }
+  },
+  "WelcomeEmptyState": {
+    "title": "Welkom bij WODBurner!",
+    "subtitle": "Log je first WOD in 3 seconden:",
+    "scanButton": "Scan een WOD van een foto",
+    "generateButton": "Genereer een willekeurige WOD",
+    "heroButton": "Probeer een Hero WOD",
+    "communityLink": "Of, verken de community."
   },
   "WodCard": {
     "optionsAlt": "Opties",
@@ -148,7 +172,7 @@
     "duplicateDialogConfirm": "Toch opslaan",
     "saveFailedTitle": "Opslaan mislukt",
     "saveFailedDescription": "Fout bij het opslaan van de WOD.",
-    "wodSavedTitle": "WOD Opgeslagen!",
+    "wodSavedTitle": "WOD Opslagen!",
     "wodSavedDescription": "Je nieuwe workout staat op je dashboard.",
     "authErrorTitle": "Fout bij opslaan",
     "authErrorDescription": "Authenticatie niet beschikbaar.",
@@ -236,7 +260,7 @@
       "scans": "Onbeperkt WOD Scannen",
       "scansFree": "3 per maand",
       "reactions": "Onbeperkt Community Reacties",
-      "reactionsFree": "5 per dag",
+      "reactionsFree": "5 per tag",
       "comments": "Comments plaatsen",
       "commentsFree": "Alleen lezen",
       "favorites": "Onbeperkt Favorieten",
@@ -343,9 +367,7 @@
     "startButton": "Start Timer",
     "forTime": {
       "title": "For Time",
-      "description": "Simpele stopwatch.",
-      "timeCapLabel": "Time Cap (minuten)",
-      "timeCapPlaceholder": "bijv. 20"
+      "description": "Simpele stopwatch."
     },
     "amrap": {
       "title": "AMRAP Timer",
@@ -375,7 +397,7 @@
     "emom": "EMOM",
     "emomDescription": "Elke minuut.",
     "tabata": "Tabata",
-    "tabataDescription": "Intervallen.",
+    "tabataDescription": "Intervals.",
     "footer": "Of kies een WOD op je dashboard."
   },
   "HeroWodsPage": {

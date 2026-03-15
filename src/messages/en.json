@@ -98,7 +98,10 @@
       },
       "emptySearchTitle": "No results.",
       "emptySearchDescription": "Try another search.",
-      "emptyCommunityTitle": "Be the first to share one!"
+      "emptyCommunityTitle": "Be the first to share one!",
+      "ScrollTop": {
+        "label": "Scroll to top"
+      }
     }
   },
   "WelcomeEmptyState": {

@@ -73,7 +73,7 @@
       "title": "डैशबोर्ड | अपने CrossFit WOD प्रबंधित करें",
       "description": "अपने CrossFit वर्कआउट प्रबंधित करें, अपने स्कैन किए गए WOD ढूंढें और सामुदायिक प्रशिक्षण खोजें।"
     },
-    "title": "Dashboard",
+    "title": "डैशबोर्ड",
     "scanNewWod": "नया WOD स्कैन करें",
     "tabs": {
       "personal": "मेरे WODs",
@@ -98,7 +98,10 @@
       },
       "emptySearchTitle": "आपकी खोज से मेल खाने वाला कोई WOD नहीं मिला।",
       "emptySearchDescription": "कोई अन्य खोज शब्द आज़माएँ।",
-      "emptyCommunityTitle": "साझा करने वाले पहले व्यक्ति बनें!"
+      "emptyCommunityTitle": "साझा करने वाले पहले व्यक्ति बनें!",
+      "ScrollTop": {
+        "label": "ऊपर"
+      }
     }
   },
   "WelcomeEmptyState": {
@@ -281,10 +284,6 @@
     }
   },
   "SettingsPage": {
-    "seo": {
-      "title": "सेटिंग्स | मेरा खाता प्रबंधित करें",
-      "description": "अपनी प्रोफ़ाइल और सदस्यता अपडेट करें।"
-    },
     "title": "सेटिंग्स",
     "profile": {
       "title": "प्रोफ़ाइल",
@@ -321,18 +320,10 @@
     }
   },
   "ScanPage": {
-    "seo": {
-      "title": "WOD स्कैन करें | AI व्हाइटबोर्ड विश्लेषक",
-      "description": "अपनी फोटो को टाइमर में बदलें।"
-    },
     "title": "WOD स्कैन करें",
     "manualButton": "मैन्युअल रूप से जोड़ें"
   },
   "NewWodPage": {
-    "seo": {
-      "title": "नया वर्कआउट | मैनुअल प्रविष्टि",
-      "description": "मैन्युअल रूप से WOD जोड़ें।"
-    },
     "title": "मैन्युअल रूप से WOD बनाएँ",
     "cardTitle": "वर्कआउट विवरण",
     "namePlaceholder": "नाम (जैसे Fran)",
@@ -359,10 +350,6 @@
     }
   },
   "EditWodPage": {
-    "seo": {
-      "title": "WOD संपादित करें | WODBurner",
-      "description": "अपना वर्कआउट अपडेट करें।"
-    },
     "title": "WOD संपादित करें",
     "cardTitle": "विवरण",
     "saveButton": "परिवर्तन सहेजें",
@@ -380,39 +367,27 @@
     "startButton": "टाइमर शुरू करें",
     "forTime": {
       "title": "समय के लिए",
-      "description": "साधारण स्टॉपवॉच।",
-      "timeCapLabel": "समय सीमा (मिनट)",
-      "timeCapPlaceholder": "जैसे 20"
+      "description": "साधारण स्टॉपवॉच。"
     },
     "amrap": {
       "title": "AMRAP",
-      "description": "समय में अधिकतम रेप्स।",
-      "durationLabel": "अवधि (मिनट)"
+      "description": "समय में अधिकतम रेप्स。"
     },
     "emom": {
       "title": "EMOM",
-      "description": "हर मिनट।",
-      "roundsLabel": "राउंड",
-      "intervalLabel": "अंतराल",
-      "intervalMinutes": "मिनट",
-      "intervalSeconds": "सेकंड"
+      "description": "हर मिनट。"
     },
     "tabata": {
       "title": "Tabata",
-      "description": "20s काम / 10s आराम।",
-      "roundsLabel": "राउंड"
+      "description": "20s काम / 10s आराम。"
     }
   },
   "TimersPage": {
-    "seo": {
-      "title": "CrossFit टाइमर | WODBurner",
-      "description": "प्रोफेशनल टाइमर।"
-    },
     "title": "स्मार्ट टाइमर",
     "forTime": "समय के लिए",
     "forTimeDescription": "साधारण स्टॉपवॉच।",
     "amrap": "AMRAP",
-    "amrapDescription": "अधिकतम रेप्स।",
+    "amrapDescription": "समय में अधिकतम रेप्स।",
     "emom": "EMOM",
     "emomDescription": "हर मिनट।",
     "tabata": "Tabata",
@@ -420,10 +395,6 @@
     "footer": "या डैशबोर्ड से वर्कआउट चुनें।"
   },
   "HeroWodsPage": {
-    "seo": {
-      "title": "हीरो WOD लाइब्रेरी | बेंचमार्क",
-      "description": "प्रसिद्ध वर्कआउट।"
-    },
     "title": "हीरो WODs",
     "description": "शहीदों की याद में।",
     "premiumUpsell": {
@@ -433,10 +404,6 @@
     }
   },
   "HallOfFamePage": {
-    "seo": {
-      "title": "हॉल ऑफ फेम | समर्थक",
-      "description": "हमारे पहले 300 समर्थक।"
-    },
     "title": "हॉल ऑफ फेम",
     "cardTitle": "पहले 300 सदस्य",
     "cardDescription": "लाइफटाइम फ्री।",
@@ -458,7 +425,7 @@
       "screenshotReady": "स्क्रीनशॉट के लिए तैयार!"
     },
     "timeCap": "समय सीमा: {duration}:00",
-    "pause": "रुकें",
+    "pause": "पausa",
     "start": "शुरू",
     "reset": "रीसेट",
     "finish": "समाप्त",
@@ -466,10 +433,6 @@
     "totalTimeElapsed": "कुल: {time}"
   },
   "GenerateWodPage": {
-    "seo": {
-      "title": "AI WOD जेनरेटर | नए वर्कआउट हर दिन",
-      "description": "AI कोच से अपना वर्कआउट बनवाएं।"
-    },
     "title": "AI WOD जेनरेटर",
     "cardTitle": "WODBot 3000",
     "cardDescription": "प्रेरणा नहीं मिल रही? AI को वर्कआउट बनाने दें।",

@@ -65,7 +65,7 @@
       "unificationTitle": "Unificarea scorurilor",
       "unificationDesc": "Pentru a permite o comparație vizuală coerentă (timp + repetări), toate scorurile sunt convertite în repetări totale. Atleții care au terminat sunt grupați la dreapta.",
       "overallTitle": "Overall",
-      "overallDesc": "Scorul corespunde sumei locurilor obținute. Un scor mic indică o performanță mai bună."
+      "overallDesc": "Scorul corespunde sumei locurilor obţinute. Un scor mic indică o performanță mai bună."
     }
   },
   "DashboardPage": {
@@ -98,7 +98,10 @@
       },
       "emptySearchTitle": "Niciun rezultat.",
       "emptySearchDescription": "Încearcă altceva.",
-      "emptyCommunityTitle": "Fii primul care distribuie!"
+      "emptyCommunityTitle": "Fii primul care distribuie!",
+      "ScrollTop": {
+        "label": "Sus"
+      }
     }
   },
   "WelcomeEmptyState": {
@@ -162,7 +165,7 @@
     "analysisFailedTitle": "Eroare analiză",
     "analysisFailedDescription": "Nu am putut analiza poza.",
     "duplicateDialogTitle": "WOD Duplicat",
-    "duplicateDialogDescription": "Ai salvat deja acest WOD.",
+    "duplicateDialogDescription": "Ai salvat déjà acest WOD.",
     "duplicateDialogSavedOn": "Salvat pe {date}",
     "duplicateDialogQuestion": "Salvezi oricum?",
     "duplicateDialogCancel": "Nu",
@@ -191,7 +194,7 @@
     },
     "verifying": "Verificăm...",
     "confirmEmailTitle": "Confirmă email",
-    "confirmEmailDescription": "Introdu codul de 6 cifre.",
+    "confirmEmailDescription": "Saisissez le code à 6 chiffres envoyé à votre adresse e-mail.",
     "confirmEmailFailedTitle": "Eroare login",
     "confirmEmailSignInButton": "Login",
     "featureTitle": "Următorul nivel.",
@@ -333,7 +336,7 @@
     "backLink": "Înapoi",
     "duplicateDialog": {
       "title": "Duplicat",
-      "description": "Îl ai deja.",
+      "description": "Îl ai déjà.",
       "savedOn": "De pe {date}",
       "question": "Salvezi oricum?",
       "cancel": "Nu",
@@ -364,27 +367,19 @@
     "startButton": "Start",
     "forTime": {
       "title": "For Time",
-      "description": "Cronometru simplu.",
-      "timeCapLabel": "Time Cap (min)",
-      "timeCapPlaceholder": "ex: 20"
+      "description": "Cronometru simplu."
     },
     "amrap": {
       "title": "AMRAP",
-      "description": "Max reps.",
-      "durationLabel": "Durată (min)"
+      "description": "Max reps."
     },
     "emom": {
       "title": "EMOM",
-      "description": "În fiecare minut.",
-      "roundsLabel": "Runde",
-      "intervalLabel": "Interval",
-      "intervalMinutes": "min",
-      "intervalSeconds": "sec"
+      "description": "În fiecare minut."
     },
     "tabata": {
       "title": "Tabata",
-      "description": "20s muncă / 10s pauză.",
-      "roundsLabel": "Runde"
+      "description": "20s muncă / 10s pauză."
     }
   },
   "TimersPage": {
@@ -412,10 +407,10 @@
     "title": "Hall of Fame",
     "cardTitle": "Primii 300",
     "cardDescription": "Gratis pe viață primilor.",
-    "spotsRemaining": "{spotsLeft} locuri!",
-    "spotsFull": "Lista plină.",
-    "claimSpotButton": "Rezervă loc",
-    "emptyList": "Fii primul!"
+    "spotsRemaining": "Plus que {spotsLeft} places!",
+    "spotsFull": "La liste est complète.",
+    "claimSpotButton": "Réclamer ma place",
+    "emptyList": "Soyez le premier!"
   },
   "TimerClient": {
     "workoutComplete": "Gata!",
