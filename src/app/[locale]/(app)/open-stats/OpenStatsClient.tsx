@@ -69,7 +69,6 @@ export default function OpenStatsClient() {
 
     const values = stats.data.map(e => stats.isTime ? (e.seconds || 0) : e.reps);
     
-    // Regroupement par valeurs réelles pour éviter les scores inexistants
     const counts: Record<number, number> = {};
     values.forEach(v => {
         counts[v] = (counts[v] || 0) + 1;
@@ -77,8 +76,8 @@ export default function OpenStatsClient() {
 
     const uniqueValues = Object.keys(counts).map(Number).sort((a, b) => a - b);
     
-    // Si trop de valeurs uniques (> 15), on fait un binning logique (pas aléatoire)
-    if (uniqueValues.length <= 15) {
+    // Si peu de valeurs uniques (< 25), on les affiche telles quelles pour éviter les "ghost scores"
+    if (uniqueValues.length <= 25) {
         return uniqueValues.map(v => ({
             name: v,
             count: counts[v],
@@ -86,7 +85,7 @@ export default function OpenStatsClient() {
         }));
     }
 
-    // Binning par tranches de 30s (temps) ou 5 reps (repetitions)
+    // Sinon regroupement logique par paliers de 30s ou 5 reps
     const step = stats.isTime ? 30 : 5;
     const bins: Record<number, number> = {};
     
@@ -106,7 +105,6 @@ export default function OpenStatsClient() {
 
   const scatterData = useMemo(() => {
     if (!stats || !stats.data) return [];
-    // Nettoyage strict des outliers pour garder un graphique propre
     return stats.data
       .map(e => {
         let xValue: number | null = null;
@@ -114,7 +112,7 @@ export default function OpenStatsClient() {
           case 'age': xValue = (e.age > 10 && e.age < 90) ? e.age : null; break;
           case 'height': xValue = (e.heightCm && e.heightCm > 120 && e.heightCm < 230) ? e.heightCm : null; break;
           case 'weight': xValue = (e.weightKg && e.weightKg > 35 && e.weightKg < 200) ? e.weightKg : null; break;
-          case 'bmi': default: xValue = (e.bmi && e.bmi > 15 && e.bmi < 45) ? e.bmi : null; break;
+          case 'bmi': default: xValue = e.bmi; break;
         }
         return { x: xValue, y: e.rank, name: e.name };
       })

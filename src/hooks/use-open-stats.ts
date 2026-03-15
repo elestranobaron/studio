@@ -119,7 +119,7 @@ export function useOpenStats() {
               }
             }
 
-            // 2. Extraction des répétitions (Priorité aux parenthèses ou au breakdown)
+            // 2. Extraction des répétitions via parenthèses ou breakdown
             const parenMatch = officialScoreDisplay.match(/\((\d+)\)/);
             const breakdownMatch = breakdownStr.match(/(\d+)\s*reps/i);
             const repsSuffixMatch = officialScoreDisplay.match(/^(\d+)\s*reps/i);
@@ -156,7 +156,7 @@ export function useOpenStats() {
             age: parseInt(row.entrant.age),
             heightCm: h,
             weightKg: w,
-            bmi: bmi,
+            bmi: (bmi && bmi > 15 && bmi < 50) ? bmi : null, // Filtrage des BMI aberrants dès le départ
             reps,
             seconds,
             finished,
@@ -175,34 +175,34 @@ export function useOpenStats() {
         throw new Error("Aucune donnée trouvée.");
       }
 
-      // --- Analyse de l'échantillon pour déduire les métadonnées ---
+      // --- Déduction dynamique haute fidélité ---
       const isWorkoutView = workout !== 0;
       
-      // On regarde si certains n'ont pas fini (WOD mixte)
-      const anyNonFinisher = isWorkoutView && allEntries.some(e => !e.finished && e.reps > 0);
-      const isTime = isWorkoutView && !anyNonFinisher;
-
-      // Déduction du Max Reps : On prend le max trouvé dans les répétitions réelles
-      let maxRepsInSample = Math.max(...allEntries.map(e => e.reps));
-      
-      // Si c'est un WOD au temps (ex: 26.2), on cherche les reps dans le breakdown du 1er athlète
-      if (isTime && allEntries.length > 0) {
-          const topAthlete = allEntries[0];
-          if (topAthlete.reps > 0) {
-              maxRepsInSample = topAthlete.reps;
+      // Déduction du Max Reps en analysant le breakdown des finishers (les premiers du classement)
+      let detectedMaxReps = 0;
+      if (isWorkoutView) {
+          for (let i = 0; i < Math.min(allEntries.length, 10); i++) {
+              const athlete = allEntries[i];
+              if (athlete.reps > detectedMaxReps) detectedMaxReps = athlete.reps;
           }
       }
+      const maxRepsInSample = detectedMaxReps;
 
-      // Attribution du score max aux finishers en mode mixte (ex: 26.1, 26.3)
-      if (!isTime && isWorkoutView) {
+      // Unification pour les épreuves mixtes : si qqn a fini (temps), il a fait le max de reps
+      if (isWorkoutView) {
           allEntries.forEach(e => {
-              if (e.finished && e.reps < maxRepsInSample) {
+              if (e.finished) {
                   e.reps = maxRepsInSample;
               }
           });
       }
 
-      // Inférence du Time Cap (le temps le plus élevé de l'échantillon arrondi à la minute supérieure)
+      // Déduction si c'est une épreuve au temps pure ou mixte
+      // On regarde s'il y a des gens qui n'ont pas fini (reps < maxReps)
+      const anyNonFinisher = isWorkoutView && allEntries.some(e => !e.finished && e.reps > 0 && e.reps < maxRepsInSample);
+      const isTime = isWorkoutView && !anyNonFinisher;
+
+      // Inférence du Time Cap (le temps le plus élevé arrondi à la minute supérieure)
       let inferredTimeCap = null;
       if (isWorkoutView) {
           const finishedAthletes = allEntries.filter(e => e.seconds !== null);
@@ -211,7 +211,6 @@ export function useOpenStats() {
               const minutes = Math.ceil(maxSeconds / 60);
               inferredTimeCap = `${minutes}:00`;
           } else {
-              // Si personne n'a fini, on ne peut pas vraiment déduire le cap proprement sans données externes
               inferredTimeCap = "N/A";
           }
       }
