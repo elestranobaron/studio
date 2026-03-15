@@ -1,3 +1,4 @@
+
 {
   "RootLayout": {
     "seo": {
@@ -26,7 +27,7 @@
   "OpenStatsPage": {
     "seo": {
       "title": "Open Stats | Leaderboard CrossFit Open en Temps Réel",
-      "description": "Analysez les performances du CrossFit Open 2026. Classements Top 10, corrélations IMC/Rang et distribution mondiale des scores."
+      "description": "Analysez les performances du CrossFit Open 2026. Classements Top 100, corrélations IMC/Rang et distribution mondiale des scores."
     },
     "title": "Open Stats",
     "description": "Données live CrossFit Open via API publique – refresh quotidien",
@@ -81,12 +82,12 @@
       "percentile": "Percentile mondial"
     },
     "leaderboard": {
-      "title": "Top 10 Athlètes",
+      "title": "Top 100 Athlètes",
       "rank": "Rang",
       "name": "Nom",
       "score": "Score",
-      "descriptionOverall": "Top 10 du classement mondial par points (somme des rangs).",
-      "descriptionWorkout": "Top 10 des athlètes pour l'épreuve {year}.{workout}."
+      "descriptionOverall": "Top 100 du classement mondial par points (somme des rangs).",
+      "descriptionWorkout": "Top 100 des athlètes pour l'épreuve {year}.{workout}."
     },
     "charts": {
       "distribution": "Distribution des scores",

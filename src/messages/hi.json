@@ -1,3 +1,4 @@
+
 {
   "RootLayout": {
     "seo": {
@@ -81,12 +82,12 @@
       "percentile": "वैश्विक पर्सेंटाइल"
     },
     "leaderboard": {
-      "title": "शीर्ष 10 एथलीट",
+      "title": "शीर्ष 100 एथलीट",
       "rank": "रैंक",
       "name": "नाम",
       "score": "स्कोर",
-      "descriptionOverall": "अंकों (रैंकों का योग) के अनुसार शीर्ष 10 वैश्विक लीडरबोर्ड।",
-      "descriptionWorkout": "इवेंट {year}.{workout} के लिए शीर्ष 10 एथलीट।"
+      "descriptionOverall": "अंकों (रैंकों का योग) के अनुसार शीर्ष 100 वैश्विक लीडरबोर्ड।",
+      "descriptionWorkout": "इवेंट {year}.{workout} के लिए शीर्ष 100 एथलीट।"
     },
     "charts": {
       "distribution": "स्कोर वितरण",
@@ -131,7 +132,7 @@
         "alphabetical": "वर्णमाला (A-Z)"
       },
       "emptySearchTitle": "आपकी खोज से मेल खाने वाला कोई WOD नहीं मिला।",
-      "emptySearchDescription": "कोई अन्य खोज शब्द आज़माएँ।",
+      "emptySearchDescription": "कोई अन्य खोज शब्द आज़ماएँ।",
       "emptyCommunityTitle": "साझा करने वाले पहले व्यक्ति बनें!",
       "ScrollTop": {
         "label": "ऊपर"
@@ -143,7 +144,7 @@
     "subtitle": "3 सेकंड में अपना पहला WOD लॉग करें:",
     "scanButton": "फोटो से WOD स्कैन करें",
     "generateButton": "यादृच्छिक WOD उत्पन्न करें",
-    "heroButton": "हीरो WOD आज़माएँ",
+    "heroButton": "हीरो WOD आज़ماएँ",
     "communityLink": "या, समुदाय का पता लगाएँ।"
   },
   "WodCard": {
@@ -183,7 +184,7 @@
     "backToDashboard": "डैशबोर्ड पर वापस",
     "viewWod": "WOD देखें",
     "fullWodLabel": "पूरा WOD: {wodName}",
-    "startSection": "شुरू करें",
+    "startSection": "शुरू करें",
     "accessRestricted": {
       "title": "पहुंच प्रतिबंधित",
       "description": "सामुदायिक WOD देखने के लिए कृपया साइन अप करें।",
@@ -310,7 +311,7 @@
       "welcomeTitle": "प्रीमियम में आपका स्वागत है!",
       "welcomeDescription": "आपका बैज अब सक्रिय है।",
       "cancelTitle": "भुगतान रद्द",
-      "cancelDescription": "तैयार होने पर पुनः प्रयास करें।",
+      "cancelDescription": "तैयाر होने पर पुनः प्रयास करें।",
       "loginRequiredTitle": "लॉगिन आवश्यक",
       "loginRequiredDescription": "प्रीमियम बनने के लिए साइन अप करें।",
       "paymentErrorTitle": "भुगतान त्रुटि",
@@ -339,7 +340,7 @@
       "deletingButton": "हटा रहे हैं...",
       "dialogTitle": "क्या आप सुनिश्चित हैं?",
       "dialogDescription": "यह आपका सारा डेटा मिटा देगा।",
-      "dialogCancel": "रद्द करें",
+      "dialogCancel": "ردد करें",
       "dialogConfirm": "हाँ, मेरा खाता हटाएँ",
       "helpText": "सारा डेटा हमेशा के लिए खो जाएगा।"
     },

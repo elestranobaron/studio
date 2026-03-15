@@ -1,3 +1,4 @@
+
 {
   "RootLayout": {
     "seo": {
@@ -81,12 +82,12 @@
       "percentile": "Percentila globală"
     },
     "leaderboard": {
-      "title": "Top 10 Atleți",
+      "title": "Top 100 Atleți",
       "rank": "Loc",
       "name": "Nume",
       "score": "Scor",
-      "descriptionOverall": "Top 10 clasament mondial după puncte (suma locurilor).",
-      "descriptionWorkout": "Top 10 atleți pentru evenimentul {year}.{workout}."
+      "descriptionOverall": "Top 100 clasament mondial după puncte (suma locurilor).",
+      "descriptionWorkout": "Top 100 atleți pentru evenimentul {year}.{workout}."
     },
     "charts": {
       "distribution": "Distribuția scorurilor",
@@ -164,8 +165,6 @@
     "deleteDialogConfirm": "Șterge",
     "deleteToastTitle": "Șters",
     "deleteToastDescription": "WOD șters cu succes.",
-    "deleteErrorToastTitle": "Eroare",
-    "deleteErrorToastDescription": "Nu s-a putut șterge.",
     "reactionErrorToastTitle": "Ups!",
     "reactionErrorToastDescription": "Eroare la reacție.",
     "viewImageAlt": "{wodName} - Foto",
@@ -268,7 +267,7 @@
     },
     "headerTitle": "Deblochează potențialul",
     "headerDescription": "Fii membru Premium.",
-    "offer": "OFERTĂ PE VIAȚĂ primii 300!",
+    "offer": "OFERTA PE VIAȚĂ primii 300!",
     "monthly": "Lunar",
     "yearly": "Anual",
     "discount": "-20%",
@@ -453,7 +452,7 @@
     "goAgain": "Încă o dată",
     "shareResult": "Distribuie",
     "shareModal": {
-      "title": "Rezultat: {wodName}",
+      "title": "Resultat: {wodName}",
       "description": "Gata în {finalTime}.",
       "finalTimeLabel": "TIMP",
       "screenshotReady": "Gata de poză!"

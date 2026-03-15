@@ -1,3 +1,4 @@
+
 {
   "RootLayout": {
     "seo": {
@@ -26,7 +27,7 @@
   "OpenStatsPage": {
     "seo": {
       "title": "Open Stats | Live CrossFit Open Leaderboards",
-      "description": "Analyze 2026 CrossFit Open results. Top 10 rankings, BMI/Rank correlations, and global score distributions."
+      "description": "Analyze 2026 CrossFit Open results. Top 100 rankings, BMI/Rank correlations, and global score distributions."
     },
     "title": "Open Stats",
     "description": "Live CrossFit Open data via public API",
@@ -81,12 +82,12 @@
       "percentile": "Global Percentile"
     },
     "leaderboard": {
-      "title": "Top 10 Athletes",
+      "title": "Top 100 Athletes",
       "rank": "Rank",
       "name": "Name",
       "score": "Score",
-      "descriptionOverall": "Top 10 global leaderboard by points (sum of ranks).",
-      "descriptionWorkout": "Top 10 athletes for the event {year}.{workout}."
+      "descriptionOverall": "Top 100 global leaderboard by points (sum of ranks).",
+      "descriptionWorkout": "Top 100 athletes for the event {year}.{workout}."
     },
     "charts": {
       "distribution": "Score Distribution",

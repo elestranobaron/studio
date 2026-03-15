@@ -1,3 +1,4 @@
+
 {
   "RootLayout": {
     "seo": {
@@ -81,12 +82,12 @@
       "percentile": "Globales Perzentil"
     },
     "leaderboard": {
-      "title": "Top 10 Athleten",
+      "title": "Top 100 Athleten",
       "rank": "Rang",
       "name": "Name",
       "score": "Ergebnis",
-      "descriptionOverall": "Top 10 Weltrangliste nach Punkten (Summe der Ränge).",
-      "descriptionWorkout": "Top 10 Athleten für das Workout {year}.{workout}."
+      "descriptionOverall": "Top 100 Weltrangliste nach Punkten (Summe der Ränge).",
+      "descriptionWorkout": "Top 100 Athleten für das Workout {year}.{workout}."
     },
     "charts": {
       "distribution": "Ergebnisverteilung",

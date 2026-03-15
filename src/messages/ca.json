@@ -1,3 +1,4 @@
+
 {
   "RootLayout": {
     "seo": {
@@ -81,12 +82,12 @@
       "percentile": "Percentil mundial"
     },
     "leaderboard": {
-      "title": "Top 10 Atletes",
+      "title": "Top 100 Atletes",
       "rank": "Posició",
       "name": "Nom",
       "score": "Puntuació",
-      "descriptionOverall": "Top 10 de la classificació mundial per punts (suma de posicions).",
-      "descriptionWorkout": "Top 10 dels atletes per a la prova {year}.{workout}."
+      "descriptionOverall": "Top 100 de la classificació mundial per punts (suma de posicions).",
+      "descriptionWorkout": "Top 100 dels atletes per a la prova {year}.{workout}."
     },
     "charts": {
       "distribution": "Distribució de puntuació",
@@ -119,7 +120,7 @@
     },
     "CommunityWodList": {
       "joinTitle": "Uneix-te a la comunitat!",
-      "joinDescription": "Crea un compte gratuït per veure, compartir i inspirar-te amb els WODs de toda la comunitat.",
+      "joinDescription": "Crea un compte gratuït per veure, compartir e inspirar-te amb els WODs de toda la comunitat.",
       "joinButton": "Registra't / Inicia sessió",
       "errorTitle": "S'ha produït un error",
       "errorDescription": "No s'han pogut carregar els WODs de la comunitat. Si us plau, torna-ho a provar més tard.",
@@ -401,9 +402,7 @@
     "startButton": "Inicia",
     "forTime": {
       "title": "For Time",
-      "description": "Cronòmetre simple.",
-      "timeCapLabel": "Time Cap (min)",
-      "timeCapPlaceholder": "ex: 20"
+      "description": "Cronòmetre simple."
     },
     "amrap": {
       "title": "AMRAP",
@@ -421,7 +420,7 @@
   "TimersPage": {
     "title": "Temporitzadors intel·ligents",
     "forTime": "For Time",
-    "forTimeDescription": "Cronòmetre simple.",
+    "forTimeDescription": "Cronmetre simple.",
     "amrap": "AMRAP",
     "amrapDescription": "Màximes repeticions en el temps.",
     "emom": "EMOM",

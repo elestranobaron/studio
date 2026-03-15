@@ -1,3 +1,4 @@
+
 {
   "RootLayout": {
     "seo": {
@@ -81,12 +82,12 @@
       "percentile": "글로벌 백분위"
     },
     "leaderboard": {
-      "title": "상위 10위 선수",
+      "title": "상위 100위 선수",
       "rank": "순위",
       "name": "이름",
       "score": "점수",
-      "descriptionOverall": "포인트별 상위 10위 글로벌 리더보드 (순위 합계).",
-      "descriptionWorkout": "이벤트 {year}.{workout}의 상위 10위 선수."
+      "descriptionOverall": "포인트별 상위 100위 글로벌 리더보드 (순위 합계).",
+      "descriptionWorkout": "이벤트 {year}.{workout}의 상위 100위 선수."
     },
     "charts": {
       "distribution": "점수 분포",

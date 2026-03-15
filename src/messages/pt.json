@@ -1,3 +1,4 @@
+
 {
   "RootLayout": {
     "seo": {
@@ -81,12 +82,12 @@
       "percentile": "Percentil global"
     },
     "leaderboard": {
-      "title": "Top 10 Atletas",
+      "title": "Top 100 Atletas",
       "rank": "Posição",
       "name": "Nome",
       "score": "Resultado",
-      "descriptionOverall": "Top 10 do ranking mundial por pontos (soma das posições).",
-      "descriptionWorkout": "Top 10 dos atletas para a prova {year}.{workout}."
+      "descriptionOverall": "Top 100 do ranking mundial por pontos (soma das posições).",
+      "descriptionWorkout": "Top 100 dos atletas para a prova {year}.{workout}."
     },
     "charts": {
       "distribution": "Distribuição de resultados",
@@ -153,7 +154,7 @@
     "edit": "Editar",
     "delete": "Excluir",
     "sharedToastTitle": "WOD Compartilhado!",
-    "sharedToastDescription": "Seu WOD agora está visível para a comunidade.",
+    "sharedToastDescription": "Seu WOD agora está visível para la comunidade.",
     "unsharedToastTitle": "WOD Deixou de ser Compartilhado",
     "unsharedToastDescription": "Seu WOD foi removido da comunidade.",
     "shareErrorToastTitle": "Erro",

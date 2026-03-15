@@ -1,3 +1,4 @@
+
 {
   "RootLayout": {
     "seo": {
@@ -81,12 +82,12 @@
       "percentile": "Percentil mundial"
     },
     "leaderboard": {
-      "title": "Top 10 Atletas",
+      "title": "Top 100 Atletas",
       "rank": "Rango",
       "name": "Nombre",
       "score": "Puntuación",
-      "descriptionOverall": "Top 10 de la clasificación mundial por puntos (suma de rangos).",
-      "descriptionWorkout": "Top 10 de atletas para el evento {year}.{workout}."
+      "descriptionOverall": "Top 100 de la clasificación mundial por puntos (suma de rangos).",
+      "descriptionWorkout": "Top 100 de atletas para el evento {year}.{workout}."
     },
     "charts": {
       "distribution": "Distribución de puntuación",
@@ -312,7 +313,7 @@
       "cancelTitle": "Pago cancelado",
       "cancelDescription": "Puedes volver a intentarlo cuando quieras.",
       "loginRequiredTitle": "Se requiere inicio de sesión",
-      "loginRequiredDescription": "Crea una cuenta para ser Premium.",
+      "loginRequiredDescription": "Crea un cuenta para ser Premium.",
       "paymentErrorTitle": "Error de pago",
       "paymentErrorDescription": "No se pudo iniciar el proceso."
     }

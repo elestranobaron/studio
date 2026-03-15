@@ -1,3 +1,4 @@
+
 {
   "RootLayout": {
     "seo": {
@@ -81,12 +82,12 @@
       "percentile": "Percentile globale"
     },
     "leaderboard": {
-      "title": "Top 10 Atleti",
+      "title": "Top 100 Atleti",
       "rank": "Posizione",
       "name": "Nome",
       "score": "Punteggio",
-      "descriptionOverall": "Top 10 della classifica mondiale per punti (somma dei ranghi).",
-      "descriptionWorkout": "Top 10 degli atleti per l'evento {year}.{workout}."
+      "descriptionOverall": "Top 100 della classifica mondiale per punti (somma dei ranghi).",
+      "descriptionWorkout": "Top 100 degli atleti per l'evento {year}.{workout}."
     },
     "charts": {
       "distribution": "Distribuzione punteggi",

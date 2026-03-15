@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useEffect, useMemo, useState } from 'react';
@@ -12,7 +13,7 @@ import {
   ScatterChart, Scatter, Cell
 } from 'recharts';
 import { 
-  LoaderCircle, Info, Users, BarChart3, Weight, Trophy, 
+  LoaderCircle, Users, BarChart3, Weight, Trophy, 
   AlertTriangle, Calendar as CalendarIcon, Activity, Target, Gem, Lock, ListOrdered, ChevronDown, ChevronUp, Scale, Ruler, UserCircle2, Filter, Info as InfoIcon
 } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -123,11 +124,9 @@ export default function OpenStatsClient() {
       .filter(e => e.x !== null);
   }, [stats, scatterMetric]);
 
-  const topTenAthletes = useMemo(() => {
+  const athletesList = useMemo(() => {
     if (!stats || !stats.data) return [];
-    return [...stats.data]
-      .sort((a, b) => a.rank - b.rank)
-      .slice(0, 10);
+    return [...stats.data].sort((a, b) => a.rank - b.rank);
   }, [stats]);
 
   const userNumericScore = useMemo(() => {
@@ -461,7 +460,7 @@ export default function OpenStatsClient() {
                       />
                       <Scatter name="Athletes" data={scatterData}>
                         {scatterData.map((entry, index) => (
-                          <Cell key={`cell-${index}`} fill={entry.y <= 100 ? '#eab308' : 'hsl(var(--primary))'} />
+                          <Cell key={`cell-${index}`} fill={entry.y <= 10 ? '#eab308' : 'hsl(var(--primary))'} />
                         ))}
                       </Scatter>
                     </ScatterChart>
@@ -502,7 +501,7 @@ export default function OpenStatsClient() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {topTenAthletes.map((athlete, idx) => (
+                  {athletesList.map((athlete, idx) => (
                     <React.Fragment key={`row-group-${idx}`}>
                       <TableRow 
                         className="cursor-pointer hover:bg-muted/50"

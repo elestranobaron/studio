@@ -1,3 +1,4 @@
+
 {
   "RootLayout": {
     "seo": {
@@ -81,12 +82,12 @@
       "percentile": "Percentyl globalny"
     },
     "leaderboard": {
-      "title": "Top 10 atleci",
+      "title": "Top 100 atleci",
       "rank": "Pozycja",
       "name": "Imię",
       "score": "Wynik",
-      "descriptionOverall": "Top 10 globalnej listy liderów według punktów (suma miejsc).",
-      "descriptionWorkout": "Top 10 sportowców dla konkurencji {year}.{workout}."
+      "descriptionOverall": "Top 100 globalnej listy liderów według punktów (suma miejsc).",
+      "descriptionWorkout": "Top 100 sportowców dla konkurencji {year}.{workout}."
     },
     "charts": {
       "distribution": "Rozkład wyników",

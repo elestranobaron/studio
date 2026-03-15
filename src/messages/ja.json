@@ -1,3 +1,4 @@
+
 {
   "RootLayout": {
     "seo": {
@@ -81,12 +82,12 @@
       "percentile": "グローバルパーセンタイル"
     },
     "leaderboard": {
-      "title": "トップ10アスリート",
+      "title": "トップ100アスリート",
       "rank": "順位",
       "name": "名前",
       "score": "スコア",
-      "descriptionOverall": "ポイント別のトップ10グローバルリーダーボード（ランクの合計）。",
-      "descriptionWorkout": "イベント{year}.{workout}のトップ10アスリート。"
+      "descriptionOverall": "ポイント別のトップ100グローバルリーダーボード（ランクの合計）。",
+      "descriptionWorkout": "イベント{year}.{workout}のトップ100アスリート。"
     },
     "charts": {
       "distribution": "スコア分布",

@@ -1,3 +1,4 @@
+
 {
   "RootLayout": {
     "seo": {
@@ -81,12 +82,12 @@
       "percentile": "全球百分位"
     },
     "leaderboard": {
-      "title": "前10名运动员",
+      "title": "前100名运动员",
       "rank": "排名",
       "name": "姓名",
       "score": "得分",
-      "descriptionOverall": "按积分排列的前10名全球排行榜（排名总和）。",
-      "descriptionWorkout": "项目{year}.{workout}的前10名运动员。"
+      "descriptionOverall": "按积分排列的前100名全球排行榜（排名总和）。",
+      "descriptionWorkout": "项目{year}.{workout}的前100名运动员。"
     },
     "charts": {
       "distribution": "分数分布",

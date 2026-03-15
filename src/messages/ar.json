@@ -1,3 +1,4 @@
+
 {
   "RootLayout": {
     "seo": {
@@ -81,12 +82,12 @@
       "percentile": "النسبة المئوية العالمية"
     },
     "leaderboard": {
-      "title": "أفضل 10 رياضيين",
+      "title": "أفضل 100 رياضيين",
       "rank": "الترتيب",
       "name": "الاسم",
       "score": "النتيجة",
-      "descriptionOverall": "أفضل 10 في لوحة المتصدرين العالمية حسب النقاط (مجموع الرتب).",
-      "descriptionWorkout": "أفضل 10 رياضيين للحدث {year}.{workout}."
+      "descriptionOverall": "أفضل 100 في لوحة المتصدرين العالمية حسب النقاط (مجموع الرتب).",
+      "descriptionWorkout": "أفضل 100 رياضيين للحدث {year}.{workout}."
     },
     "charts": {
       "distribution": "توزيع الدرجات",
@@ -446,7 +447,7 @@
       "description": "مؤقتات احترافية."
     },
     "title": "المؤقتات الذكية",
-    "forTime": "على الوقت",
+    "forTime": "For Time",
     "forTimeDescription": "ساعة توقيت بسيطة.",
     "amrap": "AMRAP",
     "amrapDescription": "أقصى تكرارات في الوقت.",

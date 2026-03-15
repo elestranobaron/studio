@@ -1,3 +1,4 @@
+
 {
   "RootLayout": {
     "seo": {
@@ -81,12 +82,12 @@
       "percentile": "Globaal Percentiel"
     },
     "leaderboard": {
-      "title": "Top 10 Atleten",
+      "title": "Top 100 Atleten",
       "rank": "Rang",
       "name": "Naam",
       "score": "Score",
-      "descriptionOverall": "Top 10 globale leaderboard op punten (som van rangen).",
-      "descriptionWorkout": "Top 10 atleten voor het event {year}.{workout}."
+      "descriptionOverall": "Top 100 globale leaderboard op punten (som van rangen).",
+      "descriptionWorkout": "Top 100 atleten voor het event {year}.{workout}."
     },
     "charts": {
       "distribution": "Scoreverdeling",

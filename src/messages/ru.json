@@ -1,3 +1,4 @@
+
 {
   "RootLayout": {
     "seo": {
@@ -81,12 +82,12 @@
       "percentile": "Мировой процентиль"
     },
     "leaderboard": {
-      "title": "Топ 10 атлетов",
+      "title": "Топ 100 атлетов",
       "rank": "Ранг",
       "name": "Имя",
       "score": "Результат",
-      "descriptionOverall": "Топ-10 мирового рейтинга по очкам (сумма рангов).",
-      "descriptionWorkout": "Топ-10 атлетов в событии {year}.{workout}."
+      "descriptionOverall": "Топ-100 мирового рейтинга по очкам (сумма рангов).",
+      "descriptionWorkout": "Топ-100 атлетов в событии {year}.{workout}."
     },
     "charts": {
       "distribution": "Распределение результатов",
