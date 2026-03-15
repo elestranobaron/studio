@@ -158,7 +158,11 @@ export const createCheckout = onCall({ cors: true }, async (request) => {
 
 export const createCustomerPortal = onCall({ cors: true }, async (request) => {
     if (!request.auth) throw new HttpsError("unauthenticated", "Auth required");
+    const { turnstileToken } = request.data;
     
+    const isValid = await validateTurnstile(turnstileToken, request.rawRequest.ip);
+    if (!isValid) throw new HttpsError("permission-denied", "Captcha failed");
+
     const stripeKey = process.env.STRIPE_SECRET_KEY;
     if (!stripeKey) throw new HttpsError("failed-precondition", "Stripe key missing");
 

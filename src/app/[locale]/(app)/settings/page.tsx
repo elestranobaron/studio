@@ -1,11 +1,11 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth, useUser, useFirebase } from '@/firebase';
 import { deleteUser } from 'firebase/auth';
-import { collection, query, getDocs, writeBatch } from 'firebase/firestore';
+import { collection, query, getDocs, writeBatch, doc } from 'firebase/firestore';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -30,6 +30,7 @@ import { LoaderCircle, Trash2, CreditCard, ArrowLeft } from 'lucide-react';
 import { SidebarTrigger, useSidebar } from '@/components/ui/sidebar';
 import { getFunctions, httpsCallable } from 'firebase/functions';
 import { useTranslations } from 'next-intl';
+import Turnstile from '@/components/turnstile';
 
 export default function SettingsPage() {
   const t = useTranslations('SettingsPage');
@@ -40,16 +41,25 @@ export default function SettingsPage() {
   const { toast } = useToast();
   const [isDeleting, setIsDeleting] = useState(false);
   const [isPortalLoading, setIsPortalLoading] = useState(false);
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
   const { toggleSidebar } = useSidebar();
 
 
   const handleManageSubscription = async () => {
+    if (!turnstileToken) {
+        toast({
+            variant: "destructive",
+            title: "Vérification requise",
+            description: "Veuillez valider le captcha avant de continuer."
+        });
+        return;
+    }
+
     setIsPortalLoading(true);
     try {
       const functions = getFunctions();
-      // Correction du nom de la fonction pour correspondre à l'export dans functions/src/index.ts
       const createCustomerPortal = httpsCallable(functions, 'createCustomerPortal');
-      const { data } = await createCustomerPortal();
+      const { data } = await createCustomerPortal({ turnstileToken });
       const portalUrl = (data as { url: string }).url;
       if (portalUrl) {
         window.location.href = portalUrl;
@@ -80,7 +90,6 @@ export default function SettingsPage() {
     setIsDeleting(true);
 
     try {
-      // 1. Delete all user data from Firestore
       const wodsCollectionRef = collection(firestore, 'users', user.uid, 'wods');
       const q = query(wodsCollectionRef);
       const querySnapshot = await getDocs(q);
@@ -93,21 +102,17 @@ export default function SettingsPage() {
         await batch.commit();
       }
 
-      // 2. Delete the user from Firebase Authentication
-      // This requires recent login, which is a security feature.
       if (auth.currentUser) {
         await deleteUser(auth.currentUser);
       } else {
         throw new Error("No authenticated user found to delete.");
       }
 
-
       toast({
         title: t('toasts.deleteSuccessTitle'),
         description: t('toasts.deleteSuccessDescription'),
       });
 
-      // Redirect the user after deletion
       router.push('/login');
     } catch (error: any) {
       console.error('Error deleting account:', error);
@@ -115,7 +120,6 @@ export default function SettingsPage() {
       let description = t('toasts.deleteFailedDescription');
       if (error.code === 'auth/requires-recent-login') {
         description = t('toasts.deleteFailedRecentLogin');
-        // Optional: sign out the user to force them to re-authenticate
         if (auth) {
             await auth.signOut();
         }
@@ -131,6 +135,14 @@ export default function SettingsPage() {
       setIsDeleting(false);
     }
   };
+
+  const onTurnstileSuccess = useCallback((token: string) => {
+    setTurnstileToken(token);
+  }, []);
+
+  const onTurnstileExpire = useCallback(() => {
+    setTurnstileToken(null);
+  }, []);
 
   const accountType = user?.isAnonymous 
     ? t('profile.typeAnonymous') 
@@ -170,18 +182,26 @@ export default function SettingsPage() {
                             <p>{t('profile.loading')}</p>
                         </div>
                     ) : user ? (
-                        <div className="space-y-4">
-                           <p><strong>{t('profile.email', { email: user.email || t('profile.emailNotSpecified') })}</strong></p>
-                           <p><strong>{t('profile.accountType', { type: accountType })}</strong></p>
+                        <div className="space-y-6">
+                           <div className="space-y-1">
+                                <p><strong>{t('profile.email', { email: user.email || t('profile.emailNotSpecified') })}</strong></p>
+                                <p><strong>{t('profile.accountType', { type: accountType })}</strong></p>
+                           </div>
+                           
                            {user.premium && (
-                             <Button onClick={handleManageSubscription} disabled={isPortalLoading}>
-                               {isPortalLoading ? (
-                                 <LoaderCircle className="mr-2 animate-spin" />
-                               ) : (
-                                 <CreditCard className="mr-2" />
-                               )}
-                               {t('profile.manageSubscription')}
-                             </Button>
+                             <div className="space-y-4 pt-4 border-t">
+                               <div className="flex justify-start">
+                                    <Turnstile onSuccess={onTurnstileSuccess} onExpire={onTurnstileExpire} />
+                               </div>
+                               <Button onClick={handleManageSubscription} disabled={isPortalLoading || !turnstileToken} className="w-full sm:w-auto">
+                                 {isPortalLoading ? (
+                                   <LoaderCircle className="mr-2 animate-spin" />
+                                 ) : (
+                                   <CreditCard className="mr-2" />
+                                 )}
+                                 {t('profile.manageSubscription')}
+                               </Button>
+                             </div>
                            )}
                         </div>
                     ) : (
