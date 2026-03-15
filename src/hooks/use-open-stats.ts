@@ -1,4 +1,3 @@
-
 import { useState, useCallback } from 'react';
 
 export interface WorkoutScoreDetail {
@@ -63,8 +62,8 @@ export function useOpenStats() {
   const [stats, setStats] = useState<StatsResult | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchLeaderboard = useCallback(async (year = 2026, workout = 0, division = 1, region = 0, scaled = 0, maxPages = 2) => {
-    const cacheKey = `${year}-${workout}-${division}-${region}-${scaled}-${maxPages}`;
+  const fetchLeaderboard = useCallback(async (stage = "open", year = 2026, workout = 0, division = 1, region = 0, scaled = 0, maxPages = 2) => {
+    const cacheKey = `${stage}-${year}-${workout}-${division}-${region}-${scaled}-${maxPages}`;
     
     if (statsCache.has(cacheKey)) {
       setStats(statsCache.get(cacheKey)!);
@@ -77,7 +76,7 @@ export function useOpenStats() {
 
     try {
       for (let page = 1; page <= maxPages; page++) {
-        const url = `/api/open-stats?year=${year}&division=${division}&region=${region}&scaled=${scaled}&page=${page}&sort=${workout}`;
+        const url = `/api/open-stats?stage=${stage}&year=${year}&division=${division}&region=${region}&scaled=${scaled}&page=${page}&sort=${workout}`;
         const response = await fetch(url);
         
         if (!response.ok) break;
@@ -106,7 +105,6 @@ export function useOpenStats() {
           let finished = false;
 
           if (workout !== 0) {
-            // 1. Détection du temps (ex: "12:30")
             if (officialScoreDisplay.includes(':')) {
               const timePart = officialScoreDisplay.split('(')[0].trim();
               const parts = timePart.split(':').map(p => parseInt(p));
@@ -119,7 +117,6 @@ export function useOpenStats() {
               }
             }
 
-            // 2. Extraction robuste des répétitions
             const parenMatch = officialScoreDisplay.match(/\((\d+)\)/);
             const breakdownMatch = breakdownStr.match(/(\d+)\s*(?:reps|total)/i);
             const repsSuffixMatch = officialScoreDisplay.match(/^(\d+)\s*reps/i);
@@ -168,7 +165,7 @@ export function useOpenStats() {
         });
 
         allEntries.push(...parsed);
-        if (page >= json.pagination?.totalPages) break;
+        if (page >= (json.pagination?.totalPages || 1)) break;
       }
 
       if (allEntries.length === 0) {
@@ -177,7 +174,6 @@ export function useOpenStats() {
 
       const isWorkoutView = workout !== 0;
       
-      // --- Déduction dynamique haute fidélité ---
       let detectedMaxReps = 0;
       let maxNonFinisherReps = 0;
       let anyFinisher = false;
@@ -189,16 +185,12 @@ export function useOpenStats() {
               if (e.finished) anyFinisher = true;
           });
 
-          // Règle du "Cap + 1" pour les WODs comme le 26.3
-          // Si on a des finishers mais que le max reps trouvé est égal au max non-finisher,
-          // alors le total réel est forcément au moins max + 1.
           if (anyFinisher && detectedMaxReps <= maxNonFinisherReps) {
               detectedMaxReps = maxNonFinisherReps + 1;
           }
       }
       const maxRepsInSample = detectedMaxReps;
 
-      // Unification pour les épreuves mixtes
       if (isWorkoutView) {
           allEntries.forEach(e => {
               if (e.finished) {
@@ -217,7 +209,6 @@ export function useOpenStats() {
               const maxSeconds = Math.max(...finishedAthletes.map(e => e.seconds!));
               const m = Math.floor(maxSeconds / 60);
               const s = maxSeconds % 60;
-              // On arrondit souvent à la minute supérieure pour le cap, ou on montre le temps du Top 100
               inferredTimeCap = `${m}:${s.toString().padStart(2, '0')}`;
           } else {
               inferredTimeCap = "N/A";
