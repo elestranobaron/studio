@@ -14,7 +14,7 @@ import {
 } from 'recharts';
 import { 
   LoaderCircle, Info, Users, BarChart3, Weight, Trophy, 
-  AlertTriangle, Calendar as CalendarIcon, Activity, Target, Gem, Lock, ListOrdered, ChevronDown, ChevronUp 
+  AlertTriangle, Calendar as CalendarIcon, Activity, Target, Gem, Lock, ListOrdered, ChevronDown, ChevronUp, Scale, Ruler, UserCircle2
 } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
@@ -22,6 +22,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
+
+type ScatterMetric = 'bmi' | 'age' | 'height' | 'weight';
 
 export default function OpenStatsClient() {
   const t = useTranslations('OpenStatsPage');
@@ -33,6 +35,7 @@ export default function OpenStatsClient() {
   const [workout, setWorkout] = useState("0");
   const [division, setDivision] = useState("1");
   const [region, setRegion] = useState("0");
+  const [scatterMetric, setScatterMetric] = useState<ScatterMetric>('bmi');
   
   const [userScoreInput, setUserScoreInput] = useState("");
   const [isMounted, setIsMounted] = useState(false);
@@ -59,7 +62,7 @@ export default function OpenStatsClient() {
   const histogramData = useMemo(() => {
     if (!stats || !stats.data || stats.data.length === 0) return [];
     
-    const dataToGraph = stats.isTime ? stats.data.filter(e => e.isTime) : stats.data;
+    const dataToGraph = stats.data;
     if (dataToGraph.length === 0) return [];
 
     const bins: Record<string, number> = {};
@@ -88,9 +91,19 @@ export default function OpenStatsClient() {
   const scatterData = useMemo(() => {
     if (!stats || !stats.data) return [];
     return stats.data
-      .filter(e => e.bmi && e.bmi < 40 && e.bmi > 15)
-      .map(e => ({ x: e.bmi, y: e.rank, name: e.name }));
-  }, [stats]);
+      .map(e => {
+        let xValue: number | null = null;
+        switch(scatterMetric) {
+          case 'age': xValue = e.age; break;
+          case 'height': xValue = e.heightCm; break;
+          case 'weight': xValue = e.weightKg; break;
+          case 'bmi': 
+          default: xValue = e.bmi; break;
+        }
+        return { x: xValue, y: e.rank, name: e.name };
+      })
+      .filter(e => e.x !== null);
+  }, [stats, scatterMetric]);
 
   const topTenAthletes = useMemo(() => {
     if (!stats || !stats.data) return [];
@@ -131,6 +144,13 @@ export default function OpenStatsClient() {
       </div>
     );
   }
+
+  const scatterConfig = {
+    bmi: { domain: [18, 35], label: t('metrics.selector.bmi'), icon: Weight },
+    age: { domain: [14, 65], label: t('metrics.selector.age'), icon: UserCircle2 },
+    height: { domain: [140, 210], label: t('metrics.selector.height'), icon: Ruler },
+    weight: { domain: [45, 130], label: t('metrics.selector.weight'), icon: Scale },
+  };
 
   return (
     <div className="flex flex-col h-full bg-background">
@@ -292,9 +312,7 @@ export default function OpenStatsClient() {
                 {workout === "0" ? "Distribution des rangs" : t('charts.distribution')}
               </CardTitle>
               <CardDescription>
-                {workout === "0" 
-                  ? "Aperçu de la position relative des athlètes dans l'échantillon." 
-                  : "Fréquence des scores obtenus par les athlètes analysés."}
+                {t('charts.distributionSub')}
               </CardDescription>
             </CardHeader>
             <CardContent className="pt-6 h-full">
@@ -313,7 +331,7 @@ export default function OpenStatsClient() {
                         fontSize={10} 
                         tickLine={false} 
                         axisLine={false}
-                        label={{ value: workout === "0" ? 'Rang Mondial' : 'Score (Reps/Temps)', position: 'insideBottom', offset: -10, fontSize: 10, fill: 'hsl(var(--muted-foreground))' }}
+                        label={{ value: workout === "0" ? 'Rang Mondial' : 'Score', position: 'insideBottom', offset: -10, fontSize: 10, fill: 'hsl(var(--muted-foreground))' }}
                       />
                       <YAxis stroke="hsl(var(--muted-foreground))" fontSize={10} tickLine={false} axisLine={false} label={{ value: 'Nb Athlètes', angle: -90, position: 'insideLeft', fontSize: 10, fill: 'hsl(var(--muted-foreground))' }} />
                       <Tooltip 
@@ -348,9 +366,32 @@ export default function OpenStatsClient() {
           </Card>
 
           <Card className="shadow-lg overflow-hidden h-[450px]">
-            <CardHeader className="bg-muted/30 border-b">
-              <CardTitle className="flex items-center gap-2 text-lg"><Weight className="h-5 w-5 text-primary" /> {t('charts.bmi')}</CardTitle>
-              <CardDescription>{t('charts.bmiSub')}</CardDescription>
+            <CardHeader className="bg-muted/30 border-b flex flex-row items-center justify-between">
+              <div>
+                <CardTitle className="flex items-center gap-2 text-lg">
+                  {React.createElement(scatterConfig[scatterMetric].icon, { className: "h-5 w-5 text-primary" })}
+                  {t('charts.bmi')}
+                </CardTitle>
+                <CardDescription>{t('charts.bmiSub')}</CardDescription>
+              </div>
+              <div className="flex items-center gap-2">
+                {!user?.premium && <Gem className="h-4 w-4 text-yellow-500" />}
+                <Select 
+                  value={scatterMetric} 
+                  onValueChange={(v) => setScatterMetric(v as ScatterMetric)}
+                  disabled={!user?.premium || isLoading}
+                >
+                  <SelectTrigger className="w-[100px] h-8 text-xs bg-background/50">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="bmi">{t('metrics.selector.bmi')}</SelectItem>
+                    <SelectItem value="age">{t('metrics.selector.age')}</SelectItem>
+                    <SelectItem value="height">{t('metrics.selector.height')}</SelectItem>
+                    <SelectItem value="weight">{t('metrics.selector.weight')}</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </CardHeader>
             <CardContent className="pt-6 h-full">
               <div className="h-[300px] w-full">
@@ -362,7 +403,15 @@ export default function OpenStatsClient() {
                   <ResponsiveContainer width="100%" height="100%" minHeight={300}>
                     <ScatterChart margin={{ top: 10, right: 10, bottom: 20, left: -20 }}>
                       <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                      <XAxis type="number" dataKey="x" name="BMI" domain={[18, 35]} label={{ value: 'IMC (BMI)', position: 'insideBottom', offset: -10, fontSize: 10, fill: 'hsl(var(--muted-foreground))' }} stroke="hsl(var(--muted-foreground))" fontSize={10} />
+                      <XAxis 
+                        type="number" 
+                        dataKey="x" 
+                        name={scatterMetric} 
+                        domain={scatterConfig[scatterMetric].domain} 
+                        label={{ value: scatterConfig[scatterMetric].label, position: 'insideBottom', offset: -10, fontSize: 10, fill: 'hsl(var(--muted-foreground))' }} 
+                        stroke="hsl(var(--muted-foreground))" 
+                        fontSize={10} 
+                      />
                       <YAxis type="number" dataKey="y" name="Rank" reversed domain={['auto', 'auto']} label={{ value: 'Rang (1 = Meilleur)', angle: -90, position: 'insideLeft', fontSize: 10, fill: 'hsl(var(--muted-foreground))' }} stroke="hsl(var(--muted-foreground))" fontSize={10} />
                       <Tooltip 
                         cursor={{ strokeDasharray: '3 3' }}
@@ -473,12 +522,12 @@ export default function OpenStatsClient() {
         <div className="bg-muted/30 p-4 rounded-lg flex items-start gap-3 border border-border/50">
           <Info className="h-5 w-5 text-primary mt-0.5" />
           <div className="text-sm text-muted-foreground">
-            <p className="font-semibold text-foreground">Méthodologie des graphiques</p>
+            <p className="font-semibold text-foreground">{t('methodology.title')}</p>
             <p className="mb-2">
-              <strong>Unification des scores</strong> : Pour permettre une comparaison visuelle cohérente sur les épreuves mixtes (temps + répétitions), tous les scores sont convertis en répétitions totales. Les athlètes ayant terminé l'épreuve sont regroupés à l'extrémité droite du graphique.
+              <strong>{t('methodology.unificationTitle')}</strong> : {t('methodology.unificationDesc')}
             </p>
             <p>
-              <strong>Overall</strong> : Le score correspond à la somme des rangs obtenus. Un score faible indique une meilleure performance globale...
+              <strong>{t('methodology.overallTitle')}</strong> : {t('methodology.overallDesc')}
             </p>
           </div>
         </div>

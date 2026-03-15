@@ -35,7 +35,14 @@
       "athletes": "Athlètes Analysés",
       "median": "Médiane",
       "top10": "Top 10%",
-      "elite": "Élite (1%)"
+      "elite": "Élite (1%)",
+      "selector": {
+        "label": "Métrique",
+        "bmi": "IMC",
+        "age": "Âge",
+        "height": "Taille",
+        "weight": "Poids"
+      }
     },
     "userScore": {
       "title": "Comparer mon score",
@@ -50,12 +57,15 @@
     "charts": {
       "distribution": "Distribution des scores",
       "distributionSub": "Répartition sur l'échantillon analysé",
-      "bmi": "Corrélation IMC / Rang",
-      "bmiSub": "Impact de l'IMC sur le classement mondial"
+      "bmi": "Corrélation de Performance",
+      "bmiSub": "Impact du profil physique sur le classement mondial"
     },
     "methodology": {
-      "title": "Méthodologie",
-      "description": "Données récupérées en temps réel via l'API publique CrossFit."
+      "title": "Méthodologie des graphiques",
+      "unificationTitle": "Unification des scores",
+      "unificationDesc": "Pour permettre une comparaison visuelle cohérente sur les épreuves mixtes (temps + répétitions), tous les scores sont convertis en répétitions totales. Les athlètes ayant terminé l'épreuve sont regroupés à l'extrémité droite du graphique.",
+      "overallTitle": "Overall",
+      "overallDesc": "Le score correspond à la somme des rangs obtenus. Un score faible indique une meilleure performance globale."
     }
   },
   "DashboardPage": {
@@ -152,7 +162,7 @@
     "analysisFailedTitle": "L'analyse a échoué",
     "analysisFailedDescription": "L'image du WOD n'a pas pu être analysée. Veuillez réessayer.",
     "duplicateDialogTitle": "WOD en double détecté",
-    "duplicateDialogDescription": "Cet entraînement semble identique à un WOD que vous avez déjà enregistré.",
+    "duplicateDialogDescription": "Cet entraînement semble identique à un WOD que vous avez enregistré.",
     "duplicateDialogSavedOn": "Enregistré le {date}",
     "duplicateDialogQuestion": "Voulez-vous quand même enregistrer celui-ci ?",
     "duplicateDialogCancel": "Annuler",

@@ -35,7 +35,14 @@
       "athletes": "Athletes Analyzed",
       "median": "Median",
       "top10": "Top 10%",
-      "elite": "Elite (1%)"
+      "elite": "Elite (1%)",
+      "selector": {
+        "label": "Metric",
+        "bmi": "BMI",
+        "age": "Age",
+        "height": "Height",
+        "weight": "Weight"
+      }
     },
     "userScore": {
       "title": "Compare my score",
@@ -50,12 +57,15 @@
     "charts": {
       "distribution": "Score Distribution",
       "distributionSub": "Distribution over the analyzed sample",
-      "bmi": "BMI / Rank Correlation",
-      "bmiSub": "Impact of BMI on global ranking"
+      "bmi": "Performance Correlation",
+      "bmiSub": "Correlation between physique and global ranking"
     },
     "methodology": {
-      "title": "Methodology",
-      "description": "Data retrieved in real-time via the CrossFit public API."
+      "title": "Charts Methodology",
+      "unificationTitle": "Score Unification",
+      "unificationDesc": "To allow consistent visual comparison on mixed events (time + repetitions), all scores are converted to total repetitions. Athletes who finished the event are grouped at the right end of the graph.",
+      "overallTitle": "Overall",
+      "overallDesc": "The score corresponds to the sum of ranks obtained. A low score indicates a better overall performance."
     }
   },
   "DashboardPage": {
