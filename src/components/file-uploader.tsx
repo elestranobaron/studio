@@ -173,6 +173,14 @@ export function FileUploader() {
   const isActionDisabled = isLoading || isSaving || isUserLoading;
   const flatDescription = analysisResult?.description?.map((s: any) => s.content).join('\n\n') || '';
 
+  const handleDescriptionChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    if (!analysisResult) return;
+    setAnalysisResult({
+      ...analysisResult,
+      description: [{ title: "Workout", content: e.target.value }]
+    });
+  };
+
   if (isLoading) {
     return (
       <div className="w-full flex-1 flex flex-col items-center justify-center gap-4 text-center">
@@ -234,7 +242,14 @@ export function FileUploader() {
                   </SelectContent>
                 </Select>
               </div>
-              <Textarea value={flatDescription} rows={10} className="whitespace-pre-wrap font-mono text-sm" placeholder="Description" disabled={isActionDisabled} />
+              <Textarea 
+                value={flatDescription} 
+                onChange={handleDescriptionChange}
+                rows={10} 
+                className="whitespace-pre-wrap font-mono text-sm" 
+                placeholder="Description" 
+                disabled={isActionDisabled} 
+              />
               <Button onClick={handleSave} className="w-full" disabled={isActionDisabled}>{isSaving ? "Saving..." : t('saveWodButton')}</Button>
             </div>
           )}
