@@ -1,4 +1,3 @@
-
 {
   "RootLayout": {
     "seo": {
@@ -45,6 +44,12 @@
       "region": "Região",
       "scaled": "Tipo de prova",
       "allWorkouts": "Geral",
+      "stages": {
+        "open": "Open",
+        "quarterfinals": "Quartas de final",
+        "semifinals": "Semifinais",
+        "games": "Games"
+      },
       "selector": {
         "bmi": "IMC",
         "age": "Idade",
@@ -79,13 +84,18 @@
     },
     "userScore": {
       "title": "Comparar meu resultado",
-      "percentile": "Percentil global"
+      "percentile": "Percentil global",
+      "premiumLabel": "Premium"
     },
     "leaderboard": {
       "title": "Top 100 Atletas",
       "rank": "Posição",
       "name": "Nome",
       "score": "Resultado",
+      "points": "Pontos",
+      "retry": "Tentar novamente",
+      "overallRank": "Posição Global",
+      "workoutRank": "Posição Prova",
       "descriptionOverall": "Top 100 do ranking mundial por pontos (soma das posições).",
       "descriptionWorkout": "Top 100 dos atletas para a prova {year}.{workout}."
     },
@@ -98,7 +108,7 @@
     "methodology": {
       "title": "Metodologia dos gráficos",
       "unificationTitle": "Unificação de resultados",
-      "unificationDesc": "Para permitir uma comparação visual coerente em provas mistas (tempo + repetições), todos os resultados são convertidos em repetições totais. Os atletas que terminaram a prova são agrupados na extremidade direita do gráfico.",
+      "unificationDesc": "Para permitir uma comparação visual coerente em provas mistas (tempo + repetições), todos os resultados sont convertidos em repetições totais. Os atletas que terminaram a prova são agrupados na extremidade direita do gráfico.",
       "overallTitle": "Overall",
       "overallDesc": "A pontuação corresponde à soma das posições obtidas. Uma pontuação baixa indica um melhor desempenho geral."
     }
@@ -187,7 +197,7 @@
     "startSection": "Iniciar",
     "accessRestricted": {
       "title": "Accesso Restrito",
-      "description": "Por favor, cadastre-se ou faça login para ver os WODs da comunidade.",
+      "description": "Por favor, cadastre-se ou faça login para ver os WODs de la comunidade.",
       "button": "Cadastre-se / Entrar"
     }
   },
@@ -270,7 +280,7 @@
     "headerTitle": "Liberte Todo o Seu Potencial",
     "headerDescription": "Torne-se um membro Premium para apoiar o app.",
     "offer": "OFERTA VITALÍCIA para os primeiros 300 membros!",
-    "monthly": "Mensal",
+    "monthly": "Mensual",
     "yearly": "Anual",
     "discount": "-20%",
     "freePlan": {

@@ -1,4 +1,3 @@
-
 {
   "RootLayout": {
     "seo": {
@@ -45,6 +44,12 @@
       "region": "Region",
       "scaled": "Workout-Typ",
       "allWorkouts": "Gesamtwertung",
+      "stages": {
+        "open": "Open",
+        "quarterfinals": "Viertelfinale",
+        "semifinals": "Halbfinale",
+        "games": "Games"
+      },
       "selector": {
         "bmi": "BMI",
         "age": "Alter",
@@ -79,13 +84,18 @@
     },
     "userScore": {
       "title": "Mein Ergebnis vergleichen",
-      "percentile": "Globales Perzentil"
+      "percentile": "Globales Perzentil",
+      "premiumLabel": "Premium"
     },
     "leaderboard": {
       "title": "Top 100 Athleten",
       "rank": "Rang",
       "name": "Name",
       "score": "Ergebnis",
+      "points": "Punkte",
+      "retry": "Wiederholen",
+      "overallRank": "Gesamtrang",
+      "workoutRank": "Workout-Rang",
       "descriptionOverall": "Top 100 Weltrangliste nach Punkten (Summe der Ränge).",
       "descriptionWorkout": "Top 100 Athleten für das Workout {year}.{workout}."
     },

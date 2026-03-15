@@ -1,4 +1,3 @@
-
 {
   "RootLayout": {
     "seo": {
@@ -45,6 +44,12 @@
       "region": "지역",
       "scaled": "WOD 유형",
       "allWorkouts": "종합",
+      "stages": {
+        "open": "오픈",
+        "quarterfinals": "준준결승",
+        "semifinals": "준결승",
+        "games": "게임스"
+      },
       "selector": {
         "bmi": "BMI",
         "age": "연령",
@@ -79,13 +84,18 @@
     },
     "userScore": {
       "title": "내 점수 비교하기",
-      "percentile": "글로벌 백분위"
+      "percentile": "글로벌 백분위",
+      "premiumLabel": "프리미엄"
     },
     "leaderboard": {
       "title": "상위 100위 선수",
       "rank": "순위",
       "name": "이름",
       "score": "점수",
+      "points": "포인트",
+      "retry": "재시도",
+      "overallRank": "종합 순위",
+      "workoutRank": "운동 순위",
       "descriptionOverall": "포인트별 상위 100위 글로벌 리더보드 (순위 합계).",
       "descriptionWorkout": "이벤트 {year}.{workout}의 상위 100위 선수."
     },

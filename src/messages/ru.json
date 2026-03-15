@@ -1,4 +1,3 @@
-
 {
   "RootLayout": {
     "seo": {
@@ -45,6 +44,12 @@
       "region": "Регион",
       "scaled": "Тип WOD",
       "allWorkouts": "Общий зачет",
+      "stages": {
+        "open": "Open",
+        "quarterfinals": "Четвертьфинал",
+        "semifinals": "Полуфинал",
+        "games": "Games"
+      },
       "selector": {
         "bmi": "ИМТ",
         "age": "Возраст",
@@ -79,13 +84,18 @@
     },
     "userScore": {
       "title": "Сравнить мой результат",
-      "percentile": "Мировой процентиль"
+      "percentile": "Мировой процентиль",
+      "premiumLabel": "Premium"
     },
     "leaderboard": {
       "title": "Топ 100 атлетов",
       "rank": "Ранг",
       "name": "Имя",
       "score": "Результат",
+      "points": "Очки",
+      "retry": "Повторить",
+      "overallRank": "Общий ранг",
+      "workoutRank": "Ранг упражнение",
       "descriptionOverall": "Топ-100 мирового рейтинга по очкам (сумма рангов).",
       "descriptionWorkout": "Топ-100 атлетов в событии {year}.{workout}."
     },
@@ -150,7 +160,7 @@
   "WodCard": {
     "optionsAlt": "Опции WOD",
     "share": "Поделиться",
-    "unshare": "Отменить",
+    "unshare": "Скрыть",
     "edit": "Редактировать",
     "delete": "Удалить",
     "sharedToastTitle": "Опубликовано!",
@@ -408,21 +418,15 @@
     },
     "amrap": {
       "title": "AMRAP",
-      "description": "Макс повторов.",
-      "durationLabel": "Время (мин)"
+      "description": "Макс повторов."
     },
     "emom": {
       "title": "EMOM",
-      "description": "Каждую минуту.",
-      "roundsLabel": "Раунды",
-      "intervalLabel": "Интервал",
-      "intervalMinutes": "мин",
-      "intervalSeconds": "сек"
+      "description": "Каждую минуту."
     },
     "tabata": {
       "title": "Tabata",
-      "description": "20с/10с.",
-      "roundsLabel": "Раунды"
+      "description": "20с/10с."
     }
   },
   "TimersPage": {

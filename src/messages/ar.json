@@ -1,4 +1,3 @@
-
 {
   "RootLayout": {
     "seo": {
@@ -45,6 +44,12 @@
       "region": "المنطقة",
       "scaled": "نوع التمرين",
       "allWorkouts": "الترتيب العام",
+      "stages": {
+        "open": "أوبن",
+        "quarterfinals": "ربع النهائي",
+        "semifinals": "نصف النهائي",
+        "games": "الألعاب"
+      },
       "selector": {
         "bmi": "BMI",
         "age": "العمر",
@@ -79,13 +84,18 @@
     },
     "userScore": {
       "title": "قارن نتيجتي",
-      "percentile": "النسبة المئوية العالمية"
+      "percentile": "النسبة المئوية العالمية",
+      "premiumLabel": "بريميوم"
     },
     "leaderboard": {
       "title": "أفضل 100 رياضيين",
       "rank": "الترتيب",
       "name": "الاسم",
       "score": "النتيجة",
+      "points": "نقاط",
+      "retry": "إعادة المحاولة",
+      "overallRank": "الترتيب العام",
+      "workoutRank": "ترتيب التمرين",
       "descriptionOverall": "أفضل 100 في لوحة المتصدرين العالمية حسب النقاط (مجموع الرتب).",
       "descriptionWorkout": "أفضل 100 رياضيين للحدث {year}.{workout}."
     },
@@ -418,34 +428,22 @@
     "startButton": "ابدأ المؤقت",
     "forTime": {
       "title": "على الوقت",
-      "description": "ساعة توقيت بسيطة.",
-      "timeCapLabel": "حد الوقت (دقيقة)",
-      "timeCapPlaceholder": "مثلاً 20"
+      "description": "ساعة توقيت بسيطة."
     },
     "amrap": {
       "title": "AMRAP",
-      "description": "أقصى تكرارات.",
-      "durationLabel": "المدة (دقيقة)"
+      "description": "أقصى تكرارات."
     },
     "emom": {
       "title": "EMOM",
-      "description": "كل دقيقة.",
-      "roundsLabel": "الجولات",
-      "intervalLabel": "الفاصل",
-      "intervalMinutes": "دقيقة",
-      "intervalSeconds": "ثانية"
+      "description": "كل دقيقة."
     },
     "tabata": {
       "title": "Tabata",
-      "description": "20 ثانية عمل / 10 ثواني راحة.",
-      "roundsLabel": "الجولات"
+      "description": "20 ثانية عمل / 10 ثواني راحة."
     }
   },
   "TimersPage": {
-    "seo": {
-      "title": "مؤقتات كروس فت | WODBurner",
-      "description": "مؤقتات احترافية."
-    },
     "title": "المؤقتات الذكية",
     "forTime": "For Time",
     "forTimeDescription": "ساعة توقيت بسيطة.",
@@ -458,10 +456,6 @@
     "footer": "أو اختر تمرين من لوحة التحكم."
   },
   "HeroWodsPage": {
-    "seo": {
-      "title": "مكتبة تمارين الأبطال | Benchmarks",
-      "description": "تمارين كروس فت الأسطورية."
-    },
     "title": "تمارين الأبطال",
     "description": "تخليداً لذكرى الأبطال.",
     "premiumUpsell": {
@@ -471,10 +465,6 @@
     }
   },
   "HallOfFamePage": {
-    "seo": {
-      "title": "قاعة المشاهير | رواد WODBurner",
-      "description": "أول 300 داعم لنا."
-    },
     "title": "قاعة المشاهير",
     "cardTitle": "أول 300 عضو",
     "cardDescription": "اشتراك مجاني مدى الحياة لأول داعمين لنا.",
@@ -504,10 +494,6 @@
     "totalTimeElapsed": "الإجمالي: {time}"
   },
   "GenerateWodPage": {
-    "seo": {
-      "title": "منشئ تمارين بالذكاء الاصطناعي | تمارين جديدة يومياً",
-      "description": "منشئ تمارين كروس فت مخصصة."
-    },
     "title": "منشئ تمارين بالذكاء الاصطناعي",
     "cardTitle": "WODBot 3000",
     "cardDescription": "لا تجد إلهاماً؟ دع الذكاء الاصطناعي يصمم تمرينك.",

@@ -1,4 +1,3 @@
-
 {
   "RootLayout": {
     "seo": {
@@ -45,6 +44,12 @@
       "region": "地域",
       "scaled": "WODタイプ",
       "allWorkouts": "総合順位",
+      "stages": {
+        "open": "オープン",
+        "quarterfinals": "準々決勝",
+        "semifinals": "準決勝",
+        "games": "ゲームス"
+      },
       "selector": {
         "bmi": "BMI",
         "age": "年齢",
@@ -79,13 +84,18 @@
     },
     "userScore": {
       "title": "スコアを比較する",
-      "percentile": "グローバルパーセンタイル"
+      "percentile": "グローバルパーセンタイル",
+      "premiumLabel": "プレミアム"
     },
     "leaderboard": {
       "title": "トップ100アスリート",
       "rank": "順位",
       "name": "名前",
       "score": "スコア",
+      "points": "ポイント",
+      "retry": "再試行",
+      "overallRank": "総合順位",
+      "workoutRank": "競技順位",
       "descriptionOverall": "ポイント別のトップ100グローバルリーダーボード（ランクの合計）。",
       "descriptionWorkout": "イベント{year}.{workout}のトップ100アスリート。"
     },
@@ -475,7 +485,7 @@
     "generatingButton": "計算中...",
     "freePlanAlert": {
       "title": "無料プラン",
-      "description": "一日の制限です。無制限は {link}。",
+      "description": "一日の制限です。無制限は {link} 。",
       "link": "プレミアムに登録"
     },
     "premiumPlanMessage": "無制限生成が有効です。",

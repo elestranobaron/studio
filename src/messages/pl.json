@@ -1,4 +1,3 @@
-
 {
   "RootLayout": {
     "seo": {
@@ -45,6 +44,12 @@
       "region": "Region",
       "scaled": "Typ WOD",
       "allWorkouts": "Ogólne",
+      "stages": {
+        "open": "Open",
+        "quarterfinals": "Ćwierćfinały",
+        "semifinals": "Półfinały",
+        "games": "Games"
+      },
       "selector": {
         "bmi": "BMI",
         "age": "Wiek",
@@ -79,13 +84,18 @@
     },
     "userScore": {
       "title": "Porównaj mój wynik",
-      "percentile": "Percentyl globalny"
+      "percentile": "Percentyl globalny",
+      "premiumLabel": "Premium"
     },
     "leaderboard": {
       "title": "Top 100 atleci",
       "rank": "Pozycja",
       "name": "Imię",
       "score": "Wynik",
+      "points": "Punkty",
+      "retry": "Spróbuj ponownie",
+      "overallRank": "Pozycja Ogólna",
+      "workoutRank": "Pozycja Trening",
       "descriptionOverall": "Top 100 globalnej listy liderów według punktów (suma miejsc).",
       "descriptionWorkout": "Top 100 sportowców dla konkurencji {year}.{workout}."
     },
@@ -123,7 +133,7 @@
       "joinDescription": "Utwórz darmowe konto, aby przeglądać i udostępniać WOD-y.",
       "joinButton": "Zarejestruj się / Zaloguj",
       "errorTitle": "Wystąpił błąd",
-      "errorDescription": "Nie można załadować treningów społeczności.",
+      "errorDescription": "Nie można załadować treningów społeczności. Spróbuj później.",
       "searchInputPlaceholder": "Szukaj treningów...",
       "sortByLabel": "Sortuj według",
       "sort": {
@@ -481,7 +491,7 @@
     "premiumPlanMessage": "Bez limitu.",
     "generatingState": {
       "title": "Myślę...",
-      "description": "AI się grzeje."
+      "description": "AI se grzeje."
     },
     "errorAlert": {
       "title": "Błąd",

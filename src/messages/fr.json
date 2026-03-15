@@ -1,4 +1,3 @@
-
 {
   "RootLayout": {
     "seo": {
@@ -30,7 +29,7 @@
       "description": "Analysez les performances du CrossFit Open 2026. Classements Top 100, corrélations IMC/Rang et distribution mondiale des scores."
     },
     "title": "Open Stats",
-    "description": "Données live CrossFit Open via API publique – refresh quotidien",
+    "description": "Données live CrossFit Open via API publique",
     "metrics": {
       "athletes": "Athlètes Analysés",
       "median": "Médiane",
@@ -45,6 +44,12 @@
       "region": "Région",
       "scaled": "Type d'épreuve",
       "allWorkouts": "Classement Général",
+      "stages": {
+        "open": "Open",
+        "quarterfinals": "Quarts de finale",
+        "semifinals": "Demi-finales",
+        "games": "Games"
+      },
       "selector": {
         "bmi": "IMC",
         "age": "Âge",
@@ -79,13 +84,18 @@
     },
     "userScore": {
       "title": "Comparer mon score",
-      "percentile": "Percentile mondial"
+      "percentile": "Percentile mondial",
+      "premiumLabel": "Premium"
     },
     "leaderboard": {
       "title": "Top 100 Athlètes",
       "rank": "Rang",
       "name": "Nom",
       "score": "Score",
+      "points": "Points",
+      "retry": "Réessayer",
+      "overallRank": "Rang Global",
+      "workoutRank": "Rang Épreuve",
       "descriptionOverall": "Top 100 du classement mondial par points (somme des rangs).",
       "descriptionWorkout": "Top 100 des athlètes pour l'épreuve {year}.{workout}."
     },

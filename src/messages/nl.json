@@ -1,4 +1,3 @@
-
 {
   "RootLayout": {
     "seo": {
@@ -45,6 +44,12 @@
       "region": "Regio",
       "scaled": "WOD Type",
       "allWorkouts": "Algemeen",
+      "stages": {
+        "open": "Open",
+        "quarterfinals": "Kwartfinales",
+        "semifinals": "Halve finales",
+        "games": "Games"
+      },
       "selector": {
         "bmi": "BMI",
         "age": "Leeftijd",
@@ -79,13 +84,18 @@
     },
     "userScore": {
       "title": "Mijn score vergelijken",
-      "percentile": "Globaal Percentiel"
+      "percentile": "Globaal Percentiel",
+      "premiumLabel": "Premium"
     },
     "leaderboard": {
       "title": "Top 100 Atleten",
       "rank": "Rang",
       "name": "Naam",
       "score": "Score",
+      "points": "Punten",
+      "retry": "Opnieuw proberen",
+      "overallRank": "Algemene Rang",
+      "workoutRank": "Workout Rang",
       "descriptionOverall": "Top 100 globale leaderboard op punten (som van rangen).",
       "descriptionWorkout": "Top 100 atleten voor het event {year}.{workout}."
     },
@@ -278,7 +288,7 @@
       "description": "Voor de hobbyist",
       "price": "€0",
       "perMonth": "/mnd",
-      "currentPlan": "Huidig plan"
+      "currentPlan": "Betalingsplan"
     },
     "premiumPlan": {
       "title": "Premium",
@@ -295,7 +305,7 @@
       "scans": "Onbeperkt WOD Scannen",
       "scansFree": "3 per maand",
       "reactions": "Onbeperkt Community Reacties",
-      "reactionsFree": "5 per tag",
+      "reactionsFree": "5 per dag",
       "comments": "Comments plaatsen",
       "commentsFree": "Alleen lezen",
       "favorites": "Onbeperkt Favorieten",
@@ -406,21 +416,15 @@
     },
     "amrap": {
       "title": "AMRAP Timer",
-      "description": "Zoveel mogelijk reps.",
-      "durationLabel": "Duur (minuten)"
+      "description": "Zoveel mogelijk reps."
     },
     "emom": {
       "title": "EMOM Timer",
-      "description": "Elke minuut.",
-      "roundsLabel": "Rondes",
-      "intervalLabel": "Interval",
-      "intervalMinutes": "min",
-      "intervalSeconds": "sec"
+      "description": "Elke minuut."
     },
     "tabata": {
       "title": "Tabata Timer",
-      "description": "20s werk / 10s rust.",
-      "roundsLabel": "Rondes"
+      "description": "20s werk / 10s rust."
     }
   },
   "TimersPage": {
