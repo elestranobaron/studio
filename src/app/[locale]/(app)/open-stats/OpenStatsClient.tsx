@@ -63,7 +63,21 @@ export default function OpenStatsClient() {
 
   const histogramData = useMemo(() => {
     if (!stats || !stats.data || stats.data.length === 0) return [];
-    if (workout === "0") return [];
+    
+    // Pour la vue globale (points)
+    if (workout === "0") {
+        const counts: Record<number, number> = {};
+        stats.data.forEach(e => {
+            const pts = parseInt(e.overallScore) || 0;
+            const bin = Math.floor(pts / 50) * 50; // Bins de 50 points
+            counts[bin] = (counts[bin] || 0) + 1;
+        });
+        return Object.entries(counts).map(([name, count]) => ({
+            name: parseInt(name),
+            count,
+            label: `${name} pts`
+        })).sort((a, b) => a.name - b.name);
+    }
 
     const values = stats.data.map(e => stats.isTime ? (e.seconds || 0) : e.reps);
     const counts: Record<number, number> = {};
@@ -71,7 +85,6 @@ export default function OpenStatsClient() {
 
     const uniqueValues = Object.keys(counts).map(Number).sort((a, b) => a - b);
     
-    // Si peu de valeurs uniques, affichage direct pour plus de précision
     if (uniqueValues.length <= 30) {
         return uniqueValues.map(v => ({
             name: v,
@@ -80,7 +93,6 @@ export default function OpenStatsClient() {
         }));
     }
 
-    // Sinon regroupement logique
     const step = stats.isTime ? 30 : 5;
     const bins: Record<number, number> = {};
     values.forEach(val => {
@@ -104,8 +116,8 @@ export default function OpenStatsClient() {
         let xValue: number | null = null;
         switch(scatterMetric) {
           case 'age': xValue = (e.age > 10 && e.age < 90) ? e.age : null; break;
-          case 'height': xValue = (e.heightCm && e.heightCm > 120 && e.heightCm < 230) ? e.heightCm : null; break;
-          case 'weight': xValue = (e.weightKg && e.weightKg > 35 && e.weightKg < 200) ? e.weightKg : null; break;
+          case 'height': xValue = (e.heightCm && e.heightCm > 100 && e.heightCm < 250) ? e.heightCm : null; break;
+          case 'weight': xValue = (e.weightKg && e.weightKg > 30 && e.weightKg < 250) ? e.weightKg : null; break;
           case 'bmi': default: xValue = e.bmi; break;
         }
         return { x: xValue, y: e.rank, name: e.name };

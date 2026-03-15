@@ -120,11 +120,8 @@ export function useOpenStats() {
             }
 
             // 2. Extraction robuste des répétitions
-            // Priorité 1: Parenthèses dans le score officiel (ex: "14:50 (288)")
             const parenMatch = officialScoreDisplay.match(/\((\d+)\)/);
-            // Priorité 2: "X reps" dans le breakdown technique
             const breakdownMatch = breakdownStr.match(/(\d+)\s*(?:reps|total)/i);
-            // Priorité 3: Début du score (ex: "354 reps")
             const repsSuffixMatch = officialScoreDisplay.match(/^(\d+)\s*reps/i);
             
             if (parenMatch) {
@@ -159,7 +156,7 @@ export function useOpenStats() {
             age: parseInt(row.entrant.age),
             heightCm: h,
             weightKg: w,
-            bmi: (bmi && bmi > 15 && bmi < 50) ? bmi : null,
+            bmi: (bmi && bmi > 10 && bmi < 60) ? bmi : null,
             reps,
             seconds,
             finished,
@@ -178,20 +175,30 @@ export function useOpenStats() {
         throw new Error("Aucune donnée trouvée.");
       }
 
-      // --- Déduction dynamique haute fidélité ---
       const isWorkoutView = workout !== 0;
       
-      // Déduction du Max Reps : on prend le maximum trouvé dans tout l'échantillon
-      // (Les leaders mondiaux atteignent forcément le plafond de répétitions s'ils finissent)
+      // --- Déduction dynamique haute fidélité ---
       let detectedMaxReps = 0;
+      let maxNonFinisherReps = 0;
+      let anyFinisher = false;
+
       if (isWorkoutView) {
-          allEntries.forEach(athlete => {
-              if (athlete.reps > detectedMaxReps) detectedMaxReps = athlete.reps;
+          allEntries.forEach(e => {
+              if (e.reps > detectedMaxReps) detectedMaxReps = e.reps;
+              if (!e.finished && e.reps > maxNonFinisherReps) maxNonFinisherReps = e.reps;
+              if (e.finished) anyFinisher = true;
           });
+
+          // Règle du "Cap + 1" pour les WODs comme le 26.3
+          // Si on a des finishers mais que le max reps trouvé est égal au max non-finisher,
+          // alors le total réel est forcément au moins max + 1.
+          if (anyFinisher && detectedMaxReps <= maxNonFinisherReps) {
+              detectedMaxReps = maxNonFinisherReps + 1;
+          }
       }
       const maxRepsInSample = detectedMaxReps;
 
-      // Unification pour les épreuves mixtes : si qqn a fini (temps), il a fait le max de reps
+      // Unification pour les épreuves mixtes
       if (isWorkoutView) {
           allEntries.forEach(e => {
               if (e.finished) {
@@ -200,11 +207,9 @@ export function useOpenStats() {
           });
       }
 
-      // Déduction si c'est une épreuve au temps pure ou mixte
       const anyNonFinisher = isWorkoutView && allEntries.some(e => !e.finished && e.reps > 0 && e.reps < maxRepsInSample);
       const isTime = isWorkoutView && !anyNonFinisher;
 
-      // Inférence du rythme du Top 100 (temps le plus long dans l'échantillon)
       let inferredTimeCap = null;
       if (isWorkoutView) {
           const finishedAthletes = allEntries.filter(e => e.seconds !== null);
@@ -212,6 +217,7 @@ export function useOpenStats() {
               const maxSeconds = Math.max(...finishedAthletes.map(e => e.seconds!));
               const m = Math.floor(maxSeconds / 60);
               const s = maxSeconds % 60;
+              // On arrondit souvent à la minute supérieure pour le cap, ou on montre le temps du Top 100
               inferredTimeCap = `${m}:${s.toString().padStart(2, '0')}`;
           } else {
               inferredTimeCap = "N/A";
@@ -219,7 +225,10 @@ export function useOpenStats() {
       }
 
       const sortedVals = allEntries
-        .map(e => isTime ? (e.seconds || 0) : e.reps)
+        .map(e => {
+            if (!isWorkoutView) return parseInt(e.overallScore) || 0;
+            return isTime ? (e.seconds || 0) : e.reps;
+        })
         .sort((a, b) => a - b);
       
       const getPercentile = (p: number) => {
