@@ -26,19 +26,6 @@ import { Badge } from '@/components/ui/badge';
 
 type ScatterMetric = 'bmi' | 'age' | 'height' | 'weight';
 
-const WORKOUT_METADATA: Record<string, Record<string, { maxReps: number; timeCap: string }>> = {
-  "2026": {
-    "1": { maxReps: 354, timeCap: "12:00" },
-    "2": { maxReps: 132, timeCap: "15:00" },
-    "3": { maxReps: 288, timeCap: "15:00" },
-  },
-  "2025": {
-    "1": { maxReps: 210, timeCap: "15:00" },
-    "2": { maxReps: 300, timeCap: "20:00" },
-    "3": { maxReps: 180, timeCap: "12:00" },
-  }
-};
-
 export default function OpenStatsClient() {
   const t = useTranslations('OpenStatsPage');
   const { user, isUserLoading } = useUser();
@@ -74,27 +61,40 @@ export default function OpenStatsClient() {
     return `${m}:${s.toString().padStart(2, '0')}`;
   };
 
-  const currentWorkoutRecap = useMemo(() => {
-    if (workout === "0") return null;
-    return WORKOUT_METADATA[year]?.[workout] || null;
-  }, [year, workout]);
-
   const histogramData = useMemo(() => {
     if (!stats || !stats.data || stats.data.length === 0) return [];
     
-    const values = stats.data.map(e => stats.isTime ? (e.seconds || 0) : e.reps);
-    if (values.length === 0) return [];
+    const isWorkoutView = workout !== "0";
+    if (!isWorkoutView) return [];
 
-    const min = Math.min(...values);
-    const max = Math.max(...values);
+    const values = stats.data.map(e => stats.isTime ? (e.seconds || 0) : e.reps);
     
-    // Pour les épreuves mixtes (reps), on veut s'assurer que le Max Reps est bien représenté
-    const bins: Record<number, number> = {};
+    // Pour le Top 100, on regroupe par valeurs réelles pour éviter les scores "fantômes"
+    const counts: Record<number, number> = {};
+    values.forEach(v => {
+        counts[v] = (counts[v] || 0) + 1;
+    });
+
+    // Si on a trop de valeurs uniques (> 15), on fait un binning intelligent
+    const uniqueValues = Object.keys(counts).map(Number).sort((a, b) => a - b);
+    
+    if (uniqueValues.length <= 15) {
+        return uniqueValues.map(v => ({
+            name: v,
+            count: counts[v],
+            label: formatScore(v, stats.isTime)
+        }));
+    }
+
+    // Sinon binning classique mais basé sur les min/max réels
+    const min = uniqueValues[0];
+    const max = uniqueValues[uniqueValues.length - 1];
     const binCount = 10;
     const step = Math.max(1, Math.ceil((max - min) / binCount));
-
+    
+    const bins: Record<number, number> = {};
     values.forEach(val => {
-      const bin = Math.floor(val / step) * step;
+      const bin = Math.floor((val - min) / step) * step + min;
       bins[bin] = (bins[bin] || 0) + 1;
     });
 
@@ -341,19 +341,21 @@ export default function OpenStatsClient() {
           </Card>
         </div>
 
-        {currentWorkoutRecap && (
+        {stats && workout !== "0" && (
           <Card className="bg-muted/30 border-dashed">
             <CardContent className="flex items-center justify-center gap-8 py-4">
               <div className="flex items-center gap-2">
                 <InfoIcon className="h-4 w-4 text-primary" />
                 <span className="text-sm font-semibold">{t('recap.maxReps')}:</span>
-                <Badge variant="secondary" className="bg-primary/10 text-primary">{currentWorkoutRecap.maxReps} reps</Badge>
+                <Badge variant="secondary" className="bg-primary/10 text-primary">{stats.maxRepsInSample} reps</Badge>
               </div>
-              <div className="flex items-center gap-2">
-                <CalendarIcon className="h-4 w-4 text-primary" />
-                <span className="text-sm font-semibold">{t('recap.timeCap')}:</span>
-                <Badge variant="secondary" className="bg-primary/10 text-primary">{currentWorkoutRecap.timeCap}</Badge>
-              </div>
+              {stats.inferredTimeCap && (
+                <div className="flex items-center gap-2">
+                    <CalendarIcon className="h-4 w-4 text-primary" />
+                    <span className="text-sm font-semibold">{t('recap.timeCap')}:</span>
+                    <Badge variant="secondary" className="bg-primary/10 text-primary">{stats.inferredTimeCap}</Badge>
+                </div>
+              )}
             </CardContent>
           </Card>
         )}

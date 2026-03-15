@@ -34,6 +34,8 @@ export interface StatsResult {
   data: LeaderboardEntry[];
   totalCount: number;
   isTime: boolean;
+  maxRepsInSample: number;
+  inferredTimeCap: string | null;
 }
 
 const parseHeight = (h: string): number | null => {
@@ -103,16 +105,6 @@ export function useOpenStats() {
           let finished = false;
 
           if (workout !== 0) {
-            // Priorité absolue aux répétitions entre parenthèses
-            const parenMatch = officialScoreDisplay.match(/\((\d+)\)/);
-            const repsSuffixMatch = officialScoreDisplay.match(/^(\d+)\s*reps/i);
-            
-            if (parenMatch) {
-              reps = parseInt(parenMatch[1]);
-            } else if (repsSuffixMatch) {
-              reps = parseInt(repsSuffixMatch[1]);
-            }
-
             // Détection du chronomètre
             if (officialScoreDisplay.includes(':')) {
               const timePart = officialScoreDisplay.split('(')[0].trim();
@@ -126,8 +118,15 @@ export function useOpenStats() {
               }
             }
 
-            // Si c'est juste un chiffre (WOD purement reps)
-            if (reps === 0 && !finished) {
+            // Extraction des répétitions
+            const parenMatch = officialScoreDisplay.match(/\((\d+)\)/);
+            const repsSuffixMatch = officialScoreDisplay.match(/^(\d+)\s*reps/i);
+            
+            if (parenMatch) {
+              reps = parseInt(parenMatch[1]);
+            } else if (repsSuffixMatch) {
+              reps = parseInt(repsSuffixMatch[1]);
+            } else if (!finished) {
                 const simpleNum = parseInt(officialScoreDisplay.trim());
                 if (!isNaN(simpleNum)) {
                     reps = simpleNum;
@@ -172,21 +171,31 @@ export function useOpenStats() {
         throw new Error("Aucune donnée trouvée.");
       }
 
-      // RÈGLE D'HOMOGÉNÉITÉ : Détection si l'échantillon est 100% au temps
+      // Analyse de l'échantillon
       const isWorkoutView = workout !== 0;
-      const allFinished = isWorkoutView && allEntries.every(e => e.finished);
-      const isTime = isWorkoutView && allFinished;
+      const anyRepScore = isWorkoutView && allEntries.some(e => !e.finished && e.reps > 0);
+      const isTime = isWorkoutView && !anyRepScore;
 
-      // Si le WOD est mixte (reps + finishers), on convertit tout en reps
+      // Calcul des répétitions max réelles dans l'échantillon
+      const maxRepsInSample = Math.max(...allEntries.map(e => e.reps));
+      
+      // Si workout mixte, on attribue les max reps aux finishers
       if (!isTime && isWorkoutView) {
-          const maxReps = Math.max(...allEntries.map(e => e.reps));
           allEntries.forEach(e => {
-              if (e.finished && e.reps === 0) {
-                  // Si l'athlète a fini mais n'a pas de reps entre parenthèses, 
-                  // on lui donne le max reps théorique
-                  e.reps = maxReps;
+              if (e.finished && e.reps < maxRepsInSample) {
+                  e.reps = maxRepsInSample;
               }
           });
+      }
+
+      // Inférence du Time Cap (le temps le plus élevé ou arrondi)
+      let inferredTimeCap = null;
+      if (isWorkoutView) {
+          const maxSeconds = Math.max(...allEntries.filter(e => e.seconds !== null).map(e => e.seconds!));
+          if (maxSeconds > 0) {
+              const minutes = Math.ceil(maxSeconds / 60);
+              inferredTimeCap = `${minutes}:00`;
+          }
       }
 
       const sortedVals = allEntries
@@ -204,7 +213,9 @@ export function useOpenStats() {
         p99: isTime ? getPercentile(0.01) : getPercentile(0.99),
         data: allEntries,
         totalCount: allEntries.length,
-        isTime
+        isTime,
+        maxRepsInSample,
+        inferredTimeCap
       };
 
       statsCache.set(cacheKey, result);
