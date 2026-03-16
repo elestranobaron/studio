@@ -175,6 +175,8 @@
     "deleteDialogConfirm": "Șterge",
     "deleteToastTitle": "Șters",
     "deleteToastDescription": "WOD șters cu succes.",
+    "deleteErrorToastTitle": "Eroare la ștergere",
+    "deleteErrorToastDescription": "Nu s-a putut șterge WOD-ul.",
     "reactionErrorToastTitle": "Ups!",
     "reactionErrorToastDescription": "Eroare la reacție.",
     "viewImageAlt": "{wodName} - Foto",
@@ -327,6 +329,10 @@
     }
   },
   "SettingsPage": {
+    "seo": {
+      "title": "Setări | Gestiune cont",
+      "description": "Actualizează profilul."
+    },
     "title": "Setări",
     "profile": {
       "title": "Profil",
@@ -363,15 +369,23 @@
     }
   },
   "ScanPage": {
+    "seo": {
+      "title": "Scanează WOD | Analiză AI",
+      "description": "Transformă poza în timer."
+    },
     "title": "Scanează WOD",
     "manualButton": "Adaugă manual"
   },
   "NewWodPage": {
+    "seo": {
+      "title": "Nou WOD | Creare manuală",
+      "description": "Adaugă manual."
+    },
     "title": "Creare manuală",
     "cardTitle": "Detalii",
     "namePlaceholder": "Nume",
     "typePlaceholder": "Tip",
-    "durationPlaceholder": "Durată",
+    "durationPlaceholder": "Durată (min)",
     "imageHintPlaceholder": "Indiciu foto",
     "descriptionPlaceholder": "Descriere...",
     "saveButton": "Salvează WOD",
@@ -393,6 +407,10 @@
     }
   },
   "EditWodPage": {
+    "seo": {
+      "title": "Editare WOD | WODBurner",
+      "description": "Modifică WOD."
+    },
     "title": "Editare WOD",
     "cardTitle": "Detalii",
     "saveButton": "Salvează",
@@ -410,22 +428,34 @@
     "startButton": "Start",
     "forTime": {
       "title": "For Time",
-      "description": "Cronometru simplu."
+      "description": "Cronometru simplu.",
+      "timeCapLabel": "Limită timp (min)",
+      "timeCapPlaceholder": "ex: 20"
     },
     "amrap": {
       "title": "AMRAP",
-      "description": "Max reps."
+      "description": "Max reps.",
+      "durationLabel": "Durată (min)"
     },
     "emom": {
       "title": "EMOM",
-      "description": "În fiecare minut."
+      "description": "În fiecare minut.",
+      "roundsLabel": "Runde",
+      "intervalLabel": "Interval",
+      "intervalMinutes": "min",
+      "intervalSeconds": "sec"
     },
     "tabata": {
       "title": "Tabata",
-      "description": "20s muncă / 10s pauză."
+      "description": "20s muncă / 10s pauză.",
+      "roundsLabel": "Runde"
     }
   },
   "TimersPage": {
+    "seo": {
+      "title": "Timere Smart | CrossFit",
+      "description": "Timere antrenament."
+    },
     "title": "Timere Smart",
     "forTime": "For Time",
     "forTimeDescription": "Cronometru simplu.",
@@ -438,6 +468,10 @@
     "footer": "Sau alege un WOD."
   },
   "HeroWodsPage": {
+    "seo": {
+      "title": "Hero WODs | Bibliotecă",
+      "description": "Toate WOD-urile legendare."
+    },
     "title": "Hero WODs",
     "description": "În memoria eroilor.",
     "premiumUpsell": {
@@ -447,6 +481,10 @@
     }
   },
   "HallOfFamePage": {
+    "seo": {
+      "title": "Hall of Fame | Pionieri",
+      "description": "Primii 300."
+    },
     "title": "Hall of Fame",
     "cardTitle": "Primii 300",
     "cardDescription": "Gratis pe viață primilor.",
@@ -476,6 +514,10 @@
     "totalTimeElapsed": "Total: {time}"
   },
   "GenerateWodPage": {
+    "seo": {
+      "title": "AI WOD Generator | CrossFit",
+      "description": "WOD-uri noi zilnic."
+    },
     "title": "AI WOD Generator",
     "cardTitle": "WODBot 3000",
     "cardDescription": "Fără idei? AI te ajută.",
