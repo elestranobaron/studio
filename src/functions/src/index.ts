@@ -158,6 +158,11 @@ export const createCheckout = onCall({ cors: true }, async (request) => {
             metadata: { uid: request.auth.uid }
         },
         allow_promotion_codes: true,
+        payment_method_options: {
+            card: {
+                request_three_d_secure: "any",
+            },
+        },
     };
 
     if (customerId) {
