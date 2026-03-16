@@ -2,7 +2,7 @@
   "RootLayout": {
     "seo": {
       "title": "WODBurner - Tu Pizarra CrossFit y Smart Timer",
-      "description": "Escanea tus entrenamientos de CrossFit a partir de fotos, genera nuevos WOD con IA y accede a cronómetros inteligentes."
+      "description": "El asistente definitivo de CrossFit. Escanea pizarras de box, genera WODs con IA, accede a estadísticas del Open."
     }
   },
   "UserNav": {
@@ -329,6 +329,10 @@
     }
   },
   "SettingsPage": {
+    "seo": {
+      "title": "Ajustes | Gestionar mi cuenta WODBurner",
+      "description": "Actualiza tu perfil, suscripción y preferencias."
+    },
     "title": "Ajustes",
     "profile": {
       "title": "Perfil",
@@ -365,10 +369,18 @@
     }
   },
   "ScanPage": {
+    "seo": {
+      "title": "Escanear WOD | Analizador IA de Pizarra",
+      "description": "Transforma instantáneamente una foto de tu entrenamiento en cronómetro interactivo."
+    },
     "title": "Escanear WOD",
     "manualButton": "Añadir manualmente"
   },
   "NewWodPage": {
+    "seo": {
+      "title": "Nuevo Entrenamiento | Entrada Manual",
+      "description": "Añade tus propios entrenamientos de CrossFit manualmente y comienza a entrenar."
+    },
     "title": "Crear WOD manualmente",
     "cardTitle": "Detalles",
     "namePlaceholder": "Nombre",
@@ -395,6 +407,10 @@
     }
   },
   "EditWodPage": {
+    "seo": {
+      "title": "Editar WOD | WODBurner",
+      "description": "Actualiza los detalles de tu entrenamiento."
+    },
     "title": "Editar WOD",
     "cardTitle": "Detalles",
     "saveButton": "Guardar cambios",
@@ -412,22 +428,34 @@
     "startButton": "Iniciar",
     "forTime": {
       "title": "For Time",
-      "description": "Cronómetro simple."
+      "description": "Cronómetro simple.",
+      "timeCapLabel": "Time Cap (min)",
+      "timeCapPlaceholder": "ej: 20"
     },
     "amrap": {
       "title": "AMRAP",
-      "description": "Máximas reps."
+      "description": "Máximas reps.",
+      "durationLabel": "Duración (min)"
     },
     "emom": {
       "title": "EMOM",
-      "description": "Cada minuto."
+      "description": "Cada minuto.",
+      "roundsLabel": "Rondas",
+      "intervalLabel": "Intervalo",
+      "intervalMinutes": "min",
+      "intervalSeconds": "seg"
     },
     "tabata": {
       "title": "Tabata",
-      "description": "20s trabajo / 10s descanso."
+      "description": "20s trabajo / 10s descanso.",
+      "roundsLabel": "Rondas"
     }
   },
   "TimersPage": {
+    "seo": {
+      "title": "Cronómetros CrossFit | AMRAP, EMOM, Tabata",
+      "description": "Temporizadores profesionales para tus entrenamientos."
+    },
     "title": "Cronómetros",
     "forTime": "For Time",
     "forTimeDescription": "Cronómetro simple.",
@@ -440,6 +468,10 @@
     "footer": "O elige un WOD de tu dashboard."
   },
   "HeroWodsPage": {
+    "seo": {
+      "title": "Hero WODs & Benchmarks | La Biblioteca Legendaria",
+      "description": "Encuentra Murph, Fran, Cindy y todos los entrenamientos legendarios."
+    },
     "title": "Hero WODs",
     "description": "En memoria de los caídos.",
     "premiumUpsell": {
@@ -449,6 +481,10 @@
     }
   },
   "HallOfFamePage": {
+    "seo": {
+      "title": "Salón de la Fama | Pioneros WODBurner",
+      "description": "El círculo restringido de nuestros primeros 300 patrocinadores."
+    },
     "title": "Salón de la Fama",
     "cardTitle": "Primeros 300 OG",
     "cardDescription": "Gratis de por vida.",
@@ -478,6 +514,10 @@
     "totalTimeElapsed": "Total: {time}"
   },
   "GenerateWodPage": {
+    "seo": {
+      "title": "Generador de WOD IA | Nuevos Entrenamientos",
+      "description": "¿Falta inspiración? Deja que nuestra IA cree un WOD para ti."
+    },
     "title": "Generador de WOD IA",
     "cardTitle": "WODBot 3000",
     "cardDescription": "IA crea tu entrenamiento.",

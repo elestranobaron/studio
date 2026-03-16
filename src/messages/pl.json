@@ -2,7 +2,7 @@
   "RootLayout": {
     "seo": {
       "title": "WODBurner - Twoja tablica CrossFit i inteligentny timer",
-      "description": "Skanuj treningi CrossFit ze zdjęć, generuj nowe WOD dzięki AI i korzystaj z inteligentnych timerów."
+      "description": "Kompletny asystent CrossFit. Skanuj tablice, generuj WOD przez AI i korzystaj z profesjonalnych timerów."
     }
   },
   "UserNav": {
@@ -116,7 +116,7 @@
   "DashboardPage": {
     "seo": {
       "title": "Dashboard | Moje Treningi CrossFit",
-      "description": "Zarządzaj swoją historią treningów, uzyskuj dostęp do zeskanowanych WOD-ów i dziel się swoimi wynikami ze społecznością."
+      "description": "Zarządzaj swoją historią treningów, uzyskuj dostęp do zeskanowanych WOD-ów i dziel się swoimi wynikami."
     },
     "title": "Dashboard",
     "scanNewWod": "Skanuj nowy WOD",
@@ -155,7 +155,7 @@
     "scanButton": "Skanuj WOD ze zdjęcia",
     "generateButton": "Generuj losowy WOD",
     "heroButton": "Wypróbuj Hero WOD",
-    "communityLink": "Lub odkryj społeczność."
+    "communityLink": "Lub odkryj <communityLink>społeczność</communityLink>."
   },
   "WodCard": {
     "optionsAlt": "Opcje WOD",
@@ -235,7 +235,7 @@
   "LoginPage": {
     "seo": {
       "title": "Logowanie | WODBurner",
-      "description": "Zaloguj się do konta."
+      "description": "Zaloguj się do konta, aby zapisać swoje treningi."
     },
     "verifying": "Weryfikacja...",
     "confirmEmailTitle": "Potwierdź email",
@@ -267,7 +267,7 @@
   "PremiumPage": {
     "seo": {
       "title": "Premium | Wspieraj WODBurner",
-      "description": "Nielimitowane opcje."
+      "description": "Nielimitowane opcje skanowania i inteligentne filtry."
     },
     "title": "Premium",
     "alreadyPremium": {
@@ -329,6 +329,10 @@
     }
   },
   "SettingsPage": {
+    "seo": {
+      "title": "Ustawienia | Zarządzaj kontem",
+      "description": "Aktualizuj swój profil, subskrypcje i preferencje."
+    },
     "title": "Ustawienia",
     "profile": {
       "title": "Profil",
@@ -365,10 +369,18 @@
     }
   },
   "ScanPage": {
+    "seo": {
+      "title": "Skanuj WOD | Analiza AI",
+      "description": "Zmień zdjęcie tablicy w interaktywny timer."
+    },
     "title": "Skanuj WOD",
     "manualButton": "Ręcznie"
   },
   "NewWodPage": {
+    "seo": {
+      "title": "Nowy trening | Ręczne wpisywanie",
+      "description": "Dodaj własne treningi CrossFit ręcznie i zacznij ćwiczyć."
+    },
     "title": "Dodaj ręcznie",
     "cardTitle": "Detale",
     "namePlaceholder": "Nazwa",
@@ -395,6 +407,10 @@
     }
   },
   "EditWodPage": {
+    "seo": {
+      "title": "Edytuj WOD | WODBurner",
+      "description": "Zaktualizuj szczegóły swojego treningu."
+    },
     "title": "Edytuj",
     "cardTitle": "Detale",
     "saveButton": "Zapisz",
@@ -412,22 +428,34 @@
     "startButton": "Start",
     "forTime": {
       "title": "For Time",
-      "description": "Stoper."
+      "description": "Stoper.",
+      "timeCapLabel": "Time Cap (min)",
+      "timeCapPlaceholder": "np. 20"
     },
     "amrap": {
       "title": "AMRAP",
-      "description": "Max reps."
+      "description": "Max powt.",
+      "durationLabel": "Czas (min)"
     },
     "emom": {
       "title": "EMOM",
-      "description": "Co minutę."
+      "description": "Co minutę.",
+      "roundsLabel": "Rundy",
+      "intervalLabel": "Interwał",
+      "intervalMinutes": "min",
+      "intervalSeconds": "sek"
     },
     "tabata": {
       "title": "Tabata",
-      "description": "20/10."
+      "description": "20/10.",
+      "roundsLabel": "Rundy"
     }
   },
   "TimersPage": {
+    "seo": {
+      "title": "Timery CrossFit | AMRAP, EMOM, Tabata",
+      "description": "Profesjonalne timery dla Twoich treningów."
+    },
     "title": "Timery",
     "forTime": "For Time",
     "forTimeDescription": "Stoper.",
@@ -440,6 +468,10 @@
     "footer": "Lub wybierz WOD."
   },
   "HeroWodsPage": {
+    "seo": {
+      "title": "Hero WODs & Benchmarks | Legendarna Biblioteka",
+      "description": "Znajdź Murpha, Fran, Cindy i wszystkie legendy."
+    },
     "title": "Hero WODs",
     "description": "Pamięć o bohaterach.",
     "premiumUpsell": {
@@ -449,6 +481,10 @@
     }
   },
   "HallOfFamePage": {
+    "seo": {
+      "title": "Galeria Sław | WODBurner Early Adopters",
+      "description": "Elitarne grono naszych pierwszych 300 wspierających."
+    },
     "title": "Galeria Sław",
     "cardTitle": "Pierwszych 300",
     "cardDescription": "Dożywocie dla pierwszych.",
@@ -478,6 +514,10 @@
     "totalTimeElapsed": "Suma: {time}"
   },
   "GenerateWodPage": {
+    "seo": {
+      "title": "AI WOD Generator | Nowe treningi codziennie",
+      "description": "Brak weny? Niech nasze AI stworzy trening CrossFit dla Ciebie."
+    },
     "title": "AI WOD Generator",
     "cardTitle": "WODBot 3000",
     "cardDescription": "Brak weny? AI pomoże.",

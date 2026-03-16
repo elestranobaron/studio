@@ -2,7 +2,7 @@
   "RootLayout": {
     "seo": {
       "title": "WODBurner - La teva Pissarra CrossFit i Smart Timer",
-      "description": "Escaneja els teus entrenaments CrossFit a partir de fotos, genera nous WODs per IA i accedeix a temporitzadors intel·ligents."
+      "description": "L'assistent CrossFit definitiu. Escaneja els teus entrenaments a partir de fotos, genera nous WODs per IA i accedeix a estadístiques de l'Open."
     }
   },
   "UserNav": {
@@ -155,7 +155,7 @@
     "scanButton": "Escaneja un WOD des d'una foto",
     "generateButton": "Genera un WOD aleatori",
     "heroButton": "Prova un Hero WOD",
-    "communityLink": "O explora la comunitat."
+    "communityLink": "O explora la <communityLink>comunitat</communityLink>."
   },
   "WodCard": {
     "optionsAlt": "Opcions del WOD",
@@ -213,7 +213,7 @@
     "duplicateDialogDescription": "Aquest entrenament sembla idèntic a un WOD que ja has desat.",
     "duplicateDialogSavedOn": "Desat el {date}",
     "duplicateDialogQuestion": "Vols desar aquest nou de totes maneres?",
-    "duplicateDialogCancel": "Cancel·la",
+    "duplicateDialogCancel": "Annul·lar",
     "duplicateDialogConfirm": "Desa igualment",
     "saveFailedTitle": "El desament ha fallat",
     "saveFailedDescription": "S'ha produït un error en desar el WOD.",
@@ -329,6 +329,10 @@
     }
   },
   "SettingsPage": {
+    "seo": {
+      "title": "Configuració | Gestiona el meu compte WODBurner",
+      "description": "Actualitza el teu perfil, subscripció i preferències."
+    },
     "title": "Configuració",
     "profile": {
       "title": "Perfil",
@@ -365,15 +369,23 @@
     }
   },
   "ScanPage": {
+    "seo": {
+      "title": "Escaneja WOD | Analitzador IA",
+      "description": "Transforma instantàniament una foto del teu entrenament en minuteur interactiu."
+    },
     "title": "Escaneja WOD",
     "manualButton": "Afegeix manualment"
   },
   "NewWodPage": {
+    "seo": {
+      "title": "Nou Entrenament | Entrada Manual",
+      "description": "Afegeix els teus propis entrenaments de CrossFit manualment i comença a suar."
+    },
     "title": "Crea WOD manualment",
     "cardTitle": "Detalls",
     "namePlaceholder": "Nom",
     "typePlaceholder": "Tipus",
-    "durationPlaceholder": "Durada",
+    "durationPlaceholder": "Durada (min)",
     "imageHintPlaceholder": "Pista imatge",
     "descriptionPlaceholder": "Descripció...",
     "saveButton": "Desa el WOD",
@@ -395,6 +407,10 @@
     }
   },
   "EditWodPage": {
+    "seo": {
+      "title": "Edita el WOD | WODBurner",
+      "description": "Actualitza els detalls del teu entrenament."
+    },
     "title": "Edita el WOD",
     "cardTitle": "Detalls",
     "saveButton": "Desa els canvis",
@@ -412,22 +428,34 @@
     "startButton": "Inicia",
     "forTime": {
       "title": "For Time",
-      "description": "Cronòmetre simple."
+      "description": "Cronòmetre simple.",
+      "timeCapLabel": "Time Cap (min)",
+      "timeCapPlaceholder": "ex: 20"
     },
     "amrap": {
       "title": "AMRAP",
-      "description": "Màximes repeticions."
+      "description": "Màximes repeticions.",
+      "durationLabel": "Durada (min)"
     },
     "emom": {
       "title": "EMOM",
-      "description": "Cada minut."
+      "description": "Cada minut.",
+      "roundsLabel": "Rondes",
+      "intervalLabel": "Interval",
+      "intervalMinutes": "min",
+      "intervalSeconds": "sec"
     },
     "tabata": {
       "title": "Tabata",
-      "description": "20s treball / 10s descans."
+      "description": "20s treball / 10s descans.",
+      "roundsLabel": "Rondes"
     }
   },
   "TimersPage": {
+    "seo": {
+      "title": "Temporitzadors CrossFit | AMRAP, EMOM, Tabata",
+      "description": "Temporitzadors professionals per als teus entrenaments."
+    },
     "title": "Temporitzadors intel·ligents",
     "forTime": "For Time",
     "forTimeDescription": "Cronmetre simple.",
@@ -440,6 +468,10 @@
     "footer": "O selecciona un WOD del dashboard."
   },
   "HeroWodsPage": {
+    "seo": {
+      "title": "Hero WODs & Benchmarks | La Biblioteca Legendària",
+      "description": "Troba Murph, Fran, Cindy i tots els entrenaments llegendaris del CrossFit."
+    },
     "title": "Hero WODs",
     "description": "En memòria dels herois.",
     "premiumUpsell": {
@@ -449,6 +481,10 @@
     }
   },
   "HallOfFamePage": {
+    "seo": {
+      "title": "Saló de la Fama | Pioners WODBurner",
+      "description": "El cercle restringit dels nostres primers 300 patrocinadors."
+    },
     "title": "Saló de la Fama",
     "cardTitle": "Els primers 300 OG",
     "cardDescription": "Gratuït per a tota la vida per als primers.",
@@ -478,6 +514,10 @@
     "totalTimeElapsed": "Total: {time}"
   },
   "GenerateWodPage": {
+    "seo": {
+      "title": "Generador de WOD IA | Entrenaments Únics",
+      "description": "Mancat d'inspiració? Deixa que la nostra IA creï un entrenament CrossFit a mida per a tu."
+    },
     "title": "Generador IA",
     "cardTitle": "WODBot 3000",
     "cardDescription": "Sense inspiració? L'IA crea el teu WOD.",

@@ -2,7 +2,7 @@
   "RootLayout": {
     "seo": {
       "title": "WODBurner - 당신의 CrossFit 화이트보드 및 스마트 타이머",
-      "description": "사진에서 CrossFit 운동을 스캔하고, AI로 새로운 WOD를 생성하고, 스마트 타이머를 사용하세요."
+      "description": "CrossFit 도우미. 화이트보드 사진을 스캔하고, AI로 WOD를 생성하고, Open 통계를 분석하세요."
     }
   },
   "UserNav": {
@@ -116,7 +116,7 @@
   "DashboardPage": {
     "seo": {
       "title": "대시보드 | CrossFit WOD 관리",
-      "description": "CrossFit 운동을 관리하고, 스캔한 WOD를 찾고, 커뮤니티 트레이닝을 발견하세요."
+      "description": "운동 기록을 관리하고, 스캔한 WOD를 확인하고, 성과를 커뮤니티와 공유하세요."
     },
     "title": "대시보드",
     "scanNewWod": "새 WOD 스캔",
@@ -133,15 +133,15 @@
       "joinDescription": "무료 계정을 만들어 커뮤니티 전체의 WOD를 보고 공유하며 영감을 얻으세요.",
       "joinButton": "회원가입 / 로그인",
       "errorTitle": "오류가 발생했습니다",
-      "errorDescription": "커뮤니티 WOD를 불러올 수 없습니다. 나중에 다시 시도해 주세요.",
-      "searchInputPlaceholder": "커뮤니티 WOD 검색...",
+      "errorDescription": "커뮤니티 WOD를 불러올 수 없습니다.",
+      "searchInputPlaceholder": "WOD 검색...",
       "sortByLabel": "정렬 기준",
       "sort": {
         "recent": "최신순",
         "popular": "인기순",
         "alphabetical": "가나다순"
       },
-      "emptySearchTitle": "검색 결과와 일치하는 WOD가 없습니다.",
+      "emptySearchTitle": "검색 결과가 없습니다.",
       "emptySearchDescription": "다른 검색어를 입력해 보세요.",
       "emptyCommunityTitle": "가장 먼저 공유해 보세요!",
       "ScrollTop": {
@@ -155,7 +155,7 @@
     "scanButton": "사진에서 WOD 스캔",
     "generateButton": "무작위 WOD 생성",
     "heroButton": "히어로 WOD 시도",
-    "communityLink": "또는 커뮤니티를 탐색해 보세요."
+    "communityLink": "또는 <communityLink>커뮤니티</communityLink>를 탐색해 보세요."
   },
   "WodCard": {
     "optionsAlt": "WOD 옵션",
@@ -235,7 +235,7 @@
   "LoginPage": {
     "seo": {
       "title": "로그인 | 내 WOD에 접근",
-      "description": "운동 기록을 저장하려면 로그인하세요."
+      "description": "운동 기록을 저장하고 커뮤니티에 참여하려면 로그인하세요."
     },
     "verifying": "확인 중...",
     "confirmEmailTitle": "이메일 확인",
@@ -267,7 +267,7 @@
   "PremiumPage": {
     "seo": {
       "title": "프리미엄 멤버십 | WODBurner 지원",
-      "description": "무제한 스캔 및 고급 필터."
+      "description": "무제한 스캔 및 고급 필터를 활성화하세요."
     },
     "title": "프리미엄",
     "alreadyPremium": {
@@ -329,6 +329,10 @@
     }
   },
   "SettingsPage": {
+    "seo": {
+      "title": "설정 | 내 계정 관리",
+      "description": "프로필 및 구독 설정을 업데이트하세요."
+    },
     "title": "설정",
     "profile": {
       "title": "프로필",
@@ -365,10 +369,18 @@
     }
   },
   "ScanPage": {
+    "seo": {
+      "title": "WOD 스캔 | AI 화이트보드 분석기",
+      "description": "운동 사진을 즉시 인터랙티브 타이머로 변환하세요."
+    },
     "title": "WOD 스캔",
     "manualButton": "수동 추가"
   },
   "NewWodPage": {
+    "seo": {
+      "title": "새 운동 | 수동 입력",
+      "description": "CrossFit 운동을 수동으로 추가하고 훈련을 시작하세요."
+    },
     "title": "수동으로 WOD 만들기",
     "cardTitle": "운동 상세 정보",
     "namePlaceholder": "이름",
@@ -395,6 +407,10 @@
     }
   },
   "EditWodPage": {
+    "seo": {
+      "title": "WOD 편집 | WODBurner",
+      "description": "운동 상세 정보를 업데이트하세요."
+    },
     "title": "WOD 편집",
     "cardTitle": "상세 정보",
     "saveButton": "변경 사항 저장",
@@ -412,22 +428,34 @@
     "startButton": "시작",
     "forTime": {
       "title": "For Time",
-      "description": "간단한 스톱워치"
+      "description": "간단한 스톱워치",
+      "timeCapLabel": "타임 캡(분)",
+      "timeCapPlaceholder": "예: 20"
     },
     "amrap": {
       "title": "AMRAP",
-      "description": "최대 반복"
+      "description": "최대 반복",
+      "durationLabel": "시간(분)"
     },
     "emom": {
       "title": "EMOM",
-      "description": "매 분마다"
+      "description": "매 분마다",
+      "roundsLabel": "라운드",
+      "intervalLabel": "인터벌",
+      "intervalMinutes": "분",
+      "intervalSeconds": "초"
     },
     "tabata": {
       "title": "Tabata",
-      "description": "20초 운동 / 10초 휴식"
+      "description": "20초 운동 / 10초 휴식",
+      "roundsLabel": "라운드"
     }
   },
   "TimersPage": {
+    "seo": {
+      "title": "CrossFit 타이머 | AMRAP, EMOM, Tabata",
+      "description": "훈련을 위한 전문 타이머."
+    },
     "title": "스마트 타이머",
     "forTime": "For Time",
     "forTimeDescription": "간단한 스톱워치",
@@ -440,6 +468,10 @@
     "footer": "또는 대시보드에서 운동을 선택하세요."
   },
   "HeroWodsPage": {
+    "seo": {
+      "title": "히어로 WOD | 전설적인 라이브러리",
+      "description": "Murph, Fran, Cindy 등 전설적인 CrossFit 운동을 찾아보세요."
+    },
     "title": "히어로 WOD",
     "description": "전사들을 기리며.",
     "premiumUpsell": {
@@ -449,6 +481,10 @@
     }
   },
   "HallOfFamePage": {
+    "seo": {
+      "title": "명예의 전당 | WODBurner 얼리 어답터",
+      "description": "초기 지원자 300인."
+    },
     "title": "명예의 전당",
     "cardTitle": "초기 300명",
     "cardDescription": "초기 지원자에게는 평생 무료.",
@@ -478,6 +514,10 @@
     "totalTimeElapsed": "합계: {time}"
   },
   "GenerateWodPage": {
+    "seo": {
+      "title": "AI WOD 생성기 | 매일 새로운 운동",
+      "description": "AI 코치에게 당신만을 위한 맞춤형 운동을 요청하세요."
+    },
     "title": "AI WOD 생성기",
     "cardTitle": "WODBot 3000",
     "cardDescription": "영감이 없나요? AI가 운동을 만들어 드립니다.",

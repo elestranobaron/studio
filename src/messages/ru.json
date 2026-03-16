@@ -2,7 +2,7 @@
   "RootLayout": {
     "seo": {
       "title": "WODBurner - Ваша доска CrossFit и умный таймер",
-      "description": "Сканируйте свои тренировки CrossFit по фотографиям, создавайте новые WOD с помощью ИИ и пользуйтесь умными таймерами."
+      "description": "Ваш помощник в CrossFit. Сканируйте доски в боксе, создавайте WOD с помощью ИИ и анализируйте статистику Open."
     }
   },
   "UserNav": {
@@ -116,7 +116,7 @@
   "DashboardPage": {
     "seo": {
       "title": "Панель | Управляйте своими WOD CrossFit",
-      "description": "Управляйте своими тренировками CrossFit, находите отсканированные WOD и открывайте тренировки сообщества."
+      "description": "Управляйте своими тренировками, находите отсканированные WOD и делитесь результатами."
     },
     "title": "Панель",
     "scanNewWod": "Сканировать новый WOD",
@@ -155,7 +155,7 @@
     "scanButton": "Отсканировать WOD с фото",
     "generateButton": "Создать случайный WOD",
     "heroButton": "Попробовать Hero WOD",
-    "communityLink": "Или исследуйте сообщество."
+    "communityLink": "Или исследуйте <communityLink>сообщество</communityLink>."
   },
   "WodCard": {
     "optionsAlt": "Опции WOD",
@@ -166,7 +166,7 @@
     "sharedToastTitle": "Опубликовано!",
     "sharedToastDescription": "Ваш WOD виден сообществу.",
     "unsharedToastTitle": "Скрыто",
-    "unsharedToastDescription": "WOD удален из сообщества.",
+    "unsharedToastDescription": "Ваш WOD удален.",
     "shareErrorToastTitle": "Ошибка",
     "shareErrorToastDescription": "Не удалось обновить статус.",
     "deleteDialogTitle": "Вы уверены?",
@@ -185,7 +185,7 @@
     "startWod": "Начать WOD",
     "profile": {
       "cardio": "Кардио",
-      "lifting": "Силовые",
+      "lifting": "Сила",
       "upper": "Верх",
       "lower": "Низ"
     }
@@ -329,6 +329,10 @@
     }
   },
   "SettingsPage": {
+    "seo": {
+      "title": "Настройки | Управление аккаунтом",
+      "description": "Обновите свой профиль и подписки."
+    },
     "title": "Настройки",
     "profile": {
       "title": "Профиль",
@@ -365,10 +369,18 @@
     }
   },
   "ScanPage": {
+    "seo": {
+      "title": "Сканировать WOD | ИИ Анализ",
+      "description": "Мгновенно превратите фото доски в интерактивный таймер."
+    },
     "title": "Сканировать WOD",
     "manualButton": "Ввести вручную"
   },
   "NewWodPage": {
+    "seo": {
+      "title": "Новый WOD | Ручной ввод",
+      "description": "Добавляйте свои тренировки вручную."
+    },
     "title": "Новый WOD",
     "cardTitle": "Детали",
     "namePlaceholder": "Название",
@@ -395,6 +407,10 @@
     }
   },
   "EditWodPage": {
+    "seo": {
+      "title": "Редактировать WOD | WODBurner",
+      "description": "Обновите данные тренировки."
+    },
     "title": "Редактировать",
     "cardTitle": "Детали",
     "saveButton": "Сохранить",
@@ -418,20 +434,30 @@
     },
     "amrap": {
       "title": "AMRAP",
-      "description": "Макс повторов."
+      "description": "Макс повторов.",
+      "durationLabel": "Время (мин)"
     },
     "emom": {
       "title": "EMOM",
-      "description": "Каждую минуту."
+      "description": "Каждую минуту.",
+      "roundsLabel": "Раундов",
+      "intervalLabel": "Интервал",
+      "intervalMinutes": "мин",
+      "intervalSeconds": "сек"
     },
     "tabata": {
       "title": "Tabata",
-      "description": "20с/10с."
+      "description": "20с/10с.",
+      "roundsLabel": "Раундов"
     }
   },
   "TimersPage": {
+    "seo": {
+      "title": "Таймеры CrossFit | AMRAP, EMOM, Tabata",
+      "description": "Профессиональные таймеры для ваших тренировок."
+    },
     "title": "Умные таймеры",
-    "forTime": "На время",
+    "forTime": "For Time",
     "forTimeDescription": "Секундомер.",
     "amrap": "AMRAP",
     "amrapDescription": "Макс повторов.",
@@ -439,9 +465,13 @@
     "emomDescription": "Каждую минуту.",
     "tabata": "Tabata",
     "tabataDescription": "Интервалы.",
-    "footer": "Один клик для старта."
+    "footer": "Или выберите WOD."
   },
   "HeroWodsPage": {
+    "seo": {
+      "title": "Hero WODs & Benchmarks | Легендарная библиотека",
+      "description": "Найдите Murph, Fran, Cindy и всю классику."
+    },
     "title": "Hero WODs",
     "description": "Память о героях.",
     "premiumUpsell": {
@@ -451,6 +481,10 @@
     }
   },
   "HallOfFamePage": {
+    "seo": {
+      "title": "Зал славы | Первые 300 сторонников",
+      "description": "Элитный круг наших первых пользователей."
+    },
     "title": "Зал славы",
     "cardTitle": "Первые 300",
     "cardDescription": "Вечный доступ первым.",
@@ -480,6 +514,10 @@
     "totalTimeElapsed": "Всего: {time}"
   },
   "GenerateWodPage": {
+    "seo": {
+      "title": "ИИ Генератор WOD | Новые тренировки каждый день",
+      "description": "Нет идей? Пусть наш ИИ создаст тренировку специально для вас."
+    },
     "title": "ИИ Генератор WOD",
     "cardTitle": "WODBot 3000",
     "cardDescription": "Нет идей? ИИ поможет.",

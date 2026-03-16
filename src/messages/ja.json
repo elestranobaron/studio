@@ -329,6 +329,10 @@
     }
   },
   "SettingsPage": {
+    "seo": {
+      "title": "設定 | WODBurnerアカウントの管理",
+      "description": "プロファイル、サブスクリプション、設定を更新します。"
+    },
     "title": "設定",
     "profile": {
       "title": "プロファイル",
@@ -365,10 +369,18 @@
     }
   },
   "ScanPage": {
+    "seo": {
+      "title": "WODをスキャン | AIホワイトボード分析",
+      "description": "写真をインタラクティブなタイマーに瞬時に変換します。"
+    },
     "title": "WODをスキャン",
     "manualButton": "手動で追加"
   },
   "NewWodPage": {
+    "seo": {
+      "title": "新しいワークアウト | 手動入力",
+      "description": "独自のCrossFitワークアウトを手動で追加してトレーニングを開始します。"
+    },
     "title": "手動作成",
     "cardTitle": "詳細",
     "namePlaceholder": "名前",
@@ -395,6 +407,10 @@
     }
   },
   "EditWodPage": {
+    "seo": {
+      "title": "WODを編集 | WODBurner",
+      "description": "ワークアウトの詳細を更新します。"
+    },
     "title": "WODを編集",
     "cardTitle": "詳細",
     "saveButton": "保存",
@@ -412,22 +428,34 @@
     "startButton": "開始",
     "forTime": {
       "title": "For Time",
-      "description": "ストップウォッチ。"
+      "description": "ストップウォッチ。",
+      "timeCapLabel": "タイムキャップ（分）",
+      "timeCapPlaceholder": "例: 20"
     },
     "amrap": {
       "title": "AMRAP",
-      "description": "最大繰り返し。"
+      "description": "最大繰り返し。",
+      "durationLabel": "期間（分）"
     },
     "emom": {
       "title": "EMOM",
-      "description": "毎分。"
+      "description": "毎分。",
+      "roundsLabel": "ラウンド",
+      "intervalLabel": "インターバル",
+      "intervalMinutes": "分",
+      "intervalSeconds": "秒"
     },
     "tabata": {
       "title": "Tabata",
-      "description": "20秒作業 / 10秒休息。"
+      "description": "20秒作業 / 10秒休息。",
+      "roundsLabel": "ラウンド"
     }
   },
   "TimersPage": {
+    "seo": {
+      "title": "CrossFitタイマー | AMRAP, EMOM, Tabata",
+      "description": "ワークアウト用のプロ仕様タイマー。"
+    },
     "title": "スマートタイマー",
     "forTime": "For Time",
     "forTimeDescription": "ストップウォッチ。",
@@ -440,6 +468,10 @@
     "footer": "またはダッシュボードから選ぶ。"
   },
   "HeroWodsPage": {
+    "seo": {
+      "title": "ヒーローWOD | 伝説のライブラリ",
+      "description": "Murph、Fran、Cindy、その他伝説のCrossFitワークアウトを見つけましょう。"
+    },
     "title": "ヒーローWOD",
     "description": "英雄たちの記憶に。",
     "premiumUpsell": {
@@ -449,6 +481,10 @@
     }
   },
   "HallOfFamePage": {
+    "seo": {
+      "title": "殿堂 | WODBurner早期支持者",
+      "description": "最初の300人の支持者の限定サークル。"
+    },
     "title": "殿堂",
     "cardTitle": "最初の300人",
     "cardDescription": "早期サポーターは永久無料。",
@@ -478,6 +514,10 @@
     "totalTimeElapsed": "合計: {time}"
   },
   "GenerateWodPage": {
+    "seo": {
+      "title": "AI WOD生成器 | 毎日新しいワークアウト",
+      "description": "インスピレーションが足りませんか？AIコーチにあなた専用のCrossFitトレーニングを作成させましょう。"
+    },
     "title": "AI WOD生成器",
     "cardTitle": "WODBot 3000",
     "cardDescription": "アイデアがない？AIが作成します。",

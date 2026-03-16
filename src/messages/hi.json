@@ -299,7 +299,7 @@
       "perYear": "/वर्ष",
       "billedAnnually": "वार्षिक बिलिंग",
       "goPremium": "प्रीमियम बनें →",
-      "loading": "लोड हो रहाmathrm..."
+      "loading": "लोड हो रहा है..."
     },
     "features": {
       "scans": "असीमित WOD स्कैन",
@@ -329,6 +329,10 @@
     }
   },
   "SettingsPage": {
+    "seo": {
+      "title": "सेटिंग्स | मेरा खाता प्रबंधित करें",
+      "description": "प्रोफ़ाइल और सदस्यता अपडेट करें।"
+    },
     "title": "सेटिंग्स",
     "profile": {
       "title": "प्रोफ़ाइल",
@@ -365,10 +369,18 @@
     }
   },
   "ScanPage": {
+    "seo": {
+      "title": "स्कैन WOD | एआई व्हाइटबोर्ड एनालाइज़र",
+      "description": "फोटो को इंटरैक्टिव टाइमर में बदलें।"
+    },
     "title": "WOD स्कैन करें",
     "manualButton": "मैन्युअल रूप से जोड़ें"
   },
   "NewWodPage": {
+    "seo": {
+      "title": "नई कसरत | मैन्युअल प्रविष्टि",
+      "description": "मैन्युअल रूप से WOD जोड़ें।"
+    },
     "title": "मैन्युअल रूप से WOD बनाएँ",
     "cardTitle": "वर्कआउट विवरण",
     "namePlaceholder": "नाम (जैसे Fran)",
@@ -395,6 +407,10 @@
     }
   },
   "EditWodPage": {
+    "seo": {
+      "title": "WOD संपादित करें | WODBurner",
+      "description": "वर्कआउट विवरण अपडेट करें।"
+    },
     "title": "WOD संपादित करें",
     "cardTitle": "विवरण",
     "saveButton": "परिवर्तन सहेजें",
@@ -412,22 +428,34 @@
     "startButton": "टाइमर शुरू करें",
     "forTime": {
       "title": "समय के लिए",
-      "description": "साधारण स्टॉपवॉच।"
+      "description": "साधारण स्टॉपवॉच।",
+      "timeCapLabel": "समय सीमा (मिनट)",
+      "timeCapPlaceholder": "जैसे 20"
     },
     "amrap": {
       "title": "AMRAP",
-      "description": "समय में अधिकतम रेप्स।"
+      "description": "समय में अधिकतम रेप्स।",
+      "durationLabel": "अवधि (मिनट)"
     },
     "emom": {
       "title": "EMOM",
-      "description": "हर मिनट।"
+      "description": "हर मिनट।",
+      "roundsLabel": "जौले",
+      "intervalLabel": "अंतराल",
+      "intervalMinutes": "मिनट",
+      "intervalSeconds": "सेकंड"
     },
     "tabata": {
       "title": "Tabata",
-      "description": "20s काम / 10s आराम।"
+      "description": "20s काम / 10s आराम।",
+      "roundsLabel": "जौले"
     }
   },
   "TimersPage": {
+    "seo": {
+      "title": "क्रॉसफ़िट टाइमर | AMRAP, EMOM, Tabata",
+      "description": "प्रोफेशनल क्रॉसफ़िट टाइमर।"
+    },
     "title": "स्मार्ट टाइमर",
     "forTime": "For Time",
     "forTimeDescription": "साधारण स्टॉपवॉच।",
@@ -440,6 +468,10 @@
     "footer": "या डैशबोर्ड से वर्कआउट चुनें।"
   },
   "HeroWodsPage": {
+    "seo": {
+      "title": "हीरो WOD | दिग्गज वर्कआउट लाइब्रेरी",
+      "description": "Murph, Fran, Cindy और अन्य क्लासिक वर्कआउट खोजें।"
+    },
     "title": "हीरो WODs",
     "description": "शहीदों की याद में।",
     "premiumUpsell": {
@@ -449,6 +481,10 @@
     }
   },
   "HallOfFamePage": {
+    "seo": {
+      "title": "हॉल ऑफ फेम | WODBurner समर्थक",
+      "description": "हमारे पहले 300 समर्थकों का विशेष क्लब।"
+    },
     "title": "हॉल ऑफ फेम",
     "cardTitle": "पहले 300 सदस्य",
     "cardDescription": "लाइफटाइम फ्री।",
@@ -478,6 +514,10 @@
     "totalTimeElapsed": "कुल: {time}"
   },
   "GenerateWodPage": {
+    "seo": {
+      "title": "एआई WOD जेनरेटर | हर दिन नई कसरत",
+      "description": "एआई को अपने लिए एक नया क्रॉसफ़िट वर्कआउट बनाने दें।"
+    },
     "title": "AI WOD जेनरेटर",
     "cardTitle": "WODBot 3000",
     "cardDescription": "प्रेरणा नहीं मिल रही? AI को वर्कआउट बनाने दें।",

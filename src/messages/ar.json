@@ -428,22 +428,34 @@
     "startButton": "ابدأ المؤقت",
     "forTime": {
       "title": "على الوقت",
-      "description": "ساعة توقيت بسيطة."
+      "description": "ساعة توقيت بسيطة.",
+      "timeCapLabel": "الحد الأقصى (دقائق)",
+      "timeCapPlaceholder": "مثلاً 20"
     },
     "amrap": {
       "title": "AMRAP",
-      "description": "أقصى تكرارات."
+      "description": "أقصى تكرارات.",
+      "durationLabel": "المدة (دقائق)"
     },
     "emom": {
       "title": "EMOM",
-      "description": "كل دقيقة."
+      "description": "كل دقيقة.",
+      "roundsLabel": "جولات",
+      "intervalLabel": "الفترة",
+      "intervalMinutes": "دقيقة",
+      "intervalSeconds": "ثانية"
     },
     "tabata": {
       "title": "Tabata",
-      "description": "20 ثانية عمل / 10 ثواني راحة."
+      "description": "20 ثانية عمل / 10 ثواني راحة.",
+      "roundsLabel": "جولات"
     }
   },
   "TimersPage": {
+    "seo": {
+      "title": "مؤقتات كروس فت | AMRAP, EMOM, Tabata",
+      "description": "مؤقتات تدريب احترافية لتمارينك."
+    },
     "title": "المؤقتات الذكية",
     "forTime": "For Time",
     "forTimeDescription": "ساعة توقيت بسيطة.",
@@ -456,6 +468,10 @@
     "footer": "أو اختر تمرين من لوحة التحكم."
   },
   "HeroWodsPage": {
+    "seo": {
+      "title": "تمارين الأبطال | مكتبة التمارين الأسطورية",
+      "description": "اعثر على Murph و Fran و Cindy وجميع تمارين كروس فت الأسطورية."
+    },
     "title": "تمارين الأبطال",
     "description": "تخليداً لذكرى الأبطال.",
     "premiumUpsell": {
@@ -465,6 +481,10 @@
     }
   },
   "HallOfFamePage": {
+    "seo": {
+      "title": "قاعة المشاهير | داعمو WODBurner الأوائل",
+      "description": "الدائرة المغلقة لأول 300 داعم لنا."
+    },
     "title": "قاعة المشاهير",
     "cardTitle": "أول 300 عضو",
     "cardDescription": "اشتراك مجاني مدى الحياة لأول داعمين لنا.",
@@ -494,6 +514,10 @@
     "totalTimeElapsed": "الإجمالي: {time}"
   },
   "GenerateWodPage": {
+    "seo": {
+      "title": "مولد تمارين بالذكاء الاصطناعي | تمارين جديدة يومياً",
+      "description": "لا تجد إلهاماً؟ دع مدرب الذكاء الاصطناعي يصمم لك تمريناً مخصصاً."
+    },
     "title": "منشئ تمارين بالذكاء الاصطناعي",
     "cardTitle": "WODBot 3000",
     "cardDescription": "لا تجد إلهاماً؟ دع الذكاء الاصطناعي يصمم تمرينك.",

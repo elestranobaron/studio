@@ -2,7 +2,7 @@
   "RootLayout": {
     "seo": {
       "title": "WODBurner - La tua Lavagna CrossFit e Smart Timer",
-      "description": "Scansiona i tuoi allenamenti CrossFit dalle foto, genera nuovi WOD con l'IA e accedi a timer intelligenti."
+      "description": "L'assistente CrossFit definitivo. Scansiona le tue lavagne, genera WOD con l'IA e accedi a timer professionali."
     }
   },
   "UserNav": {
@@ -102,8 +102,8 @@
     "charts": {
       "distribution": "Distribuzione punteggi",
       "distributionSub": "Distribuzione sul campione analizzato",
-      "bmi": "Correlazione BMI / Posizione",
-      "bmiSub": "Impatto del BMI sulla classifica globale"
+      "bmi": "Correlazione di Performance",
+      "bmiSub": "Impatto del profilo fisico sulla classifica globale"
     },
     "methodology": {
       "title": "Metodologia dei grafici",
@@ -116,7 +116,7 @@
   "DashboardPage": {
     "seo": {
       "title": "Dashboard | Gestisci i tuoi WOD di CrossFit",
-      "description": "Gestisci i tuoi allenamenti di CrossFit, trova i tuoi WOD scansionati e scopri l'allenamento della comunità."
+      "description": "Gestisci i tuoi allenamenti di CrossFit, trova i tuoi WOD scansionati e condividi le tue prestazioni."
     },
     "title": "Dashboard",
     "scanNewWod": "Scansiona nuovo WOD",
@@ -134,14 +134,14 @@
       "joinButton": "Registrati / Accedi",
       "errorTitle": "Si è verificato un errore",
       "errorDescription": "Impossibile caricare i WOD della comunità. Riprova più tardi.",
-      "searchInputPlaceholder": "Cerca WOD della comunità...",
+      "searchInputPlaceholder": "Cerca WOD...",
       "sortByLabel": "Ordina per",
       "sort": {
         "recent": "Più recenti",
         "popular": "Più popolari",
-        "alphabetical": "Alfabetico (A-Z)"
+        "alphabetical": "Alfabetico"
       },
-      "emptySearchTitle": "Nessun WOD corrisponde alla tua ricerca.",
+      "emptySearchTitle": "Nessun risultato.",
       "emptySearchDescription": "Prova un termine di ricerca diverso.",
       "emptyCommunityTitle": "Sii il primo a condividerne uno!",
       "ScrollTop": {
@@ -155,7 +155,7 @@
     "scanButton": "Scansiona un WOD da una foto",
     "generateButton": "Genera un WOD casuale",
     "heroButton": "Prova un Hero WOD",
-    "communityLink": "Oppure esplora la comunità."
+    "communityLink": "Oppure esplora la <communityLink>comunità</communityLink>."
   },
   "WodCard": {
     "optionsAlt": "Opzioni WOD",
@@ -166,7 +166,7 @@
     "sharedToastTitle": "WOD condiviso!",
     "sharedToastDescription": "Il tuo WOD è ora visibile alla comunità.",
     "unsharedToastTitle": "WOD non più condiviso",
-    "unsharedToastDescription": "Il tuo WOD è stato rimosso dalla comunità.",
+    "unsharedToastDescription": "Il tuo WOD è stato rimosso.",
     "shareErrorToastTitle": "Errore",
     "shareErrorToastDescription": "Impossibile aggiornare lo stato di condivisione.",
     "deleteDialogTitle": "Sei sicuro?",
@@ -234,8 +234,8 @@
   },
   "LoginPage": {
     "seo": {
-      "title": "Accedi | WODBurner",
-      "description": "Accedi al tuo account WODBurner per salvare i tuoi allenamenti."
+      "title": "Accedi | Accedi ai tuoi WOD",
+      "description": "Accedi per salvare i tuoi allenamenti e unirti alla comunità CrossFit."
     },
     "verifying": "Verifica in corso...",
     "confirmEmailTitle": "Conferma e-mail",
@@ -329,6 +329,10 @@
     }
   },
   "SettingsPage": {
+    "seo": {
+      "title": "Impostazioni | Gestisci il mio account WODBurner",
+      "description": "Aggiorna il tuo profilo e il tuo abbonamento."
+    },
     "title": "Impostazioni",
     "profile": {
       "title": "Profilo",
@@ -365,10 +369,18 @@
     }
   },
   "ScanPage": {
+    "seo": {
+      "title": "Scansiona WOD | Analizzatore IA di Lavagna",
+      "description": "Trasforma istantaneamente una foto del tuo allenamento in timer interattivo."
+    },
     "title": "Scansiona WOD",
     "manualButton": "Aggiungi manualmente"
   },
   "NewWodPage": {
+    "seo": {
+      "title": "Nuovo Allenamento | Creazione Manuale",
+      "description": "Aggiungi i tuoi allenamenti personalizzati manualment e inizia."
+    },
     "title": "Crea WOD manualmente",
     "cardTitle": "Dettagli allenamento",
     "namePlaceholder": "Nome",
@@ -395,6 +407,10 @@
     }
   },
   "EditWodPage": {
+    "seo": {
+      "title": "Modifica WOD | WODBurner",
+      "description": "Aggiorna i dettagli del tuo allenamento."
+    },
     "title": "Modifica WOD",
     "cardTitle": "Dettagli",
     "saveButton": "Salva modifiche",
@@ -412,22 +428,34 @@
     "startButton": "Avvia timer",
     "forTime": {
       "title": "For Time",
-      "description": "Cronometro semplice."
+      "description": "Cronometro semplice.",
+      "timeCapLabel": "Time Cap (min)",
+      "timeCapPlaceholder": "es: 20"
     },
     "amrap": {
       "title": "AMRAP",
-      "description": "Massime ripetizioni."
+      "description": "Massime ripetizioni.",
+      "durationLabel": "Durata (min)"
     },
     "emom": {
       "title": "EMOM",
-      "description": "Ogni minuto."
+      "description": "Ogni minuto.",
+      "roundsLabel": "Rounds",
+      "intervalLabel": "Intervallo",
+      "intervalMinutes": "min",
+      "intervalSeconds": "sec"
     },
     "tabata": {
       "title": "Tabata",
-      "description": "20s lavoro / 10s riposo."
+      "description": "20s lavoro / 10s riposo.",
+      "roundsLabel": "Rounds"
     }
   },
   "TimersPage": {
+    "seo": {
+      "title": "Timer CrossFit | AMRAP, EMOM, Tabata",
+      "description": "Timer professionali per i tuoi allenamenti."
+    },
     "title": "Timer Intelligenti",
     "forTime": "For Time",
     "forTimeDescription": "Cronometro semplice.",
@@ -440,6 +468,10 @@
     "footer": "O seleziona un WOD dal dashboard."
   },
   "HeroWodsPage": {
+    "seo": {
+      "title": "Hero WODs & Benchmarks | La Libreria Leggendaria",
+      "description": "Trova Murph, Fran, Cindy e tutti gli allenamenti leggendari del CrossFit."
+    },
     "title": "Hero WODs",
     "description": "In memoria degli eroi.",
     "premiumUpsell": {
@@ -449,6 +481,10 @@
     }
   },
   "HallOfFamePage": {
+    "seo": {
+      "title": "Hall of Fame | Pionieri WODBurner",
+      "description": "Il circolo ristretto dei nostri primi 300 sostenitori."
+    },
     "title": "Hall of Fame",
     "cardTitle": "I primi 300 OG",
     "cardDescription": "Gratis a vita per i primi sostenitori.",
@@ -478,6 +514,10 @@
     "totalTimeElapsed": "Totale: {time}"
   },
   "GenerateWodPage": {
+    "seo": {
+      "title": "Generatore WOD IA | Nuovi Allenamenti",
+      "description": "Senza ispirazione? Lascia che l'IA crei il tuo WOD."
+    },
     "title": "Generatore WOD IA",
     "cardTitle": "WODBot 3000",
     "cardDescription": "Senza ispirazione? Lascia che l'IA crei il tuo WOD.",

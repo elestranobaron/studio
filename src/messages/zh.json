@@ -2,7 +2,7 @@
   "RootLayout": {
     "seo": {
       "title": "WODBurner - 您的CrossFit白板和智能计时器",
-      "description": "从照片中扫描您的CrossFit训练，使用AI生成新的WOD，并访问智能计时器。"
+      "description": "终极CrossFit助手。扫描白板照片，AI生成WOD，访问专业计时器。"
     }
   },
   "UserNav": {
@@ -116,7 +116,7 @@
   "DashboardPage": {
     "seo": {
       "title": "仪表板 | 管理您的CrossFit WOD",
-      "description": "管理您的CrossFit训练，查找您扫描的WOD，并发现社区训练。"
+      "description": "管理您的训练历史，查看扫描的WOD并分享您的表现。"
     },
     "title": "仪表板",
     "scanNewWod": "扫描新WOD",
@@ -134,14 +134,14 @@
       "joinButton": "注册/登录",
       "errorTitle": "发生错误",
       "errorDescription": "无法加载社区WOD。请稍后再试。",
-      "searchInputPlaceholder": "搜索社区WOD...",
+      "searchInputPlaceholder": "搜索WOD...",
       "sortByLabel": "排序方式",
       "sort": {
         "recent": "最近",
         "popular": "最受欢迎",
-        "alphabetical": "字母顺序 (A-Z)"
+        "alphabetical": "字母顺序"
       },
-      "emptySearchTitle": "没有与您的搜索匹配的WOD。",
+      "emptySearchTitle": "没有结果。",
       "emptySearchDescription": "请尝试其他搜索词。",
       "emptyCommunityTitle": "成为第一个分享的人！",
       "ScrollTop": {
@@ -155,7 +155,7 @@
     "scanButton": "从照片扫描WOD",
     "generateButton": "生成随机WOD",
     "heroButton": "尝试英雄WOD",
-    "communityLink": "或者，探索社区。"
+    "communityLink": "或者，探索 <communityLink>社区</communityLink>。"
   },
   "WodCard": {
     "optionsAlt": "WOD选项",
@@ -197,7 +197,7 @@
     "startSection": "开始",
     "accessRestricted": {
       "title": "访问受限",
-      "description": "请注册或登录以查看社区WOD并使用计时器。",
+      "description": "请注册以查看社区WOD并使用计时器。",
       "button": "注册/登录"
     }
   },
@@ -234,8 +234,8 @@
   },
   "LoginPage": {
     "seo": {
-      "title": "登录 | WODBurner",
-      "description": "登录您的WODBurner帐户以保存您的训练。"
+      "title": "登录 | 访问您的WOD",
+      "description": "登录以保存白板扫描、生成新训练并加入社区。"
     },
     "verifying": "验证中...",
     "confirmEmailTitle": "确认电子邮件",
@@ -329,6 +329,10 @@
     }
   },
   "SettingsPage": {
+    "seo": {
+      "title": "设置 | 管理账户",
+      "description": "更新您的个人资料、订阅和偏好。"
+    },
     "title": "设置",
     "profile": {
       "title": "个人资料",
@@ -365,10 +369,18 @@
     }
   },
   "ScanPage": {
+    "seo": {
+      "title": "扫描WOD | AI白板分析",
+      "description": "将您的白板照片瞬间转换为交互式计时器。"
+    },
     "title": "扫描WOD",
     "manualButton": "手动添加"
   },
   "NewWodPage": {
+    "seo": {
+      "title": "新训练 | 手动输入",
+      "description": "手动添加您的自定义训练并开始锻炼。"
+    },
     "title": "手动创建",
     "cardTitle": "锻炼详情",
     "namePlaceholder": "名称",
@@ -395,6 +407,10 @@
     }
   },
   "EditWodPage": {
+    "seo": {
+      "title": "编辑WOD | WODBurner",
+      "description": "更新您的训练详情。"
+    },
     "title": "编辑WOD",
     "cardTitle": "详细内容",
     "saveButton": "保存更改",
@@ -412,22 +428,34 @@
     "startButton": "开始",
     "forTime": {
       "title": "For Time",
-      "description": "简单秒表。"
+      "description": "简单秒表。",
+      "timeCapLabel": "时间限制（分）",
+      "timeCapPlaceholder": "例如 20"
     },
     "amrap": {
       "title": "AMRAP",
-      "description": "最大重复次数。"
+      "description": "最大重复次数。",
+      "durationLabel": "持续时间（分）"
     },
     "emom": {
       "title": "EMOM",
-      "description": "每分钟。"
+      "description": "每分钟。",
+      "roundsLabel": "轮数",
+      "intervalLabel": "间歇",
+      "intervalMinutes": "分",
+      "intervalSeconds": "秒"
     },
     "tabata": {
       "title": "Tabata",
-      "description": "20秒工作 / 10秒休息。"
+      "description": "20秒工作 / 10秒休息。",
+      "roundsLabel": "轮数"
     }
   },
   "TimersPage": {
+    "seo": {
+      "title": "CrossFit计时器 | AMRAP, EMOM, Tabata",
+      "description": "为您准备的专业训练计时器。"
+    },
     "title": "智能计时器",
     "forTime": "For Time",
     "forTimeDescription": "秒表。",
@@ -440,6 +468,10 @@
     "footer": "或从仪表板选择一个WOD。"
   },
   "HeroWodsPage": {
+    "seo": {
+      "title": "英雄WOD | 传奇图书馆",
+      "description": "查找 Murph, Fran, Cindy 和所有传奇 Crossfit 训练。"
+    },
     "title": "英雄WOD",
     "description": "纪念英烈。",
     "premiumUpsell": {
@@ -449,6 +481,10 @@
     }
   },
   "HallOfFamePage": {
+    "seo": {
+      "title": "名人堂 | WODBurner元老",
+      "description": "前300位元老级支持者的精英圈子。"
+    },
     "title": "名人堂",
     "cardTitle": "首批300位元老",
     "cardDescription": "早期支持者永久免费。",
@@ -478,6 +514,10 @@
     "totalTimeElapsed": "总计：{time}"
   },
   "GenerateWodPage": {
+    "seo": {
+      "title": "AI WOD生成器 | 每日新训练",
+      "description": "缺乏灵感？让我们的 AI 教练为您量身定制 Crossfit 训练。"
+    },
     "title": "AI WOD生成器",
     "cardTitle": "WODBot 3000",
     "cardDescription": "没有灵感？AI帮您创建。",

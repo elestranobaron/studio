@@ -2,7 +2,7 @@
   "RootLayout": {
     "seo": {
       "title": "WODBurner - Je CrossFit Whiteboard & Smart Timer",
-      "description": "Scan je CrossFit workouts van foto's, genereer nieuwe WOD's met AI en gebruik slimme timers."
+      "description": "De ultieme CrossFit-metgezel. Scan whiteboard-foto's, genereer AI-workouts en gebruik professionele timers."
     }
   },
   "UserNav": {
@@ -116,7 +116,7 @@
   "DashboardPage": {
     "seo": {
       "title": "Dashboard | Beheer je CrossFit WOD's",
-      "description": "Beheer je CrossFit workouts, vind je gescande WOD's en ontdek community trainingen."
+      "description": "Beheer je CrossFit workouts, vind je gescande WOD's en deel je resultaten."
     },
     "title": "Dashboard",
     "scanNewWod": "Nieuwe WOD Scannen",
@@ -155,7 +155,7 @@
     "scanButton": "Scan een WOD van een foto",
     "generateButton": "Genereer een willekeurige WOD",
     "heroButton": "Probeer een Hero WOD",
-    "communityLink": "Of, verken de community."
+    "communityLink": "Of, verken de <communityLink>community</communityLink>."
   },
   "WodCard": {
     "optionsAlt": "Opties",
@@ -235,7 +235,7 @@
   "LoginPage": {
     "seo": {
       "title": "Inloggen | WODBurner",
-      "description": "Log in op je WODBurner account."
+      "description": "Log in op je WODBurner account om je workouts op te slaan."
     },
     "verifying": "Controleren...",
     "confirmEmailTitle": "Bevestig je e-mail",
@@ -329,6 +329,10 @@
     }
   },
   "SettingsPage": {
+    "seo": {
+      "title": "Instellingen | Beheer mijn account",
+      "description": "Werk je profiel en abonnement bij."
+    },
     "title": "Instellingen",
     "profile": {
       "title": "Profiel",
@@ -365,10 +369,18 @@
     }
   },
   "ScanPage": {
+    "seo": {
+      "title": "WOD Scannen | AI Whiteboard-analyse",
+      "description": "Verander je whiteboard-foto direct in een interactieve timer."
+    },
     "title": "WOD Scannen",
     "manualButton": "Handmatig toevoegen"
   },
   "NewWodPage": {
+    "seo": {
+      "title": "Nieuwe Workout | Handmatige invoer",
+      "description": "Voeg je CrossFit workouts handmatig toe en begin met trainen."
+    },
     "title": "WOD handmatig maken",
     "cardTitle": "Workout Details",
     "namePlaceholder": "Naam (bijv. Fran)",
@@ -395,6 +407,10 @@
     }
   },
   "EditWodPage": {
+    "seo": {
+      "title": "WOD Bewerken | WODBurner",
+      "description": "Werk je workout-details bij."
+    },
     "title": "WOD Bewerken",
     "cardTitle": "Details",
     "saveButton": "Opslaan",
@@ -412,22 +428,34 @@
     "startButton": "Start Timer",
     "forTime": {
       "title": "For Time",
-      "description": "Simpele stopwatch."
+      "description": "Simpele stopwatch.",
+      "timeCapLabel": "Time Cap (min)",
+      "timeCapPlaceholder": "bijv. 20"
     },
     "amrap": {
-      "title": "AMRAP Timer",
-      "description": "Zoveel mogelijk reps."
+      "title": "AMRAP",
+      "description": "Zoveel mogelijk herhalingen.",
+      "durationLabel": "Duur (min)"
     },
     "emom": {
-      "title": "EMOM Timer",
-      "description": "Elke minuut."
+      "title": "EMOM",
+      "description": "Elke minuut.",
+      "roundsLabel": "Ronden",
+      "intervalLabel": "Interval",
+      "intervalMinutes": "min",
+      "intervalSeconds": "sec"
     },
     "tabata": {
-      "title": "Tabata Timer",
-      "description": "20s werk / 10s rust."
+      "title": "Tabata",
+      "description": "20s werk / 10s rust.",
+      "roundsLabel": "Ronden"
     }
   },
   "TimersPage": {
+    "seo": {
+      "title": "CrossFit Timers | AMRAP, EMOM, Tabata",
+      "description": "Professionele timers voor je workouts."
+    },
     "title": "Slimme Timers",
     "forTime": "For Time",
     "forTimeDescription": "Simpele stopwatch.",
@@ -440,6 +468,10 @@
     "footer": "Of kies een WOD op je dashboard."
   },
   "HeroWodsPage": {
+    "seo": {
+      "title": "Hero WODs & Benchmarks | De legendarische bibliotheek",
+      "description": "Vind Murph, Fran, Cindy en alle klassiekers."
+    },
     "title": "Hero WOD's",
     "description": "Ter nagedachtenis aan gevallenen.",
     "premiumUpsell": {
@@ -449,6 +481,10 @@
     }
   },
   "HallOfFamePage": {
+    "seo": {
+      "title": "Hall of Fame | De Pioniers",
+      "description": "De exclusieve groep van onze eerste 300 supporters."
+    },
     "title": "Hall of Fame",
     "cardTitle": "Eerste 300 OGs",
     "cardDescription": "Lifetime gratis voor onze eerste steunbetuigers.",
@@ -478,6 +514,10 @@
     "totalTimeElapsed": "Totaal: {time}"
   },
   "GenerateWodPage": {
+    "seo": {
+      "title": "AI WOD Generator | Dagelijks nieuwe workouts",
+      "description": "Geen inspiratie? Laat onze AI je workout maken."
+    },
     "title": "AI WOD Generator",
     "cardTitle": "WODBot 3000",
     "cardDescription": "Geen inspiratie? Laat AI je workout maken.",
