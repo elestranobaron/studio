@@ -135,24 +135,42 @@ export const verifyDigicode = onCall({ cors: true }, async (request) => {
 export const createCheckout = onCall({ cors: true }, async (request) => {
     if (!request.auth) throw new HttpsError("unauthenticated", "Auth required");
     const { yearly, turnstileToken } = request.data;
+    
     const isValid = await validateTurnstile(turnstileToken, request.rawRequest.ip);
     if (!isValid) throw new HttpsError("permission-denied", "Captcha failed");
 
     const stripeKey = process.env.STRIPE_SECRET_KEY;
     if (!stripeKey) throw new HttpsError("failed-precondition", "Stripe key missing");
 
-    const stripe = new Stripe(stripeKey, { apiVersion: "2026-02-25.clover" });
+    const stripe = new Stripe(stripeKey, { apiVersion: "2024-12-18.acacia" });
     const priceId = yearly ? process.env.STRIPE_YEARLY_PRICE_ID : process.env.STRIPE_MONTHLY_PRICE_ID;
     if (!priceId) throw new HttpsError("failed-precondition", "Price ID missing");
 
-    const session = await stripe.checkout.sessions.create({
+    // Récupération du client existant pour éviter les doublons dans Stripe
+    const userDoc = await db.collection("users").doc(request.auth.uid).get();
+    const userData = userDoc.data();
+    const customerId = userData?.stripeCustomerId;
+
+    const sessionParams: Stripe.Checkout.SessionCreateParams = {
         payment_method_types: ["card"],
         line_items: [{ price: priceId, quantity: 1 }],
         mode: "subscription",
         success_url: `${process.env.NEXT_PUBLIC_APP_URL || 'https://wodburner.app'}/premium?success=true`,
         cancel_url: `${process.env.NEXT_PUBLIC_APP_URL || 'https://wodburner.app'}/premium?cancel=true`,
         metadata: { uid: request.auth.uid },
-    });
+        subscription_data: {
+            metadata: { uid: request.auth.uid }
+        },
+        allow_promotion_codes: true,
+    };
+
+    if (customerId) {
+        sessionParams.customer = customerId;
+    } else if (request.auth.token.email) {
+        sessionParams.customer_email = request.auth.token.email;
+    }
+
+    const session = await stripe.checkout.sessions.create(sessionParams);
     return { url: session.url };
 });
 
@@ -170,7 +188,7 @@ export const createCustomerPortal = onCall({ cors: true }, async (request) => {
     const customerId = userDoc.data()?.stripeCustomerId;
     if (!customerId) throw new HttpsError("not-found", "Stripe customer not found");
 
-    const stripe = new Stripe(stripeKey, { apiVersion: "2026-02-25.clover" });
+    const stripe = new Stripe(stripeKey, { apiVersion: "2024-12-18.acacia" });
     const portalSession = await stripe.billingPortal.sessions.create({
         customer: customerId,
         return_url: `${process.env.NEXT_PUBLIC_APP_URL || 'https://wodburner.app'}/settings`,
@@ -182,7 +200,7 @@ export const stripeWebhook = onRequest(async (req, res) => {
     const sig = req.headers["stripe-signature"] as string;
     const stripeKey = process.env.STRIPE_SECRET_KEY || "";
     const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET || "";
-    const stripe = new Stripe(stripeKey, { apiVersion: "2026-02-25.clover" });
+    const stripe = new Stripe(stripeKey, { apiVersion: "2024-12-18.acacia" });
     
     try {
         const event = stripe.webhooks.constructEvent(req.rawBody, sig, webhookSecret);
