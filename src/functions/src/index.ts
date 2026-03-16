@@ -13,7 +13,6 @@ if (admin.apps.length === 0) {
 }
 const db = admin.firestore();
 
-// Augmentation de la mémoire à 1GiB pour le traitement d'images
 setGlobalOptions({ 
   region: "us-central1",
   memory: "1GiB", 
@@ -22,7 +21,6 @@ setGlobalOptions({
 
 async function validateTurnstile(token: string, ip: string | undefined): Promise<boolean> {
     const secret = process.env.TURNSTILE_SECRET_KEY;
-    // Autoriser les tokens de test ou si le secret n'est pas configuré en dev
     if (!token || token.includes('DUMMY')) return true;
     if (!secret || secret.startsWith('your_')) return true; 
 
@@ -146,13 +144,12 @@ export const createCheckout = onCall({ cors: true }, async (request) => {
     const priceId = yearly ? process.env.STRIPE_YEARLY_PRICE_ID : process.env.STRIPE_MONTHLY_PRICE_ID;
     if (!priceId) throw new HttpsError("failed-precondition", "Price ID missing");
 
-    // Récupération du client existant pour éviter les doublons dans Stripe
     const userDoc = await db.collection("users").doc(request.auth.uid).get();
     const userData = userDoc.data();
     const customerId = userData?.stripeCustomerId;
 
     const sessionParams: Stripe.Checkout.SessionCreateParams = {
-        payment_method_types: ["card"],
+        // En supprimant payment_method_types, on laisse Stripe gérer le 3DS et les méthodes locales via le Dashboard
         line_items: [{ price: priceId, quantity: 1 }],
         mode: "subscription",
         success_url: `${process.env.NEXT_PUBLIC_APP_URL || 'https://wodburner.app'}/premium?success=true`,
@@ -202,19 +199,43 @@ export const stripeWebhook = onRequest(async (req, res) => {
     const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET || "";
     const stripe = new Stripe(stripeKey, { apiVersion: "2024-12-18.acacia" });
     
+    let event: Stripe.Event;
+
     try {
-        const event = stripe.webhooks.constructEvent(req.rawBody, sig, webhookSecret);
-        if (event.type === "checkout.session.completed") {
-            const obj = event.data.object as any;
-            const uid = obj.metadata?.uid;
-            if (uid) {
-                await db.collection("users").doc(uid).set({ premium: true, stripeCustomerId: obj.customer }, { merge: true });
-            }
-        }
-        res.status(200).send({ received: true });
+        event = stripe.webhooks.constructEvent(req.rawBody, sig, webhookSecret);
     } catch (err: any) {
-        res.status(400).send(`Error: ${err.message}`);
+        res.status(400).send(`Webhook Error: ${err.message}`);
+        return;
     }
+
+    const subscription = event.data.object as any;
+    const uid = subscription.metadata?.uid;
+
+    switch (event.type) {
+        case "checkout.session.completed":
+            if (uid) {
+                await db.collection("users").doc(uid).set({ 
+                    premium: true, 
+                    stripeCustomerId: subscription.customer 
+                }, { merge: true });
+            }
+            break;
+
+        case "customer.subscription.deleted":
+            if (uid) {
+                await db.collection("users").doc(uid).update({ premium: false });
+            }
+            break;
+
+        case "invoice.payment_failed":
+            // Si le paiement échoue, on peut choisir de suspendre le premium immédiatement
+            if (uid) {
+                await db.collection("users").doc(uid).update({ premium: false });
+            }
+            break;
+    }
+
+    res.status(200).send({ received: true });
 });
 
 export const resetDailyLimits = onSchedule('0 0 * * *', async () => {
