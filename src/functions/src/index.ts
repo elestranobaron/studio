@@ -140,7 +140,7 @@ export const createCheckout = onCall({ cors: true }, async (request) => {
     const stripeKey = process.env.STRIPE_SECRET_KEY;
     if (!stripeKey) throw new HttpsError("failed-precondition", "Stripe key missing");
 
-    const stripe = new Stripe(stripeKey, { apiVersion: "2024-12-18.acacia" });
+    const stripe = new Stripe(stripeKey, { apiVersion: "2026-02-25.clover" });
     const priceId = yearly ? process.env.STRIPE_YEARLY_PRICE_ID : process.env.STRIPE_MONTHLY_PRICE_ID;
     if (!priceId) throw new HttpsError("failed-precondition", "Price ID missing");
 
@@ -149,7 +149,6 @@ export const createCheckout = onCall({ cors: true }, async (request) => {
     const customerId = userData?.stripeCustomerId;
 
     const sessionParams: Stripe.Checkout.SessionCreateParams = {
-        // En supprimant payment_method_types, on laisse Stripe gérer le 3DS et les méthodes locales via le Dashboard
         line_items: [{ price: priceId, quantity: 1 }],
         mode: "subscription",
         success_url: `${process.env.NEXT_PUBLIC_APP_URL || 'https://wodburner.app'}/premium?success=true`,
@@ -185,7 +184,7 @@ export const createCustomerPortal = onCall({ cors: true }, async (request) => {
     const customerId = userDoc.data()?.stripeCustomerId;
     if (!customerId) throw new HttpsError("not-found", "Stripe customer not found");
 
-    const stripe = new Stripe(stripeKey, { apiVersion: "2024-12-18.acacia" });
+    const stripe = new Stripe(stripeKey, { apiVersion: "2026-02-25.clover" });
     const portalSession = await stripe.billingPortal.sessions.create({
         customer: customerId,
         return_url: `${process.env.NEXT_PUBLIC_APP_URL || 'https://wodburner.app'}/settings`,
@@ -197,7 +196,7 @@ export const stripeWebhook = onRequest(async (req, res) => {
     const sig = req.headers["stripe-signature"] as string;
     const stripeKey = process.env.STRIPE_SECRET_KEY || "";
     const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET || "";
-    const stripe = new Stripe(stripeKey, { apiVersion: "2024-12-18.acacia" });
+    const stripe = new Stripe(stripeKey, { apiVersion: "2026-02-25.clover" });
     
     let event: Stripe.Event;
 
@@ -228,7 +227,6 @@ export const stripeWebhook = onRequest(async (req, res) => {
             break;
 
         case "invoice.payment_failed":
-            // Si le paiement échoue, on peut choisir de suspendre le premium immédiatement
             if (uid) {
                 await db.collection("users").doc(uid).update({ premium: false });
             }
