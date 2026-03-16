@@ -1,0 +1,543 @@
+{
+  "RootLayout": {
+    "seo": {
+      "title": "WODBurner - Tabloul tău CrossFit și Smart Timer",
+      "description": "Scanează-ți antrenamentele CrossFit din fotografii, generează WOD-uri noi cu AI și accesează timere inteligente."
+    }
+  },
+  "UserNav": {
+    "signIn": "Autentificare",
+    "signOut": "Deconectare",
+    "loading": "Se încarcă...",
+    "anonymousUser": "Utilizator Anonim",
+    "temporaryProfile": "Profil Temporar",
+    "settingsTooltip": "Setări"
+  },
+  "MainNav": {
+    "dashboard": "Panou",
+    "scanWod": "Scanează WOD",
+    "generateWod": "Generează WOD",
+    "heroWods": "Hero WODs",
+    "timers": "Timere",
+    "goPremium": "Treci la Premium",
+    "hallOfFame": "Hall of Fame",
+    "openStats": "Open Stats"
+  },
+  "OpenStatsPage": {
+    "seo": {
+      "title": "Open Stats | Statistici Leaderboard CrossFit Open",
+      "description": "Statistici CrossFit Open în timp real. Compară scorurile tale și analizează performanța mondială."
+    },
+    "title": "Open Stats",
+    "description": "Date live CrossFit Open via API public",
+    "metrics": {
+      "athletes": "Atleți Analizați",
+      "median": "Mediană",
+      "top10": "Top 10%",
+      "elite": "Elită (1%)"
+    },
+    "filters": {
+      "label": "Filtre",
+      "year": "An",
+      "workout": "Antrenament",
+      "division": "Divizie",
+      "region": "Regiune",
+      "scaled": "Tip WOD",
+      "allWorkouts": "General",
+      "stages": {
+        "open": "Open",
+        "quarterfinals": "Sferturi de finală",
+        "semifinals": "Semifinale",
+        "games": "Games"
+      },
+      "selector": {
+        "bmi": "IMC",
+        "age": "Vârstă",
+        "height": "Înălțime",
+        "weight": "Greutate"
+      },
+      "divisions": {
+        "men": "Bărbați Rx",
+        "women": "Femei Rx",
+        "teens1415": "Ados (14-15)",
+        "masters3539": "Masters (35-39)"
+      },
+      "regions": {
+        "worldwide": "Toată lumea",
+        "africa": "Africa",
+        "asia": "Asia",
+        "europe": "Europa",
+        "naEast": "AN Est",
+        "naWest": "AN Vest",
+        "oceania": "Oceania",
+        "southAmerica": "America de Sud"
+      },
+      "scaledTypes": {
+        "rxd": "Rx'd",
+        "scaled": "Scaled",
+        "foundations": "Foundations"
+      }
+    },
+    "recap": {
+      "maxReps": "Reps Max",
+      "timeCap": "Time Cap"
+    },
+    "userScore": {
+      "title": "Compară scorul meu",
+      "percentile": "Percentila globală",
+      "premiumLabel": "Premium"
+    },
+    "leaderboard": {
+      "title": "Top 100 Atleți",
+      "rank": "Loc",
+      "name": "Nume",
+      "score": "Scor",
+      "points": "Puncte",
+      "retry": "Reîncearcă",
+      "overallRank": "Loc General",
+      "workoutRank": "Loc Antrenament",
+      "descriptionOverall": "Top 100 clasament mondial după puncte (suma locurilor).",
+      "descriptionWorkout": "Top 100 atleți pentru evenimentul {year}.{workout}."
+    },
+    "charts": {
+      "distribution": "Distribuția scorurilor",
+      "distributionSub": "Distribuția pe eșantionul analizat",
+      "bmi": "Corelație Performanță",
+      "bmiSub": "Impactul profilului fizic asupra clasamentului"
+    },
+    "methodology": {
+      "title": "Metodologia graficelor",
+      "unificationTitle": "Unificarea scorurilor",
+      "unificationDesc": "Pentru a permite o comparație vizuală coerentă (timp + repetări), toate scorurile sunt convertite în repetări totale. Atleții care au terminat sunt grupați la dreapta.",
+      "overallTitle": "Overall",
+      "overallDesc": "Scorul corespunde sumei locurilor obţinute. Un scor mic indică o performanță mai bună."
+    }
+  },
+  "DashboardPage": {
+    "seo": {
+      "title": "Panou | Gestionează-ți WOD-urile CrossFit",
+      "description": "Gestionează-ți antrenamentele CrossFit, găsește WOD-urile scanate și descoperă antrenamentele comunității."
+    },
+    "title": "Panou",
+    "scanNewWod": "Scanează WOD nou",
+    "tabs": {
+      "personal": "WOD-urile mele",
+      "community": "Comunitate"
+    },
+    "PersonalWodList": {
+      "emptyTitle": "Nu s-au găsit WOD-uri aici.",
+      "emptyDescription": "Scanează primul tău WOD pentru a începe!"
+    },
+    "CommunityWodList": {
+      "joinTitle": "Alătură-te Comunității!",
+      "joinDescription": "Creează un cont gratuit pentru a vedea WOD-urile comunității.",
+      "joinButton": "Înregistrare / Autentificare",
+      "errorTitle": "Eroare",
+      "errorDescription": "Nu s-au putut încărca WOD-urile.",
+      "searchInputPlaceholder": "Caută WOD-uri...",
+      "sortByLabel": "Sortează",
+      "sort": {
+        "recent": "Noi",
+        "popular": "Populare",
+        "alphabetical": "Alfabetic"
+      },
+      "emptySearchTitle": "Niciun rezultat.",
+      "emptySearchDescription": "Încearcă altceva.",
+      "emptyCommunityTitle": "Fii primul care distribuie!",
+      "ScrollTop": {
+        "label": "Sus"
+      }
+    }
+  },
+  "WelcomeEmptyState": {
+    "title": "Bine ai venit la WODBurner!",
+    "subtitle": "Înregistrează primul WOD în 3 secunde:",
+    "scanButton": "Scanează WOD din foto",
+    "generateButton": "Generează WOD aleatoriu",
+    "heroButton": "Încearcă un Hero WOD",
+    "communityLink": "Sau explorează comunitatea."
+  },
+  "WodCard": {
+    "optionsAlt": "Opțiuni",
+    "share": "Distribuie",
+    "unshare": "Nu mai distribui",
+    "edit": "Editează",
+    "delete": "Șterge",
+    "sharedToastTitle": "Distribuit!",
+    "sharedToastDescription": "WOD-ul tău este public.",
+    "unsharedToastTitle": "Retras",
+    "unsharedToastDescription": "WOD-ul a fost retras.",
+    "shareErrorToastTitle": "Eroare",
+    "shareErrorToastDescription": "Nu s-a putut actualiza.",
+    "deleteDialogTitle": "Ești sigur?",
+    "deleteDialogDescription": "Acțiunea este permanentă.",
+    "deleteDialogCancel": "Anulează",
+    "deleteDialogConfirm": "Șterge",
+    "deleteToastTitle": "Șters",
+    "deleteToastDescription": "WOD șters cu succes.",
+    "reactionErrorToastTitle": "Ups!",
+    "reactionErrorToastDescription": "Eroare la reacție.",
+    "viewImageAlt": "{wodName} - Foto",
+    "viewWodDescription": "{type} - {date}",
+    "viewWodSharedBy": "De {displayName}",
+    "startWod": "Start WOD",
+    "profile": {
+      "cardio": "Cardio",
+      "lifting": "Forță",
+      "upper": "Sus",
+      "lower": "Jos"
+    }
+  },
+  "TimerPage": {
+    "backToDashboard": "Înapoi la Panou",
+    "viewWod": "Vezi WOD",
+    "fullWodLabel": "WOD Complet: {wodName}",
+    "startSection": "Start",
+    "accessRestricted": {
+      "title": "Acces Restrâns",
+      "description": "Autentifică-te pentru comunitate.",
+      "button": "Înregistrare / Autentificare"
+    }
+  },
+  "FileUploader": {
+    "dragAndDropPrompt": "Trage poza WOD aici",
+    "dragActivePrompt": "Lasă poza aici...",
+    "fileTypes": "PNG, JPG, GIF (max 5MB)",
+    "analyzingTitle": "Analizăm WOD...",
+    "analyzingDescription": "AI se încălzește.",
+    "analysisFailedTitle": "Eroare analiză",
+    "analysisFailedDescription": "Nu am putut analiza poza.",
+    "duplicateDialogTitle": "WOD Duplicat",
+    "duplicateDialogDescription": "Ai salvat déjà acest WOD.",
+    "duplicateDialogSavedOn": "Salvat pe {date}",
+    "duplicateDialogQuestion": "Salvezi oricum?",
+    "duplicateDialogCancel": "Nu",
+    "duplicateDialogConfirm": "Da",
+    "saveFailedTitle": "Eroare salvare",
+    "saveFailedDescription": "A apărut o problemă.",
+    "wodSavedTitle": "Salvat!",
+    "wodSavedDescription": "WOD adăugat în panou.",
+    "authErrorTitle": "Eroare",
+    "authErrorDescription": "Serviciu indisponibil.",
+    "wodPreviewAlt": "Previzualizare",
+    "analyzeButton": "Analizează",
+    "analysisResultTitle": "Rezultat",
+    "wodNamePlaceholder": "Nume",
+    "wodTypePlaceholder": "Tip",
+    "durationPlaceholder": "Durată (min)",
+    "shareCheckbox": "Distribuie",
+    "shareAnonymousHelp": "Autentifică-te pentru a distribui.",
+    "saveWodButton": "Salvează WOD",
+    "savingButton": "Salvare..."
+  },
+  "LoginPage": {
+    "seo": {
+      "title": "Autentificare | WODBurner",
+      "description": "Intră în contul tău."
+    },
+    "verifying": "Verificăm...",
+    "confirmEmailTitle": "Confirmă email",
+    "confirmEmailDescription": "Introdu codul primit pe email.",
+    "confirmEmailFailedTitle": "Eroare login",
+    "confirmEmailSignInButton": "Login",
+    "featureTitle": "Următorul nivel.",
+    "featureDescription": "Cont gratuit pentru toate funcțiile.",
+    "featureManual": "Creare manuală",
+    "featureManualDescription": "Adaugă fără poză.",
+    "featureHistory": "Istoric complet",
+    "featureHistoryDescription": "Toate WOD-urile la un loc.",
+    "featureTracking": "Performanță (În curând!)",
+    "featureTrackingDescription": "Analizează progresul.",
+    "formTitle": "Login / Înregistrare",
+    "formDescription": "Introdu email pentru cod.",
+    "emailSentTitle": "Verifică email!",
+    "emailSentDescription": "Cod trimis la <bold>{email}</bold>.",
+    "sendLinkButton": "Trimite cod",
+    "authError": "Serviciu nepregătit.",
+    "sendLinkError": "Nu am putut trimite codul.",
+    "linkSentToast": "Cod trimis!",
+    "linkSentToastDescription": "Verifică inbox.",
+    "signInSuccessToast": "Succes!",
+    "signInSuccessToastDescription": "Ești autentificat.",
+    "genericError": "A apărut o eroare.",
+    "invalidLinkError": "Cod invalid sau expirat."
+  },
+  "PremiumPage": {
+    "seo": {
+      "title": "Premium | Susține WODBurner",
+      "description": "Scanează nelimitat."
+    },
+    "title": "Premium",
+    "alreadyPremium": {
+      "title": "EȘTI PREMIUM!",
+      "subtitle": "Badge de suporter activ",
+      "description": "Mulțumim pentru susținere ❤️",
+      "communityButton": "Vezi comunitatea",
+      "dashboardButton": "Panou"
+    },
+    "headerTitle": "Deblochează potențialul",
+    "headerDescription": "Fii membru Premium.",
+    "offer": "OFERTA PE VIAȚĂ primii 300!",
+    "monthly": "Lunar",
+    "yearly": "Anual",
+    "discount": "-20%",
+    "freePlan": {
+      "title": "Gratis",
+      "description": "Urmărire ocazională",
+      "price": "0€",
+      "perMonth": "/lună",
+      "currentPlan": "Plan actual"
+    },
+    "premiumPlan": {
+      "title": "Premium",
+      "description": "Pentru atleți",
+      "priceMonthly": "1.99€",
+      "priceYearly": "19.99€",
+      "perMonth": "/lună",
+      "perYear": "/an",
+      "billedAnnually": "Facturat anual",
+      "goPremium": "Treci la Premium →",
+      "loading": "Se încarcă..."
+    },
+    "features": {
+      "scans": "Scanări nelimitate",
+      "scansFree": "3 pe lună",
+      "reactions": "Reacții nelimitate",
+      "reactionsFree": "5 pe zi",
+      "comments": "Postează comentarii",
+      "commentsFree": "Doar citire",
+      "favorites": "Favorite nelimitate",
+      "favoritesFree": "Max 10",
+      "customs": "WOD-uri custom nelimitate",
+      "customsFree": "Max 3",
+      "search": "Filtre avansate",
+      "badge": "Badge suporter",
+      "unlimited": "Nelimitat",
+      "notIncluded": "Nu"
+    },
+    "toasts": {
+      "welcomeTitle": "Bun venit Premium!",
+      "welcomeDescription": "Badge activat.",
+      "cancelTitle": "Plată anulată",
+      "cancelDescription": "Reîncearcă mai târziu.",
+      "loginRequiredTitle": "Login necesar",
+      "loginRequiredDescription": "Autentifică-te pentru Premium.",
+      "paymentErrorTitle": "Eroare plată",
+      "paymentErrorDescription": "Eroare la checkout."
+    }
+  },
+  "SettingsPage": {
+    "seo": {
+      "title": "Setări | Gestionați contul meu",
+      "description": "Actualizați profilul și abonamentele."
+    },
+    "title": "Setări",
+    "profile": {
+      "title": "Profil",
+      "description": "Info cont.",
+      "loading": "Se încarcă...",
+      "email": "Email: {email}",
+      "emailNotSpecified": "Nu",
+      "accountType": "Cont: {type}",
+      "typeAnonymous": "Anonim",
+      "typePremium": "Premium",
+      "typeStandard": "Standard",
+      "manageSubscription": "Gestionare abonament",
+      "userNotFound": "Nu există."
+    },
+    "dangerZone": {
+      "title": "Zonă periculoasă",
+      "description": "Acțiuni permanente.",
+      "deleteButton": "Șterge cont",
+      "deletingButton": "Se șterge...",
+      "dialogTitle": "Sigur ștergi?",
+      "dialogDescription": "Toate datele vor fi șterse.",
+      "dialogCancel": "Nu",
+      "dialogConfirm": "Da, șterge",
+      "helpText": "Datele se pierd definitiv."
+    },
+    "toasts": {
+      "deleteError": "Eroare la ștergere.",
+      "deleteSuccessTitle": "Cont șters",
+      "deleteSuccessDescription": "Rămas bun!",
+      "deleteFailedTitle": "Eroare",
+      "deleteFailedDescription": "Încearcă iar.",
+      "deleteFailedRecentLogin": "Re-login necesar.",
+      "portalError": "Eroare portal."
+    }
+  },
+  "ScanPage": {
+    "seo": {
+      "title": "Scanează WOD | Analiză IA de tablă",
+      "description": "Transformă instantaneu o fotografie a antrenamentului tău într-un cronometru interactiv."
+    },
+    "title": "Scanează WOD",
+    "manualButton": "Adaugă manual"
+  },
+  "NewWodPage": {
+    "seo": {
+      "title": "Antrenament nou | Intrare manuală",
+      "description": "Adăugați antrenamentele dvs. personalizate manual."
+    },
+    "title": "Creare manuală",
+    "cardTitle": "Detalii",
+    "namePlaceholder": "Nume",
+    "typePlaceholder": "Tip",
+    "durationPlaceholder": "Durată",
+    "imageHintPlaceholder": "Indiciu foto",
+    "descriptionPlaceholder": "Descriere...",
+    "saveButton": "Salvează WOD",
+    "savingButton": "Salvare...",
+    "backLink": "Înapoi",
+    "duplicateDialog": {
+      "title": "Duplicat",
+      "description": "Îl ai déjà.",
+      "savedOn": "De pe {date}",
+      "question": "Salvezi oricum?",
+      "cancel": "Nu",
+      "confirm": "Da"
+    },
+    "toasts": {
+      "saveSuccessTitle": "Succes!",
+      "saveSuccessDescription": "WOD adăugat.",
+      "saveFailedTitle": "Eroare",
+      "saveFailedDescription": "Nu s-a salvat."
+    }
+  },
+  "EditWodPage": {
+    "seo": {
+      "title": "Editare WOD | WODBurner",
+      "description": "Actualizați detaliile antrenamentului dvs."
+    },
+    "title": "Editare WOD",
+    "cardTitle": "Detalii",
+    "saveButton": "Salvează",
+    "savingButton": "Se salvează...",
+    "backLink": "Panou",
+    "toasts": {
+      "updateSuccessTitle": "Actualizat!",
+      "updateSuccessDescription": "Modificări salvate.",
+      "updateFailedTitle": "Eroare",
+      "updateFailedDescription": "Eșec."
+    }
+  },
+  "GenericTimerPage": {
+    "backLink": "Timere",
+    "startButton": "Start",
+    "forTime": {
+      "title": "For Time",
+      "description": "Cronometru simplu.",
+      "timeCapLabel": "Time Cap (min)",
+      "timeCapPlaceholder": "ex: 20"
+    },
+    "amrap": {
+      "title": "AMRAP",
+      "description": "Max reps.",
+      "durationLabel": "Durată (min)"
+    },
+    "emom": {
+      "title": "EMOM",
+      "description": "În fiecare minut.",
+      "roundsLabel": "Runde",
+      "intervalLabel": "Interval",
+      "intervalMinutes": "min",
+      "intervalSeconds": "sec"
+    },
+    "tabata": {
+      "title": "Tabata",
+      "description": "20s muncă / 10s pauză.",
+      "roundsLabel": "Runde"
+    }
+  },
+  "TimersPage": {
+    "seo": {
+      "title": "Cronometre CrossFit | AMRAP, EMOM, Tabata",
+      "description": "Cronometre profesionale de antrenament pentru WOD-urile tale."
+    },
+    "title": "Timere Smart",
+    "forTime": "For Time",
+    "forTimeDescription": "Cronometru simplu.",
+    "amrap": "AMRAP",
+    "amrapDescription": "Max reps.",
+    "emom": "EMOM",
+    "emomDescription": "În fiecare minut.",
+    "tabata": "Tabata",
+    "tabataDescription": "Intervale.",
+    "footer": "Sau alege un WOD."
+  },
+  "HeroWodsPage": {
+    "seo": {
+      "title": "Hero WODs & Benchmarks | Biblioteca legendară",
+      "description": "Găsește Murph, Fran, Cindy și toate antrenamentele legendare."
+    },
+    "title": "Hero WODs",
+    "description": "În memoria eroilor.",
+    "premiumUpsell": {
+      "title": "Deblochează tot",
+      "description": "Premium pentru {totalWodCount}+ WOD-uri.",
+      "button": "Treci la Premium"
+    }
+  },
+  "HallOfFamePage": {
+    "seo": {
+      "title": "Hall of Fame | Primii adoptatori WODBurner",
+      "description": "Cercul restrâns al primilor noștri 300 de suporteri."
+    },
+    "title": "Hall of Fame",
+    "cardTitle": "Primii 300",
+    "cardDescription": "Gratis pe viață primilor.",
+    "spotsRemaining": "Doar {spotsLeft} locuri!",
+    "spotsFull": "Lista este plină.",
+    "claimSpotButton": "Revendică-ți locul",
+    "emptyList": "Fii primul!"
+  },
+  "TimerClient": {
+    "workoutComplete": "Gata!",
+    "totalTime": "Timp total",
+    "timeCompleted": "Făcut în",
+    "goAgain": "Încă o dată",
+    "shareResult": "Distribuie",
+    "shareModal": {
+      "title": "Resultat: {wodName}",
+      "description": "Gata în {finalTime}.",
+      "finalTimeLabel": "TIMP",
+      "screenshotReady": "Gata de poză!"
+    },
+    "timeCap": "Time Cap: {duration}:00",
+    "pause": "Pauză",
+    "start": "Start",
+    "reset": "Reset",
+    "finish": "Final",
+    "round": "Rundă {current} / {total}",
+    "totalTimeElapsed": "Total: {time}"
+  },
+  "GenerateWodPage": {
+    "seo": {
+      "title": "Generator de WOD IA | Antrenamente noi în fiecare zi",
+      "description": "Lipsit de inspirație? Lasă IA noastră să creeze un antrenament CrossFit personalizat pentru tine."
+    },
+    "title": "AI WOD Generator",
+    "cardTitle": "WODBot 3000",
+    "cardDescription": "Fără idei? AI te ajută.",
+    "generateButton": "Generează",
+    "generatingButton": "Se calculează...",
+    "freePlanAlert": {
+      "title": "Plan gratis",
+      "description": "Limită atinsă. {link} nelimitat.",
+      "link": "Treci la Premium"
+    },
+    "premiumPlanMessage": "Generezi nelimitat.",
+    "generatingState": {
+      "title": "Se calculează...",
+      "description": "AI se încălzește."
+    },
+    "errorAlert": {
+      "title": "Eroare",
+      "description": "Reîncearcă imediat."
+    },
+    "result": {
+      "title": "Antrenament AI",
+      "savedMessage": "Salvat în panou."
+    }
+  }
+}
