@@ -49,7 +49,7 @@ if (admin.apps.length === 0) {
 const db = admin.firestore();
 (0, v2_1.setGlobalOptions)({
     region: "us-central1",
-    memory: "512MiB",
+    memory: "1GiB",
     timeoutSeconds: 120
 });
 async function validateTurnstile(token, ip) {
@@ -69,7 +69,6 @@ async function validateTurnstile(token, ip) {
             body: formData,
         });
         const outcome = await response.json();
-        firebase_functions_1.logger.info("[validateTurnstile] Full Cloudflare response:", outcome);
         return !!outcome.success;
     }
     catch (e) {
@@ -77,14 +76,12 @@ async function validateTurnstile(token, ip) {
         return false;
     }
 }
-exports.generateWod = (0, https_1.onCall)(async (request) => {
-    firebase_functions_1.logger.info("[generateWod] Started");
+exports.generateWod = (0, https_1.onCall)({ cors: true }, async (request) => {
     try {
         const { turnstileToken } = request.data;
         const isValid = await validateTurnstile(turnstileToken, request.rawRequest.ip);
         if (!isValid)
             throw new https_1.HttpsError("permission-denied", "Captcha failed");
-        // Use a different name for the imported function to avoid shadowing
         const flowModule = await Promise.resolve().then(() => __importStar(require("./ai/generate-wod-flow")));
         const result = await flowModule.generateWod({});
         return result;
@@ -94,7 +91,7 @@ exports.generateWod = (0, https_1.onCall)(async (request) => {
         throw new https_1.HttpsError("internal", e.message || "AI Error");
     }
 });
-exports.analyzeWod = (0, https_1.onCall)(async (request) => {
+exports.analyzeWod = (0, https_1.onCall)({ cors: true }, async (request) => {
     try {
         const { photoDataUri, turnstileToken } = request.data;
         if (!photoDataUri)
@@ -111,7 +108,7 @@ exports.analyzeWod = (0, https_1.onCall)(async (request) => {
         throw new https_1.HttpsError("internal", e.message || "AI Error");
     }
 });
-exports.sendDigicode = (0, https_1.onCall)(async (request) => {
+exports.sendDigicode = (0, https_1.onCall)({ cors: true }, async (request) => {
     const { email, turnstileToken } = request.data;
     if (!email)
         throw new https_1.HttpsError("invalid-argument", "Email required");
@@ -140,7 +137,7 @@ exports.sendDigicode = (0, https_1.onCall)(async (request) => {
         throw new https_1.HttpsError("internal", "Email failed");
     return { success: true };
 });
-exports.verifyDigicode = (0, https_1.onCall)(async (request) => {
+exports.verifyDigicode = (0, https_1.onCall)({ cors: true }, async (request) => {
     const { email, code } = request.data;
     const digiDoc = await db.collection("digicodes").doc(email.toLowerCase()).get();
     if (!digiDoc.exists)
@@ -163,7 +160,7 @@ exports.verifyDigicode = (0, https_1.onCall)(async (request) => {
     const token = await admin.auth().createCustomToken(uid);
     return { token, isNewUser };
 });
-exports.createCheckout = (0, https_1.onCall)(async (request) => {
+exports.createCheckout = (0, https_1.onCall)({ cors: true }, async (request) => {
     if (!request.auth)
         throw new https_1.HttpsError("unauthenticated", "Auth required");
     const { yearly, turnstileToken } = request.data;
@@ -171,30 +168,58 @@ exports.createCheckout = (0, https_1.onCall)(async (request) => {
     if (!isValid)
         throw new https_1.HttpsError("permission-denied", "Captcha failed");
     const stripeKey = process.env.STRIPE_SECRET_KEY;
-    const stripe = new stripe_1.default(stripeKey, { apiVersion: "2026-01-28.clover" });
+    if (!stripeKey)
+        throw new https_1.HttpsError("failed-precondition", "Stripe key missing");
+    const stripe = new stripe_1.default(stripeKey, { apiVersion: "2026-02-25.clover" });
     const priceId = yearly ? process.env.STRIPE_YEARLY_PRICE_ID : process.env.STRIPE_MONTHLY_PRICE_ID;
-    const session = await stripe.checkout.sessions.create({
-        payment_method_types: ["card"],
+    if (!priceId)
+        throw new https_1.HttpsError("failed-precondition", "Price ID missing");
+    const userDoc = await db.collection("users").doc(request.auth.uid).get();
+    const userData = userDoc.data();
+    const customerId = userData?.stripeCustomerId;
+    const sessionParams = {
         line_items: [{ price: priceId, quantity: 1 }],
         mode: "subscription",
-        success_url: `${process.env.NEXT_PUBLIC_APP_URL}/premium?success=true`,
-        cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/premium?cancel=true`,
+        success_url: `${process.env.NEXT_PUBLIC_APP_URL || 'https://wodburner.app'}/premium?success=true`,
+        cancel_url: `${process.env.NEXT_PUBLIC_APP_URL || 'https://wodburner.app'}/premium?cancel=true`,
         metadata: { uid: request.auth.uid },
-    });
+        subscription_data: {
+            metadata: { uid: request.auth.uid }
+        },
+        allow_promotion_codes: true,
+        payment_method_options: {
+            card: {
+                request_three_d_secure: "any",
+            },
+        },
+    };
+    if (customerId) {
+        sessionParams.customer = customerId;
+    }
+    else if (request.auth.token.email) {
+        sessionParams.customer_email = request.auth.token.email;
+    }
+    const session = await stripe.checkout.sessions.create(sessionParams);
     return { url: session.url };
 });
-exports.createCustomerPortal = (0, https_1.onCall)(async (request) => {
+exports.createCustomerPortal = (0, https_1.onCall)({ cors: true }, async (request) => {
     if (!request.auth)
         throw new https_1.HttpsError("unauthenticated", "Auth required");
+    const { turnstileToken } = request.data;
+    const isValid = await validateTurnstile(turnstileToken, request.rawRequest.ip);
+    if (!isValid)
+        throw new https_1.HttpsError("permission-denied", "Captcha failed");
     const stripeKey = process.env.STRIPE_SECRET_KEY;
+    if (!stripeKey)
+        throw new https_1.HttpsError("failed-precondition", "Stripe key missing");
     const userDoc = await db.collection('users').doc(request.auth.uid).get();
     const customerId = userDoc.data()?.stripeCustomerId;
     if (!customerId)
         throw new https_1.HttpsError("not-found", "Stripe customer not found");
-    const stripe = new stripe_1.default(stripeKey, { apiVersion: "2026-01-28.clover" });
+    const stripe = new stripe_1.default(stripeKey, { apiVersion: "2026-02-25.clover" });
     const portalSession = await stripe.billingPortal.sessions.create({
         customer: customerId,
-        return_url: `${process.env.NEXT_PUBLIC_APP_URL}/settings`,
+        return_url: `${process.env.NEXT_PUBLIC_APP_URL || 'https://wodburner.app'}/settings`,
     });
     return { url: portalSession.url };
 });
@@ -202,21 +227,38 @@ exports.stripeWebhook = (0, https_1.onRequest)(async (req, res) => {
     const sig = req.headers["stripe-signature"];
     const stripeKey = process.env.STRIPE_SECRET_KEY || "";
     const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET || "";
-    const stripe = new stripe_1.default(stripeKey, { apiVersion: "2026-01-28.clover" });
+    const stripe = new stripe_1.default(stripeKey, { apiVersion: "2026-02-25.clover" });
+    let event;
     try {
-        const event = stripe.webhooks.constructEvent(req.rawBody, sig, webhookSecret);
-        if (event.type === "checkout.session.completed") {
-            const obj = event.data.object;
-            const uid = obj.metadata?.uid;
-            if (uid) {
-                await db.collection("users").doc(uid).set({ premium: true, stripeCustomerId: obj.customer }, { merge: true });
-            }
-        }
-        res.status(200).send({ received: true });
+        event = stripe.webhooks.constructEvent(req.rawBody, sig, webhookSecret);
     }
     catch (err) {
-        res.status(400).send(`Error: ${err.message}`);
+        res.status(400).send(`Webhook Error: ${err.message}`);
+        return;
     }
+    const subscription = event.data.object;
+    const uid = subscription.metadata?.uid;
+    switch (event.type) {
+        case "checkout.session.completed":
+            if (uid) {
+                await db.collection("users").doc(uid).set({
+                    premium: true,
+                    stripeCustomerId: subscription.customer
+                }, { merge: true });
+            }
+            break;
+        case "customer.subscription.deleted":
+            if (uid) {
+                await db.collection("users").doc(uid).update({ premium: false });
+            }
+            break;
+        case "invoice.payment_failed":
+            if (uid) {
+                await db.collection("users").doc(uid).update({ premium: false });
+            }
+            break;
+    }
+    res.status(200).send({ received: true });
 });
 exports.resetDailyLimits = (0, scheduler_1.onSchedule)('0 0 * * *', async () => {
     const users = await db.collection('users').get();
