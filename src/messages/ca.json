@@ -1,3 +1,4 @@
+
 {
   "RootLayout": {
     "seo": {
@@ -262,7 +263,8 @@
     "signInSuccessToast": "Inici de sessió correcte!",
     "signInSuccessToastDescription": "Ya has iniciado sesión.",
     "genericError": "S'ha produït un error.",
-    "invalidLinkError": "El codi no és vàlid o ha caducat."
+    "invalidLinkError": "El codi no és vàlid o ha caducat.",
+    "backToDashboard": "Tornar al Dashboard"
   },
   "PremiumPage": {
     "seo": {
@@ -393,7 +395,7 @@
     "backLink": "Enrere",
     "duplicateDialog": {
       "title": "Duplicat",
-      "description": "Ja tens aquest WOD.",
+      "description": "Ya tens aquest WOD.",
       "savedOn": "Desat el {date}",
       "question": "Vols desar-lo igualment?",
       "cancel": "No",

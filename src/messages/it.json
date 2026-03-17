@@ -1,3 +1,4 @@
+
 {
   "RootLayout": {
     "seo": {
@@ -262,7 +263,8 @@
     "signInSuccessToast": "Accesso riuscito!",
     "signInSuccessToastDescription": "Ora sei connesso.",
     "genericError": "Si è verificato un errore.",
-    "invalidLinkError": "Codice non valido o scaduto."
+    "invalidLinkError": "Codice non valido o scaduto.",
+    "backToDashboard": "Torna alla Dashboard"
   },
   "PremiumPage": {
     "seo": {

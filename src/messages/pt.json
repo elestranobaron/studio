@@ -1,3 +1,4 @@
+
 {
   "RootLayout": {
     "seo": {
@@ -262,7 +263,8 @@
     "signInSuccessToast": "Login Bem-sucedido!",
     "signInSuccessToastDescription": "Você está agora logado.",
     "genericError": "Ocorreu um erro.",
-    "invalidLinkError": "O código é inválido ou expirou."
+    "invalidLinkError": "O código é inválido ou expirou.",
+    "backToDashboard": "Voltar ao Painel"
   },
   "PremiumPage": {
     "seo": {
@@ -353,7 +355,7 @@
       "deleteButton": "Excluir conta",
       "deletingButton": "Excluindo...",
       "dialogTitle": "Tem certeza?",
-      "dialogDescription": "Isso apagará todos os seus dados.",
+      "dialogDescription": "Isso apagará todos os seus datos.",
       "dialogCancel": "Cancelar",
       "dialogConfirm": "Sim, exclua",
       "helpText": "Operação irreversível."
@@ -469,7 +471,7 @@
   },
   "HeroWodsPage": {
     "seo": {
-      "title": "Hero WODs & Benchmarks | A Biblioteca Lendária",
+      "title": "Hero WODs & Benchmarks | A Biblioteca Legendária",
       "description": "Encontre Murph, Fran, Cindy e todos os treinos lendários do CrossFit."
     },
     "title": "Hero WODs",

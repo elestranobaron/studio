@@ -1,3 +1,4 @@
+
 {
   "RootLayout": {
     "seo": {
@@ -70,7 +71,7 @@
         "naEast": "NA Este",
         "naWest": "NA Oeste",
         "oceania": "Oceanía",
-        "southAmerica": "América del Sur"
+        "southAmerica": "América del Sud"
       },
       "scaledTypes": {
         "rxd": "Rx'd",
@@ -262,7 +263,8 @@
     "signInSuccessToast": "¡Éxito!",
     "signInSuccessToastDescription": "Ya has iniciado sesión.",
     "genericError": "Ocurrió un error.",
-    "invalidLinkError": "Código no válido o caducado."
+    "invalidLinkError": "Código no válido o caducado.",
+    "backToDashboard": "Volver al Dashboard"
   },
   "PremiumPage": {
     "seo": {

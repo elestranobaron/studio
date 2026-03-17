@@ -1,3 +1,4 @@
+
 {
   "RootLayout": {
     "seo": {
@@ -262,7 +263,8 @@
     "signInSuccessToast": "نجاح!",
     "signInSuccessToastDescription": "تم تسجيل دخولك الآن.",
     "genericError": "حدث خطأ ما.",
-    "invalidLinkError": "كود غير صالح أو منتهي الصلاحية."
+    "invalidLinkError": "كود غير صالح أو منتهي الصلاحية.",
+    "backToDashboard": "العودة إلى لوحة التحكم"
   },
   "PremiumPage": {
     "seo": {
@@ -281,7 +283,7 @@
     "headerDescription": "كن عضواً بريميوم لدعم التطبيق.",
     "offer": "عرض مدى الحياة لأول 300 عضو!",
     "monthly": "شهرياً",
-    "yearly": "سنوياً",
+    "yearly": "سنويأ",
     "discount": "-20%",
     "freePlan": {
       "title": "مجاني",
@@ -322,7 +324,7 @@
       "welcomeDescription": "شارتك مفعلة الآن.",
       "cancelTitle": "تم إلغاء الدفع",
       "cancelDescription": "حاول مرة أخرى عندما تكون مستعداً.",
-      "loginRequiredTitle": "تسجيل الدخول مطلوب",
+      "loginRequiredTitle": "تسجيل دخول مطلوب",
       "loginRequiredDescription": "سجل للدخول في بريميوم.",
       "paymentErrorTitle": "خطأ في الدفع",
       "paymentErrorDescription": "تعذر بدء عملية الدفع."

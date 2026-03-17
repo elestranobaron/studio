@@ -1,3 +1,4 @@
+
 {
   "RootLayout": {
     "seo": {
@@ -262,7 +263,8 @@
     "signInSuccessToast": "सफलता!",
     "signInSuccessToastDescription": "अब आप लॉग इन हैं।",
     "genericError": "एक त्रुटि हुई।",
-    "invalidLinkError": "अमान्य या पुराना कोड।"
+    "invalidLinkError": "अमान्य या पुराना कोड।",
+    "backToDashboard": "डैशबोर्ड पर वापस"
   },
   "PremiumPage": {
     "seo": {
@@ -383,7 +385,7 @@
     },
     "title": "मैन्युअल रूप से WOD बनाएँ",
     "cardTitle": "वर्कआउट विवरण",
-    "namePlaceholder": "नाम (जैसे Fran)",
+    "namePlaceholder": "नाम",
     "typePlaceholder": "प्रकार",
     "durationPlaceholder": "अवधि (मिनट)",
     "imageHintPlaceholder": "छवि संकेत",
@@ -515,8 +517,8 @@
   },
   "GenerateWodPage": {
     "seo": {
-      "title": "एआई WOD जेनरेटर | हर दिन नई कसरत",
-      "description": "एआई को अपने लिए एक नया क्रॉसफ़िट वर्कआउट बनाने दें।"
+      "title": "AI WOD जेनरेटर | हर दिन नई कसरत",
+      "description": "AI को अपने लिए एक नया क्रॉसफ़िट वर्कआउट बनाने दें।"
     },
     "title": "AI WOD जेनरेटर",
     "cardTitle": "WODBot 3000",

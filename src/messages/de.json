@@ -1,3 +1,4 @@
+
 {
   "RootLayout": {
     "seo": {
@@ -249,7 +250,7 @@
     "featureHistory": "Vollständiger Verlauf",
     "featureHistoryDescription": "Alle Workouts jederzeit finden.",
     "featureTracking": "Leistungsverfolgung (in Kürze!)",
-    "featureTrackingDescription": "Analysiere deinen Fortschritt.",
+    "featureTrackingDescription": "Analisiere deinen Fortschritt.",
     "formTitle": "Anmelden / Registrieren",
     "formDescription": "Gib deine E-Mail für einen sicheren Anmeldelink ein.",
     "emailSentTitle": "Überprüfe deine E-Mails!",
@@ -262,7 +263,8 @@
     "signInSuccessToast": "Erfolg!",
     "signInSuccessToastDescription": "Du bist jetzt angemeldet.",
     "genericError": "Ein Fehler ist aufgetreten.",
-    "invalidLinkError": "Code ungültig oder abgelaufen."
+    "invalidLinkError": "Code ungültig oder abgelaufen.",
+    "backToDashboard": "Zurück zum Dashboard"
   },
   "PremiumPage": {
     "seo": {
@@ -469,8 +471,8 @@
   },
   "HeroWodsPage": {
     "seo": {
-      "title": "Hero WODs | Die legendäre Bibliothek",
-      "description": "Murph, Fran, Cindy und alle Klassiker."
+      "title": "Hero WODs & Benchmarks | Die legendäre Bibliothek",
+      "description": "Finde Murph, Fran, Cindy und alle Klassiker."
     },
     "title": "Hero WODs",
     "description": "Zum Gedenken an Helden.",

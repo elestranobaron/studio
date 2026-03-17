@@ -1,3 +1,4 @@
+
 {
   "RootLayout": {
     "seo": {
@@ -262,7 +263,8 @@
     "signInSuccessToast": "ログインに成功しました！",
     "signInSuccessToastDescription": "サインインしました。",
     "genericError": "エラーが発生しました。",
-    "invalidLinkError": "コードが無効か、期限が切れています。"
+    "invalidLinkError": "コードが無効か、期限が切れています。",
+    "backToDashboard": "ダッシュボードに戻る"
   },
   "PremiumPage": {
     "seo": {

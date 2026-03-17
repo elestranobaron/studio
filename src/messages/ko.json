@@ -1,3 +1,4 @@
+
 {
   "RootLayout": {
     "seo": {
@@ -262,7 +263,8 @@
     "signInSuccessToast": "성공!",
     "signInSuccessToastDescription": "이제 로그인되었습니다.",
     "genericError": "오류가 발생했습니다.",
-    "invalidLinkError": "유효하지 않거나 만료된 코드입니다."
+    "invalidLinkError": "유효하지 않거나 만료된 코드입니다.",
+    "backToDashboard": "대시보드로 돌아가기"
   },
   "PremiumPage": {
     "seo": {

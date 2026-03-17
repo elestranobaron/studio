@@ -1,3 +1,4 @@
+
 {
   "RootLayout": {
     "seo": {
@@ -245,7 +246,7 @@
     "featureTitle": "Naar het volgende niveau.",
     "featureDescription": "Maak een account om al je workouts op te slaan.",
     "featureManual": "Handmatig toevoegen",
-    "featureManualDescription": "Voeg WOD's toe zonder foto.",
+    "featureManualDescription": "Bez WOD's toe zonder foto.",
     "featureHistory": "Volledige historie",
     "featureHistoryDescription": "Al je workouts op één plek.",
     "featureTracking": "Prestaties tracken (Binnenkort!)",
@@ -262,7 +263,8 @@
     "signInSuccessToast": "Inloggen gelukt!",
     "signInSuccessToastDescription": "Je bent nu ingelogd.",
     "genericError": "Er is iets fout gegaan.",
-    "invalidLinkError": "Ongeldige of verlopen code."
+    "invalidLinkError": "Ongeldige of verlopen code.",
+    "backToDashboard": "Terug naar Dashboard"
   },
   "PremiumPage": {
     "seo": {
@@ -294,7 +296,7 @@
       "title": "Premium",
       "description": "Voor de fanatiekeling",
       "priceMonthly": "€1,99",
-      "priceYearly": "€19,99",
+      "priceYearly": "€1,99",
       "perMonth": "/mnd",
       "perYear": "/jr",
       "billedAnnually": "Jaarlijks gefactureerd",
@@ -465,7 +467,7 @@
     "emomDescription": "Elke minuut.",
     "tabata": "Tabata",
     "tabataDescription": "Intervals.",
-    "footer": "Of kies een WOD op je dashboard."
+    "footer": "Or kies een WOD op je dashboard."
   },
   "HeroWodsPage": {
     "seo": {

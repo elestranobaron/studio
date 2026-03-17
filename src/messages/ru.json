@@ -1,3 +1,4 @@
+
 {
   "RootLayout": {
     "seo": {
@@ -262,7 +263,8 @@
     "signInSuccessToast": "Успешно!",
     "signInSuccessToastDescription": "Вы вошли в систему.",
     "genericError": "Произошла ошибка.",
-    "invalidLinkError": "Код неверный или истек."
+    "invalidLinkError": "Код неверный или истек.",
+    "backToDashboard": "Вернуться на панель"
   },
   "PremiumPage": {
     "seo": {
@@ -525,7 +527,7 @@
     "generatingButton": "Работаю...",
     "freePlanAlert": {
       "title": "Лимит",
-      "description": "Дневной лимит. {link}.",
+      "description": "Дневной лимит. {link} .",
       "link": "Стать Premium"
     },
     "premiumPlanMessage": "Безлимит активен.",

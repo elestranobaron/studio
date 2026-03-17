@@ -1,3 +1,4 @@
+
 {
   "RootLayout": {
     "seo": {
@@ -262,7 +263,8 @@
     "signInSuccessToast": "登录成功！",
     "signInSuccessToastDescription": "您现在已登录。",
     "genericError": "发生错误。",
-    "invalidLinkError": "代码无效或已过期。"
+    "invalidLinkError": "代码无效或已过期。",
+    "backToDashboard": "返回仪表板"
   },
   "PremiumPage": {
     "seo": {
