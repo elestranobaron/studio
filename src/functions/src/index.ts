@@ -203,17 +203,28 @@ export const stripeWebhook = onRequest(async (req, res) => {
     const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET || "";
     const stripe = new Stripe(stripeKey, { apiVersion: "2026-02-25.clover" });
     
+    if (!webhookSecret) {
+        logger.error("Webhook Error: STRIPE_WEBHOOK_SECRET is not defined in environment variables.");
+        res.status(500).send("Webhook secret missing");
+        return;
+    }
+
     let event: Stripe.Event;
 
     try {
+        // req.rawBody est indispensable pour Firebase Cloud Functions afin de vérifier la signature brute
         event = stripe.webhooks.constructEvent(req.rawBody, sig, webhookSecret);
     } catch (err: any) {
+        logger.error(`Webhook Signature Verification Failed: ${err.message}`);
         res.status(400).send(`Webhook Error: ${err.message}`);
         return;
     }
 
     const subscription = event.data.object as any;
+    // On récupère l'UID depuis les métadonnées (définies dans createCheckout)
     const uid = subscription.metadata?.uid;
+
+    logger.info(`Processing Stripe event: ${event.type}`, { uid });
 
     switch (event.type) {
         case "checkout.session.completed":
@@ -222,18 +233,21 @@ export const stripeWebhook = onRequest(async (req, res) => {
                     premium: true, 
                     stripeCustomerId: subscription.customer 
                 }, { merge: true });
+                logger.info(`User ${uid} upgraded to Premium.`);
             }
             break;
 
         case "customer.subscription.deleted":
             if (uid) {
                 await db.collection("users").doc(uid).update({ premium: false });
+                logger.info(`User ${uid} Premium subscription deleted.`);
             }
             break;
 
         case "invoice.payment_failed":
             if (uid) {
                 await db.collection("users").doc(uid).update({ premium: false });
+                logger.warn(`User ${uid} Premium revoked due to payment failure.`);
             }
             break;
     }
