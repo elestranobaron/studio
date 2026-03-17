@@ -1,4 +1,3 @@
-
 'use client';
 
 import {
@@ -30,10 +29,16 @@ export function UserNav() {
 
   const handleLogout = async () => {
     setOpenMobile(false);
-    if (auth) {
-      await auth.signOut();
+    try {
+      if (auth) {
+        await auth.signOut();
+      }
+      // Force navigation to clear any remaining protected routes state
+      window.location.href = '/login';
+    } catch (error) {
+      console.error("Logout error:", error);
+      router.push('/login');
     }
-    router.push('/login');
   };
   
   if(isUserLoading || !auth) {

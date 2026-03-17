@@ -1,4 +1,3 @@
-
 'use client';
     
 import { useState, useEffect } from 'react';
@@ -9,6 +8,7 @@ import {
   FirestoreError,
   DocumentSnapshot,
 } from 'firebase/firestore';
+import { getAuth } from 'firebase/auth';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
 
@@ -31,17 +31,6 @@ type UseDocOptions<T> = {
 
 /**
  * React hook to subscribe to a single Firestore document in real-time.
- * Handles nullable references.
- * 
- * IMPORTANT! YOU MUST MEMOIZE the inputted memoizedTargetRefOrQuery or BAD THINGS WILL HAPPEN
- * use useMemo to memoize it per React guidence.  Also make sure that it's dependencies are stable
- * references
- *
- *
- * @template T Optional type for document data. Defaults to any.
- * @param {DocumentReference<DocumentData> | null | undefined} docRef -
- * The Firestore DocumentReference. Waits if null/undefined.
- * @returns {UseDocResult<T>} Object with data, isLoading, error.
  */
 export function useDoc<T = any>(
   memoizedDocRef: DocumentReference<DocumentData> | null | undefined,
@@ -79,6 +68,14 @@ export function useDoc<T = any>(
         options?.onLoad?.(docData);
       },
       (error: FirestoreError) => {
+        // SILENCE ERROR DURING LOGOUT
+        const auth = getAuth();
+        if (!auth.currentUser || error.code === 'permission-denied') {
+          setData(null);
+          setIsLoading(false);
+          return;
+        }
+
         setIsLoading(false);
         setData(null);
         
@@ -88,13 +85,11 @@ export function useDoc<T = any>(
         });
 
         setError(contextualError);
-        
         errorEmitter.emit('permission-error', contextualError);
       }
     );
 
     return () => unsubscribe();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [memoizedDocRef]);
 
   return { data, isLoading, error };
