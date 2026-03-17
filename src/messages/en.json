@@ -1,3 +1,4 @@
+
 {
   "RootLayout": {
     "seo": {
@@ -262,7 +263,8 @@
     "signInSuccessToast": "Success!",
     "signInSuccessToastDescription": "You are now logged in.",
     "genericError": "An error occurred.",
-    "invalidLinkError": "Invalid or expired code."
+    "invalidLinkError": "Invalid or expired code.",
+    "backToDashboard": "Back to Dashboard"
   },
   "PremiumPage": {
     "seo": {
@@ -488,7 +490,7 @@
     "title": "Hall of Fame",
     "cardTitle": "First 300 OGs",
     "cardDescription": "Lifetime free for our first supporters.",
-    "spotsRemaining": "{spotsLeft} spots left!",
+    "spotsRemaining": "Only {spotsLeft} spots left!",
     "spotsFull": "List is full.",
     "claimSpotButton": "Claim your spot",
     "emptyList": "Be the first!"

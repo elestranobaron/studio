@@ -7,12 +7,13 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/components/ui/use-toast';
-import { LoaderCircle, AlertTriangle, Dumbbell, Archive, LineChart } from 'lucide-react';
+import { LoaderCircle, AlertTriangle, Dumbbell, Archive, LineChart, ArrowLeft } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { useTranslations } from 'next-intl';
 import { getFunctions, httpsCallable } from 'firebase/functions';
 import { signInWithCustomToken } from 'firebase/auth';
 import Turnstile from '@/components/turnstile';
+import Link from 'next/link';
 
 function LoginClientContent() {
   const t = useTranslations('LoginPage');
@@ -150,7 +151,16 @@ function LoginClientContent() {
   }
 
   return (
-    <div className="flex h-screen w-full items-center justify-center bg-background p-4">
+    <div className="flex h-screen w-full items-center justify-center bg-background p-4 relative">
+      <div className="absolute top-4 left-4 z-20">
+        <Button asChild variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground">
+          <Link href="/dashboard">
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            {t('backToDashboard')}
+          </Link>
+        </Button>
+      </div>
+
       <div className="grid lg:grid-cols-2 max-w-4xl w-full gap-16 items-center">
         <div className="flex-col items-center lg:items-start text-center hidden lg:flex">
           <div className="text-3xl font-bold font-headline text-primary tracking-wider">

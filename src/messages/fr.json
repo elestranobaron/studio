@@ -1,3 +1,4 @@
+
 {
   "RootLayout": {
     "seo": {
@@ -262,7 +263,8 @@
     "signInSuccessToast": "Connexion réussie !",
     "signInSuccessToastDescription": "Vous êtes maintenant connecté.",
     "genericError": "Une erreur est survenue. Veuillez réessayer.",
-    "invalidLinkError": "Le code est invalide ou a expiré."
+    "invalidLinkError": "Le code est invalide ou a expiré.",
+    "backToDashboard": "Retour au tableau de bord"
   },
   "PremiumPage": {
     "seo": {
