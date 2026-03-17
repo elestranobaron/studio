@@ -146,6 +146,12 @@ export const createCheckout = onCall({ cors: true }, async (request) => {
 
     const userDoc = await db.collection("users").doc(request.auth.uid).get();
     const userData = userDoc.data();
+
+    // SÉCURITÉ : Empêcher un abonné actif de souscrire à nouveau
+    if (userData?.premium) {
+        throw new HttpsError("failed-precondition", "You are already a premium subscriber.");
+    }
+
     const customerId = userData?.stripeCustomerId;
 
     const sessionParams: Stripe.Checkout.SessionCreateParams = {
@@ -212,7 +218,6 @@ export const stripeWebhook = onRequest(async (req, res) => {
     let event: Stripe.Event;
 
     try {
-        // req.rawBody est indispensable pour Firebase Cloud Functions afin de vérifier la signature brute
         event = stripe.webhooks.constructEvent(req.rawBody, sig, webhookSecret);
     } catch (err: any) {
         logger.error(`Webhook Signature Verification Failed: ${err.message}`);
@@ -221,7 +226,6 @@ export const stripeWebhook = onRequest(async (req, res) => {
     }
 
     const subscription = event.data.object as any;
-    // On récupère l'UID depuis les métadonnées (définies dans createCheckout)
     const uid = subscription.metadata?.uid;
 
     logger.info(`Processing Stripe event: ${event.type}`, { uid });
