@@ -31,7 +31,7 @@ const analyzeWodFlow = getAi().defineFlow(
       name: 'analyzeWodPrompt',
       input: {schema: AnalyzeWodInputSchema},
       output: {schema: AnalyzeWodOutputSchema},
-      model: 'googleai/gemini-2.0-flash', 
+      model: 'googleai/gemini-2.5-flash', 
       config: {
         temperature: 0.2, 
         safetySettings: [

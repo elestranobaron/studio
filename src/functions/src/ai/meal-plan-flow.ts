@@ -16,7 +16,7 @@ const generateMealPlanPrompt = getAi().definePrompt({
   name: 'generateMealPlanPrompt',
   input: {schema: GenerateMealPlanInputSchema},
   output: {schema: GenerateMealPlanOutputSchema},
-  model: 'googleai/gemini-2.0-flash', 
+  model: 'googleai/gemini-2.5-flash', 
   config: {
     temperature: 0.7,
   },
