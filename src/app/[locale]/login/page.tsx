@@ -25,7 +25,6 @@ function LoginClientContent() {
   const [error, setError] = useState<string | null>(null);
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
   
-  // Ref to track the last code we tried to verify automatically to prevent loops
   const lastVerifiedCode = useRef('');
 
   const auth = useAuth();
@@ -44,12 +43,8 @@ function LoginClientContent() {
 
   useEffect(() => {
     if (!isUserLoading && user && !user.isAnonymous) {
-      const isNewUser = sessionStorage.getItem('isNewUser') === 'true';
-      if(isNewUser){
-        router.push('/dashboard?tab=community');
-      } else {
-        router.push('/dashboard');
-      }
+      // Redirige systématiquement vers l'onglet communauté après la connexion
+      router.push('/dashboard?tab=community');
     }
   }, [user, isUserLoading, router]);
 
@@ -121,7 +116,6 @@ function LoginClientContent() {
       }
 
       await signInWithCustomToken(auth!, data.token);
-      // Success toast removed to avoid UI obstruction. Feedback provided by sidebar status dot.
     } catch (err: any) {
       console.error('Verification error:', err);
       let msg = err.message || 'Could not sign in.';
@@ -135,7 +129,6 @@ function LoginClientContent() {
     }
   }, [code, email, auth, t, toast, isVerifying]);
 
-  // Trigger verification automatically when 6 digits are entered
   useEffect(() => {
     if (code.length === 6 && step === 'code' && !isVerifying && code !== lastVerifiedCode.current) {
       handleVerifyCode();
@@ -259,7 +252,6 @@ function LoginClientContent() {
                   onChange={(e) => {
                     const newCode = e.target.value.replace(/\D/g, '').slice(0, 6);
                     setCode(newCode);
-                    // Reset verified code ref if user changes the code
                     if (newCode !== lastVerifiedCode.current) {
                       setError(null);
                     }
