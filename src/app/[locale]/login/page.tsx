@@ -1,6 +1,6 @@
 
 'use client';
-import { useState, useEffect, Suspense, useCallback } from 'react';
+import { useState, useEffect, Suspense, useCallback, useRef } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth, useUser } from '@/firebase/provider';
 import { Button } from '@/components/ui/button';
@@ -24,6 +24,9 @@ function LoginClientContent() {
   const [step, setStep] = useState<'email' | 'code'>('email');
   const [error, setError] = useState<string | null>(null);
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+  
+  // Ref to track the last code we tried to verify automatically to prevent loops
+  const lastVerifiedCode = useRef('');
 
   const auth = useAuth();
   const { user, isUserLoading } = useUser();
@@ -101,6 +104,7 @@ function LoginClientContent() {
 
     setIsVerifying(true);
     setError(null);
+    lastVerifiedCode.current = code;
 
     try {
       const functions = getFunctions();
@@ -130,11 +134,11 @@ function LoginClientContent() {
     } finally {
       setIsVerifying(false);
     }
-  }, [code, email, auth, t, toast]);
+  }, [code, email, auth, t, toast, isVerifying]);
 
   // Trigger verification automatically when 6 digits are entered
   useEffect(() => {
-    if (code.length === 6 && step === 'code' && !isVerifying) {
+    if (code.length === 6 && step === 'code' && !isVerifying && code !== lastVerifiedCode.current) {
       handleVerifyCode();
     }
   }, [code, step, isVerifying, handleVerifyCode]);
@@ -253,15 +257,22 @@ function LoginClientContent() {
                   pattern="[0-9]{6}"
                   placeholder="123456"
                   value={code}
-                  onChange={(e) => setCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                  onChange={(e) => {
+                    const newCode = e.target.value.replace(/\D/g, '').slice(0, 6);
+                    setCode(newCode);
+                    // Reset verified code ref if user changes the code
+                    if (newCode !== lastVerifiedCode.current) {
+                      setError(null);
+                    }
+                  }}
                   maxLength={6}
                   autoFocus
                   disabled={isVerifying}
                 />
-                <Button type="submit" className="w-full" disabled={isVerifying}>
+                <Button type="submit" className="w-full" disabled={isVerifying || code.length !== 6}>
                   {isVerifying ? <LoaderCircle className="animate-spin mr-2" /> : t('confirmEmailSignInButton')}
                 </Button>
-                <Button variant="link" size="sm" onClick={() => { setStep('email'); setCode(''); }} className="w-full">
+                <Button variant="link" size="sm" onClick={() => { setStep('email'); setCode(''); lastVerifiedCode.current = ''; }} className="w-full">
                   Use a different email address
                 </Button>
               </form>
