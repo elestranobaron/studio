@@ -1,4 +1,3 @@
-
 'use client';
 
 import {
@@ -35,7 +34,6 @@ export function UserNav() {
       if (auth) {
         await auth.signOut();
       }
-      // Force navigation to clear any remaining protected routes state
       window.location.href = '/login';
     } catch (error) {
       console.error("Logout error:", error);
@@ -62,7 +60,7 @@ export function UserNav() {
   
   if(!user) {
     return (
-        <div className="p-2">
+        <div className="p-2 space-y-4">
             <SidebarMenu>
                 <SidebarMenuItem>
                     <SidebarMenuButton onClick={handleLogin}>
@@ -72,11 +70,15 @@ export function UserNav() {
                     </SidebarMenuButton>
                 </SidebarMenuItem>
             </SidebarMenu>
+            <div className="px-3">
+                <p className="text-[10px] text-muted-foreground/50">
+                    {t('madeBy')} <Link href="https://x.com/wodburner" target="_blank" className="hover:text-primary transition-colors underline">@WODBurner</Link>
+                </p>
+            </div>
         </div>
     )
   }
 
-  // Fallback to email prefix if displayName is missing
   const userDisplayName = user.displayName || user.email?.split('@')[0] || 'User';
 
   return (
@@ -97,7 +99,8 @@ export function UserNav() {
                 </SidebarMenuButton>
             </SidebarMenuItem>
         </SidebarMenu>
-        <div className="flex items-center gap-3 p-2">
+        
+        <div className="flex items-center gap-3 p-2 border-t border-white/5 mt-2">
             <div className="relative">
                 <Avatar className="h-10 w-10 border-2 border-transparent">
                     {user.photoURL && (
@@ -123,6 +126,11 @@ export function UserNav() {
                     {user.isAnonymous ? t('temporaryProfile') : user.email}
                 </span>
             </div>
+        </div>
+        <div className="px-3 mt-2">
+            <p className="text-[10px] text-muted-foreground/50">
+                {t('madeBy')} <Link href="https://x.com/wodburner" target="_blank" className="hover:text-primary transition-colors underline">@WODBurner</Link>
+            </p>
         </div>
     </div>
   );

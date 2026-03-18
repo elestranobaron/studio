@@ -59,8 +59,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     },
     description: t('description'),
     keywords: ["CrossFit", "WOD", "Workout", "Timer", "AI", "Fitness", "Whiteboard Scanner"],
-    authors: [{ name: "[TON NOM / TA MARQUE]" }],
-    creator: "[TON NOM]",
+    authors: [{ name: "WODBurner Team", url: "https://x.com/wodburner" }], // REMPLACE PAR TON NOM ET TON LIEN
+    creator: "WODBurner Labs", // REMPLACE PAR TON NOM OU PSEUDO
     publisher: "WODBurner",
     formatDetection: {
       email: false,
@@ -95,7 +95,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       title: t('title'),
       description: t('description'),
       images: ['https://images.unsplash.com/photo-1517836357463-d25dfeac3438?q=80&w=1200&h=630&fit=crop'],
-      creator: '@wodburner',
+      creator: '@wodburner', // REMPLACE PAR TON HANDLE TWITTER
     },
     robots: {
       index: true,

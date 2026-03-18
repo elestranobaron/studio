@@ -1,4 +1,3 @@
-
 {
   "RootLayout": {
     "seo": {
@@ -12,7 +11,8 @@
     "loading": "Chargement...",
     "anonymousUser": "Utilisateur Anonyme",
     "temporaryProfile": "Profil Temporaire",
-    "settingsTooltip": "Paramètres"
+    "settingsTooltip": "Paramètres",
+    "madeBy": "Créé avec ❤️ par"
   },
   "MainNav": {
     "dashboard": "Dashboard",
