@@ -27,6 +27,16 @@ export type Message = {
   replyCount: number;
 };
 
+export type MealIdea = {
+  name: string;
+  description: string;
+  calories: number;
+  proteins: number;
+  carbs: number;
+  fats: number;
+  type: 'breakfast' | 'lunch' | 'dinner' | 'snack' | 'post-wod';
+};
+
 export type WOD = {
   id: string;
   name: string;

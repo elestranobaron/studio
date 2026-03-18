@@ -26,8 +26,15 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from '@/components/ui/dialog';
 import { useToast } from '@/components/ui/use-toast';
-import { LoaderCircle, Trash2, CreditCard, ArrowLeft, User, Scale, Ruler, Camera } from 'lucide-react';
+import { LoaderCircle, Trash2, CreditCard, ArrowLeft, User, Scale, Ruler, Camera, Utensils, Zap, Gem, CheckCircle2 } from 'lucide-react';
 import { SidebarTrigger, useSidebar } from '@/components/ui/sidebar';
 import { getFunctions, httpsCallable } from 'firebase/functions';
 import { useTranslations } from 'next-intl';
@@ -35,6 +42,12 @@ import Turnstile from '@/components/turnstile';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Badge } from '@/components/ui/badge';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Separator } from '@/components/ui/separator';
+import { cn } from '@/lib/utils';
+import type { MealIdea } from '@/lib/types';
 
 const toBase64 = (file: File): Promise<string> =>
   new Promise((resolve, reject) => {
@@ -72,13 +85,20 @@ export default function SettingsPage() {
   const [isDeleting, setIsDeleting] = useState(false);
   const [isPortalLoading, setIsPortalLoading] = useState(false);
   const [isSavingProfile, setIsSavingProfile] = useState(false);
+  const [isGeneratingMeals, setIsGeneratingMeals] = useState(false);
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+  const [mealPlan, setMealPlan] = useState<{ meals: MealIdea[], totalCalories: number, totalProteins: number, coachAdvice: string } | null>(null);
+  const [isMealDialogOpen, setIsMealDialogOpen] = useState(false);
 
   // Profile form state
   const [displayName, setDisplayName] = useState('');
   const [weight, setWeight] = useState('');
   const [height, setHeight] = useState('');
   const [photoURL, setPhotoURL] = useState('');
+  const [nutritionGoal, setNutritionGoal] = useState('');
+  const [activityLevel, setActivityLevel] = useState('');
+  const [targetCalories, setTargetCalories] = useState('');
+  const [targetProteins, setTargetProteins] = useState('');
 
   useEffect(() => {
     if (user) {
@@ -86,6 +106,10 @@ export default function SettingsPage() {
       setWeight(user.weight?.toString() || '');
       setHeight(user.height?.toString() || '');
       setPhotoURL(user.photoURL || '');
+      setNutritionGoal(user.nutritionGoal || 'maintenance');
+      setActivityLevel(user.activityLevel || 'moderate');
+      setTargetCalories(user.targetCalories?.toString() || '');
+      setTargetProteins(user.targetProteins?.toString() || '');
     }
   }, [user]);
 
@@ -113,6 +137,10 @@ export default function SettingsPage() {
         weight: weight ? parseFloat(weight) : null,
         height: height ? parseFloat(height) : null,
         photoURL,
+        nutritionGoal,
+        activityLevel,
+        targetCalories: targetCalories ? parseFloat(targetCalories) : null,
+        targetProteins: targetProteins ? parseFloat(targetProteins) : null,
       });
       toast({
         title: t('profile.updateSuccess'),
@@ -127,6 +155,35 @@ export default function SettingsPage() {
       });
     } finally {
       setIsSavingProfile(false);
+    }
+  };
+
+  const handleGenerateMeals = async () => {
+    if (!user || !turnstileToken) {
+        toast({ variant: "destructive", title: "Verification required", description: "Please complete captcha" });
+        return;
+    }
+    
+    setIsGeneratingMeals(true);
+    try {
+        const functions = getFunctions();
+        const generateMealPlanFn = httpsCallable(functions, 'generateMealPlan');
+        const response = await generateMealPlanFn({
+            weight: weight ? parseFloat(weight) : undefined,
+            height: height ? parseFloat(height) : undefined,
+            goal: nutritionGoal,
+            activityLevel,
+            targetCalories: targetCalories ? parseFloat(targetCalories) : undefined,
+            targetProteins: targetProteins ? parseFloat(targetProteins) : undefined,
+            turnstileToken,
+        });
+        setMealPlan(response.data as any);
+        setIsMealDialogOpen(true);
+    } catch (error: any) {
+        console.error("Error generating meals:", error);
+        toast({ variant: 'destructive', title: 'AI Error', description: error.message || 'Could not generate meals' });
+    } finally {
+        setIsGeneratingMeals(false);
     }
   };
 
@@ -317,15 +374,162 @@ export default function SettingsPage() {
                                 />
                             </div>
                         </div>
+
+                        <Separator className="opacity-50" />
+
+                        <div className="space-y-4 pt-2">
+                            <h3 className="text-sm font-semibold flex items-center gap-2">
+                                <Utensils className="h-4 w-4 text-primary" />
+                                {t('profile.nutritionTitle')}
+                            </h3>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div className="space-y-2">
+                                    <Label>{t('profile.nutritionGoal')}</Label>
+                                    <Select value={nutritionGoal} onValueChange={setNutritionGoal}>
+                                        <SelectTrigger>
+                                            <SelectValue />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="loss">{t('profile.goals.loss')}</SelectItem>
+                                            <SelectItem value="maintenance">{t('profile.goals.maintenance')}</SelectItem>
+                                            <SelectItem value="muscle">{t('profile.goals.muscle')}</SelectItem>
+                                            <SelectItem value="performance">{t('profile.goals.performance')}</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                                <div className="space-y-2">
+                                    <Label>{t('profile.activityLevel')}</Label>
+                                    <Select value={activityLevel} onValueChange={setActivityLevel}>
+                                        <SelectTrigger>
+                                            <SelectValue />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="sedentary">{t('profile.activity.sedentary')}</SelectItem>
+                                            <SelectItem value="moderate">{t('profile.activity.moderate')}</SelectItem>
+                                            <SelectItem value="intense">{t('profile.activity.intense')}</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                            </div>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div className="space-y-2">
+                                    <Label>{t('profile.targetCalories')}</Label>
+                                    <Input 
+                                        type="number" 
+                                        value={targetCalories} 
+                                        onChange={(e) => setTargetCalories(e.target.value)} 
+                                        placeholder="2500"
+                                    />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label>{t('profile.targetProteins')}</Label>
+                                    <Input 
+                                        type="number" 
+                                        value={targetProteins} 
+                                        onChange={(e) => setTargetProteins(e.target.value)} 
+                                        placeholder="160"
+                                    />
+                                </div>
+                            </div>
+                        </div>
                     </CardContent>
-                    <CardFooter>
+                    <CardFooter className="flex flex-col sm:flex-row gap-4">
                         <Button type="submit" disabled={isSavingProfile || isUserLoading} className="w-full sm:w-auto">
                             {isSavingProfile && <LoaderCircle className="mr-2 h-4 w-4 animate-spin" />}
                             {t('profile.saveProfile')}
                         </Button>
+                        <Button 
+                            type="button" 
+                            variant="secondary"
+                            onClick={handleGenerateMeals}
+                            disabled={isGeneratingMeals || isUserLoading || !turnstileToken}
+                            className="w-full sm:w-auto relative"
+                        >
+                            {isGeneratingMeals ? (
+                                <><LoaderCircle className="mr-2 h-4 w-4 animate-spin" /> {t('profile.generatingMeals')}</>
+                            ) : (
+                                <><Zap className="mr-2 h-4 w-4 text-yellow-500 fill-yellow-500" /> {t('profile.generateMeals')}</>
+                            )}
+                            {!user?.premium && (
+                                <Badge variant="secondary" className="absolute -top-2 -right-2 text-[10px] h-4 px-1 bg-yellow-500 text-black border-none">
+                                    <Gem className="h-3 w-3 mr-0.5" /> PRO
+                                </Badge>
+                            )}
+                        </Button>
                     </CardFooter>
                 </form>
             </Card>
+
+            {/* MEAL PLAN DIALOG */}
+            <Dialog open={isMealDialogOpen} onOpenChange={setIsMealDialogOpen}>
+                <DialogContent className="max-w-2xl max-h-[90vh] flex flex-col p-0 overflow-hidden">
+                    <DialogHeader className="p-6 pb-2">
+                        <div className="flex items-center justify-between mb-2">
+                            <Badge className="bg-primary/20 text-primary hover:bg-primary/20 border-none">WODBurner Nutrition</Badge>
+                            <span className="text-xs text-muted-foreground">{new Date().toLocaleDateString()}</span>
+                        </div>
+                        <DialogTitle className="text-3xl font-headline flex items-center gap-2">
+                            <Utensils className="text-primary" /> {t('profile.mealPlanTitle')}
+                        </DialogTitle>
+                        <DialogDescription>
+                            Custom plan based on your {nutritionGoal} goal.
+                        </DialogDescription>
+                    </DialogHeader>
+                    
+                    <ScrollArea className="flex-1 p-6 pt-2">
+                        <div className="grid grid-cols-2 gap-4 mb-6">
+                            <Card className="bg-primary/5 border-primary/20">
+                                <CardContent className="p-4 text-center">
+                                    <p className="text-xs uppercase font-bold text-muted-foreground">{t('profile.targetCalories')}</p>
+                                    <p className="text-2xl font-bold text-primary">{mealPlan?.totalCalories} <span className="text-xs font-normal">kcal</span></p>
+                                </CardContent>
+                            </Card>
+                            <Card className="bg-primary/5 border-primary/20">
+                                <CardContent className="p-4 text-center">
+                                    <p className="text-xs uppercase font-bold text-muted-foreground">{t('profile.targetProteins')}</p>
+                                    <p className="text-2xl font-bold text-primary">{mealPlan?.totalProteins} <span className="text-xs font-normal">g</span></p>
+                                </CardContent>
+                            </Card>
+                        </div>
+
+                        <div className="space-y-6">
+                            {mealPlan?.meals.map((meal, idx) => (
+                                <div key={idx} className="relative pl-6 border-l-2 border-primary/30">
+                                    <div className="absolute -left-[9px] top-0 h-4 w-4 rounded-full bg-primary flex items-center justify-center">
+                                        <CheckCircle2 className="h-3 w-3 text-primary-foreground" />
+                                    </div>
+                                    <div className="mb-1 flex items-center justify-between">
+                                        <h4 className="font-bold text-lg">{meal.name}</h4>
+                                        <Badge variant="outline" className="capitalize text-[10px]">{meal.type}</Badge>
+                                    </div>
+                                    <p className="text-sm text-muted-foreground mb-2">{meal.description}</p>
+                                    <div className="flex gap-3 text-[10px] font-mono text-primary/80 bg-primary/5 p-2 rounded-md">
+                                        <span>CAL: {meal.calories}</span>
+                                        <span>P: {meal.proteins}g</span>
+                                        <span>C: {meal.carbs}g</span>
+                                        <span>F: {meal.fats}g</span>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+
+                        {mealPlan?.coachAdvice && (
+                            <Card className="mt-8 border-dashed bg-muted/30">
+                                <CardContent className="p-4">
+                                    <div className="flex items-center gap-2 mb-2">
+                                        <User className="h-4 w-4 text-primary" />
+                                        <h4 className="text-xs font-bold uppercase tracking-wider">{t('profile.coachAdvice')}</h4>
+                                    </div>
+                                    <p className="text-sm italic text-muted-foreground">"{mealPlan.coachAdvice}"</p>
+                                </CardContent>
+                            </Card>
+                        )}
+                    </ScrollArea>
+                    <CardFooter className="p-6 border-t bg-muted/20">
+                        <Button className="w-full" onClick={() => setIsMealDialogOpen(false)}>Close</Button>
+                    </CardFooter>
+                </DialogContent>
+            </Dialog>
 
             {/* ACCOUNT INFO CARD */}
             <Card>

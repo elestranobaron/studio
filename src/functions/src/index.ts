@@ -74,6 +74,21 @@ export const analyzeWod = onCall({ cors: true }, async (request) => {
     }
 });
 
+export const generateMealPlan = onCall({ cors: true }, async (request) => {
+    try {
+        const { turnstileToken, ...input } = request.data;
+        const isValid = await validateTurnstile(turnstileToken, request.rawRequest.ip);
+        if (!isValid) throw new HttpsError("permission-denied", "Captcha failed");
+
+        const flowModule = await import("./ai/meal-plan-flow");
+        const result = await flowModule.generateMealPlan(input);
+        return result;
+    } catch (e: any) {
+        logger.error("[generateMealPlan] Error:", e);
+        throw new HttpsError("internal", e.message || "AI Error");
+    }
+});
+
 export const sendDigicode = onCall({ cors: true }, async (request) => {
   const { email, turnstileToken } = request.data;
   if (!email) throw new HttpsError("invalid-argument", "Email required");
@@ -262,7 +277,7 @@ export const stripeWebhook = onRequest(async (req, res) => {
 export const resetDailyLimits = onSchedule('0 0 * * *', async () => {
     const users = await db.collection('users').get();
     const batch = db.batch();
-    users.forEach(d => batch.update(d.ref, { dailyReactions: 0, wodGenerationCount: 0 }));
+    users.forEach(d => batch.update(d.ref, { dailyReactions: 0, wodGenerationCount: 0, mealGenerationCount: 0 }));
     await batch.commit();
 });
 

@@ -1,3 +1,4 @@
+
 {
   "RootLayout": {
     "seo": {
@@ -346,6 +347,26 @@
       "height": "Height (cm)",
       "avatar": "Avatar",
       "saveProfile": "Save Profile",
+      "nutritionTitle": "Nutrition Goals",
+      "nutritionGoal": "Main Goal",
+      "activityLevel": "Activity Level",
+      "targetCalories": "Target Calories (kcal)",
+      "targetProteins": "Target Proteins (g)",
+      "generateMeals": "Generate Meal Ideas",
+      "generatingMeals": "Generating Plan...",
+      "mealPlanTitle": "Daily Meal Plan",
+      "coachAdvice": "Coach Advice",
+      "goals": {
+        "loss": "Fat Loss",
+        "maintenance": "Maintenance",
+        "muscle": "Muscle Gain",
+        "performance": "CrossFit Performance"
+      },
+      "activity": {
+        "sedentary": "Sedentary",
+        "moderate": "Moderate Activity",
+        "intense": "Intense Activity"
+      },
       "updateSuccess": "Profile updated!",
       "updateSuccessDesc": "Your metrics have been saved.",
       "updateError": "Could not update profile.",

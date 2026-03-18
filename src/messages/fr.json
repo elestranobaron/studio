@@ -1,3 +1,4 @@
+
 {
   "RootLayout": {
     "seo": {
@@ -346,6 +347,26 @@
       "height": "Taille (cm)",
       "avatar": "Avatar",
       "saveProfile": "Enregistrer le Profil",
+      "nutritionTitle": "Objectifs Nutrition",
+      "nutritionGoal": "Objectif Principal",
+      "activityLevel": "Niveau d'Activité",
+      "targetCalories": "Calories Cibles (kcal)",
+      "targetProteins": "Protéines Cibles (g)",
+      "generateMeals": "Générer Idées Repas",
+      "generatingMeals": "Génération du Plan...",
+      "mealPlanTitle": "Plan Alimentaire du Jour",
+      "coachAdvice": "Conseil du Coach",
+      "goals": {
+        "loss": "Perte de Gras",
+        "maintenance": "Maintien",
+        "muscle": "Prise de Muscle",
+        "performance": "Performance CrossFit"
+      },
+      "activity": {
+        "sedentary": "Sédentaire",
+        "moderate": "Activité Modérée",
+        "intense": "Activité Intense"
+      },
       "updateSuccess": "Profil mis à jour !",
       "updateSuccessDesc": "Vos informations ont été enregistrées.",
       "updateError": "Impossible de mettre à jour le profil.",
