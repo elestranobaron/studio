@@ -1,0 +1,557 @@
+
+{
+  "RootLayout": {
+    "seo": {
+      "title": "WODBurner - سبورتك الذكية لتمارين الكروس فت",
+      "description": "قم بمسح تمارين الكروس فت الخاصة بك من الصور، وأنشئ تمارين جديدة بالذكاء الاصطناعي."
+    }
+  },
+  "UserNav": {
+    "signIn": "تسجيل الدخول",
+    "signOut": "تسجيل الخروج",
+    "loading": "جاري التحميل...",
+    "anonymousUser": "مستخدم مجهول",
+    "temporaryProfile": "ملف شخصي مؤقت",
+    "settingsTooltip": "الإعدادات"
+  },
+  "MainNav": {
+    "dashboard": "لوحة التحكم",
+    "scanWod": "مسح WOD",
+    "generateWod": "إنشاء WOD",
+    "heroWods": "تمارين الأبطال",
+    "timers": "المؤقتات",
+    "goPremium": "اشترك في بريميوم",
+    "hallOfFame": "قاعة المشاهير",
+    "openStats": "إحصائيات المفتوحة"
+  },
+  "OpenStatsPage": {
+    "seo": {
+      "title": "Open Stats | إحصائيات لوحة المتصدرين لكروس فت أوبن",
+      "description": "إحصائيات مباشرة لكروس فت أوبن. قارن نتائجك وحلل الأداء العالمي."
+    },
+    "title": "Open Stats",
+    "description": "بيانات مباشرة لكروس فت أوبن عبر API عام",
+    "metrics": {
+      "athletes": "الرياضيين الذين تم تحليلهم",
+      "median": "الوسيط",
+      "top10": "أعلى 10%",
+      "elite": "النخبة (1%)"
+    },
+    "filters": {
+      "label": "الفلاتر",
+      "year": "السنة",
+      "workout": "التمرين",
+      "division": "الفئة",
+      "region": "المنطقة",
+      "scaled": "نوع التمرين",
+      "allWorkouts": "الترتيب العام",
+      "stages": {
+        "open": "أوبن",
+        "quarterfinals": "ربع النهائي",
+        "semifinals": "نصف النهائي",
+        "games": "الألعاب"
+      },
+      "selector": {
+        "bmi": "BMI",
+        "age": "العمر",
+        "height": "الطول",
+        "weight": "الوزن"
+      },
+      "divisions": {
+        "men": "الرجال Rx",
+        "women": "النساء Rx",
+        "teens1415": "المراهقين (14-15)",
+        "masters3539": "الماسترز (35-39)"
+      },
+      "regions": {
+        "worldwide": "عالمي",
+        "africa": "أفريقيا",
+        "asia": "آسيا",
+        "europe": "أوروبا",
+        "naEast": "ش أمريكا شرق",
+        "naWest": "ش أمريكا غرب",
+        "oceania": "أوقيانوسيا",
+        "southAmerica": "أمريكا الجنوبية"
+      },
+      "scaledTypes": {
+        "rxd": "Rx'd",
+        "scaled": "Scaled",
+        "foundations": "Foundations"
+      }
+    },
+    "recap": {
+      "maxReps": "أقصى تكرار",
+      "timeCap": "الوقت المحدد"
+    },
+    "userScore": {
+      "title": "قارن نتيجتي",
+      "percentile": "النسبة المئوية العالمية",
+      "premiumLabel": "بريميوم"
+    },
+    "leaderboard": {
+      "title": "أفضل 100 رياضيين",
+      "rank": "الترتيب",
+      "name": "الاسم",
+      "score": "النتيجة",
+      "points": "نقاط",
+      "retry": "إعادة المحاولة",
+      "overallRank": "الترتيب العام",
+      "workoutRank": "ترتيب التمرين",
+      "descriptionOverall": "أفضل 100 في لوحة المتصدرين العالمية حسب النقاط (مجموع الرتب).",
+      "descriptionWorkout": "أفضل 100 رياضيين للحدث {year}.{workout}."
+    },
+    "charts": {
+      "distribution": "توزيع الدرجات",
+      "distributionSub": "التوزيع على العينة التي تم تحليلها",
+      "bmi": "ارتباط الأداء",
+      "bmiSub": "تأثير الملف الشخصي على الترتيب العالمي"
+    },
+    "methodology": {
+      "title": "منهجية الرسوم البيانية",
+      "unificationTitle": "توحيد النتائج",
+      "unificationDesc": "للسماح بمقارنة بصرية متسقة في الأحداث المختلطة (الوقت + التكرارات)، يتم تحويل جميع النتائج إلى إجمالي التكرارات. يتم تجميع الرياضيين الذين أنهوا الحدث في الطرف الأيمن من الرسم البياني.",
+      "overallTitle": "الإجمالي",
+      "overallDesc": "النتيجة تتوافق مع مجموع الرتب التي تم الحصول عليها. النتيجة المنخفضة تشير إلى أداء إجمالي أفضل."
+    }
+  },
+  "DashboardPage": {
+    "seo": {
+      "title": "لوحة التحكم | إدارة تمارين WOD الخاصة بك",
+      "description": "إدارة تمارين الكروس فت الخاصة بك، والعثور على التمارين الممسوحة ضوئياً."
+    },
+    "title": "لوحة التحكم",
+    "scanNewWod": "مسح WOD جديد",
+    "tabs": {
+      "personal": "تماريني",
+      "community": "المجتمع"
+    },
+    "PersonalWodList": {
+      "emptyTitle": "لم يتم العثور على تمارين هنا.",
+      "emptyDescription": "امسح أول تمرين لك للبدء!"
+    },
+    "CommunityWodList": {
+      "joinTitle": "انضم للمجتمع!",
+      "joinDescription": "أنشئ حساباً مجانياً لمشاهدة ومشاركة التمارين مع المجتمع بأكمله.",
+      "joinButton": "سجل الآن / تسجيل دخول",
+      "errorTitle": "حدث خطأ ما",
+      "errorDescription": "تعذر تحميل تمارين المجتمع. يرجى المحاولة لاحقاً.",
+      "searchInputPlaceholder": "ابحث في تمارين المجتمع...",
+      "sortByLabel": "ترتيب حسب",
+      "sort": {
+        "recent": "الأحدث",
+        "popular": "الأكثر شهرة",
+        "alphabetical": "أبجدياً (A-Z)"
+      },
+      "emptySearchTitle": "لا توجد تمارين تطابق بحثك.",
+      "emptySearchDescription": "جرب كلمة بحث أخرى.",
+      "emptyCommunityTitle": "كن أول من يشارك تمريناً!",
+      "ScrollTop": {
+        "label": "إلى الأعلى"
+      }
+    }
+  },
+  "WelcomeEmptyState": {
+    "title": "مرحباً بك في WODBurner!",
+    "subtitle": "سجل أول تمرين لك في 3 ثوانٍ:",
+    "scanButton": "مسح WOD من صورة",
+    "generateButton": "إنشاء تمرين عشوائي",
+    "heroButton": "جرب تمرين بطل",
+    "communityLink": "أو استكشف المجتمع."
+  },
+  "WodCard": {
+    "optionsAlt": "خيارات التمرين",
+    "share": "مشاركة",
+    "unshare": "إلغاء المشاركة",
+    "edit": "تعديل",
+    "delete": "حذف",
+    "sharedToastTitle": "تمت المشاركة!",
+    "sharedToastDescription": "تمرينك مرئي للمجتمع الآن.",
+    "unsharedToastTitle": "تم إلغاء المشاركة",
+    "unsharedToastDescription": "تمت إزالة تمرينك من المجتمع.",
+    "shareErrorToastTitle": "فشلت العملية",
+    "shareErrorToastDescription": "تعذر تحديث حالة المشاركة.",
+    "deleteDialogTitle": "هل أنت متأكد؟",
+    "deleteDialogDescription": "لا يمكن التراجع عن هذا الإجراء.",
+    "deleteDialogCancel": "إلغاء",
+    "deleteDialogConfirm": "حذف",
+    "deleteToastTitle": "تم حذف التمرين",
+    "deleteToastDescription": "تمت إزالة تمرينك بنجاح.",
+    "deleteErrorToastTitle": "فشل الحذف",
+    "deleteErrorToastDescription": "تعذر حذف التمرين.",
+    "reactionErrorToastTitle": "عذراً!",
+    "reactionErrorToastDescription": "تعذر حفظ التفاعل.",
+    "viewImageAlt": "{wodName} - الصورة الأصلية",
+    "viewWodDescription": "{type} - {date}",
+    "viewWodSharedBy": "تمت المشاركة بواسطة {displayName}",
+    "startWod": "ابدأ التمرين",
+    "profile": {
+      "cardio": "قلبي",
+      "lifting": "أثقال",
+      "upper": "علوي",
+      "lower": "سفلي"
+    }
+  },
+  "TimerPage": {
+    "backToDashboard": "العودة للوحة التحكم",
+    "viewWod": "عرض التمرين",
+    "fullWodLabel": "التمرين الكامل: {wodName}",
+    "startSection": "ابدأ",
+    "accessRestricted": {
+      "title": "الوصول مقيد",
+      "description": "يرجى التسجيل لعرض تمارين المجتمع.",
+      "button": "سجل / دخول"
+    }
+  },
+  "FileUploader": {
+    "dragAndDropPrompt": "اسحب وأفلت صورة تمرينك، أو انقر للاختيار",
+    "dragActivePrompt": "أفلت الصورة هنا...",
+    "fileTypes": "PNG, JPG أو GIF (بحد أقصى 5MB)",
+    "analyzingTitle": "جاري تحليل التمرين...",
+    "analyzingDescription": "الذكاء الاصطناعي يستعد. قد يستغرق ذلك لحظة.",
+    "analysisFailedTitle": "فشل التحليل",
+    "analysisFailedDescription": "تعذر تحليل الصورة. يرجى المحاولة مرة أخرى.",
+    "duplicateDialogTitle": "تم اكتشاف تمرين مكرر",
+    "duplicateDialogDescription": "هذا التمرين يبدو مطابقاً لتمرين قمت بحفظه بالفعل.",
+    "duplicateDialogSavedOn": "تم الحفظ في {date}",
+    "duplicateDialogQuestion": "حفظ على أي حال؟",
+    "duplicateDialogCancel": "إلغاء",
+    "duplicateDialogConfirm": "حفظ على أي حال",
+    "saveFailedTitle": "فشل الحفظ",
+    "saveFailedDescription": "حدث خطأ أثناء الحفظ.",
+    "wodSavedTitle": "تم حفظ التمرين!",
+    "wodSavedDescription": "تمت إضافته إلى لوحة التحكم الخاصة بك.",
+    "authErrorTitle": "تعذر الحفظ",
+    "authErrorDescription": "خدمات المصادقة غير متوفرة.",
+    "wodPreviewAlt": "معاينة التمرين",
+    "analyzeButton": "تحليل التمرين",
+    "analysisResultTitle": "نتيجة التحليل",
+    "wodNamePlaceholder": "اسم التمرين",
+    "wodTypePlaceholder": "نوع التمرين",
+    "durationPlaceholder": "المدة (بالدقائق)",
+    "shareCheckbox": "مشاركة مع المجتمع",
+    "shareAnonymousHelp": "سجل للمشاركة مع المجتمع.",
+    "saveWodButton": "حفظ التمرين",
+    "savingButton": "جاري الحفظ..."
+  },
+  "LoginPage": {
+    "seo": {
+      "title": "تسجيل الدخول | الوصول إلى تمارينك",
+      "description": "سجل الدخول لحفظ تمارينك والانضمام إلى المجتمع."
+    },
+    "verifying": "جاري التحقق...",
+    "confirmEmailTitle": "تأكيد البريد الإلكتروني",
+    "confirmEmailDescription": "أدخل الكود المكون من 6 أرقام المرسل لبريدك.",
+    "confirmEmailFailedTitle": "فشل تسجيل الدخول",
+    "confirmEmailSignInButton": "تسجيل دخول",
+    "featureTitle": "تتبع بمستوى أعلى.",
+    "featureDescription": "أنشئ حساباً مجانياً لفتح جميع الميزات.",
+    "featureManual": "إنشاء يدوي",
+    "featureManualDescription": "أضف تمارين بدون صورة.",
+    "featureHistory": "سجل كامل",
+    "featureHistoryDescription": "احفظ وابحث عن تمارينك في أي وقت.",
+    "featureTracking": "الأداء (قريباً!)",
+    "featureTrackingDescription": "حلل تقدمك.",
+    "formTitle": "دخول / تسجيل",
+    "formDescription": "أدخل بريدك للحصول على كود دخول آمن.",
+    "emailSentTitle": "تحقق من بريدك!",
+    "emailSentDescription": "تم إرسال كود لـ <bold>{email}</bold>.",
+    "sendLinkButton": "إرسال الكود",
+    "authError": "الخدمة غير جاهزة.",
+    "sendLinkError": "تعذر إرسال الكود.",
+    "linkSentToast": "تم إرسال الكود!",
+    "linkSentToastDescription": "تحقق من بريدك.",
+    "signInSuccessToast": "نجاح!",
+    "signInSuccessToastDescription": "تم تسجيل دخولك الآن.",
+    "genericError": "حدث خطأ ما.",
+    "invalidLinkError": "كود غير صالح أو منتهي الصلاحية.",
+    "backToDashboard": "العودة إلى لوحة التحكم"
+  },
+  "PremiumPage": {
+    "seo": {
+      "title": "WODBurner بريميوم | مسح غير محدود وفلاتر متقدمة",
+      "description": "كن محترفاً مع WODBurner بريميوم."
+    },
+    "title": "بريميوم",
+    "alreadyPremium": {
+      "title": "أنت عضو بريميوم!",
+      "subtitle": "شارة الداعم مفعلة",
+      "description": "شكراً لدعمك WODBurner ❤️",
+      "communityButton": "عرض المجتمع",
+      "dashboardButton": "لوحة التحكم"
+    },
+    "headerTitle": "أطلق العنان لإمكانياتك",
+    "headerDescription": "كن عضواً بريميوم لدعم التطبيق.",
+    "offer": "عرض مدى الحياة لأول 300 عضو!",
+    "monthly": "شهرياً",
+    "yearly": "سنويأ",
+    "discount": "-20%",
+    "freePlan": {
+      "title": "مجاني",
+      "description": "للتتبع العرضي",
+      "price": "0$",
+      "perMonth": "/شهر",
+      "currentPlan": "الخطة الحالية"
+    },
+    "premiumPlan": {
+      "title": "بريميوم",
+      "description": "للرياضيين المتفانين",
+      "priceMonthly": "1.99$",
+      "priceYearly": "19.99$",
+      "perMonth": "/شهر",
+      "perYear": "/سنة",
+      "billedAnnually": "يتم الدفع سنوياً",
+      "goPremium": "اشترك في بريميوم ←",
+      "loading": "جاري التحميل..."
+    },
+    "features": {
+      "scans": "مسح WOD غير محدود",
+      "scansFree": "3 شهرياً",
+      "reactions": "تفاعلات مجتمع غير محدودة",
+      "reactionsFree": "5 يومياً",
+      "comments": "نشر تعليقات",
+      "commentsFree": "للقراءة فقط",
+      "favorites": "مفضلة غير محدودة",
+      "favoritesFree": "أقصى 10",
+      "customs": "تمارين مخصصة غير محدودة",
+      "customsFree": "أقصى 3",
+      "search": "فلاتر بحث متقدمة",
+      "badge": "شارة داعم حصرية",
+      "unlimited": "غير محدود",
+      "notIncluded": "غير متضمن"
+    },
+    "toasts": {
+      "welcomeTitle": "مرحباً بك في بريميوم!",
+      "welcomeDescription": "شارتك مفعلة الآن.",
+      "cancelTitle": "تم إلغاء الدفع",
+      "cancelDescription": "حاول مرة أخرى عندما تكون مستعداً.",
+      "loginRequiredTitle": "تسجيل دخول مطلوب",
+      "loginRequiredDescription": "سجل للدخول في بريميوم.",
+      "paymentErrorTitle": "خطأ في الدفع",
+      "paymentErrorDescription": "تعذر بدء عملية الدفع."
+    }
+  },
+  "SettingsPage": {
+    "seo": {
+      "title": "الإعدادات | إدارة حسابي",
+      "description": "تحديث ملفك الشخصي واشتراكاتك."
+    },
+    "title": "الإعدادات",
+    "profile": {
+      "title": "معلومات الحساب",
+      "description": "إدارة البريد والاشتراك.",
+      "personalTitle": "الملف الشخصي",
+      "personalDescription": "هويتك ومقاييسك البدنية.",
+      "displayName": "الاسم المستعار",
+      "weight": "الوزن (كجم)",
+      "height": "الطول (سم)",
+      "avatar": "الصورة الرمزية",
+      "saveProfile": "حفظ الملف الشخصي",
+      "updateSuccess": "تم تحديث الملف!",
+      "updateSuccessDesc": "تم حفظ مقاييسك بنجاح.",
+      "updateError": "تعذر تحديث الملف الشخصي.",
+      "loading": "جاري التحميل...",
+      "email": "البريد: {email}",
+      "emailNotSpecified": "غير محدد",
+      "accountType": "الحساب: {type}",
+      "typeAnonymous": "أنوني",
+      "typePremium": "بريميوم",
+      "typeStandard": "عادي",
+      "manageSubscription": "إدارة الاشتراك",
+      "userNotFound": "المستخدم غير موجود."
+    },
+    "dangerZone": {
+      "title": "منطقة الخطر",
+      "description": "إجراءات دائمة.",
+      "deleteButton": "حذف الحساب",
+      "deletingButton": "جاري الحذف...",
+      "dialogTitle": "هل أنت متأكد؟",
+      "dialogDescription": "سيؤدي هذا لمسح جميع بياناتك.",
+      "dialogCancel": "إلغاء",
+      "dialogConfirm": "نعم، احذف حسابي",
+      "helpText": "ستفقد جميع البيانات للأبد."
+    },
+    "toasts": {
+      "deleteError": "تعذر الحذف.",
+      "deleteSuccessTitle": "تم الحذف",
+      "deleteSuccessDescription": "وداعاً!",
+      "deleteFailedTitle": "فشل",
+      "deleteFailedDescription": "حدث خطأ.",
+      "deleteFailedRecentLogin": "يلزم إعادة تسجيل الدخول.",
+      "portalError": "خطأ في البوابة."
+    }
+  },
+  "ScanPage": {
+    "seo": {
+      "title": "مسح WOD | محلل السبورة بالذكاء الاصطناعي",
+      "description": "حول صورتك لمؤقت تفاعلي."
+    },
+    "title": "مسح WOD",
+    "manualButton": "إضافة يدوياً"
+  },
+  "NewWodPage": {
+    "seo": {
+      "title": "تمرين جديد | إدخال يدوي",
+      "description": "أضف تمرينك يدوياً."
+    },
+    "title": "إنشاء تمرين يدوياً",
+    "cardTitle": "تفاصيل التمرين",
+    "namePlaceholder": "الاسم",
+    "typePlaceholder": "النوع",
+    "durationPlaceholder": "المدة (دقيقة)",
+    "imageHintPlaceholder": "تلميح صورة",
+    "descriptionPlaceholder": "الوصف...",
+    "saveButton": "حفظ التمرين",
+    "savingButton": "جاري الحفظ...",
+    "backLink": "رجوع",
+    "duplicateDialog": {
+      "title": "مكرر",
+      "description": "هذا التمرين موجود بالفعل.",
+      "savedOn": "تم الحفظ في {date}",
+      "question": "حفظ على أي حال؟",
+      "cancel": "لا",
+      "confirm": "نعم"
+    },
+    "toasts": {
+      "saveSuccessTitle": "نجاح!",
+      "saveSuccessDescription": "تمت إضافة التمرين.",
+      "saveFailedTitle": "فشل",
+      "saveFailedDescription": "تعذر الحفظ."
+    }
+  },
+  "EditWodPage": {
+    "seo": {
+      "title": "تعديل التمرين | WODBurner",
+      "description": "تحديث تفاصيل التمرين."
+    },
+    "title": "تعديل التمرين",
+    "cardTitle": "التفاصيل",
+    "saveButton": "حفظ التغييرات",
+    "savingButton": "جاري الحفظ...",
+    "backLink": "لوحة التحكم",
+    "toasts": {
+      "updateSuccessTitle": "تم التحديث!",
+      "updateSuccessDescription": "تم حفظ التغييرات.",
+      "updateFailedTitle": "فشل",
+      "updateFailedDescription": "حدث خطأ."
+    }
+  },
+  "GenericTimerPage": {
+    "backLink": "المؤقتات",
+    "startButton": "ابدأ المؤقت",
+    "forTime": {
+      "title": "على الوقت",
+      "description": "ساعة توقيت بسيطة.",
+      "timeCapLabel": "الحد الأقصى (دقائق)",
+      "timeCapPlaceholder": "مثلاً 20"
+    },
+    "amrap": {
+      "title": "AMRAP",
+      "description": "أقصى تكرارات.",
+      "durationLabel": "المدة (دقائق)"
+    },
+    "emom": {
+      "title": "EMOM",
+      "description": "كل دقيقة.",
+      "roundsLabel": "جولات",
+      "intervalLabel": "الفترة",
+      "intervalMinutes": "دقيقة",
+      "intervalSeconds": "ثانية"
+    },
+    "tabata": {
+      "title": "Tabata",
+      "description": "20 ثانية عمل / 10 ثواني راحة.",
+      "roundsLabel": "جولات"
+    }
+  },
+  "TimersPage": {
+    "seo": {
+      "title": "مؤقتات كروس فت | AMRAP, EMOM, Tabata",
+      "description": "مؤقتات تدريب احترافية لتمارينك."
+    },
+    "title": "المؤقتات الذكية",
+    "forTime": "For Time",
+    "forTimeDescription": "ساعة توقيت بسيطة.",
+    "amrap": "AMRAP",
+    "amrapDescription": "أقصى تكرارات في الوقت.",
+    "emom": "EMOM",
+    "emomDescription": "كل دقيقة.",
+    "tabata": "Tabata",
+    "tabataDescription": "فواصل زمنية.",
+    "footer": "أو اختر تمرين من لوحة التحكم."
+  },
+  "HeroWodsPage": {
+    "seo": {
+      "title": "تمارين الأبطال | مكتبة التمارين الأسطورية",
+      "description": "اعثر على Murph و Fran و Cindy وجميع تمارين كروس فت الأسطورية."
+    },
+    "title": "تمارين الأبطال",
+    "description": "تخليداً لذكرى الأبطال.",
+    "premiumUpsell": {
+      "title": "فتح الكل",
+      "description": "احصل على {totalWodCount}+ تمرين.",
+      "button": "اشترك في بريميوم"
+    }
+  },
+  "HallOfFamePage": {
+    "seo": {
+      "title": "قاعة المشاهير | داعمو WODBurner الأوائل",
+      "description": "الدائرة المغلقة لأول 300 داعم لنا."
+    },
+    "title": "قاعة المشاهير",
+    "cardTitle": "أول 300 عضو",
+    "cardDescription": "اشتراك مجاني مدى الحياة لأول داعمين لنا.",
+    "spotsRemaining": "تبقى {spotsLeft} أماكن فقط!",
+    "spotsFull": "القائمة مكتملة.",
+    "claimSpotButton": "احجز مكانك",
+    "emptyList": "كن أول المنضمين!"
+  },
+  "TimerClient": {
+    "workoutComplete": "انتهى!",
+    "totalTime": "الوقت الإجمالي",
+    "timeCompleted": "تم في",
+    "goAgain": "مرة أخرى",
+    "shareResult": "مشاركة",
+    "shareModal": {
+      "title": "النتيجة: {wodName}",
+      "description": "انتهى في {finalTime}.",
+      "finalTimeLabel": "الوقت",
+      "screenshotReady": "جاهز لتصوير الشاشة!"
+    },
+    "timeCap": "حد الوقت: {duration}:00",
+    "pause": "إيقاف",
+    "start": "ابدأ",
+    "reset": "إعادة",
+    "finish": "إنهاء",
+    "round": "جولة {current} / {total}",
+    "totalTimeElapsed": "الإجمالي: {time}"
+  },
+  "GenerateWodPage": {
+    "seo": {
+      "title": "مولد تمارين بالذكاء الاصطناعي | تمارين جديدة يومياً",
+      "description": "لا تجد إلهاماً؟ دع مدرب الذكاء الاصطناعي يصمم لك تمريناً مخصصاً."
+    },
+    "title": "منشئ تمارين بالذكاء الاصطناعي",
+    "cardTitle": "WODBot 3000",
+    "cardDescription": "لا تجد إلهاماً؟ دع الذكاء الاصطناعي يصمم تمرينك.",
+    "generateButton": "إنشاء",
+    "generatingButton": "جاري العمل...",
+    "freePlanAlert": {
+      "title": "خطة مجانية",
+      "description": "وصلت للحد اليومي. {link} للوصول غير المحدود.",
+      "link": "اشترك في بريميوم"
+    },
+    "premiumPlanMessage": "إنشاء غير محدود مفعل.",
+    "generatingState": {
+      "title": "جاري العمل...",
+      "description": "الذكاء الاصطناعي يستعد."
+    },
+    "errorAlert": {
+      "title": "خطأ",
+      "description": "حاول مرة أخرى بعد قليل."
+    },
+    "result": {
+      "title": "تمرين ذكاء اصطناعي",
+      "savedMessage": "تم الحفظ في لوحة التحكم."
+    }
+  }
+}

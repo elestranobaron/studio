@@ -1,0 +1,557 @@
+
+{
+  "RootLayout": {
+    "seo": {
+      "title": "WODBurner - あなたのCrossFitホワイトボード＆スマートタイマー",
+      "description": "写真からCrossFitワークアウトをスキャンし、AIで新しいWODを生成し、スマートタイマーにアクセスします。"
+    }
+  },
+  "UserNav": {
+    "signIn": "サインイン",
+    "signOut": "サインアウト",
+    "loading": "読み込み中...",
+    "anonymousUser": "匿名ユーザー",
+    "temporaryProfile": "一時的なプロファイル",
+    "settingsTooltip": "設定"
+  },
+  "MainNav": {
+    "dashboard": "ダッシュボード",
+    "scanWod": "WODをスキャン",
+    "generateWod": "WODを生成",
+    "heroWods": "ヒーローWOD",
+    "timers": "タイマー",
+    "goPremium": "プレミアムに登録",
+    "hallOfFame": "殿堂",
+    "openStats": "Open Stats"
+  },
+  "OpenStatsPage": {
+    "seo": {
+      "title": "Open Stats | CrossFit Open リーダーボード統計",
+      "description": "ライブのCrossFit Open統計。あなたのスコアを比較し、世界中のパフォーマンスを分析します。"
+    },
+    "title": "Open Stats",
+    "description": "パブリックAPIによるライブCrossFit Openデータ",
+    "metrics": {
+      "athletes": "分析されたアスリート",
+      "median": "中央値",
+      "top10": "トップ 10%",
+      "elite": "エリート (1%)"
+    },
+    "filters": {
+      "label": "フィルター",
+      "year": "年",
+      "workout": "競技",
+      "division": "ディビジョン",
+      "region": "地域",
+      "scaled": "WODタイプ",
+      "allWorkouts": "総合順位",
+      "stages": {
+        "open": "オープン",
+        "quarterfinals": "準々決勝",
+        "semifinals": "準決勝",
+        "games": "ゲームス"
+      },
+      "selector": {
+        "bmi": "BMI",
+        "age": "年齢",
+        "height": "身長",
+        "weight": "体重"
+      },
+      "divisions": {
+        "men": "男子 Rx",
+        "women": "女子 Rx",
+        "teens1415": "10代 (14-15)",
+        "masters3539": "マスターズ (35-39)"
+      },
+      "regions": {
+        "worldwide": "世界中",
+        "africa": "アフリカ",
+        "asia": "アジア",
+        "europe": "ヨーロッパ",
+        "naEast": "北米東",
+        "naWest": "北米西",
+        "oceania": "オセアニア",
+        "southAmerica": "南米"
+      },
+      "scaledTypes": {
+        "rxd": "Rx'd",
+        "scaled": "Scaled",
+        "foundations": "Foundations"
+      }
+    },
+    "recap": {
+      "maxReps": "最大レップ",
+      "timeCap": "タイムキャップ"
+    },
+    "userScore": {
+      "title": "スコアを比較する",
+      "percentile": "グローバルパーセンタイル",
+      "premiumLabel": "プレミアム"
+    },
+    "leaderboard": {
+      "title": "トップ100アスリート",
+      "rank": "順位",
+      "name": "名前",
+      "score": "スコア",
+      "points": "ポイント",
+      "retry": "再試行",
+      "overallRank": "総合順位",
+      "workoutRank": "競技順位",
+      "descriptionOverall": "ポイント別のトップ100グローバルリーダーボード（ランクの合計）。",
+      "descriptionWorkout": "イベント{year}.{workout}のトップ100アスリート。"
+    },
+    "charts": {
+      "distribution": "スコア分布",
+      "distributionSub": "分析サンプルの分布",
+      "bmi": "パフォーマンス相関",
+      "bmiSub": "体格がグローバルランキングに与える影響"
+    },
+    "methodology": {
+      "title": "チャートの教義",
+      "unificationTitle": "スコアの統一",
+      "unificationDesc": "混合イベント（時間＋繰り返し）で一貫した視覚的比較を可能にするため、すべてのスコアは総繰り返し数に変換されます。イベントを終了したアスリートはグラフの右端にグループ化されます。",
+      "overallTitle": "Overall",
+      "overallDesc": "スコアは獲得した順位の合計に対応します。スコアが低いほど、全体的なパフォーマンスが良いことを示します。"
+    }
+  },
+  "DashboardPage": {
+    "seo": {
+      "title": "ダッシュボード | CrossFit WODの管理",
+      "description": "CrossFitワークアウトを管理し、スキャンしたWODを見つけ、コミュニティのトレーニングを発見します。"
+    },
+    "title": "ダッシュボード",
+    "scanNewWod": "新しいWODをスキャン",
+    "tabs": {
+      "personal": "私のWOD",
+      "community": "コミュニティ"
+    },
+    "PersonalWodList": {
+      "emptyTitle": "ここにWODは見つかりませんでした。",
+      "emptyDescription": "最初のWODをスキャンして始めましょう！"
+    },
+    "CommunityWodList": {
+      "joinTitle": "コミュニティに参加しよう！",
+      "joinDescription": "無料アカウントを作成して、コミュニティ全体のWODを閲覧、共有、インスピレーションを得ましょう。",
+      "joinButton": "サインアップ / ログイン",
+      "errorTitle": "エラーが発生しました",
+      "errorDescription": "コミュニティWODを読み込めませんでした。後でもう一度お試しください。",
+      "searchInputPlaceholder": "コミュニティWODを検索...",
+      "sortByLabel": "並べ替え",
+      "sort": {
+        "recent": "最新",
+        "popular": "人気",
+        "alphabetical": "アルファベット順 (A-Z)"
+      },
+      "emptySearchTitle": "検索に一致するWODはありません。",
+      "emptySearchDescription": "別の検索語を試してください。",
+      "emptyCommunityTitle": "最初に共有する人になりましょう！",
+      "ScrollTop": {
+        "label": "トップに戻る"
+      }
+    }
+  },
+  "WelcomeEmptyState": {
+    "title": "WODBurnerへようこそ！",
+    "subtitle": "3秒で最初のWODを記録:",
+    "scanButton": "写真からWODをスキャン",
+    "generateButton": "ランダムなWODを生成",
+    "heroButton": "ヒーローWODを試す",
+    "communityLink": "または、コミュニティを探索してください。"
+  },
+  "WodCard": {
+    "optionsAlt": "WODオプション",
+    "share": "共有",
+    "unshare": "共有を解除",
+    "edit": "編集",
+    "delete": "削除",
+    "sharedToastTitle": "WODが共有されました！",
+    "sharedToastDescription": "あなたのWODはコミュニティに表示されるようになりました。",
+    "unsharedToastTitle": "WODの共有が解除されました",
+    "unsharedToastDescription": "あなたのWODはコミュニティから削除されました。",
+    "shareErrorToastTitle": "アクションに失敗しました",
+    "shareErrorToastDescription": "共有ステータスを更新できませんでした。",
+    "deleteDialogTitle": "本当にいいですか？",
+    "deleteDialogDescription": "この操作は元に戻せません。",
+    "deleteDialogCancel": "キャンセル",
+    "deleteDialogConfirm": "削除",
+    "deleteToastTitle": "WODが削除されました",
+    "deleteToastDescription": "あなたのWODは正常に削除されました。",
+    "deleteErrorToastTitle": "削除に失敗しました",
+    "deleteErrorToastDescription": "WODを削除できませんでした。",
+    "reactionErrorToastTitle": "おっと！",
+    "reactionErrorToastDescription": "リアクションを保存できませんでした。",
+    "viewImageAlt": "{wodName} - オリジナル画像",
+    "viewWodDescription": "{type} - {date}",
+    "viewWodSharedBy": "{displayName}が共有",
+    "startWod": "WODを開始",
+    "profile": {
+      "cardio": "有酸素",
+      "lifting": "リフティング",
+      "upper": "上半身",
+      "lower": "下半身"
+    }
+  },
+  "TimerPage": {
+    "backToDashboard": "ダッシュボードに戻る",
+    "viewWod": "WODを表示",
+    "fullWodLabel": "完全なWOD: {wodName}",
+    "startSection": "開始",
+    "accessRestricted": {
+      "title": "アクセス制限",
+      "description": "コミュニティWODを表示してタイマーを使用するには、サインアップまたはログインしてください。",
+      "button": "サインアップ / ログイン"
+    }
+  },
+  "FileUploader": {
+    "dragAndDropPrompt": "WOD画像をドラッグ＆ドロップするか、クリックして選択",
+    "dragActivePrompt": "ここに画像をドロップ...",
+    "fileTypes": "PNG、JPG、またはGIF（最大5MB）",
+    "analyzingTitle": "WODを分析中...",
+    "analyzingDescription": "AIがウォームアップ中です。しばらくお待ちください。",
+    "analysisFailedTitle": "分析に失敗しました",
+    "analysisFailedDescription": "WOD画像を分析できませんでした。もう一度お試しください。",
+    "duplicateDialogTitle": "重複したWODが検出されました",
+    "duplicateDialogDescription": "このワークアウトは、既に保存したWODと同一のようです。",
+    "duplicateDialogSavedOn": "{date}に保存",
+    "duplicateDialogQuestion": "それでもこの新しいものを保存しますか？",
+    "duplicateDialogCancel": "キャンセル",
+    "duplicateDialogConfirm": "それでも保存",
+    "saveFailedTitle": "保存に失敗しました",
+    "saveFailedDescription": "WODの保存中にエラーが発生しました。",
+    "wodSavedTitle": "WODが保存されました！",
+    "wodSavedDescription": "新しいWODがダッシュボードに追加されました。",
+    "authErrorTitle": "保存できませんでした",
+    "authErrorDescription": "認証サービスが利用できません。",
+    "wodPreviewAlt": "WODプレビュー",
+    "analyzeButton": "WODを分析",
+    "analysisResultTitle": "分析結果",
+    "wodNamePlaceholder": "WOD名",
+    "wodTypePlaceholder": "WODタイプ",
+    "durationPlaceholder": "期間（分）",
+    "shareCheckbox": "コミュニティと共有",
+    "shareAnonymousHelp": "アカウントにサインアップして、WODをコミュニティと共有しましょう。",
+    "saveWodButton": "WODを保存",
+    "savingButton": "保存中..."
+  },
+  "LoginPage": {
+    "seo": {
+      "title": "サインイン | WODBurner",
+      "description": "ワークアウトを保存するためにログインしてください。"
+    },
+    "verifying": "確認中...",
+    "confirmEmailTitle": "メールを確認",
+    "confirmEmailDescription": "メールで受信した6桁のコードを入力してください。",
+    "confirmEmailFailedTitle": "ログインに失敗しました",
+    "confirmEmailSignInButton": "サインイン",
+    "featureTitle": "次のレベルへ。",
+    "featureDescription": "無料アカウントを作成して、すべての機能のロックを解除しましょう。",
+    "featureManual": "手動作成",
+    "featureManualDescription": "写真を必要とせずに独自のWODを追加します。",
+    "featureHistory": "完全な履歴",
+    "featureHistoryDescription": "いつでもすべてのワークアウトを保存して見つけます。",
+    "featureTracking": "分析 (近日公開！)",
+    "featureTrackingDescription": "進捗を追跡しましょう。",
+    "formTitle": "ログイン / サインアップ",
+    "formDescription": "安全なサインインリンクを受け取るには、メールアドレスを入力してください。",
+    "emailSentTitle": "メールをチェックしてください！",
+    "emailSentDescription": "コードが<bold>{email}</bold>に送信されました。",
+    "sendLinkButton": "コードを送信",
+    "authError": "認証サービスの準備ができていません。",
+    "sendLinkError": "コードを送信できませんでした。",
+    "linkSentToast": "コードが送信されました！",
+    "linkSentToastDescription": "受信トレイを確認してください。",
+    "signInSuccessToast": "ログインに成功しました！",
+    "signInSuccessToastDescription": "サインインしました。",
+    "genericError": "エラーが発生しました。",
+    "invalidLinkError": "コードが無効か、期限が切れています。",
+    "backToDashboard": "ダッシュボードに戻る"
+  },
+  "PremiumPage": {
+    "seo": {
+      "title": "プレミアムメンバーシップ | WODBurnerをサポート",
+      "description": "無制限のWODスキャン、高度なフィルター、限定機能のロックを解除します。"
+    },
+    "title": "プレミアム",
+    "alreadyPremium": {
+      "title": "あなたはプレミアムです！",
+      "subtitle": "サポーターバッジが有効になりました",
+      "description": "WODBurnerをサポートしていただきありがとうございます❤️",
+      "communityButton": "コミュニティを表示",
+      "dashboardButton": "ダッシュボード"
+    },
+    "headerTitle": "あなたの可能性を最大限に引き出す",
+    "headerDescription": "WODBurnerプレミアムメンバーになって、アプリの開発をサポートしてください。",
+    "offer": "最初の300人のメンバー向けの生涯ローンチオファー！",
+    "monthly": "月額",
+    "yearly": "年額",
+    "discount": "-20%",
+    "freePlan": {
+      "title": "無料",
+      "description": "たまに追跡する方向け",
+      "price": "¥0",
+      "perMonth": "/月",
+      "currentPlan": "現在のプラン"
+    },
+    "premiumPlan": {
+      "title": "プレミアム",
+      "description": "熱心なアスリート向け",
+      "priceMonthly": "¥250",
+      "priceYearly": "¥2500",
+      "perMonth": "/月",
+      "perYear": "/年",
+      "billedAnnually": "年間請求",
+      "goPremium": "プレミアムに登録 →",
+      "loading": "読み込み中..."
+    },
+    "features": {
+      "scans": "無制限のWODスキャン",
+      "scansFree": "月3回",
+      "reactions": "無制限のコミュニティリアクション",
+      "reactionsFree": "1日5回",
+      "comments": "コメントを投稿",
+      "commentsFree": "読み取り専用",
+      "favorites": "無制限のお気に入り",
+      "favoritesFree": "最大10",
+      "customs": "無制限のカスタムWOD",
+      "customsFree": "最大3",
+      "search": "高度な検索フィルター",
+      "badge": "限定サポーターバッジ",
+      "unlimited": "無制限",
+      "notIncluded": "含まれていません"
+    },
+    "toasts": {
+      "welcomeTitle": "プレミアムへようこそ！",
+      "welcomeDescription": "あなたのバッジが有効になりました。",
+      "cancelTitle": "支払いがキャンセルされました",
+      "cancelDescription": "準備ができたら、もう一度お試しいただけます。",
+      "loginRequiredTitle": "ログインが必要です",
+      "loginRequiredDescription": "プレミアムにアップグレードするにはアカウントを作成してください。",
+      "paymentErrorTitle": "支払いエラー",
+      "paymentErrorDescription": "チェックアウトを開始できませんでした。"
+    }
+  },
+  "SettingsPage": {
+    "seo": {
+      "title": "設定 | WODBurnerアカウントの管理",
+      "description": "プロファイル、サブスクリプション、設定を更新します。"
+    },
+    "title": "設定",
+    "profile": {
+      "title": "アカウント情報",
+      "description": "メールとサブスクリプションの管理。",
+      "personalTitle": "個人プロフィール",
+      "personalDescription": "あなたの身元と身体指標。",
+      "displayName": "表示名",
+      "weight": "体重 (kg)",
+      "height": "身長 (cm)",
+      "avatar": "アバター",
+      "saveProfile": "プロフィールを保存",
+      "updateSuccess": "プロフィールを更新しました！",
+      "updateSuccessDesc": "指標が保存されました。",
+      "updateError": "プロフィールを更新できませんでした。",
+      "loading": "読み込み中...",
+      "email": "メール: {email}",
+      "emailNotSpecified": "指定なし",
+      "accountType": "タイプ: {type}",
+      "typeAnonymous": "匿名",
+      "typePremium": "プレミアム",
+      "typeStandard": "標準",
+      "manageSubscription": "サブスクリプション管理",
+      "userNotFound": "ユーザーが見つかりません。"
+    },
+    "dangerZone": {
+      "title": "危険地帯",
+      "description": "永続的な操作。",
+      "deleteButton": "アカウントを削除",
+      "deletingButton": "削除中...",
+      "dialogTitle": "本当にいいですか？",
+      "dialogDescription": "すべてのデータが削除されます。",
+      "dialogCancel": "キャンセル",
+      "dialogConfirm": "はい、削除します",
+      "helpText": "復元できません。"
+    },
+    "toasts": {
+      "deleteError": "アカウントを削除できませんでした。",
+      "deleteSuccessTitle": "アカウント削除",
+      "deleteSuccessDescription": "さようなら！",
+      "deleteFailedTitle": "失敗",
+      "deleteFailedDescription": "もう一度お試しください。",
+      "deleteFailedRecentLogin": "再ログインが必要です。",
+      "portalError": "ポータルエラー。"
+    }
+  },
+  "ScanPage": {
+    "seo": {
+      "title": "WODをスキャン | AIホワイトボード分析",
+      "description": "写真をインタラクティブなタイマーに瞬時に変換します。"
+    },
+    "title": "WODをスキャン",
+    "manualButton": "手動で追加"
+  },
+  "NewWodPage": {
+    "seo": {
+      "title": "新しいワークアウト | 手動入力",
+      "description": "独自のCrossFitワークアウトを手動で追加してトレーニングを開始します。"
+    },
+    "title": "手動作成",
+    "cardTitle": "詳細",
+    "namePlaceholder": "名前",
+    "typePlaceholder": "タイプ",
+    "durationPlaceholder": "期間",
+    "imageHintPlaceholder": "画像ヒント",
+    "descriptionPlaceholder": "説明...",
+    "saveButton": "WODを保存",
+    "savingButton": "保存中...",
+    "backLink": "戻る",
+    "duplicateDialog": {
+      "title": "重複",
+      "description": "既に登録されています。",
+      "savedOn": "{date} に保存",
+      "question": "保存しますか？",
+      "cancel": "いいえ",
+      "confirm": "はい"
+    },
+    "toasts": {
+      "saveSuccessTitle": "成功！",
+      "saveSuccessDescription": "WODが追加されました。",
+      "saveFailedTitle": "失敗",
+      "saveFailedDescription": "保存できませんでした。"
+    }
+  },
+  "EditWodPage": {
+    "seo": {
+      "title": "WODを編集 | WODBurner",
+      "description": "ワークアウトの詳細を更新します。"
+    },
+    "title": "WODを編集",
+    "cardTitle": "詳細",
+    "saveButton": "保存",
+    "savingButton": "保存中...",
+    "backLink": "ダッシュボード",
+    "toasts": {
+      "updateSuccessTitle": "更新完了！",
+      "updateSuccessDescription": "保存されました。",
+      "updateFailedTitle": "失敗",
+      "updateFailedDescription": "エラーが発生しました。"
+    }
+  },
+  "GenericTimerPage": {
+    "backLink": "タイマー",
+    "startButton": "開始",
+    "forTime": {
+      "title": "For Time",
+      "description": "ストップウォッチ。",
+      "timeCapLabel": "タイムキャップ（分）",
+      "timeCapPlaceholder": "例: 20"
+    },
+    "amrap": {
+      "title": "AMRAP",
+      "description": "最大繰り返し。",
+      "durationLabel": "期間（分）"
+    },
+    "emom": {
+      "title": "EMOM",
+      "description": "毎分。",
+      "roundsLabel": "ラウンド",
+      "intervalLabel": "インターバル",
+      "intervalMinutes": "分",
+      "intervalSeconds": "秒"
+    },
+    "tabata": {
+      "title": "Tabata",
+      "description": "20秒作業 / 10秒休息。",
+      "roundsLabel": "ラウンド"
+    }
+  },
+  "TimersPage": {
+    "seo": {
+      "title": "CrossFitタイマー | AMRAP, EMOM, Tabata",
+      "description": "ワークアウト用のプロ仕様タイマー。"
+    },
+    "title": "スマートタイマー",
+    "forTime": "For Time",
+    "forTimeDescription": "ストップウォッチ。",
+    "amrap": "AMRAP",
+    "amrapDescription": "時間内に最大レップ。",
+    "emom": "EMOM",
+    "emomDescription": "毎分。",
+    "tabata": "Tabata",
+    "tabataDescription": "インターバル。",
+    "footer": "またはダッシュボードから選ぶ。"
+  },
+  "HeroWodsPage": {
+    "seo": {
+      "title": "ヒーローWOD | 伝説のライブラリ",
+      "description": "Murph、Fran、Cindy、その他伝説のCrossFitワークアウトを見つけましょう。"
+    },
+    "title": "ヒーローWOD",
+    "description": "英雄たちの記憶に。",
+    "premiumUpsell": {
+      "title": "すべて解除",
+      "description": "{totalWodCount}+ 以上のWODを見るにはプレミアムへ。",
+      "button": "プレミアムに登録"
+    }
+  },
+  "HallOfFamePage": {
+    "seo": {
+      "title": "殿堂 | WODBurner早期支持者",
+      "description": "最初の300人の支持者の限定サークル。"
+    },
+    "title": "殿堂",
+    "cardTitle": "最初の300人",
+    "cardDescription": "早期サポーターは永久無料。",
+    "spotsRemaining": "残り {spotsLeft} 席！",
+    "spotsFull": "満席です。",
+    "claimSpotButton": "席を確保する",
+    "emptyList": "最初の人になりましょう！"
+  },
+  "TimerClient": {
+    "workoutComplete": "完了！",
+    "totalTime": "合計時間",
+    "timeCompleted": "完了タイム",
+    "goAgain": "もう一度",
+    "shareResult": "共有",
+    "shareModal": {
+      "title": "結果: {wodName}",
+      "description": "{finalTime} で完了。",
+      "finalTimeLabel": "タイム",
+      "screenshotReady": "スクショの準備完了！"
+    },
+    "timeCap": "制限: {duration}:00",
+    "pause": "一時停止",
+    "start": "開始",
+    "reset": "リセット",
+    "finish": "終了",
+    "round": "ラウンド {current} / {total}",
+    "totalTimeElapsed": "合計: {time}"
+  },
+  "GenerateWodPage": {
+    "seo": {
+      "title": "AI WOD生成器 | 毎日新しいワークアウト",
+      "description": "インスピレーションが足りませんか？AIコーチにあなた専用のCrossFitトレーニングを作成させましょう。"
+    },
+    "title": "AI WOD生成器",
+    "cardTitle": "WODBot 3000",
+    "cardDescription": "アイデアがない？AIが作成します。",
+    "generateButton": "生成",
+    "generatingButton": "計算中...",
+    "freePlanAlert": {
+      "title": "無料プラン",
+      "description": "一日の制限です。無制限は {link} 。",
+      "link": "プレミアムに登録"
+    },
+    "premiumPlanMessage": "無制限生成が有効です。",
+    "generatingState": {
+      "title": "生成中...",
+      "description": "AIが準備しています。"
+    },
+    "errorAlert": {
+      "title": "エラー",
+      "description": "しばらくしてからお試しください。"
+    },
+    "result": {
+      "title": "AIトレーニング",
+      "savedMessage": "ダッシュボードに保存されました。"
+    }
+  }
+}

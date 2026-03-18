@@ -1,0 +1,557 @@
+
+{
+  "RootLayout": {
+    "seo": {
+      "title": "WODBurner - Je CrossFit Whiteboard & Smart Timer",
+      "description": "De ultieme CrossFit-metgezel. Scan whiteboard-foto's, genereer AI-workouts en gebruik professionele timers."
+    }
+  },
+  "UserNav": {
+    "signIn": "Inloggen",
+    "signOut": "Uitloggen",
+    "loading": "Laden...",
+    "anonymousUser": "Anonieme Gebruiker",
+    "temporaryProfile": "Tijdelijk Profiel",
+    "settingsTooltip": "Instellingen"
+  },
+  "MainNav": {
+    "dashboard": "Dashboard",
+    "scanWod": "WOD Scannen",
+    "generateWod": "WOD Genereren",
+    "heroWods": "Hero WOD's",
+    "timers": "Timers",
+    "goPremium": "Ga Premium",
+    "hallOfFame": "Hall of Fame",
+    "openStats": "Open Stats"
+  },
+  "OpenStatsPage": {
+    "seo": {
+      "title": "Open Stats | CrossFit Open Leaderboard Statistieken",
+      "description": "Live CrossFit Open statistieken. Vergelijk je scores en analyseer wereldwijde prestaties."
+    },
+    "title": "Open Stats",
+    "description": "Live CrossFit Open data via publieke API",
+    "metrics": {
+      "athletes": "Geanalyseerde Atleten",
+      "median": "Mediaan",
+      "top10": "Top 10%",
+      "elite": "Elite (1%)"
+    },
+    "filters": {
+      "label": "Filters",
+      "year": "Jaar",
+      "workout": "Workout",
+      "division": "Divisie",
+      "region": "Regio",
+      "scaled": "WOD Type",
+      "allWorkouts": "Algemeen",
+      "stages": {
+        "open": "Open",
+        "quarterfinals": "Kwartfinales",
+        "semifinals": "Halve finales",
+        "games": "Games"
+      },
+      "selector": {
+        "bmi": "BMI",
+        "age": "Leeftijd",
+        "height": "Lengte",
+        "weight": "Gewicht"
+      },
+      "divisions": {
+        "men": "Heren Rx",
+        "women": "Dames Rx",
+        "teens1415": "Tiener (14-15)",
+        "masters3539": "Masters (35-39)"
+      },
+      "regions": {
+        "worldwide": "Wereldwijd",
+        "africa": "Afrika",
+        "asia": "Azië",
+        "europe": "Europa",
+        "naEast": "NA Oost",
+        "naWest": "NA West",
+        "oceania": "Oceanië",
+        "southAmerica": "Zuid-Amerika"
+      },
+      "scaledTypes": {
+        "rxd": "Rx'd",
+        "scaled": "Scaled",
+        "foundations": "Foundations"
+      }
+    },
+    "recap": {
+      "maxReps": "Max Reps",
+      "timeCap": "Time Cap"
+    },
+    "userScore": {
+      "title": "Mijn score vergelijken",
+      "percentile": "Globaal Percentiel",
+      "premiumLabel": "Premium"
+    },
+    "leaderboard": {
+      "title": "Top 100 Atleten",
+      "rank": "Rang",
+      "name": "Naam",
+      "score": "Score",
+      "points": "Punten",
+      "retry": "Opnieuw proberen",
+      "overallRank": "Algemene Rang",
+      "workoutRank": "Workout Rang",
+      "descriptionOverall": "Top 100 globale leaderboard op punten (som van rangen).",
+      "descriptionWorkout": "Top 100 atleten voor het event {year}.{workout}."
+    },
+    "charts": {
+      "distribution": "Scoreverdeling",
+      "distributionSub": "Verdeling over de geanalyseerde steekproef",
+      "bmi": "Prestatiecorrelatie",
+      "bmiSub": "Impact van fysiek profiel op de globale ranglijst"
+    },
+    "methodology": {
+      "title": "Grafiekmethode",
+      "unificationTitle": "Score-unificatie",
+      "unificationDesc": "Om een consistente visuele vergelijking mogelijk te maken bij gemengde evenementen (tijd + herhalingen), worden alle scores omgezet naar totale herhalingen. Atleten die het evenement hebben voltooid, worden gegroepeerd aan de rechterkant van de grafiek.",
+      "overallTitle": "Overall",
+      "overallDesc": "De score komt overeen met de som van de behaalde rangen. Een lage score duidt op een betere algehele prestatie."
+    }
+  },
+  "DashboardPage": {
+    "seo": {
+      "title": "Dashboard | Beheer je CrossFit WOD's",
+      "description": "Beheer je CrossFit workouts, vind je gescande WOD's en deel je resultaten."
+    },
+    "title": "Dashboard",
+    "scanNewWod": "Nieuwe WOD Scannen",
+    "tabs": {
+      "personal": "Mijn WOD's",
+      "community": "Community"
+    },
+    "PersonalWodList": {
+      "emptyTitle": "Geen WOD's gevonden.",
+      "emptyDescription": "Scan je eerste WOD om te beginnen!"
+    },
+    "CommunityWodList": {
+      "joinTitle": "Sluit je aan bij de Community!",
+      "joinDescription": "Maak een gratis account aan om WOD's te bekijken en te delen.",
+      "joinButton": "Aanmelden / Inloggen",
+      "errorTitle": "Er is een fout opgetreden",
+      "errorDescription": "Kon community WOD's niet laden.",
+      "searchInputPlaceholder": "Zoek workouts...",
+      "sortByLabel": "Sorteren op",
+      "sort": {
+        "recent": "Nieuwste",
+        "popular": "Populair",
+        "alphabetical": "Alfabetisch"
+      },
+      "emptySearchTitle": "Geen resultaten.",
+      "emptySearchDescription": "Probeer een andere zoekterm.",
+      "emptyCommunityTitle": "Deel als eerste een workout!",
+      "ScrollTop": {
+        "label": "Bovenaan"
+      }
+    }
+  },
+  "WelcomeEmptyState": {
+    "title": "Welkom bij WODBurner!",
+    "subtitle": "Log je first WOD in 3 seconden:",
+    "scanButton": "Scan een WOD van een foto",
+    "generateButton": "Genereer een willekeurige WOD",
+    "heroButton": "Probeer een Hero WOD",
+    "communityLink": "Of, verken de <communityLink>community</communityLink>."
+  },
+  "WodCard": {
+    "optionsAlt": "Opties",
+    "share": "Delen",
+    "unshare": "Niet meer delen",
+    "edit": "Bewerken",
+    "delete": "Verwijderen",
+    "sharedToastTitle": "WOD Gedeeld!",
+    "sharedToastDescription": "Je WOD is nu zichtbaar voor de community.",
+    "unsharedToastTitle": "Niet meer gedeeld",
+    "unsharedToastDescription": "Je WOD is verwijderd uit de community.",
+    "shareErrorToastTitle": "Fout",
+    "shareErrorToastDescription": "Kon deelstatus niet bijwerken.",
+    "deleteDialogTitle": "Weet je het zeker?",
+    "deleteDialogDescription": "Dit kan niet ongedaan worden gemaakt.",
+    "deleteDialogCancel": "Annuleren",
+    "deleteDialogConfirm": "Verwijderen",
+    "deleteToastTitle": "WOD Verwijderd",
+    "deleteToastDescription": "Je workout is succesvol verwijderd.",
+    "deleteErrorToastTitle": "Fout bij verwijderen",
+    "deleteErrorToastDescription": "Kon de WOD niet verwijderen.",
+    "reactionErrorToastTitle": "Oeps!",
+    "reactionErrorToastDescription": "Kon je reactie niet opslaan.",
+    "viewImageAlt": "{wodName} - Origineel",
+    "viewWodDescription": "{type} - {date}",
+    "viewWodSharedBy": "Gedeeld door {displayName}",
+    "startWod": "Start WOD",
+    "profile": {
+      "cardio": "Cardio",
+      "lifting": "Lifting",
+      "upper": "Boven",
+      "lower": "Onder"
+    }
+  },
+  "TimerPage": {
+    "backToDashboard": "Terug naar Dashboard",
+    "viewWod": "Bekijk WOD",
+    "fullWodLabel": "Volledige WOD: {wodName}",
+    "startSection": "Start",
+    "accessRestricted": {
+      "title": "Toegang beperkt",
+      "description": "Log in om de community WOD's te zien en de timer te gebruiken.",
+      "button": "Aanmelden / Inloggen"
+    }
+  },
+  "FileUploader": {
+    "dragAndDropPrompt": "Sleep je WOD foto hierheen of klik om te selecteren",
+    "dragActivePrompt": "Laat de afbeelding hier los...",
+    "fileTypes": "PNG, JPG, GIF (max 5MB)",
+    "analyzingTitle": "WOD Analyseren...",
+    "analyzingDescription": "De AI is bezig. Een moment geduld.",
+    "analysisFailedTitle": "Analyse mislukt",
+    "analysisFailedDescription": "Kon de afbeelding niet analyseren.",
+    "duplicateDialogTitle": "Dubbele WOD gevonden",
+    "duplicateDialogDescription": "Deze workout heb je al opgeslagen.",
+    "duplicateDialogSavedOn": "Opgeslagen op {date}",
+    "duplicateDialogQuestion": "Wil je deze toch opslaan?",
+    "duplicateDialogCancel": "Annuleren",
+    "duplicateDialogConfirm": "Toch opslaan",
+    "saveFailedTitle": "Opslaan mislukt",
+    "saveFailedDescription": "Fout bij het opslaan van de WOD.",
+    "wodSavedTitle": "WOD Opslagen!",
+    "wodSavedDescription": "Je nieuwe workout staat op je dashboard.",
+    "authErrorTitle": "Fout bij opslaan",
+    "authErrorDescription": "Authenticatie niet beschikbaar.",
+    "wodPreviewAlt": "WOD voorbeeld",
+    "analyzeButton": "Analyseer WOD",
+    "analysisResultTitle": "Resultaat",
+    "wodNamePlaceholder": "WOD Naam",
+    "wodTypePlaceholder": "WOD Type",
+    "durationPlaceholder": "Duur (minuten)",
+    "shareCheckbox": "Delen met community",
+    "shareAnonymousHelp": "Maak een account aan om te delen.",
+    "saveWodButton": "WOD Opslaan",
+    "savingButton": "Opslaan..."
+  },
+  "LoginPage": {
+    "seo": {
+      "title": "Inloggen | WODBurner",
+      "description": "Log in op je WODBurner account om je workouts op te slaan."
+    },
+    "verifying": "Controleren...",
+    "confirmEmailTitle": "Bevestig je e-mail",
+    "confirmEmailDescription": "Voer de 6-cijferige code in die we hebben gestuurd.",
+    "confirmEmailFailedTitle": "Inloggen mislukt",
+    "confirmEmailSignInButton": "Inloggen",
+    "featureTitle": "Naar het volgende niveau.",
+    "featureDescription": "Maak een account om al je workouts op te slaan.",
+    "featureManual": "Handmatig toevoegen",
+    "featureManualDescription": "Bez WOD' toe zonder foto.",
+    "featureHistory": "Volledige historie",
+    "featureHistoryDescription": "Al je workouts op één plek.",
+    "featureTracking": "Prestaties tracken (Binnenkort!)",
+    "featureTrackingDescription": "Analyseer je voortgang.",
+    "formTitle": "Login / Registreren",
+    "formDescription": "Voer je e-mail in voor een inlogcode.",
+    "emailSentTitle": "Check je e-mail!",
+    "emailSentDescription": "Er is een code gestuurd naar <bold>{email}</bold>.",
+    "sendLinkButton": "Code versturen",
+    "authError": "Dienst niet gereed.",
+    "sendLinkError": "Kon code niet versturen.",
+    "linkSentToast": "Code verstuurd!",
+    "linkSentToastDescription": "Check je inbox (en spam).",
+    "signInSuccessToast": "Inloggen gelukt!",
+    "signInSuccessToastDescription": "Je bent nu ingelogd.",
+    "genericError": "Er is iets fout gegaan.",
+    "invalidLinkError": "Ongeldige of verlopen code.",
+    "backToDashboard": "Terug naar Dashboard"
+  },
+  "PremiumPage": {
+    "seo": {
+      "title": "Premium | Steun WODBurner",
+      "description": "Ontgrendel onbeperkte scans en extra functies."
+    },
+    "title": "Premium",
+    "alreadyPremium": {
+      "title": "JE BENT PREMIUM!",
+      "subtitle": "Supporter Badge geactiveerd",
+      "description": "Bedankt voor je steun aan WODBurner ❤️",
+      "communityButton": "Bekijk community",
+      "dashboardButton": "Dashboard"
+    },
+    "headerTitle": "Haal alles uit jezelf",
+    "headerDescription": "Word Premium lid en steun de verdere ontwikkeling.",
+    "offer": "LIFETIME AANBIEDING voor de eerste 300 leden!",
+    "monthly": "Maandelijks",
+    "yearly": "Jaarlijks",
+    "discount": "-20%",
+    "freePlan": {
+      "title": "Gratis",
+      "description": "Voor de hobbyist",
+      "price": "€0",
+      "perMonth": "/mnd",
+      "currentPlan": "Betalingsplan"
+    },
+    "premiumPlan": {
+      "title": "Premium",
+      "description": "Voor de fanatiekeling",
+      "priceMonthly": "€1,99",
+      "priceYearly": "€19,99",
+      "perMonth": "/mnd",
+      "perYear": "/jr",
+      "billedAnnually": "Jaarlijks gefactureerd",
+      "goPremium": "Ga Premium →",
+      "loading": "Laden..."
+    },
+    "features": {
+      "scans": "Onbeperkt WOD Scannen",
+      "scansFree": "3 per maand",
+      "reactions": "Onbeperkt Community Reacties",
+      "reactionsFree": "5 per dag",
+      "comments": "Comments plaatsen",
+      "commentsFree": "Alleen lezen",
+      "favorites": "Onbeperkt Favorieten",
+      "favoritesFree": "Max 10",
+      "customs": "Onbeperkt Eigen WOD's",
+      "customsFree": "Max 3",
+      "search": "Geavanceerde filters",
+      "badge": "Exclusieve Supporter Badge",
+      "unlimited": "Onbeperkt",
+      "notIncluded": "Niet inbegrepen"
+    },
+    "toasts": {
+      "welcomeTitle": "Welkom bij Premium!",
+      "welcomeDescription": "Je badge is nu actief.",
+      "cancelTitle": "Betaling geannuleerd",
+      "cancelDescription": "Probeer het later gerust opnieuw.",
+      "loginRequiredTitle": "Inloggen verplicht",
+      "loginRequiredDescription": "Log in om Premium te worden.",
+      "paymentErrorTitle": "Fout bij betaling",
+      "paymentErrorDescription": "Kon de checkout niet starten."
+    }
+  },
+  "SettingsPage": {
+    "seo": {
+      "title": "Instellingen | Beheer mijn account",
+      "description": "Werk je profiel en abonnement bij."
+    },
+    "title": "Instellingen",
+    "profile": {
+      "title": "Accountinformatie",
+      "description": "Beheer e-mail en abonnement.",
+      "personalTitle": "Persoonlijk Profiel",
+      "personalDescription": "Je identiteit en fysieke statistieken.",
+      "displayName": "Weergavenaam",
+      "weight": "Gewicht (kg)",
+      "height": "Lengte (cm)",
+      "avatar": "Avatar",
+      "saveProfile": "Profiel Opslaan",
+      "updateSuccess": "Profiel bijgewerkt!",
+      "updateSuccessDesc": "Je gegevens zijn opgeslagen.",
+      "updateError": "Kon profiel niet bijwerken.",
+      "loading": "Laden...",
+      "email": "E-mail: {email}",
+      "emailNotSpecified": "Niet opgegeven",
+      "accountType": "Type: {type}",
+      "typeAnonymous": "Anoniem",
+      "typePremium": "Premium",
+      "typeStandard": "Standaard",
+      "manageSubscription": "Beheer abonnement",
+      "userNotFound": "Gebruiker niet gevonden."
+    },
+    "dangerZone": {
+      "title": "Danger Zone",
+      "description": "Niet terug te draaien acties.",
+      "deleteButton": "Account verwijderen",
+      "deletingButton": "Verwijderen...",
+      "dialogTitle": "Echt account verwijderen?",
+      "dialogDescription": "Al je data en WOD's gaan verloren.",
+      "dialogCancel": "Annuleren",
+      "dialogConfirm": "Ja, verwijder mijn account",
+      "helpText": "Data wordt definitief gewist."
+    },
+    "toasts": {
+      "deleteError": "Kon account niet verwijderen.",
+      "deleteSuccessTitle": "Account verwijderd",
+      "deleteSuccessDescription": "Je gegevens zijn gewist.",
+      "deleteFailedTitle": "Fout",
+      "deleteFailedDescription": "Probeer het later opnieuw.",
+      "deleteFailedRecentLogin": "Log opnieuw in voor deze actie.",
+      "portalError": "Kon portaal niet laden."
+    }
+  },
+  "ScanPage": {
+    "seo": {
+      "title": "WOD Scannen | AI Whiteboard-analyse",
+      "description": "Verander je whiteboard-foto direct in een interactieve timer."
+    },
+    "title": "WOD Scannen",
+    "manualButton": "Handmatig toevoegen"
+  },
+  "NewWodPage": {
+    "seo": {
+      "title": "Nieuwe Workout | Handmatige invoer",
+      "description": "Voeg je CrossFit workouts handmatig toe en begin met trainen."
+    },
+    "title": "WOD handmatig maken",
+    "cardTitle": "Workout Details",
+    "namePlaceholder": "Naam (bijv. Fran)",
+    "typePlaceholder": "Type",
+    "durationPlaceholder": "Duur (minuten)",
+    "imageHintPlaceholder": "Afbeelding hint",
+    "descriptionPlaceholder": "Beschrijving...",
+    "saveButton": "WOD Opslaan",
+    "savingButton": "Opslaan...",
+    "backLink": "Terug",
+    "duplicateDialog": {
+      "title": "Dubbele WOD",
+      "description": "Je hebt deze al.",
+      "savedOn": "Opgeslagen op {date}",
+      "question": "Toch opslaan?",
+      "cancel": "Nee",
+      "confirm": "Ja"
+    },
+    "toasts": {
+      "saveSuccessTitle": "Gelukt!",
+      "saveSuccessDescription": "WOD toegevoegd.",
+      "saveFailedTitle": "Fout",
+      "saveFailedDescription": "Kon niet opslaan."
+    }
+  },
+  "EditWodPage": {
+    "seo": {
+      "title": "WOD Bewerken | WODBurner",
+      "description": "Werk je workout-details bij."
+    },
+    "title": "WOD Bewerken",
+    "cardTitle": "Details",
+    "saveButton": "Opslaan",
+    "savingButton": "Bezig...",
+    "backLink": "Dashboard",
+    "toasts": {
+      "updateSuccessTitle": "Bijgewerkt!",
+      "updateSuccessDescription": "Wijzigingen bewaard.",
+      "updateFailedTitle": "Fout",
+      "updateFailedDescription": "Niet gelukt."
+    }
+  },
+  "GenericTimerPage": {
+    "backLink": "Timers",
+    "startButton": "Start Timer",
+    "forTime": {
+      "title": "For Time",
+      "description": "Simpele stopwatch.",
+      "timeCapLabel": "Time Cap (min)",
+      "timeCapPlaceholder": "bijv. 20"
+    },
+    "amrap": {
+      "title": "AMRAP",
+      "description": "Zoveel mogelijk herhalingen.",
+      "durationLabel": "Duur (min)"
+    },
+    "emom": {
+      "title": "EMOM",
+      "description": "Elke minuut.",
+      "roundsLabel": "Ronden",
+      "intervalLabel": "Interval",
+      "intervalMinutes": "min",
+      "intervalSeconds": "sec"
+    },
+    "tabata": {
+      "title": "Tabata",
+      "description": "20s werk / 10s rust.",
+      "roundsLabel": "Ronden"
+    }
+  },
+  "TimersPage": {
+    "seo": {
+      "title": "CrossFit Timers | AMRAP, EMOM, Tabata",
+      "description": "Professionele timers voor je workouts."
+    },
+    "title": "Slimme Timers",
+    "forTime": "For Time",
+    "forTimeDescription": "Simpele stopwatch.",
+    "amrap": "AMRAP",
+    "amrapDescription": "Max reps in tijd.",
+    "emom": "EMOM",
+    "emomDescription": "Elke minuut.",
+    "tabata": "Tabata",
+    "tabataDescription": "Intervals.",
+    "footer": "Or kies een WOD op je dashboard."
+  },
+  "HeroWodsPage": {
+    "seo": {
+      "title": "Hero WODs & Benchmarks | De legendarische bibliotheek",
+      "description": "Vind Murph, Fran, Cindy en alle klassiekers."
+    },
+    "title": "Hero WOD's",
+    "description": "Ter nagedachtenis aan gevallenen.",
+    "premiumUpsell": {
+      "title": "Alles ontgrendelen",
+      "description": "Word Premium voor {totalWodCount}+ WOD's.",
+      "button": "Ga Premium"
+    }
+  },
+  "HallOfFamePage": {
+    "seo": {
+      "title": "Hall of Fame | De Pioniers",
+      "description": "De exclusieve groep van onze eerste 300 supporters."
+    },
+    "title": "Hall of Fame",
+    "cardTitle": "Eerste 300 OGs",
+    "cardDescription": "Lifetime gratis voor onze eerste steunbetuigers.",
+    "spotsRemaining": "Nog {spotsLeft} plekken!",
+    "spotsFull": "Lijst is vol.",
+    "claimSpotButton": "Claim je plek",
+    "emptyList": "Wees de eerste!"
+  },
+  "TimerClient": {
+    "workoutComplete": "Klaar!",
+    "totalTime": "Totale Tijd",
+    "timeCompleted": "Gedaan in",
+    "goAgain": "Nog een keer",
+    "shareResult": "Deel resultaat",
+    "shareModal": {
+      "title": "WOD Resultaat: {wodName}",
+      "description": "Je deed er {finalTime} over.",
+      "finalTimeLabel": "TIJD",
+      "screenshotReady": "Klaar voor screenshot!"
+    },
+    "timeCap": "Time Cap: {duration}:00",
+    "pause": "Pauze",
+    "start": "Start",
+    "reset": "Reset",
+    "finish": "Finish",
+    "round": "Ronde {current} / {total}",
+    "totalTimeElapsed": "Totaal: {time}"
+  },
+  "GenerateWodPage": {
+    "seo": {
+      "title": "AI WOD Generator | Dagelijks nieuwe workouts",
+      "description": "Geen inspiratie? Laat onze AI je workout maken."
+    },
+    "title": "AI WOD Generator",
+    "cardTitle": "WODBot 3000",
+    "cardDescription": "Geen inspiratie? Laat AI je workout maken.",
+    "generateButton": "Genereren",
+    "generatingButton": "Bezig...",
+    "freePlanAlert": {
+      "title": "Gratis plan",
+      "description": "Dagsessie limiet. {link} voor onbeperkt.",
+      "link": "Ga Premium"
+    },
+    "premiumPlanMessage": "Onbeperkt genereren actief.",
+    "generatingState": {
+      "title": "Bezig...",
+      "description": "AI warmt op."
+    },
+    "errorAlert": {
+      "title": "Fout",
+      "description": "Probeer het zo opnieuw."
+    },
+    "result": {
+      "title": "Je AI Training",
+      "savedMessage": "Workout is opgeslagen op je dashboard."
+    }
+  }
+}

@@ -1,0 +1,557 @@
+
+{
+  "RootLayout": {
+    "seo": {
+      "title": "WODBurner - Twoja tablica CrossFit i inteligentny timer",
+      "description": "Kompletny asystent CrossFit. Skanuj tablice, generuj WOD przez AI i korzystaj z profesjonalnych timerów."
+    }
+  },
+  "UserNav": {
+    "signIn": "Zaloguj się",
+    "signOut": "Wyloguj się",
+    "loading": "Ładowanie...",
+    "anonymousUser": "Anonimowy użytkownik",
+    "temporaryProfile": "Profil tymczasowy",
+    "settingsTooltip": "Ustawienia"
+  },
+  "MainNav": {
+    "dashboard": "Dashboard",
+    "scanWod": "Skanuj WOD",
+    "generateWod": "Generuj WOD",
+    "heroWods": "Hero WODs",
+    "timers": "Timery",
+    "goPremium": "Przejdź na Premium",
+    "hallOfFame": "Galeria Sław",
+    "openStats": "Open Stats"
+  },
+  "OpenStatsPage": {
+    "seo": {
+      "title": "Open Stats | Statystyki CrossFit Open",
+      "description": "Statystyki CrossFit Open na żywo. Porównaj swoje wyniki i analizuj globalną formę."
+    },
+    "title": "Open Stats",
+    "description": "Dane CrossFit Open na żywo przez publiczne API",
+    "metrics": {
+      "athletes": "Przeanalizowani sportowcy",
+      "median": "Mediana",
+      "top10": "Top 10%",
+      "elite": "Elita (1%)"
+    },
+    "filters": {
+      "label": "Filtry",
+      "year": "Rok",
+      "workout": "Trening",
+      "division": "Dywizja",
+      "region": "Region",
+      "scaled": "Typ WOD",
+      "allWorkouts": "Ogólne",
+      "stages": {
+        "open": "Open",
+        "quarterfinals": "Ćwierćfinały",
+        "semifinals": "Półfinały",
+        "games": "Games"
+      },
+      "selector": {
+        "bmi": "BMI",
+        "age": "Wiek",
+        "height": "Wzrost",
+        "weight": "Waga"
+      },
+      "divisions": {
+        "men": "Mężczyźni Rx",
+        "women": "Kobiety Rx",
+        "teens1415": "Nastolatki (14-15)",
+        "masters3539": "Masters (35-39)"
+      },
+      "regions": {
+        "worldwide": "Cały świat",
+        "africa": "Afryka",
+        "asia": "Azja",
+        "europe": "Europa",
+        "naEast": "AP Wschód",
+        "naWest": "AP Zachód",
+        "oceania": "Oceania",
+        "southAmerica": "Ameryka Południowa"
+      },
+      "scaledTypes": {
+        "rxd": "Rx'd",
+        "scaled": "Scaled",
+        "foundations": "Foundations"
+      }
+    },
+    "recap": {
+      "maxReps": "Max powt.",
+      "timeCap": "Time Cap"
+    },
+    "userScore": {
+      "title": "Porównaj mój wynik",
+      "percentile": "Percentyl globalny",
+      "premiumLabel": "Premium"
+    },
+    "leaderboard": {
+      "title": "Top 100 atleci",
+      "rank": "Pozycja",
+      "name": "Imię",
+      "score": "Wynik",
+      "points": "Punkty",
+      "retry": "Spróbuj ponownie",
+      "overallRank": "Pozycja Ogólna",
+      "workoutRank": "Pozycja Trening",
+      "descriptionOverall": "Top 100 globalnej listy liderów według punktów (suma miejsc).",
+      "descriptionWorkout": "Top 100 sportowców dla konkurencji {year}.{workout}."
+    },
+    "charts": {
+      "distribution": "Rozkład wyników",
+      "distributionSub": "Rozkład na analizowanej próbce",
+      "bmi": "Korelacja wydajności",
+      "bmiSub": "Wpływ profilu fizycznego na ranking światowy"
+    },
+    "methodology": {
+      "title": "Metodologia wykresów",
+      "unificationTitle": "Unifikacja wyników",
+      "unificationDesc": "Aby umożliwić spójne porównanie wizualne w konkurencjach mieszanych (czas + powtórzenia), wszystkie wyniki są przeliczane na całkowitą liczbę powtórzeń. Atleci, którzy ukończyli zadanie, są grupowani na prawym końcu wykresu.",
+      "overallTitle": "Overall",
+      "overallDesc": "Wynik odpowiada sumie zajętych miejsc. Niski wynik wskazuje na lepszą ogólną wydajność."
+    }
+  },
+  "DashboardPage": {
+    "seo": {
+      "title": "Dashboard | Moje Treningi CrossFit",
+      "description": "Zarządzaj swoją historią treningów, uzyskuj dostęp do zeskanowanych WOD-ów i dziel się swoimi wynikami."
+    },
+    "title": "Dashboard",
+    "scanNewWod": "Skanuj nowy WOD",
+    "tabs": {
+      "personal": "Moje WOD-y",
+      "community": "Społeczność"
+    },
+    "PersonalWodList": {
+      "emptyTitle": "Brak WOD-ów.",
+      "emptyDescription": "Zeskanuj swój pierwszy trening, aby zacząć!"
+    },
+    "CommunityWodList": {
+      "joinTitle": "Dołącz do społeczności!",
+      "joinDescription": "Utwórz darmowe konto, aby przeglądać i udostępniać WOD-y.",
+      "joinButton": "Zarejestruj się / Zaloguj",
+      "errorTitle": "Wystąpił błąd",
+      "errorDescription": "Nie można załadować treningów społeczności. Spróbuj później.",
+      "searchInputPlaceholder": "Szukaj treningów...",
+      "sortByLabel": "Sortuj według",
+      "sort": {
+        "recent": "Najnowsze",
+        "popular": "Popularne",
+        "alphabetical": "Alfabetycznie"
+      },
+      "emptySearchTitle": "Brak wyników.",
+      "emptySearchDescription": "Spróbuj innego hasła.",
+      "emptyCommunityTitle": "Bądź pierwszy i udostępnij trening!",
+      "ScrollTop": {
+        "label": "Góra"
+      }
+    }
+  },
+  "WelcomeEmptyState": {
+    "title": "Witaj w WODBurner!",
+    "subtitle": "Zaloguj swój pierwszy WOD w 3 sekundy:",
+    "scanButton": "Skanuj WOD ze zdjęcia",
+    "generateButton": "Generuj losowy WOD",
+    "heroButton": "Wypróbuj Hero WOD",
+    "communityLink": "Lub odkryj <communityLink>społeczność</communityLink>."
+  },
+  "WodCard": {
+    "optionsAlt": "Opcje WOD",
+    "share": "Udostępnij",
+    "unshare": "Cofnij",
+    "edit": "Edytuj",
+    "delete": "Usuń",
+    "sharedToastTitle": "Udostępniono!",
+    "sharedToastDescription": "WOD jest teraz widoczny.",
+    "unsharedToastTitle": "Cofnięto",
+    "unsharedToastDescription": "Usunięto ze społeczności.",
+    "shareErrorToastTitle": "Błąd",
+    "shareErrorToastDescription": "Nie udało się zaktualizować.",
+    "deleteDialogTitle": "Na pewno?",
+    "deleteDialogDescription": "Tej akcji nie można cofnąć.",
+    "deleteDialogCancel": "Anuluj",
+    "deleteDialogConfirm": "Usuń",
+    "deleteToastTitle": "Usunięto",
+    "deleteToastDescription": "WOD został usunięty.",
+    "deleteErrorToastTitle": "Błąd",
+    "deleteErrorToastDescription": "Nie udało się usunąć.",
+    "reactionErrorToastTitle": "Ups!",
+    "reactionErrorToastDescription": "Nie zapisano reakcji.",
+    "viewImageAlt": "{wodName} - zdjęcie",
+    "viewWodDescription": "{type} - {date}",
+    "viewWodSharedBy": "Przez {displayName}",
+    "startWod": "Zacznij WOD",
+    "profile": {
+      "cardio": "Cardio",
+      "lifting": "Siłowe",
+      "upper": "Góra",
+      "lower": "Dół"
+    }
+  },
+  "TimerPage": {
+    "backToDashboard": "Powrót",
+    "viewWod": "Pokaż WOD",
+    "fullWodLabel": "Pełny WOD: {wodName}",
+    "startSection": "Zacznij",
+    "accessRestricted": {
+      "title": "Brak dostępu",
+      "description": "Zaloguj się, aby zobaczyć społeczność.",
+      "button": "Zarejestruj się / Zaloguj"
+    }
+  },
+  "FileUploader": {
+    "dragAndDropPrompt": "Przeciągnij zdjęcie lub kliknij",
+    "dragActivePrompt": "Upuść tutaj...",
+    "fileTypes": "PNG, JPG, GIF (max 5MB)",
+    "analyzingTitle": "Analizowanie...",
+    "analyzingDescription": "AI przygotowuje trening.",
+    "analysisFailedTitle": "Błąd",
+    "analysisFailedDescription": "Nie rozpoznano zdjęcia.",
+    "duplicateDialogTitle": "Duplikat",
+    "duplicateDialogDescription": "Już to masz.",
+    "duplicateDialogSavedOn": "{date}",
+    "duplicateDialogQuestion": "Zapisać mimo to?",
+    "duplicateDialogCancel": "Nie",
+    "duplicateDialogConfirm": "Tak",
+    "saveFailedTitle": "Błąd zapisu",
+    "saveFailedDescription": "Wystąpił błąd.",
+    "wodSavedTitle": "Zapisano!",
+    "wodSavedDescription": "Dodano do listy.",
+    "authErrorTitle": "Błąd",
+    "authErrorDescription": "Usługa niedostępna.",
+    "wodPreviewAlt": "Podgląd",
+    "analyzeButton": "Analizuj",
+    "analysisResultTitle": "Wynik",
+    "wodNamePlaceholder": "Nazwa",
+    "wodTypePlaceholder": "Typ",
+    "durationPlaceholder": "Czas (min)",
+    "shareCheckbox": "Udostępnij",
+    "shareAnonymousHelp": "Zaloguj się, by udostępniać.",
+    "saveWodButton": "Zapisz",
+    "savingButton": "Zapisywanie..."
+  },
+  "LoginPage": {
+    "seo": {
+      "title": "Logowanie | WODBurner",
+      "description": "Zaloguj się do konta, aby zapisać swoje treningi."
+    },
+    "verifying": "Weryfikacja...",
+    "confirmEmailTitle": "Potwierdź email",
+    "confirmEmailDescription": "Wpisz 6 cyfr z emaila.",
+    "confirmEmailFailedTitle": "Błąd",
+    "confirmEmailSignInButton": "Zaloguj",
+    "featureTitle": "Wyższy poziom.",
+    "featureDescription": "Darmowe konto dla wszystkich opcji.",
+    "featureManual": "Dodawanie ręczne",
+    "featureManualDescription": "Bez zdjęcia.",
+    "featureHistory": "Pełna historia",
+    "featureHistoryDescription": "Wszystko w jednym miejscu.",
+    "featureTracking": "Analiza (Wkrótce!)",
+    "featureTrackingDescription": "Śledź progres.",
+    "formTitle": "Login / Rejestracja",
+    "formDescription": "Podaj email dla kodu.",
+    "emailSentTitle": "Sprawdź pocztę!",
+    "emailSentDescription": "Kod wysłany na <bold>{email}</bold>.",
+    "sendLinkButton": "Wyślij kod",
+    "authError": "Błąd usługi.",
+    "sendLinkError": "Nie wysłano kodu.",
+    "linkSentToast": "Kod wysłany!",
+    "linkSentToastDescription": "Sprawdź skrzynkę.",
+    "signInSuccessToast": "Sukces!",
+    "signInSuccessToastDescription": "Jesteś zalogowany.",
+    "genericError": "Błąd.",
+    "invalidLinkError": "Zły kod.",
+    "backToDashboard": "Powrót do Dashboardu"
+  },
+  "PremiumPage": {
+    "seo": {
+      "title": "Premium | Wspieraj WODBurner",
+      "description": "Nielimitowane opcje skanowania i inteligentne filtry."
+    },
+    "title": "Premium",
+    "alreadyPremium": {
+      "title": "JESTEŚ PREMIUM!",
+      "subtitle": "Odznaka aktywna",
+      "description": "Dzięki za wsparcie ❤️",
+      "communityButton": "Społeczność",
+      "dashboardButton": "Dashboard"
+    },
+    "headerTitle": "Uwolnij potencjał",
+    "headerDescription": "Wspieraj rozwój aplikacji.",
+    "offer": "OFERTA DOŻYWOTNIA pierwsi 300!",
+    "monthly": "Miesięcznie",
+    "yearly": "Rocznie",
+    "discount": "-20%",
+    "freePlan": {
+      "title": "Darmowy",
+      "description": "Amatorzy",
+      "price": "0 zł",
+      "perMonth": "/mc",
+      "currentPlan": "Twój plan"
+    },
+    "premiumPlan": {
+      "title": "Premium",
+      "description": "Dla pro",
+      "priceMonthly": "9.99 zł",
+      "priceYearly": "99 zł",
+      "perMonth": "/mc",
+      "perYear": "/rok",
+      "billedAnnually": "Płatne rocznie",
+      "goPremium": "Kup Premium →",
+      "loading": "Ładowanie..."
+    },
+    "features": {
+      "scans": "Bez limitu skanów",
+      "scansFree": "3 miesięcznie",
+      "reactions": "Bez limitu reakcji",
+      "reactionsFree": "5 dziennie",
+      "comments": "Komentarze",
+      "commentsFree": "Tylko odczyt",
+      "favorites": "Bez limitu ulubionych",
+      "favoritesFree": "Max 10",
+      "customs": "Bez limitu własnych",
+      "customsFree": "Max 3",
+      "search": "Filtry pro",
+      "badge": "Odznaka Premium",
+      "unlimited": "Bez limitu",
+      "notIncluded": "Brak"
+    },
+    "toasts": {
+      "welcomeTitle": "Witaj w Premium!",
+      "welcomeDescription": "Odznaka aktywna.",
+      "cancelTitle": "Anulowano",
+      "cancelDescription": "Spróbuj później.",
+      "loginRequiredTitle": "Zaloguj się",
+      "loginRequiredDescription": "Musisz mieć konto.",
+      "paymentErrorTitle": "Błąd płatności",
+      "paymentErrorDescription": "Błąd transakcji."
+    }
+  },
+  "SettingsPage": {
+    "seo": {
+      "title": "Ustawienia | Zarządzaj kontem",
+      "description": "Aktualizuj swój profil, subskrypcje i preferencje."
+    },
+    "title": "Ustawienia",
+    "profile": {
+      "title": "Informacje o Koncie",
+      "description": "Zarządzanie adresem e-mail i subskrypcją.",
+      "personalTitle": "Profil Osobisty",
+      "personalDescription": "Twoja tożsamość i wskaźniki fizyczne.",
+      "displayName": "Nazwa użytkownika",
+      "weight": "Waga (kg)",
+      "height": "Wzrost (cm)",
+      "avatar": "Awatar",
+      "saveProfile": "Zapisz Profil",
+      "updateSuccess": "Profil zaktualizowany!",
+      "updateSuccessDesc": "Twoje dane zostały zapisane.",
+      "updateError": "Nie można zaktualizować profilu.",
+      "loading": "Ładowanie...",
+      "email": "Email: {email}",
+      "emailNotSpecified": "Brak",
+      "accountType": "Typ: {type}",
+      "typeAnonymous": "Anonim",
+      "typePremium": "Premium",
+      "typeStandard": "Standard",
+      "manageSubscription": "Subskrypcja",
+      "userNotFound": "Błąd."
+    },
+    "dangerZone": {
+      "title": "Strefa niebezpieczna",
+      "description": "Akcje trwałe.",
+      "deleteButton": "Usuń konto",
+      "deletingButton": "Usuwanie...",
+      "dialogTitle": "Na pewno?",
+      "dialogDescription": "To usunie wszystkie dane.",
+      "dialogCancel": "Anuluj",
+      "dialogConfirm": "Tak",
+      "helpText": "Dane przepadną."
+    },
+    "toasts": {
+      "deleteError": "Błąd.",
+      "deleteSuccessTitle": "Usunięto",
+      "deleteSuccessDescription": "Pa!",
+      "deleteFailedTitle": "Błąd",
+      "deleteFailedDescription": "Spróbuj znów.",
+      "deleteFailedRecentLogin": "Zaloguj się ponownie.",
+      "portalError": "Błąd portalu."
+    }
+  },
+  "ScanPage": {
+    "seo": {
+      "title": "Skanuj WOD | Analiza AI",
+      "description": "Zmień zdjęcie tablicy w interaktywny timer."
+    },
+    "title": "Skanuj WOD",
+    "manualButton": "Ręcznie"
+  },
+  "NewWodPage": {
+    "seo": {
+      "title": "Nowy trening | Ręczne wpisywanie",
+      "description": "Dodaj własne treningi CrossFit ręcznie i zacznij ćwiczyć."
+    },
+    "title": "Dodaj ręcznie",
+    "cardTitle": "Detale",
+    "namePlaceholder": "Nazwa",
+    "typePlaceholder": "Typ",
+    "durationPlaceholder": "Czas",
+    "imageHintPlaceholder": "Obraz",
+    "descriptionPlaceholder": "Opis...",
+    "saveButton": "Zapisz",
+    "savingButton": "Zapisywanie...",
+    "backLink": "Wróć",
+    "duplicateDialog": {
+      "title": "Duplikat",
+      "description": "Już jest.",
+      "savedOn": "{date}",
+      "question": "Zapisać?",
+      "cancel": "Nie",
+      "confirm": "Tak"
+    },
+    "toasts": {
+      "saveSuccessTitle": "Sukces!",
+      "saveSuccessDescription": "Dodano.",
+      "saveFailedTitle": "Błąd",
+      "saveFailedDescription": "Nie zapisano."
+    }
+  },
+  "EditWodPage": {
+    "seo": {
+      "title": "Edytuj WOD | WODBurner",
+      "description": "Zaktualizuj szczegóły swojego treningu."
+    },
+    "title": "Edytuj",
+    "cardTitle": "Detale",
+    "saveButton": "Zapisz",
+    "savingButton": "Czekaj...",
+    "backLink": "Dashboard",
+    "toasts": {
+      "updateSuccessTitle": "Zapisano!",
+      "updateSuccessDescription": "Gotowe.",
+      "updateFailedTitle": "Błąd",
+      "updateFailedDescription": "Feralny błąd."
+    }
+  },
+  "GenericTimerPage": {
+    "backLink": "Timery",
+    "startButton": "Start",
+    "forTime": {
+      "title": "For Time",
+      "description": "Stoper.",
+      "timeCapLabel": "Time Cap (min)",
+      "timeCapPlaceholder": "np. 20"
+    },
+    "amrap": {
+      "title": "AMRAP",
+      "description": "Max powt.",
+      "durationLabel": "Czas (min)"
+    },
+    "emom": {
+      "title": "EMOM",
+      "description": "Co minutę.",
+      "roundsLabel": "Rundy",
+      "intervalLabel": "Interwał",
+      "intervalMinutes": "min",
+      "intervalSeconds": "sek"
+    },
+    "tabata": {
+      "title": "Tabata",
+      "description": "20/10.",
+      "roundsLabel": "Rundy"
+    }
+  },
+  "TimersPage": {
+    "seo": {
+      "title": "Timery CrossFit | AMRAP, EMOM, Tabata",
+      "description": "Profesjonalne timery dla Twoich treningów."
+    },
+    "title": "Timery",
+    "forTime": "For Time",
+    "forTimeDescription": "Stoper.",
+    "amrap": "AMRAP",
+    "amrapDescription": "Max reps.",
+    "emom": "EMOM",
+    "emomDescription": "Co minutę.",
+    "tabata": "Tabata",
+    "tabataDescription": "Interwały.",
+    "footer": "Lub wybierz WOD."
+  },
+  "HeroWodsPage": {
+    "seo": {
+      "title": "Hero WODs & Benchmarks | Legendarna Biblioteka",
+      "description": "Znajdź Murpha, Fran, Cindy i wszystkie legendy."
+    },
+    "title": "Hero WODs",
+    "description": "Pamięć o bohaterach.",
+    "premiumUpsell": {
+      "title": "Wszystkie",
+      "description": "{totalWodCount}+ WOD-ów.",
+      "button": "Kup Premium"
+    }
+  },
+  "HallOfFamePage": {
+    "seo": {
+      "title": "Galeria Sław | WODBurner Early Adopters",
+      "description": "Elitarne grono naszych pierwszych 300 wspierających."
+    },
+    "title": "Galeria Sław",
+    "cardTitle": "Pierwszych 300",
+    "cardDescription": "Dożywocie dla pierwszych osób, które nas wsparły.",
+    "spotsRemaining": "Tylko {spotsLeft} miejsc!",
+    "spotsFull": "Lista pełna.",
+    "claimSpotButton": "Zajmij miejsce",
+    "emptyList": "Bądź pierwszy!"
+  },
+  "TimerClient": {
+    "workoutComplete": "Koniec!",
+    "totalTime": "Czas całkowity",
+    "timeCompleted": "W czasie",
+    "goAgain": "Jeszcze raz",
+    "shareResult": "Udostępnij",
+    "shareModal": {
+      "title": "Wynik: {wodName}",
+      "description": "Czas: {finalTime}.",
+      "finalTimeLabel": "CZAS",
+      "screenshotReady": "Zrób screena!"
+    },
+    "timeCap": "Limit: {duration}:00",
+    "pause": "Pauza",
+    "start": "Start",
+    "reset": "Reset",
+    "finish": "Koniec",
+    "round": "Runda {current} / {total}",
+    "totalTimeElapsed": "Suma: {time}"
+  },
+  "GenerateWodPage": {
+    "seo": {
+      "title": "AI WOD Generator | Nowe treningi codziennie",
+      "description": "Brak weny? Niech nasze AI stworzy trening CrossFit dla Ciebie."
+    },
+    "title": "AI WOD Generator",
+    "cardTitle": "WODBot 3000",
+    "cardDescription": "Brak weny? AI pomoże.",
+    "generateButton": "Generuj",
+    "generatingButton": "Myślę...",
+    "freePlanAlert": {
+      "title": "Limit",
+      "description": "Limit dzienny. {link}.",
+      "link": "Kup Premium"
+    },
+    "premiumPlanMessage": "Bez limitu.",
+    "generatingState": {
+      "title": "Myślę...",
+      "description": "AI se grzeje."
+    },
+    "errorAlert": {
+      "title": "Błąd",
+      "description": "Spróbuj za moment."
+    },
+    "result": {
+      "title": "Trening AI",
+      "savedMessage": "Zapisano w Dashboardzie."
+    }
+  }
+}
