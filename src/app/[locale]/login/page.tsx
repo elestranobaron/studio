@@ -93,10 +93,9 @@ function LoginClientContent() {
     }
   };
 
-  const handleVerifyCode = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (code.length !== 6 || !/^\d+$/.test(code)) {
-      setError('The code must be exactly 6 digits.');
+  const handleVerifyCode = useCallback(async (e?: React.FormEvent) => {
+    e?.preventDefault();
+    if (code.length !== 6 || !/^\d+$/.test(code) || isVerifying) {
       return;
     }
 
@@ -131,7 +130,14 @@ function LoginClientContent() {
     } finally {
       setIsVerifying(false);
     }
-  };
+  }, [code, email, auth, t, toast]);
+
+  // Trigger verification automatically when 6 digits are entered
+  useEffect(() => {
+    if (code.length === 6 && step === 'code' && !isVerifying) {
+      handleVerifyCode();
+    }
+  }, [code, step, isVerifying, handleVerifyCode]);
 
   const onTurnstileSuccess = useCallback((token: string) => {
     setTurnstileToken(token);
