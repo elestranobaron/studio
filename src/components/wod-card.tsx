@@ -127,7 +127,7 @@ function PersonalWodActions({ wod }: { wod: WOD }) {
         await batch.commit();
         toast({ title: t("unsharedToastTitle"), description: t("unsharedToastDescription") });
       } else {
-        const userDisplayName = user.email?.split('@')[0] || "Anonymous";
+        const userDisplayName = user.displayName || user.email?.split('@')[0] || "Anonymous";
         const communityWodData = {
           ...wod,
           date: new Date(wod.date).toISOString(),

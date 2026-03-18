@@ -276,7 +276,7 @@ export function CommunityChat({ wodId }: { wodId: string }) {
             const messageData: Omit<Message, 'id'> = {
                 text: newMessage,
                 userId: user.uid,
-                userDisplayName: user.email?.split('@')[0] || 'Anonymous',
+                userDisplayName: user.displayName || user.email?.split('@')[0] || 'Anonymous',
                 timestamp: serverTimestamp() as any, // Firestore will convert this
                 score: 0,
                 upvotes: 0,

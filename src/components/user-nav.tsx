@@ -1,3 +1,4 @@
+
 'use client';
 
 import {
@@ -113,7 +114,7 @@ export function UserNav() {
             </div>
             <div className="flex flex-col truncate">
                 <span className="font-semibold text-sm text-sidebar-foreground">
-                    {user.isAnonymous ? t('anonymousUser') : (user.email || 'User')}
+                    {user.isAnonymous ? t('anonymousUser') : (user.displayName || user.email || 'User')}
                 </span>
                 <span className="text-xs text-sidebar-foreground/70">
                     {user.isAnonymous ? t('temporaryProfile') : user.email}
