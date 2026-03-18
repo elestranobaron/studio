@@ -36,7 +36,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.resetMonthlyLimits = exports.resetDailyLimits = exports.stripeWebhook = exports.createCustomerPortal = exports.createCheckout = exports.verifyDigicode = exports.sendDigicode = exports.analyzeWod = exports.generateWod = void 0;
+exports.resetMonthlyLimits = exports.resetDailyLimits = exports.stripeWebhook = exports.createCustomerPortal = exports.createCheckout = exports.verifyDigicode = exports.sendDigicode = exports.generateMealPlan = exports.analyzeWod = exports.generateWod = void 0;
 const https_1 = require("firebase-functions/v2/https");
 const scheduler_1 = require("firebase-functions/v2/scheduler");
 const admin = __importStar(require("firebase-admin"));
@@ -108,6 +108,21 @@ exports.analyzeWod = (0, https_1.onCall)({ cors: true }, async (request) => {
         throw new https_1.HttpsError("internal", e.message || "AI Error");
     }
 });
+exports.generateMealPlan = (0, https_1.onCall)({ cors: true }, async (request) => {
+    try {
+        const { turnstileToken, ...input } = request.data;
+        const isValid = await validateTurnstile(turnstileToken, request.rawRequest.ip);
+        if (!isValid)
+            throw new https_1.HttpsError("permission-denied", "Captcha failed");
+        const flowModule = await Promise.resolve().then(() => __importStar(require("./ai/meal-plan-flow")));
+        const result = await flowModule.generateMealPlan(input);
+        return result;
+    }
+    catch (e) {
+        firebase_functions_1.logger.error("[generateMealPlan] Error:", e);
+        throw new https_1.HttpsError("internal", e.message || "AI Error");
+    }
+});
 exports.sendDigicode = (0, https_1.onCall)({ cors: true }, async (request) => {
     const { email, turnstileToken } = request.data;
     if (!email)
@@ -176,6 +191,10 @@ exports.createCheckout = (0, https_1.onCall)({ cors: true }, async (request) => 
         throw new https_1.HttpsError("failed-precondition", "Price ID missing");
     const userDoc = await db.collection("users").doc(request.auth.uid).get();
     const userData = userDoc.data();
+    // SÉCURITÉ : Empêcher un abonné actif de souscrire à nouveau
+    if (userData?.premium) {
+        throw new https_1.HttpsError("failed-precondition", "You are already a premium subscriber.");
+    }
     const customerId = userData?.stripeCustomerId;
     const sessionParams = {
         line_items: [{ price: priceId, quantity: 1 }],
@@ -228,16 +247,23 @@ exports.stripeWebhook = (0, https_1.onRequest)(async (req, res) => {
     const stripeKey = process.env.STRIPE_SECRET_KEY || "";
     const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET || "";
     const stripe = new stripe_1.default(stripeKey, { apiVersion: "2026-02-25.clover" });
+    if (!webhookSecret) {
+        firebase_functions_1.logger.error("Webhook Error: STRIPE_WEBHOOK_SECRET is not defined in environment variables.");
+        res.status(500).send("Webhook secret missing");
+        return;
+    }
     let event;
     try {
         event = stripe.webhooks.constructEvent(req.rawBody, sig, webhookSecret);
     }
     catch (err) {
+        firebase_functions_1.logger.error(`Webhook Signature Verification Failed: ${err.message}`);
         res.status(400).send(`Webhook Error: ${err.message}`);
         return;
     }
     const subscription = event.data.object;
     const uid = subscription.metadata?.uid;
+    firebase_functions_1.logger.info(`Processing Stripe event: ${event.type}`, { uid });
     switch (event.type) {
         case "checkout.session.completed":
             if (uid) {
@@ -245,16 +271,19 @@ exports.stripeWebhook = (0, https_1.onRequest)(async (req, res) => {
                     premium: true,
                     stripeCustomerId: subscription.customer
                 }, { merge: true });
+                firebase_functions_1.logger.info(`User ${uid} upgraded to Premium.`);
             }
             break;
         case "customer.subscription.deleted":
             if (uid) {
                 await db.collection("users").doc(uid).update({ premium: false });
+                firebase_functions_1.logger.info(`User ${uid} Premium subscription deleted.`);
             }
             break;
         case "invoice.payment_failed":
             if (uid) {
                 await db.collection("users").doc(uid).update({ premium: false });
+                firebase_functions_1.logger.warn(`User ${uid} Premium revoked due to payment failure.`);
             }
             break;
     }
@@ -263,7 +292,7 @@ exports.stripeWebhook = (0, https_1.onRequest)(async (req, res) => {
 exports.resetDailyLimits = (0, scheduler_1.onSchedule)('0 0 * * *', async () => {
     const users = await db.collection('users').get();
     const batch = db.batch();
-    users.forEach(d => batch.update(d.ref, { dailyReactions: 0, wodGenerationCount: 0 }));
+    users.forEach(d => batch.update(d.ref, { dailyReactions: 0, wodGenerationCount: 0, mealGenerationCount: 0 }));
     await batch.commit();
 });
 exports.resetMonthlyLimits = (0, scheduler_1.onSchedule)('0 0 1 * *', async () => {
