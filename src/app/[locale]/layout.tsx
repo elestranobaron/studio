@@ -59,8 +59,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     },
     description: t('description'),
     keywords: ["CrossFit", "WOD", "Workout", "Timer", "AI", "Fitness", "Whiteboard Scanner"],
-    authors: [{ name: "WODBurner Team" }],
-    creator: "WODBurner",
+    authors: [{ name: "[TON NOM / TA MARQUE]" }],
+    creator: "[TON NOM]",
     publisher: "WODBurner",
     formatDetection: {
       email: false,
