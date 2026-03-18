@@ -12,7 +12,8 @@
     "loading": "S'està carregant...",
     "anonymousUser": "Usuari anònim",
     "temporaryProfile": "Perfil temporal",
-    "settingsTooltip": "Configuració"
+    "settingsTooltip": "Configuració",
+    "madeBy": "Fet amb ❤️ per"
   },
   "MainNav": {
     "dashboard": "Dashboard",
@@ -281,7 +282,7 @@
     },
     "headerTitle": "Allibera tot el teu potencial",
     "headerDescription": "Fes-te membre de WODBurner Premium per donar suport a l'aplicació.",
-    "offer": "OFERTA PER A TOTA LA VIDA per als primers 300 membres!",
+    "offer": "OFERTA PER A TOTA LA VIDA per als primers 50 membres!",
     "monthly": "Mensual",
     "yearly": "Anual",
     "discount": "-20%",
@@ -346,6 +347,26 @@
       "height": "Altura (cm)",
       "avatar": "Avatar",
       "saveProfile": "Desa el Perfil",
+      "nutritionTitle": "Objectius nutricionals",
+      "nutritionGoal": "Objectiu principal",
+      "activityLevel": "Nivell d'activitat",
+      "targetCalories": "Calories objectiu (kcal)",
+      "targetProteins": "Proteïnes objectiu (g)",
+      "generateMeals": "Generar idees de menjars",
+      "generatingMeals": "Generant pla...",
+      "mealPlanTitle": "Pla de menjars del dia",
+      "coachAdvice": "Consell de l'entrenador",
+      "goals": {
+        "loss": "Pèrdua de greix",
+        "maintenance": "Manteniment",
+        "muscle": "Guany de múscul",
+        "performance": "Rendiment CrossFit"
+      },
+      "activity": {
+        "sedentary": "Sedentari",
+        "moderate": "Activitat moderada",
+        "intense": "Activitat intensa"
+      },
       "updateSuccess": "Perfil actualitzat!",
       "updateSuccessDesc": "Les teves mètriques s'han desat.",
       "updateError": "No s'ha pogut actualitzar el perfil.",
@@ -482,7 +503,7 @@
   "HeroWodsPage": {
     "seo": {
       "title": "Hero WODs & Benchmarks | La Biblioteca Legendària",
-      "description": "Troba Murph, Fran, Cindy i tots els entrenaments llegendaris del CrossFit."
+      "description": "Troba Murph, Fran, Cindy i tots els entrenamientos llegendaris del CrossFit."
     },
     "title": "Hero WODs",
     "description": "En memòria dels herois.",
@@ -495,10 +516,10 @@
   "HallOfFamePage": {
     "seo": {
       "title": "Saló de la Fama | Pioners WODBurner",
-      "description": "El cercle restringit dels nostres primers 300 patrocinadors."
+      "description": "El cercle restringit dels nostres primers 50 patrocinadors."
     },
     "title": "Saló de la Fama",
-    "cardTitle": "Els primers 300 OG",
+    "cardTitle": "Els primers 50 OG",
     "cardDescription": "Gratuït per a tota la vida per als primers.",
     "spotsRemaining": "Només {spotsLeft} places!",
     "spotsFull": "Llista plena.",

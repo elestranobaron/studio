@@ -12,7 +12,8 @@
     "loading": "加载中...",
     "anonymousUser": "匿名用户",
     "temporaryProfile": "临时个人资料",
-    "settingsTooltip": "设置"
+    "settingsTooltip": "设置",
+    "madeBy": "❤️ 制作"
   },
   "MainNav": {
     "dashboard": "仪表板",
@@ -281,7 +282,7 @@
     },
     "headerTitle": "释放您的全部潜力",
     "headerDescription": "成为WODBurner高级会员，支持应用程序的开发。",
-    "offer": "前300名会员的终身启动优惠！",
+    "offer": "前50名会员的终身启动优惠！",
     "monthly": "每月",
     "yearly": "每年",
     "discount": "-20%",
@@ -346,6 +347,26 @@
       "height": "身高 (cm)",
       "avatar": "头像",
       "saveProfile": "保存个人资料",
+      "nutritionTitle": "营养目标",
+      "nutritionGoal": "核心目标",
+      "activityLevel": "活动水平",
+      "targetCalories": "目标卡路里 (kcal)",
+      "targetProteins": "目标蛋白质 (g)",
+      "generateMeals": "生成餐食建议",
+      "generatingMeals": "正在生成计划...",
+      "mealPlanTitle": "每日饮食计划",
+      "coachAdvice": "教练建议",
+      "goals": {
+        "loss": "减脂",
+        "maintenance": "维持",
+        "muscle": "增肌",
+        "performance": "CrossFit 表现"
+      },
+      "activity": {
+        "sedentary": "久坐",
+        "moderate": "适度活动",
+        "intense": "高强度活动"
+      },
       "updateSuccess": "个人资料已更新！",
       "updateSuccessDesc": "您的指标已保存。",
       "updateError": "无法更新个人资料。",
@@ -495,10 +516,10 @@
   "HallOfFamePage": {
     "seo": {
       "title": "名人堂 | WODBurner元老",
-      "description": "前300位元老级支持者的精英圈子。"
+      "description": "前50位元老级支持者的精英圈子。"
     },
     "title": "名人堂",
-    "cardTitle": "首批300位元老",
+    "cardTitle": "首批50位元老",
     "cardDescription": "早期支持者永久免费。",
     "spotsRemaining": "仅剩 {spotsLeft} 个名额！",
     "spotsFull": "名单已满。",

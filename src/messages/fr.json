@@ -282,7 +282,7 @@
     },
     "headerTitle": "Libérez tout votre potentiel",
     "headerDescription": "Devenez membre WODBurner Premium pour obtenir un accès illimité.",
-    "offer": "OFFRE DE LANCEMENT À VIE pour les 300 premiers membres !",
+    "offer": "OFFRE DE LANCEMENT À VIE pour les 50 premiers membres !",
     "monthly": "Mensuel",
     "yearly": "Annuel",
     "discount": "-20%",
@@ -516,10 +516,10 @@
   "HallOfFamePage": {
     "seo": {
       "title": "Hall of Fame | Les Pionniers WODBurner",
-      "description": "Le cercle restreint des 300 premiers soutiens de l'application."
+      "description": "Le cercle restreint des 50 premiers soutiens de l'application."
     },
     "title": "Hall of Fame",
-    "cardTitle": "Les 300 premiers OGs",
+    "cardTitle": "Les 50 premiers OGs",
     "cardDescription": "Accès à vie gratuit pour nos premiers supporters.",
     "spotsRemaining": "Plus que {spotsLeft} places!",
     "spotsFull": "La liste est complète.",

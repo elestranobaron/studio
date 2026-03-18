@@ -12,7 +12,8 @@
     "loading": "Загрузка...",
     "anonymousUser": "Анонимный пользователь",
     "temporaryProfile": "Временный профиль",
-    "settingsTooltip": "Настройки"
+    "settingsTooltip": "Настройки",
+    "madeBy": "Сделано с ❤️ от"
   },
   "MainNav": {
     "dashboard": "Панель",
@@ -281,7 +282,7 @@
     },
     "headerTitle": "Раскройте потенциал",
     "headerDescription": "Станьте Premium участником.",
-    "offer": "ПОЖИЗНЕННОЕ ПРЕДЛОЖЕНИЕ для первых 300!",
+    "offer": "ПОЖИЗНЕННОЕ ПРЕДЛОЖЕНИЕ для первых 50!",
     "monthly": "Ежемесячно",
     "yearly": "Ежегодно",
     "discount": "-20%",
@@ -346,6 +347,26 @@
       "height": "Рост (см)",
       "avatar": "Аватар",
       "saveProfile": "Сохранить профиль",
+      "nutritionTitle": "Цели питания",
+      "nutritionGoal": "Основная цель",
+      "activityLevel": "Уровень активности",
+      "targetCalories": "Целевые калории (ккал)",
+      "targetProteins": "Целевые белки (г)",
+      "generateMeals": "Генерация идей блюд",
+      "generatingMeals": "Создание плана...",
+      "mealPlanTitle": "План питания на день",
+      "coachAdvice": "Совет тренера",
+      "goals": {
+        "loss": "Похудение",
+        "maintenance": "Поддержание",
+        "muscle": "Набор мышечной массы",
+        "performance": "Результативность в CrossFit"
+      },
+      "activity": {
+        "sedentary": "Малоподвижный",
+        "moderate": "Умеренная активность",
+        "intense": "Высокая активность"
+      },
       "updateSuccess": "Профиль обновлен!",
       "updateSuccessDesc": "Ваши данные сохранены.",
       "updateError": "Не удалось обновить профиль.",
@@ -494,11 +515,11 @@
   },
   "HallOfFamePage": {
     "seo": {
-      "title": "Зал славы | Первые 300 сторонников",
+      "title": "Зал славы | Первые 50 сторонников",
       "description": "Элитный круг наших первых пользователей."
     },
     "title": "Зал славы",
-    "cardTitle": "Первые 300",
+    "cardTitle": "Первые 50",
     "cardDescription": "Вечный доступ первым сторонникам приложения.",
     "spotsRemaining": "{spotsLeft} мест!",
     "spotsFull": "Зал полон.",

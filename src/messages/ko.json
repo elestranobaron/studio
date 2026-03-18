@@ -12,7 +12,8 @@
     "loading": "로딩 중...",
     "anonymousUser": "익명 사용자",
     "temporaryProfile": "임시 프로필",
-    "settingsTooltip": "설정"
+    "settingsTooltip": "설정",
+    "madeBy": "❤️ 에 의해 제작됨"
   },
   "MainNav": {
     "dashboard": "대시보드",
@@ -281,7 +282,7 @@
     },
     "headerTitle": "잠재력을 최대한 발휘하세요",
     "headerDescription": "앱을 지원하기 위해 프리미엄 회원이 되어보세요.",
-    "offer": "선착순 300명을 위한 평생 혜택!",
+    "offer": "선착순 50명을 위한 평생 혜택!",
     "monthly": "월간",
     "yearly": "연간",
     "discount": "-20%",
@@ -339,13 +340,33 @@
     "profile": {
       "title": "계정 정보",
       "description": "이메일 및 구독 관리.",
-      "personalTitle": "व्यक्तिगत प्रोफ़ाइल",
+      "personalTitle": "개인 프로필",
       "personalDescription": "당신의 신원 및 신체 지표.",
       "displayName": "표시 이름",
       "weight": "몸무게 (kg)",
       "height": "키 (cm)",
       "avatar": "아바타",
       "saveProfile": "프로필 저장",
+      "nutritionTitle": "영양 목표",
+      "nutritionGoal": "주요 목표",
+      "activityLevel": "활동 수준",
+      "targetCalories": "목표 칼로리 (kcal)",
+      "targetProteins": "목표 단백질 (g)",
+      "generateMeals": "식단 아이디어 생성",
+      "generatingMeals": "계획 생성 중...",
+      "mealPlanTitle": "오늘의 식단 계획",
+      "coachAdvice": "코치의 조언",
+      "goals": {
+        "loss": "체지방 감소",
+        "maintenance": "유지",
+        "muscle": "근육 증가",
+        "performance": "CrossFit 수행능력"
+      },
+      "activity": {
+        "sedentary": "비활동적",
+        "moderate": "보통 활동",
+        "intense": "강한 활동"
+      },
       "updateSuccess": "프로필 업데이트됨!",
       "updateSuccessDesc": "지표가 저장되었습니다.",
       "updateError": "프로필을 업데이트할 수 없습니다.",
@@ -495,10 +516,10 @@
   "HallOfFamePage": {
     "seo": {
       "title": "명예의 전당 | WODBurner 얼리 어답터",
-      "description": "초기 지원자 300인."
+      "description": "초기 지원자 50인."
     },
     "title": "명예의 전당",
-    "cardTitle": "초기 300명",
+    "cardTitle": "초기 50명",
     "cardDescription": "초기 지원자에게는 평생 무료.",
     "spotsRemaining": "단 {spotsLeft}석 남음!",
     "spotsFull": "마감되었습니다.",

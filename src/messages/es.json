@@ -12,7 +12,8 @@
     "loading": "Cargando...",
     "anonymousUser": "Usuario anónimo",
     "temporaryProfile": "Perfil temporal",
-    "settingsTooltip": "Ajustes"
+    "settingsTooltip": "Ajustes",
+    "madeBy": "Hecho con ❤️ por"
   },
   "MainNav": {
     "dashboard": "Dashboard",
@@ -109,7 +110,7 @@
     "methodology": {
       "title": "Metodología de los gráficos",
       "unificationTitle": "Unificación de puntuaciones",
-      "unificationDesc": "Para permitir una comparación visual coherente en pruebas mixtas (tiempo + repeticiones), todas las puntuaciones se convierten en repeticiones totales. Los atletas que terminaron la prueba se agrupan en el extremo derecho del gráfico.",
+      "unificationDesc": "Para permitir una comparación visual coherente en pruebas mixtas (tiempo + repeticiones), todas las puntuaciones se convierten en repeticions totales. Los atletas que terminaron la prueba se agrupan en el extremo derecho del gráfico.",
       "overallTitle": "Overall",
       "overallDesc": "La puntuación corresponde a la suma de los rangos obtenidos. Una puntuación baja indica un mejor rendimiento general."
     }
@@ -281,7 +282,7 @@
     },
     "headerTitle": "Desata todo tu potencial",
     "headerDescription": "Conviértete en miembro Premium para apoyar el desarrollo.",
-    "offer": "¡OFERTA VITALICIA para los primeros 300 miembros!",
+    "offer": "¡OFERTA VITALICIA para los primeros 50 miembros!",
     "monthly": "Mensual",
     "yearly": "Anual",
     "discount": "-20%",
@@ -338,7 +339,7 @@
     "title": "Ajustes",
     "profile": {
       "title": "Información de la Cuenta",
-      "description": "Gestión de email y suscripción.",
+      "description": "Gestión de email e suscripción.",
       "personalTitle": "Perfil Personal",
       "personalDescription": "Tu identidad y métricas físicas.",
       "displayName": "Nombre de usuario",
@@ -346,6 +347,26 @@
       "height": "Altura (cm)",
       "avatar": "Avatar",
       "saveProfile": "Guardar Perfil",
+      "nutritionTitle": "Objetivos de nutrición",
+      "nutritionGoal": "Objetivo principal",
+      "activityLevel": "Nivel de actividad",
+      "targetCalories": "Calorías objetivo (kcal)",
+      "targetProteins": "Proteínas objetivo (g)",
+      "generateMeals": "Generar ideas de comidas",
+      "generatingMeals": "Generando plan...",
+      "mealPlanTitle": "Plan de comidas del día",
+      "coachAdvice": "Consejo del coach",
+      "goals": {
+        "loss": "Pérdida de grasa",
+        "maintenance": "Mantenimiento",
+        "muscle": "Ganancia de músculo",
+        "performance": "Rendimiento CrossFit"
+      },
+      "activity": {
+        "sedentary": "Sedentario",
+        "moderate": "Actividad moderada",
+        "intense": "Actividad intensa"
+      },
       "updateSuccess": "¡Perfil actualizado!",
       "updateSuccessDesc": "Tus métricas se han guardado.",
       "updateError": "No se pudo actualizar el perfil.",
@@ -495,10 +516,10 @@
   "HallOfFamePage": {
     "seo": {
       "title": "Salón de la Fama | Pioneros WODBurner",
-      "description": "El círculo restringido de nuestros primeros 300 patrocinadores."
+      "description": "El círculo restringido de nuestros primeros 50 patrocinadores."
     },
     "title": "Salón de la Fama",
-    "cardTitle": "Primeros 300 OG",
+    "cardTitle": "Primeros 50 OG",
     "cardDescription": "Gratis de por vida para los primeros patrocinadores.",
     "spotsRemaining": "¡Solo {spotsLeft} plazas!",
     "spotsFull": "Lista cerrada.",

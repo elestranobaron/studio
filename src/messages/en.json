@@ -282,7 +282,7 @@
     },
     "headerTitle": "Unlock Your Potential",
     "headerDescription": "Become a Premium member to support the app.",
-    "offer": "LIFETIME OFFER for the first 300 members!",
+    "offer": "LIFETIME OFFER for the first 50 members!",
     "monthly": "Monthly",
     "yearly": "Yearly",
     "discount": "-20%",
@@ -516,10 +516,10 @@
   "HallOfFamePage": {
     "seo": {
       "title": "Hall of Fame | WODBurner Early Adopters",
-      "description": "The restricted circle of our first 300 supporters."
+      "description": "The restricted circle of our first 50 supporters."
     },
     "title": "Hall of Fame",
-    "cardTitle": "First 300 OGs",
+    "cardTitle": "First 50 OGs",
     "cardDescription": "Lifetime free for our first supporters.",
     "spotsRemaining": "Only {spotsLeft} spots left!",
     "spotsFull": "List is full.",
@@ -553,7 +553,7 @@
     },
     "title": "AI WOD Generator",
     "cardTitle": "WODBot 3000",
-    "cardDescription": "Let AI create your WOD.",
+    "cardDescription": "No inspiration? Let AI create your WOD.",
     "generateButton": "Generate",
     "generatingButton": "Working...",
     "freePlanAlert": {

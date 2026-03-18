@@ -12,7 +12,8 @@
     "loading": "جاري التحميل...",
     "anonymousUser": "مستخدم مجهول",
     "temporaryProfile": "ملف شخصي مؤقت",
-    "settingsTooltip": "الإعدادات"
+    "settingsTooltip": "الإعدادات",
+    "madeBy": "بكل حب ❤️ بواسطة"
   },
   "MainNav": {
     "dashboard": "لوحة التحكم",
@@ -281,7 +282,7 @@
     },
     "headerTitle": "أطلق العنان لإمكانياتك",
     "headerDescription": "كن عضواً بريميوم لدعم التطبيق.",
-    "offer": "عرض مدى الحياة لأول 300 عضو!",
+    "offer": "عرض مدى الحياة لأول 50 عضو!",
     "monthly": "شهرياً",
     "yearly": "سنويأ",
     "discount": "-20%",
@@ -346,6 +347,26 @@
       "height": "الطول (سم)",
       "avatar": "الصورة الرمزية",
       "saveProfile": "حفظ الملف الشخصي",
+      "nutritionTitle": "أهداف التغذية",
+      "nutritionGoal": "الهدف الرئيسي",
+      "activityLevel": "مستوى النشاط",
+      "targetCalories": "السعرات الحرارية المستهدفة (كجم)",
+      "targetProteins": "البروتينات المستهدفة (جم)",
+      "generateMeals": "توليد أفكار وجبات",
+      "generatingMeals": "جاري توليد الخطة...",
+      "mealPlanTitle": "خطة وجبات اليوم",
+      "coachAdvice": "نصيحة المدرب",
+      "goals": {
+        "loss": "فقدان الدهون",
+        "maintenance": "المحافظة",
+        "muscle": "زيادة العضلات",
+        "performance": "أداء الكروس فت"
+      },
+      "activity": {
+        "sedentary": "خامل",
+        "moderate": "نشاط متوسط",
+        "intense": "نشاط مكثف"
+      },
       "updateSuccess": "تم تحديث الملف!",
       "updateSuccessDesc": "تم حفظ مقاييسك بنجاح.",
       "updateError": "تعذر تحديث الملف الشخصي.",
@@ -495,10 +516,10 @@
   "HallOfFamePage": {
     "seo": {
       "title": "قاعة المشاهير | داعمو WODBurner الأوائل",
-      "description": "الدائرة المغلقة لأول 300 داعم لنا."
+      "description": "الدائرة المغلقة لأول 50 داعم لنا."
     },
     "title": "قاعة المشاهير",
-    "cardTitle": "أول 300 عضو",
+    "cardTitle": "أول 50 عضو",
     "cardDescription": "اشتراك مجاني مدى الحياة لأول داعمين لنا.",
     "spotsRemaining": "تبقى {spotsLeft} أماكن فقط!",
     "spotsFull": "القائمة مكتملة.",

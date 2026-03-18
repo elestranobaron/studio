@@ -91,7 +91,7 @@ export default function HallOfFamePage() {
   const { data: ogs, isLoading } = useCollection<HallOfFameEntry>(ogsQuery);
 
   const ogCount = ogs?.length ?? 0;
-  const spotsLeft = 300 - ogCount;
+  const spotsLeft = 50 - ogCount;
   const isFull = spotsLeft <= 0;
 
   return (
@@ -133,7 +133,7 @@ export default function HallOfFamePage() {
                         ) : (
                             <>
                                 <div className="space-y-2 py-4">
-                                  <ProgressCircle value={ogCount} max={300} />
+                                  <ProgressCircle value={ogCount} max={50} />
                                   <p className="text-sm font-medium text-red-400 animate-pulse">
                                       {isFull ? t('spotsFull') : t('spotsRemaining', { spotsLeft })}
                                   </p>
@@ -175,6 +175,3 @@ export default function HallOfFamePage() {
     </div>
   );
 }
-
-    
-

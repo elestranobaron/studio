@@ -12,7 +12,8 @@
     "loading": "読み込み中...",
     "anonymousUser": "匿名ユーザー",
     "temporaryProfile": "一時的なプロファイル",
-    "settingsTooltip": "設定"
+    "settingsTooltip": "設定",
+    "madeBy": "❤️ によって作成されました"
   },
   "MainNav": {
     "dashboard": "ダッシュボード",
@@ -281,7 +282,7 @@
     },
     "headerTitle": "あなたの可能性を最大限に引き出す",
     "headerDescription": "WODBurnerプレミアムメンバーになって、アプリの開発をサポートしてください。",
-    "offer": "最初の300人のメンバー向けの生涯ローンチオファー！",
+    "offer": "最初の50人のメンバー向けの生涯ローンチオファー！",
     "monthly": "月額",
     "yearly": "年額",
     "discount": "-20%",
@@ -346,6 +347,26 @@
       "height": "身長 (cm)",
       "avatar": "アバター",
       "saveProfile": "プロフィールを保存",
+      "nutritionTitle": "栄養目標",
+      "nutritionGoal": "主な目標",
+      "activityLevel": "活動レベル",
+      "targetCalories": "目標カロリー (kcal)",
+      "targetProteins": "目標タンパク質 (g)",
+      "generateMeals": "食事のアイデアを生成する",
+      "generatingMeals": "プランを生成中...",
+      "mealPlanTitle": "今日の食事プラン",
+      "coachAdvice": "コーチのアドバイス",
+      "goals": {
+        "loss": "脂肪減少",
+        "maintenance": "維持",
+        "muscle": "筋肉増加",
+        "performance": "CrossFit パフォーマンス"
+      },
+      "activity": {
+        "sedentary": "座りがち",
+        "moderate": "適度な活動",
+        "intense": "激しい活動"
+      },
       "updateSuccess": "プロフィールを更新しました！",
       "updateSuccessDesc": "指標が保存されました。",
       "updateError": "プロフィールを更新できませんでした。",
@@ -495,10 +516,10 @@
   "HallOfFamePage": {
     "seo": {
       "title": "殿堂 | WODBurner早期支持者",
-      "description": "最初の300人の支持者の限定サークル。"
+      "description": "最初の50人の支持者の限定サークル。"
     },
     "title": "殿堂",
-    "cardTitle": "最初の300人",
+    "cardTitle": "最初の50人",
     "cardDescription": "早期サポーターは永久無料。",
     "spotsRemaining": "残り {spotsLeft} 席！",
     "spotsFull": "満席です。",

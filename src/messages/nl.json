@@ -12,7 +12,8 @@
     "loading": "Laden...",
     "anonymousUser": "Anonieme Gebruiker",
     "temporaryProfile": "Tijdelijk Profiel",
-    "settingsTooltip": "Instellingen"
+    "settingsTooltip": "Instellingen",
+    "madeBy": "Gemaakt met ❤️ door"
   },
   "MainNav": {
     "dashboard": "Dashboard",
@@ -281,7 +282,7 @@
     },
     "headerTitle": "Haal alles uit jezelf",
     "headerDescription": "Word Premium lid en steun de verdere ontwikkeling.",
-    "offer": "LIFETIME AANBIEDING voor de eerste 300 leden!",
+    "offer": "LIFETIME AANBIEDING voor de eerste 50 leden!",
     "monthly": "Maandelijks",
     "yearly": "Jaarlijks",
     "discount": "-20%",
@@ -346,6 +347,26 @@
       "height": "Lengte (cm)",
       "avatar": "Avatar",
       "saveProfile": "Profiel Opslaan",
+      "nutritionTitle": "Voedingsdoelen",
+      "nutritionGoal": "Hoofddoel",
+      "activityLevel": "Activiteitsniveau",
+      "targetCalories": "Doelcalorieën (kcal)",
+      "targetProteins": "Doelproteïnen (g)",
+      "generateMeals": "Maaltijdideeën genereren",
+      "generatingMeals": "Plan genereren...",
+      "mealPlanTitle": "Voedingsplan van de dag",
+      "coachAdvice": "Coach-tip",
+      "goals": {
+        "loss": "Vetverlies",
+        "maintenance": "Onderhoud",
+        "muscle": "Spieropbouw",
+        "performance": "CrossFit Prestaties"
+      },
+      "activity": {
+        "sedentary": "Zittend",
+        "moderate": "Gemiddeld actief",
+        "intense": "Intensief actief"
+      },
       "updateSuccess": "Profiel bijgewerkt!",
       "updateSuccessDesc": "Je gegevens zijn opgeslagen.",
       "updateError": "Kon profiel niet bijwerken.",
@@ -495,10 +516,10 @@
   "HallOfFamePage": {
     "seo": {
       "title": "Hall of Fame | De Pioniers",
-      "description": "De exclusieve groep van onze eerste 300 supporters."
+      "description": "De exclusieve groep van onze eerste 50 supporters."
     },
     "title": "Hall of Fame",
-    "cardTitle": "Eerste 300 OGs",
+    "cardTitle": "Eerste 50 OGs",
     "cardDescription": "Lifetime gratis voor onze eerste steunbetuigers.",
     "spotsRemaining": "Nog {spotsLeft} plekken!",
     "spotsFull": "Lijst is vol.",

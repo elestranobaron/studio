@@ -12,7 +12,8 @@
     "loading": "Carregando...",
     "anonymousUser": "Usuário Anônimo",
     "temporaryProfile": "Perfil Temporário",
-    "settingsTooltip": "Configurações"
+    "settingsTooltip": "Configurações",
+    "madeBy": "Feito com ❤️ por"
   },
   "MainNav": {
     "dashboard": "Painel",
@@ -281,7 +282,7 @@
     },
     "headerTitle": "Liberte Todo o Seu Potencial",
     "headerDescription": "Torne-se um membro Premium para apoiar o app.",
-    "offer": "OFERTA VITALÍCIA para os primeiros 300 membros!",
+    "offer": "OFERTA VITALÍCIA para os primeiros 50 membros!",
     "monthly": "Mensual",
     "yearly": "Anual",
     "discount": "-20%",
@@ -346,6 +347,26 @@
       "height": "Altura (cm)",
       "avatar": "Avatar",
       "saveProfile": "Salvar Perfil",
+      "nutritionTitle": "Objetivos de nutrição",
+      "nutritionGoal": "Objetivo principal",
+      "activityLevel": "Nível de atividade",
+      "targetCalories": "Calorias alvo (kcal)",
+      "targetProteins": "Proteínas alvo (g)",
+      "generateMeals": "Gerar ideias de refeições",
+      "generatingMeals": "Gerando plano...",
+      "mealPlanTitle": "Plano de refeições do dia",
+      "coachAdvice": "Conselho do treinador",
+      "goals": {
+        "loss": "Perda de gordura",
+        "maintenance": "Manutenção",
+        "muscle": "Ganho muscular",
+        "performance": "Desempenho CrossFit"
+      },
+      "activity": {
+        "sedentary": "Sedentário",
+        "moderate": "Atividade moderada",
+        "intense": "Atividade intensa"
+      },
       "updateSuccess": "Perfil atualizado!",
       "updateSuccessDesc": "Suas métricas foram salvas.",
       "updateError": "Não foi possível atualizar o perfil.",
@@ -495,10 +516,10 @@
   "HallOfFamePage": {
     "seo": {
       "title": "Hall of Fame | Pioneiros WODBurner",
-      "description": "O círculo restrito dos nossos primeiros 300 patrocinadores."
+      "description": "O círculo restrito dos nossos primeiros 50 patrocinadores."
     },
     "title": "Hall da Fama",
-    "cardTitle": "Os primeiros 300 OG",
+    "cardTitle": "Os primeiros 50 OG",
     "cardDescription": "Grátis para sempre para os primeiros apoiadores.",
     "spotsRemaining": "Apenas {spotsLeft} vagas!",
     "spotsFull": "Lista cheia.",

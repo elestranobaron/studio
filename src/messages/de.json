@@ -12,7 +12,8 @@
     "loading": "Wird geladen...",
     "anonymousUser": "Anonymer Benutzer",
     "temporaryProfile": "Temporäres Profil",
-    "settingsTooltip": "Einstellungen"
+    "settingsTooltip": "Einstellungen",
+    "madeBy": "Mit ❤️ gemacht von"
   },
   "MainNav": {
     "dashboard": "Dashboard",
@@ -281,7 +282,7 @@
     },
     "headerTitle": "Entfessle dein Potenzial",
     "headerDescription": "Werde Premium-Mitglied, um die App zu unterstützen.",
-    "offer": "LIFETIME-ANGEBOT für die ersten 300 Mitglieder!",
+    "offer": "LIFETIME-ANGEBOT für die ersten 50 Mitglieder!",
     "monthly": "Monatlich",
     "yearly": "Jährlich",
     "discount": "-20%",
@@ -346,6 +347,26 @@
       "height": "Größe (cm)",
       "avatar": "Avatar",
       "saveProfile": "Profil speichern",
+      "nutritionTitle": "Ernährungsziele",
+      "nutritionGoal": "Hauptziel",
+      "activityLevel": "Aktivitätsniveau",
+      "targetCalories": "Zielkalorien (kcal)",
+      "targetProteins": "Zielproteine (g)",
+      "generateMeals": "Mahlzeitideen generieren",
+      "generatingMeals": "Plan generieren...",
+      "mealPlanTitle": "Tages-Ernährungsplan",
+      "coachAdvice": "Coach-Tipp",
+      "goals": {
+        "loss": "Fettabbau",
+        "maintenance": "Erhaltung",
+        "muscle": "Muskelaufbau",
+        "performance": "CrossFit Leistung"
+      },
+      "activity": {
+        "sedentary": "Sitzend",
+        "moderate": "Mäßige Aktivität",
+        "intense": "Intensive Aktivität"
+      },
       "updateSuccess": "Profil aktualisiert!",
       "updateSuccessDesc": "Ihre Daten wurden gespeichert.",
       "updateError": "Profil konnte nicht aktualisiert werden.",
@@ -495,10 +516,10 @@
   "HallOfFamePage": {
     "seo": {
       "title": "Hall of Fame | Die Pioniere",
-      "description": "Die ersten 300 Unterstützer."
+      "description": "Der exklusive Kreis unserer ersten 50 Unterstützer."
     },
     "title": "Hall of Fame",
-    "cardTitle": "Die ersten 300 OGs",
+    "cardTitle": "Die ersten 50 OGs",
     "cardDescription": "Lebenslang kostenlos für unsere ersten Unterstützer.",
     "spotsRemaining": "Nur noch {spotsLeft} Plätze!",
     "spotsFull": "Liste ist voll.",

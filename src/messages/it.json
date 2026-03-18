@@ -12,7 +12,8 @@
     "loading": "Caricamento...",
     "anonymousUser": "Utente anonimo",
     "temporaryProfile": "Profilo temporaneo",
-    "settingsTooltip": "Impostazioni"
+    "settingsTooltip": "Impostazioni",
+    "madeBy": "Fatto con ❤️ da"
   },
   "MainNav": {
     "dashboard": "Dashboard",
@@ -281,7 +282,7 @@
     },
     "headerTitle": "Scatena il tuo pieno potenziale",
     "headerDescription": "Diventa un membro Premium per supportare l'app.",
-    "offer": "OFFERTA A VITA per i primi 300 membri!",
+    "offer": "OFFERTA A VITA per i primi 50 membri!",
     "monthly": "Mensile",
     "yearly": "Annuale",
     "discount": "-20%",
@@ -346,6 +347,26 @@
       "height": "Altezza (cm)",
       "avatar": "Avatar",
       "saveProfile": "Salva Profilo",
+      "nutritionTitle": "Obiettivi nutrizionali",
+      "nutritionGoal": "Obiettivo principale",
+      "activityLevel": "Livello di attività",
+      "targetCalories": "Calorie obiettivo (kcal)",
+      "targetProteins": "Proteine obiettivo (g)",
+      "generateMeals": "Genera idee pasti",
+      "generatingMeals": "Generazione piano...",
+      "mealPlanTitle": "Piano pasti del giorno",
+      "coachAdvice": "Consiglio del coach",
+      "goals": {
+        "loss": "Perdita di grasso",
+        "maintenance": "Mantenimento",
+        "muscle": "Guadagno muscolare",
+        "performance": "Performance CrossFit"
+      },
+      "activity": {
+        "sedentary": "Sedentario",
+        "moderate": "Attività moderata",
+        "intense": "Attività intensa"
+      },
       "updateSuccess": "Profilo aggiornato!",
       "updateSuccessDesc": "I tuoi parametri sono stati salvati.",
       "updateError": "Impossibile aggiornare il profilo.",
@@ -495,10 +516,10 @@
   "HallOfFamePage": {
     "seo": {
       "title": "Hall of Fame | Pionieri WODBurner",
-      "description": "Il circolo ristretto dei nostri primi 300 sostenitori."
+      "description": "Il circolo ristretto dei nostri primi 50 sostenitori."
     },
     "title": "Hall of Fame",
-    "cardTitle": "I primi 300 OG",
+    "cardTitle": "I primi 50 OG",
     "cardDescription": "Gratis a vita per i primi sostenitori.",
     "spotsRemaining": "Solo {spotsLeft} posti rimasti!",
     "spotsFull": "Lista chiusa.",

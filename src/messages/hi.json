@@ -12,7 +12,8 @@
     "loading": "लोड हो रहा है...",
     "anonymousUser": "अनाम उपयोगकर्ता",
     "temporaryProfile": "अस्थायी प्रोफ़ाइल",
-    "settingsTooltip": "सेटिंग्स"
+    "settingsTooltip": "सेटिंग्स",
+    "madeBy": "बड़ी मेहनत से ❤️ द्वारा बनाया गया"
   },
   "MainNav": {
     "dashboard": "डैशबोर्ड",
@@ -227,7 +228,7 @@
     "analysisResultTitle": "विश्लेषण परिणाम",
     "wodNamePlaceholder": "WOD नाम",
     "wodTypePlaceholder": "WOD प्रकार",
-    "durationPlaceholder": "अवधि (मिनट)",
+    "durationPlaceholder": "अवधि (मतलब)",
     "shareCheckbox": "समुदाय के साथ साझा करें",
     "shareAnonymousHelp": "साझा करने के लिए साइन अप करें।",
     "saveWodButton": "WOD सहेजें",
@@ -281,7 +282,7 @@
     },
     "headerTitle": "अपनी क्षमता को अनलॉक करें",
     "headerDescription": "ऐप का समर्थन करने के लिए प्रीमियम सदस्य बनें।",
-    "offer": "पहले 300 सदस्यों के लिए लाइफटाइम ऑफर!",
+    "offer": "पहले 50 सदस्यों के लिए लाइफटाइम ऑफर!",
     "monthly": "मासिक",
     "yearly": "वार्षिक",
     "discount": "-20%",
@@ -346,6 +347,26 @@
       "height": "ऊंचाई (सेमी)",
       "avatar": "अवतार",
       "saveProfile": "प्रोफ़ाइल सहेजें",
+      "nutritionTitle": "पोषण लक्ष्य",
+      "nutritionGoal": "मुख्य लक्ष्य",
+      "activityLevel": "गतिविधि स्तर",
+      "targetCalories": "लक्षित कैलोरी (kcal)",
+      "targetProteins": "लक्षित प्रोटीन (ग्राम)",
+      "generateMeals": "भोजन विचार उत्पन्न करें",
+      "generatingMeals": "योजना उत्पन्न हो रही है...",
+      "mealPlanTitle": "आज की भोजन योजना",
+      "coachAdvice": "कोच की सलाह",
+      "goals": {
+        "loss": "वसा कम करना",
+        "maintenance": "रखरखाव",
+        "muscle": "मांसपेशियों का लाभ",
+        "performance": "क्रॉसफ़िट प्रदर्शन"
+      },
+      "activity": {
+        "sedentary": "गतिहीन",
+        "moderate": "मध्यम गतिविधि",
+        "intense": "तीव्र गतिविधि"
+      },
       "updateSuccess": "प्रोफ़ाइल अपडेट हो गई!",
       "updateSuccessDesc": "आपके माप सहेजे गए हैं।",
       "updateError": "प्रोफ़ाइल अपडेट नहीं हो सकी।",
@@ -397,7 +418,7 @@
     "cardTitle": "वर्कआउट विवरण",
     "namePlaceholder": "नाम",
     "typePlaceholder": "प्रकार",
-    "durationPlaceholder": "अवधि (मिनट)",
+    "durationPlaceholder": "अवधि (मतलब)",
     "imageHintPlaceholder": "छवि संकेत",
     "descriptionPlaceholder": "विवरण...",
     "saveButton": "WOD सहेजें",
@@ -441,20 +462,20 @@
     "forTime": {
       "title": "समय के लिए",
       "description": "साधारण स्टॉपवॉच।",
-      "timeCapLabel": "समय सीमा (मिनट)",
+      "timeCapLabel": "समय सीमा (मतलब)",
       "timeCapPlaceholder": "जैसे 20"
     },
     "amrap": {
       "title": "AMRAP",
       "description": "समय में अधिकतम रेप्स।",
-      "durationLabel": "अवधि (मिनट)"
+      "durationLabel": "अवधि (मतलब)"
     },
     "emom": {
       "title": "EMOM",
       "description": "हर मिनट।",
       "roundsLabel": "जौले",
       "intervalLabel": "अंतराल",
-      "intervalMinutes": "मिनट",
+      "intervalMinutes": "मतलब",
       "intervalSeconds": "सेकंड"
     },
     "tabata": {
@@ -495,10 +516,10 @@
   "HallOfFamePage": {
     "seo": {
       "title": "हॉल ऑफ फेम | WODBurner समर्थक",
-      "description": "हमारे पहले 300 समर्थकों का विशेष क्लब।"
+      "description": "हमारे पहले 50 समर्थकों का विशेष क्लब।"
     },
     "title": "हॉल ऑफ फेम",
-    "cardTitle": "पहले 300 सदस्य",
+    "cardTitle": "पहले 50 सदस्य",
     "cardDescription": "लाइफटाइम फ्री।",
     "spotsRemaining": "{spotsLeft} स्थान शेष!",
     "spotsFull": "सूची पूर्ण है।",
