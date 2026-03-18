@@ -20,11 +20,11 @@ import {
   AlertDialogAction,
   AlertDialogCancel,
   AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
+  AlertDialogFooter,
   AlertDialogTrigger,
+  AlertDialogDescription,
 } from '@/components/ui/alert-dialog';
 import {
   Dialog,
@@ -34,7 +34,7 @@ import {
   DialogDescription,
 } from '@/components/ui/dialog';
 import { useToast } from '@/components/ui/use-toast';
-import { LoaderCircle, Trash2, CreditCard, ArrowLeft, User, Scale, Ruler, Camera, Utensils, Zap, Gem, CheckCircle2 } from 'lucide-react';
+import { LoaderCircle, Trash2, CreditCard, ArrowLeft, User, Scale, Ruler, Camera, Utensils, Zap, Gem, CheckCircle2, History } from 'lucide-react';
 import { SidebarTrigger, useSidebar } from '@/components/ui/sidebar';
 import { getFunctions, httpsCallable } from 'firebase/functions';
 import { useTranslations } from 'next-intl';
@@ -110,6 +110,9 @@ export default function SettingsPage() {
       setActivityLevel(user.activityLevel || 'moderate');
       setTargetCalories(user.targetCalories?.toString() || '');
       setTargetProteins(user.targetProteins?.toString() || '');
+      if (user.lastMealPlan) {
+          setMealPlan(user.lastMealPlan);
+      }
     }
   }, [user]);
 
@@ -177,7 +180,19 @@ export default function SettingsPage() {
             targetProteins: targetProteins ? parseFloat(targetProteins) : undefined,
             turnstileToken,
         });
-        setMealPlan(response.data as any);
+        
+        const plan = response.data as any;
+        setMealPlan(plan);
+
+        // SAVE TO FIRESTORE FOR PERSISTENCE
+        if (firestore) {
+            const userRef = doc(firestore, 'users', user.uid);
+            await updateDoc(userRef, {
+                lastMealPlan: plan,
+                lastMealPlanDate: new Date().toISOString(),
+            });
+        }
+
         setIsMealDialogOpen(true);
     } catch (error: any) {
         console.error("Error generating meals:", error);
@@ -283,6 +298,8 @@ export default function SettingsPage() {
   const accountType = user?.isAnonymous 
     ? t('profile.typeAnonymous') 
     : (user?.premium ? t('profile.typePremium') : t('profile.typeStandard'));
+
+  const lastUpdateDate = user?.lastMealPlanDate ? new Date(user.lastMealPlanDate).toLocaleDateString() : '';
 
   return (
     <div className="flex flex-col h-full">
@@ -438,95 +455,112 @@ export default function SettingsPage() {
                             {isSavingProfile && <LoaderCircle className="mr-2 h-4 w-4 animate-spin" />}
                             {t('profile.saveProfile')}
                         </Button>
-                        <Button 
-                            type="button" 
-                            variant="secondary"
-                            onClick={handleGenerateMeals}
-                            disabled={isGeneratingMeals || isUserLoading || !turnstileToken}
-                            className="w-full sm:w-auto relative"
-                        >
-                            {isGeneratingMeals ? (
-                                <><LoaderCircle className="mr-2 h-4 w-4 animate-spin" /> {t('profile.generatingMeals')}</>
-                            ) : (
-                                <><Zap className="mr-2 h-4 w-4 text-yellow-500 fill-yellow-500" /> {t('profile.generateMeals')}</>
+                        <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+                            <Button 
+                                type="button" 
+                                variant="secondary"
+                                onClick={handleGenerateMeals}
+                                disabled={isGeneratingMeals || isUserLoading || !turnstileToken}
+                                className="relative"
+                            >
+                                {isGeneratingMeals ? (
+                                    <><LoaderCircle className="mr-2 h-4 w-4 animate-spin" /> {t('profile.generatingMeals')}</>
+                                ) : (
+                                    <><Zap className="mr-2 h-4 w-4 text-yellow-500 fill-yellow-500" /> {t('profile.generateMeals')}</>
+                                )}
+                                {!user?.premium && (
+                                    <Badge variant="secondary" className="absolute -top-2 -right-2 text-[10px] h-4 px-1 bg-yellow-500 text-black border-none">
+                                        <Gem className="h-3 w-3 mr-0.5" /> PRO
+                                    </Badge>
+                                )}
+                            </Button>
+                            
+                            {user?.lastMealPlan && (
+                                <Button 
+                                    type="button" 
+                                    variant="outline" 
+                                    onClick={() => setIsMealDialogOpen(true)}
+                                    className="gap-2"
+                                >
+                                    <History className="h-4 w-4" />
+                                    Voir plan actuel
+                                </Button>
                             )}
-                            {!user?.premium && (
-                                <Badge variant="secondary" className="absolute -top-2 -right-2 text-[10px] h-4 px-1 bg-yellow-500 text-black border-none">
-                                    <Gem className="h-3 w-3 mr-0.5" /> PRO
-                                </Badge>
-                            )}
-                        </Button>
+                        </div>
                     </CardFooter>
                 </form>
             </Card>
 
             {/* MEAL PLAN DIALOG */}
             <Dialog open={isMealDialogOpen} onOpenChange={setIsMealDialogOpen}>
-                <DialogContent className="max-w-2xl max-h-[90vh] flex flex-col p-0 overflow-hidden">
-                    <DialogHeader className="p-6 pb-2">
+                <DialogContent className="max-w-2xl max-h-[90vh] flex flex-col p-0 overflow-hidden bg-background">
+                    <DialogHeader className="p-6 pb-2 shrink-0">
                         <div className="flex items-center justify-between mb-2">
                             <Badge className="bg-primary/20 text-primary hover:bg-primary/20 border-none">WODBurner Nutrition</Badge>
-                            <span className="text-xs text-muted-foreground">{new Date().toLocaleDateString()}</span>
+                            <span className="text-xs text-muted-foreground">{lastUpdateDate || new Date().toLocaleDateString()}</span>
                         </div>
                         <DialogTitle className="text-3xl font-headline flex items-center gap-2">
                             <Utensils className="text-primary" /> {t('profile.mealPlanTitle')}
                         </DialogTitle>
                         <DialogDescription>
-                            Custom plan based on your {nutritionGoal} goal.
+                            Plan personnalisé basé sur votre objectif : {t(`profile.goals.${nutritionGoal || 'maintenance'}`)}.
                         </DialogDescription>
                     </DialogHeader>
                     
-                    <ScrollArea className="flex-1 p-6 pt-2">
-                        <div className="grid grid-cols-2 gap-4 mb-6">
-                            <Card className="bg-primary/5 border-primary/20">
-                                <CardContent className="p-4 text-center">
-                                    <p className="text-xs uppercase font-bold text-muted-foreground">{t('profile.targetCalories')}</p>
-                                    <p className="text-2xl font-bold text-primary">{mealPlan?.totalCalories} <span className="text-xs font-normal">kcal</span></p>
-                                </CardContent>
-                            </Card>
-                            <Card className="bg-primary/5 border-primary/20">
-                                <CardContent className="p-4 text-center">
-                                    <p className="text-xs uppercase font-bold text-muted-foreground">{t('profile.targetProteins')}</p>
-                                    <p className="text-2xl font-bold text-primary">{mealPlan?.totalProteins} <span className="text-xs font-normal">g</span></p>
-                                </CardContent>
-                            </Card>
-                        </div>
+                    <ScrollArea className="flex-1 px-6">
+                        <div className="py-4 space-y-6">
+                            <div className="grid grid-cols-2 gap-4">
+                                <Card className="bg-primary/5 border-primary/20 shadow-none">
+                                    <CardContent className="p-4 text-center">
+                                        <p className="text-xs uppercase font-bold text-muted-foreground">{t('profile.targetCalories')}</p>
+                                        <p className="text-2xl font-bold text-primary">{mealPlan?.totalCalories} <span className="text-xs font-normal">kcal</span></p>
+                                    </CardContent>
+                                </Card>
+                                <Card className="bg-primary/5 border-primary/20 shadow-none">
+                                    <CardContent className="p-4 text-center">
+                                        <p className="text-xs uppercase font-bold text-muted-foreground">{t('profile.targetProteins')}</p>
+                                        <p className="text-2xl font-bold text-primary">{mealPlan?.totalProteins} <span className="text-xs font-normal">g</span></p>
+                                    </CardContent>
+                                </Card>
+                            </div>
 
-                        <div className="space-y-6">
-                            {mealPlan?.meals.map((meal, idx) => (
-                                <div key={idx} className="relative pl-6 border-l-2 border-primary/30">
-                                    <div className="absolute -left-[9px] top-0 h-4 w-4 rounded-full bg-primary flex items-center justify-center">
-                                        <CheckCircle2 className="h-3 w-3 text-primary-foreground" />
+                            <div className="space-y-6">
+                                {mealPlan?.meals.map((meal, idx) => (
+                                    <div key={idx} className="relative pl-6 border-l-2 border-primary/30">
+                                        <div className="absolute -left-[9px] top-0 h-4 w-4 rounded-full bg-primary flex items-center justify-center">
+                                            <CheckCircle2 className="h-3 w-3 text-primary-foreground" />
+                                        </div>
+                                        <div className="mb-1 flex items-center justify-between">
+                                            <h4 className="font-bold text-lg">{meal.name}</h4>
+                                            <Badge variant="outline" className="capitalize text-[10px]">{meal.type}</Badge>
+                                        </div>
+                                        <p className="text-sm text-muted-foreground mb-2">{meal.description}</p>
+                                        <div className="flex flex-wrap gap-3 text-[10px] font-mono text-primary/80 bg-primary/5 p-2 rounded-md">
+                                            <span>CAL: {meal.calories}</span>
+                                            <span>P: {meal.proteins}g</span>
+                                            <span>C: {meal.carbs}g</span>
+                                            <span>F: {meal.fats}g</span>
+                                        </div>
                                     </div>
-                                    <div className="mb-1 flex items-center justify-between">
-                                        <h4 className="font-bold text-lg">{meal.name}</h4>
-                                        <Badge variant="outline" className="capitalize text-[10px]">{meal.type}</Badge>
-                                    </div>
-                                    <p className="text-sm text-muted-foreground mb-2">{meal.description}</p>
-                                    <div className="flex gap-3 text-[10px] font-mono text-primary/80 bg-primary/5 p-2 rounded-md">
-                                        <span>CAL: {meal.calories}</span>
-                                        <span>P: {meal.proteins}g</span>
-                                        <span>C: {meal.carbs}g</span>
-                                        <span>F: {meal.fats}g</span>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
+                                ))}
+                            </div>
 
-                        {mealPlan?.coachAdvice && (
-                            <Card className="mt-8 border-dashed bg-muted/30">
-                                <CardContent className="p-4">
-                                    <div className="flex items-center gap-2 mb-2">
-                                        <User className="h-4 w-4 text-primary" />
-                                        <h4 className="text-xs font-bold uppercase tracking-wider">{t('profile.coachAdvice')}</h4>
-                                    </div>
-                                    <p className="text-sm italic text-muted-foreground">"{mealPlan.coachAdvice}"</p>
-                                </CardContent>
-                            </Card>
-                        )}
+                            {mealPlan?.coachAdvice && (
+                                <Card className="border-dashed bg-muted/30 shadow-none">
+                                    <CardContent className="p-4">
+                                        <div className="flex items-center gap-2 mb-2">
+                                            <User className="h-4 w-4 text-primary" />
+                                            <h4 className="text-xs font-bold uppercase tracking-wider">{t('profile.coachAdvice')}</h4>
+                                        </div>
+                                        <p className="text-sm italic text-muted-foreground">"{mealPlan.coachAdvice}"</p>
+                                    </CardContent>
+                                </Card>
+                            )}
+                        </div>
                     </ScrollArea>
-                    <CardFooter className="p-6 border-t bg-muted/20">
-                        <Button className="w-full" onClick={() => setIsMealDialogOpen(false)}>Close</Button>
+                    
+                    <CardFooter className="p-6 border-t bg-muted/20 shrink-0">
+                        <Button className="w-full" onClick={() => setIsMealDialogOpen(false)}>Fermer</Button>
                     </CardFooter>
                 </DialogContent>
             </Dialog>

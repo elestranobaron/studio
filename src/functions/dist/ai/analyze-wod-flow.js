@@ -26,7 +26,6 @@ const analyzeWodFlow = (0, genkit_instance_1.getAi)().defineFlow({
             temperature: 0.2,
             safetySettings: [
                 { category: 'HARM_CATEGORY_DANGEROUS_CONTENT', threshold: 'BLOCK_MEDIUM_AND_ABOVE' },
-                // etc. pour HATE_SPEECH, HARASSMENT, SEXUALLY_EXPLICIT
             ],
         },
         prompt: `You are "WODBurner", an expert CrossFit coach specializing in analyzing images of workouts written on whiteboards.
