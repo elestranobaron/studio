@@ -32,14 +32,14 @@ User Profile:
 - Target Calories: {{targetCalories}} kcal
 - Target Proteins: {{targetProteins}} g
 
+IMPORTANT: You must write the entire output (meal names, descriptions, and coach advice) in the following language: {{locale}}.
+
 Instructions:
 1. Create a balanced day of eating with breakfast, lunch, dinner, and snacks/post-wod meals.
 2. Ensure the total calories and proteins are close to the targets provided.
 3. Suggest simple, healthy, and realistic meals for an athlete.
 4. Provide macro-nutrients for each meal.
-5. Add a short, motivating coach advice at the end.
-
-The language of the output should be the same as the input language or English by default.`,
+5. Add a short, motivating coach advice at the end.`,
 });
 
 export async function generateMealPlan(

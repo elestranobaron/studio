@@ -8,6 +8,7 @@ export const GenerateMealPlanInputSchema = z.object({
   activityLevel: z.string().optional(),
   targetCalories: z.number().optional(),
   targetProteins: z.number().optional(),
+  locale: z.string().optional().describe("The language code for the output (e.g., 'fr', 'en', 'es')."),
 });
 export type GenerateMealPlanInput = z.infer<typeof GenerateMealPlanInputSchema>;
 

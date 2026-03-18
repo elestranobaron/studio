@@ -2,7 +2,7 @@
 'use client';
 
 import { useState, useCallback, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useParams } from 'next/navigation';
 import { useAuth, useUser, useFirebase } from '@/firebase';
 import { deleteUser } from 'firebase/auth';
 import { collection, query, getDocs, writeBatch, doc, updateDoc } from 'firebase/firestore';
@@ -75,6 +75,8 @@ const toBase64 = (file: File): Promise<string> =>
 
 export default function SettingsPage() {
   const t = useTranslations('SettingsPage');
+  const params = useParams();
+  const locale = params.locale as string;
   const { user, isUserLoading } = useUser();
   const auth = useAuth();
   const { firestore } = useFirebase();
@@ -179,12 +181,12 @@ export default function SettingsPage() {
             targetCalories: targetCalories ? parseFloat(targetCalories) : undefined,
             targetProteins: targetProteins ? parseFloat(targetProteins) : undefined,
             turnstileToken,
+            locale: locale || 'en'
         });
         
         const plan = response.data as any;
         setMealPlan(plan);
 
-        // SAVE TO FIRESTORE FOR PERSISTENCE
         if (firestore) {
             const userRef = doc(firestore, 'users', user.uid);
             await updateDoc(userRef, {
@@ -483,7 +485,7 @@ export default function SettingsPage() {
                                     className="gap-2"
                                 >
                                     <History className="h-4 w-4" />
-                                    Voir plan actuel
+                                    {t('profile.viewCurrentPlan', { defaultValue: 'Voir plan actuel' })}
                                 </Button>
                             )}
                         </div>
@@ -499,7 +501,7 @@ export default function SettingsPage() {
                             <Badge className="bg-primary/20 text-primary hover:bg-primary/20 border-none">WODBurner Nutrition</Badge>
                             <span className="text-xs text-muted-foreground">{lastUpdateDate || new Date().toLocaleDateString()}</span>
                         </div>
-                        <DialogTitle className="text-3xl font-headline flex items-center gap-2">
+                        <DialogTitle className="text-3xl font-headline flex items-center gap-2 text-foreground">
                             <Utensils className="text-primary" /> {t('profile.mealPlanTitle')}
                         </DialogTitle>
                         <DialogDescription>
@@ -512,13 +514,13 @@ export default function SettingsPage() {
                             <div className="grid grid-cols-2 gap-4">
                                 <Card className="bg-primary/5 border-primary/20 shadow-none">
                                     <CardContent className="p-4 text-center">
-                                        <p className="text-xs uppercase font-bold text-muted-foreground">{t('profile.targetCalories')}</p>
+                                        <p className="text-[10px] uppercase font-bold text-muted-foreground tracking-wider">{t('profile.targetCalories')}</p>
                                         <p className="text-2xl font-bold text-primary">{mealPlan?.totalCalories} <span className="text-xs font-normal">kcal</span></p>
                                     </CardContent>
                                 </Card>
                                 <Card className="bg-primary/5 border-primary/20 shadow-none">
                                     <CardContent className="p-4 text-center">
-                                        <p className="text-xs uppercase font-bold text-muted-foreground">{t('profile.targetProteins')}</p>
+                                        <p className="text-[10px] uppercase font-bold text-muted-foreground tracking-wider">{t('profile.targetProteins')}</p>
                                         <p className="text-2xl font-bold text-primary">{mealPlan?.totalProteins} <span className="text-xs font-normal">g</span></p>
                                     </CardContent>
                                 </Card>
@@ -531,15 +533,15 @@ export default function SettingsPage() {
                                             <CheckCircle2 className="h-3 w-3 text-primary-foreground" />
                                         </div>
                                         <div className="mb-1 flex items-center justify-between">
-                                            <h4 className="font-bold text-lg">{meal.name}</h4>
+                                            <h4 className="font-bold text-lg text-foreground">{meal.name}</h4>
                                             <Badge variant="outline" className="capitalize text-[10px]">{meal.type}</Badge>
                                         </div>
-                                        <p className="text-sm text-muted-foreground mb-2">{meal.description}</p>
-                                        <div className="flex flex-wrap gap-3 text-[10px] font-mono text-primary/80 bg-primary/5 p-2 rounded-md">
-                                            <span>CAL: {meal.calories}</span>
-                                            <span>P: {meal.proteins}g</span>
-                                            <span>C: {meal.carbs}g</span>
-                                            <span>F: {meal.fats}g</span>
+                                        <p className="text-sm text-muted-foreground mb-3 leading-relaxed">{meal.description}</p>
+                                        <div className="flex flex-wrap gap-4 text-[11px] font-medium text-primary/90 bg-primary/10 p-3 rounded-lg border border-primary/20">
+                                            <span className="flex items-center gap-1.5"><span className="text-muted-foreground font-normal">CAL:</span> {meal.calories}</span>
+                                            <span className="flex items-center gap-1.5"><span className="text-muted-foreground font-normal">PROT:</span> {meal.proteins}g</span>
+                                            <span className="flex items-center gap-1.5"><span className="text-muted-foreground font-normal">CARB:</span> {meal.carbs}g</span>
+                                            <span className="flex items-center gap-1.5"><span className="text-muted-foreground font-normal">FAT:</span> {meal.fats}g</span>
                                         </div>
                                     </div>
                                 ))}
@@ -550,9 +552,9 @@ export default function SettingsPage() {
                                     <CardContent className="p-4">
                                         <div className="flex items-center gap-2 mb-2">
                                             <User className="h-4 w-4 text-primary" />
-                                            <h4 className="text-xs font-bold uppercase tracking-wider">{t('profile.coachAdvice')}</h4>
+                                            <h4 className="text-[10px] font-bold uppercase tracking-widest text-foreground">{t('profile.coachAdvice')}</h4>
                                         </div>
-                                        <p className="text-sm italic text-muted-foreground">"{mealPlan.coachAdvice}"</p>
+                                        <p className="text-sm italic text-muted-foreground font-medium leading-relaxed">"{mealPlan.coachAdvice}"</p>
                                     </CardContent>
                                 </Card>
                             )}
