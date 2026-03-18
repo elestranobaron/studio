@@ -72,7 +72,7 @@ export function UserNav() {
             </SidebarMenu>
             <div className="px-3">
                 <p className="text-[10px] text-muted-foreground/50">
-                    {t('madeBy')} <Link href="https://x.com/wodburner" target="_blank" className="hover:text-primary transition-colors underline">@WODBurner</Link>
+                    {t('madeBy')} <Link href="https://deter-mi.net" target="_blank" className="hover:text-primary transition-colors underline">@tlloancy</Link>
                 </p>
             </div>
         </div>
@@ -129,7 +129,7 @@ export function UserNav() {
         </div>
         <div className="px-3 mt-2">
             <p className="text-[10px] text-muted-foreground/50">
-                {t('madeBy')} <Link href="https://x.com/wodburner" target="_blank" className="hover:text-primary transition-colors underline">@WODBurner</Link>
+                {t('madeBy')} <Link href="https://deter-mi.net" target="_blank" className="hover:text-primary transition-colors underline">@tlloancy</Link>
             </p>
         </div>
     </div>
