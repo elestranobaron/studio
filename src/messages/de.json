@@ -97,7 +97,7 @@
       "retry": "Wiederholen",
       "overallRank": "Gesamtrang",
       "workoutRank": "Workout-Rang",
-      "descriptionOverall": "Top 100 Weltrangliste nach Punkten (Summe der Ränge).",
+      "descriptionOverall": "Top 10 Weltrangliste nach Punkten (Summe der Ränge).",
       "descriptionWorkout": "Top 100 Athleten für das Workout {year}.{workout}."
     },
     "charts": {
@@ -327,7 +327,7 @@
       "loginRequiredTitle": "Anmeldung erforderlich",
       "loginRequiredDescription": "Registriere dich für Premium.",
       "paymentErrorTitle": "Zahlungsfehler",
-      "paymentErrorDescription": "Checkout konnte nicht gestartet werden."
+      "paymentErrorDescription": "Konnte Checkout nicht starten."
     }
   },
   "SettingsPage": {
@@ -337,8 +337,18 @@
     },
     "title": "Einstellungen",
     "profile": {
-      "title": "Profil",
-      "description": "Deine Kontoinfos.",
+      "title": "Kontoinformationen",
+      "description": "E-Mail- und Abonnementverwaltung.",
+      "personalTitle": "Persönliches Profil",
+      "personalDescription": "Ihre Identität und physischen Kennzahlen.",
+      "displayName": "Anzeigename",
+      "weight": "Gewicht (kg)",
+      "height": "Größe (cm)",
+      "avatar": "Avatar",
+      "saveProfile": "Profil speichern",
+      "updateSuccess": "Profil aktualisiert!",
+      "updateSuccessDesc": "Ihre Daten wurden gespeichert.",
+      "updateError": "Profil konnte nicht aktualisiert werden.",
       "loading": "Wird geladen...",
       "email": "E-Mail: {email}",
       "emailNotSpecified": "Nicht angegeben",
@@ -488,8 +498,8 @@
       "description": "Die ersten 300 Unterstützer."
     },
     "title": "Hall of Fame",
-    "cardTitle": "Die ersten 300",
-    "cardDescription": "Lebenslang kostenlos für die ersten OGs.",
+    "cardTitle": "Die ersten 300 OGs",
+    "cardDescription": "Lebenslang kostenlos für unsere ersten Unterstützer.",
     "spotsRemaining": "Nur noch {spotsLeft} Plätze!",
     "spotsFull": "Liste ist voll.",
     "claimSpotButton": "Sichere dir deinen Platz",
