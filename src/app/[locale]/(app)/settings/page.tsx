@@ -1,11 +1,11 @@
 
 'use client';
 
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useMemo } from 'react';
 import { useRouter, useParams } from 'next/navigation';
-import { useAuth, useUser, useFirebase } from '@/firebase';
+import { useAuth, useUser, useFirebase, useCollection } from '@/firebase';
 import { deleteUser } from 'firebase/auth';
-import { collection, query, getDocs, writeBatch, doc, updateDoc } from 'firebase/firestore';
+import { collection, query, getDocs, writeBatch, doc, updateDoc, addDoc, serverTimestamp, orderBy, limit } from 'firebase/firestore';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -34,7 +34,7 @@ import {
   DialogDescription,
 } from '@/components/ui/dialog';
 import { useToast } from '@/components/ui/use-toast';
-import { LoaderCircle, Trash2, CreditCard, ArrowLeft, User, Scale, Ruler, Camera, Utensils, Zap, Gem, CheckCircle2, History } from 'lucide-react';
+import { LoaderCircle, Trash2, CreditCard, ArrowLeft, User, Scale, Ruler, Camera, Utensils, Zap, Gem, CheckCircle2, History, CalendarDays } from 'lucide-react';
 import { SidebarTrigger, useSidebar } from '@/components/ui/sidebar';
 import { getFunctions, httpsCallable } from 'firebase/functions';
 import { useTranslations } from 'next-intl';
@@ -89,8 +89,9 @@ export default function SettingsPage() {
   const [isSavingProfile, setIsSavingProfile] = useState(false);
   const [isGeneratingMeals, setIsGeneratingMeals] = useState(false);
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
-  const [mealPlan, setMealPlan] = useState<{ meals: MealIdea[], totalCalories: number, totalProteins: number, coachAdvice: string } | null>(null);
+  const [mealPlan, setMealPlan] = useState<{ meals: MealIdea[], totalCalories: number, totalProteins: number, coachAdvice: string, title?: string } | null>(null);
   const [isMealDialogOpen, setIsMealDialogOpen] = useState(false);
+  const [isHistoryOpen, setIsHistoryOpen] = useState(false);
 
   // Profile form state
   const [displayName, setDisplayName] = useState('');
@@ -101,6 +102,18 @@ export default function SettingsPage() {
   const [activityLevel, setActivityLevel] = useState('');
   const [targetCalories, setTargetCalories] = useState('');
   const [targetProteins, setTargetProteins] = useState('');
+
+  // Fetch meal plans history
+  const historyQuery = useMemo(() => {
+    if (!firestore || !user?.uid) return null;
+    return query(
+      collection(firestore, 'users', user.uid, 'mealPlans'),
+      orderBy('createdAt', 'desc'),
+      limit(20)
+    );
+  }, [firestore, user?.uid]);
+
+  const { data: historyPlans, isLoading: isHistoryLoading } = useCollection(historyQuery);
 
   useEffect(() => {
     if (user) {
@@ -185,13 +198,26 @@ export default function SettingsPage() {
         });
         
         const plan = response.data as any;
-        setMealPlan(plan);
+        const planWithTitle = {
+            ...plan,
+            title: `Plan du ${new Date().toLocaleDateString(locale)}`
+        };
+        setMealPlan(planWithTitle);
 
         if (firestore) {
             const userRef = doc(firestore, 'users', user.uid);
+            const historyRef = collection(firestore, 'users', user.uid, 'mealPlans');
+            
+            // Update last plan in user doc
             await updateDoc(userRef, {
-                lastMealPlan: plan,
+                lastMealPlan: planWithTitle,
                 lastMealPlanDate: new Date().toISOString(),
+            });
+
+            // Save to chronological history
+            await addDoc(historyRef, {
+                ...planWithTitle,
+                createdAt: serverTimestamp(),
             });
         }
 
@@ -202,6 +228,12 @@ export default function SettingsPage() {
     } finally {
         setIsGeneratingMeals(false);
     }
+  };
+
+  const loadHistoryPlan = (plan: any) => {
+      setMealPlan(plan);
+      setIsHistoryOpen(false);
+      setIsMealDialogOpen(true);
   };
 
   const handleManageSubscription = async () => {
@@ -301,7 +333,7 @@ export default function SettingsPage() {
     ? t('profile.typeAnonymous') 
     : (user?.premium ? t('profile.typePremium') : t('profile.typeStandard'));
 
-  const lastUpdateDate = user?.lastMealPlanDate ? new Date(user.lastMealPlanDate).toLocaleDateString() : '';
+  const lastUpdateDate = user?.lastMealPlanDate ? new Date(user.lastMealPlanDate).toLocaleDateString(locale) : '';
 
   return (
     <div className="flex flex-col h-full">
@@ -463,7 +495,7 @@ export default function SettingsPage() {
                                 variant="secondary"
                                 onClick={handleGenerateMeals}
                                 disabled={isGeneratingMeals || isUserLoading || !turnstileToken}
-                                className="relative"
+                                className="relative flex-1 sm:flex-initial"
                             >
                                 {isGeneratingMeals ? (
                                     <><LoaderCircle className="mr-2 h-4 w-4 animate-spin" /> {t('profile.generatingMeals')}</>
@@ -477,17 +509,29 @@ export default function SettingsPage() {
                                 )}
                             </Button>
                             
-                            {user?.lastMealPlan && (
+                            <div className="flex gap-2">
+                                {user?.lastMealPlan && (
+                                    <Button 
+                                        type="button" 
+                                        variant="outline" 
+                                        onClick={() => setIsMealDialogOpen(true)}
+                                        className="gap-2 flex-1"
+                                    >
+                                        <History className="h-4 w-4" />
+                                        {t('profile.viewCurrentPlan')}
+                                    </Button>
+                                )}
                                 <Button 
                                     type="button" 
-                                    variant="outline" 
-                                    onClick={() => setIsMealDialogOpen(true)}
-                                    className="gap-2"
+                                    variant="ghost" 
+                                    size="icon" 
+                                    onClick={() => setIsHistoryOpen(true)}
+                                    className="border"
+                                    title={t('profile.historyTooltip', { defaultValue: 'Historique' })}
                                 >
-                                    <History className="h-4 w-4" />
-                                    {t('profile.viewCurrentPlan', { defaultValue: 'Voir plan actuel' })}
+                                    <CalendarDays className="h-4 w-4" />
                                 </Button>
-                            )}
+                            </div>
                         </div>
                     </CardFooter>
                 </form>
@@ -499,7 +543,7 @@ export default function SettingsPage() {
                     <DialogHeader className="p-6 pb-2 shrink-0">
                         <div className="flex items-center justify-between mb-2">
                             <Badge className="bg-primary/20 text-primary hover:bg-primary/20 border-none">WODBurner Nutrition</Badge>
-                            <span className="text-xs text-muted-foreground">{lastUpdateDate || new Date().toLocaleDateString()}</span>
+                            <span className="text-xs text-muted-foreground">{mealPlan?.title || lastUpdateDate}</span>
                         </div>
                         <DialogTitle className="text-3xl font-headline flex items-center gap-2 text-foreground">
                             <Utensils className="text-primary" /> {t('profile.mealPlanTitle')}
@@ -564,6 +608,42 @@ export default function SettingsPage() {
                     <CardFooter className="p-6 border-t bg-muted/20 shrink-0">
                         <Button className="w-full" onClick={() => setIsMealDialogOpen(false)}>Fermer</Button>
                     </CardFooter>
+                </DialogContent>
+            </Dialog>
+
+            {/* MEAL PLAN HISTORY DIALOG */}
+            <Dialog open={isHistoryOpen} onOpenChange={setIsHistoryOpen}>
+                <DialogContent className="max-w-md max-h-[80vh] flex flex-col p-0">
+                    <DialogHeader className="p-6">
+                        <DialogTitle className="font-headline text-2xl">{t('profile.historyTitle', { defaultValue: 'Historique Nutrition' })}</DialogTitle>
+                        <DialogDescription>{t('profile.historyDescription', { defaultValue: 'Retrouvez vos 20 derniers plans alimentaires.' })}</DialogDescription>
+                    </DialogHeader>
+                    <ScrollArea className="flex-1 px-6 pb-6">
+                        {isHistoryLoading ? (
+                            <div className="flex justify-center p-8"><LoaderCircle className="animate-spin" /></div>
+                        ) : historyPlans && historyPlans.length > 0 ? (
+                            <div className="space-y-3">
+                                {historyPlans.map((plan) => (
+                                    <Button 
+                                        key={plan.id} 
+                                        variant="outline" 
+                                        className="w-full justify-between h-auto py-4 px-4 text-left hover:border-primary/50"
+                                        onClick={() => loadHistoryPlan(plan)}
+                                    >
+                                        <div className="space-y-1">
+                                            <p className="font-bold text-foreground">{plan.title || `Plan du ${new Date(plan.createdAt?.seconds * 1000).toLocaleDateString(locale)}`}</p>
+                                            <p className="text-xs text-muted-foreground flex items-center gap-2">
+                                                <Zap className="h-3 w-3 text-yellow-500" /> {plan.totalCalories} kcal · {plan.totalProteins}g PROT
+                                            </p>
+                                        </div>
+                                        <Badge variant="secondary" className="bg-primary/10 text-primary">Recharger</Badge>
+                                    </Button>
+                                ))}
+                            </div>
+                        ) : (
+                            <p className="text-center text-muted-foreground py-8">Aucun plan dans l'historique.</p>
+                        )}
+                    </ScrollArea>
                 </DialogContent>
             </Dialog>
 

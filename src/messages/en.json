@@ -356,6 +356,10 @@
       "generatingMeals": "Generating Plan...",
       "mealPlanTitle": "Daily Meal Plan",
       "coachAdvice": "Coach Advice",
+      "viewCurrentPlan": "View current plan",
+      "historyTitle": "Nutrition History",
+      "historyDescription": "Find your last 20 generated meal plans.",
+      "historyTooltip": "History",
       "goals": {
         "loss": "Fat Loss",
         "maintenance": "Maintenance",
