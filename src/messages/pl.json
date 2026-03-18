@@ -12,7 +12,8 @@
     "loading": "Ładowanie...",
     "anonymousUser": "Anonimowy użytkownik",
     "temporaryProfile": "Profil tymczasowy",
-    "settingsTooltip": "Ustawienia"
+    "settingsTooltip": "Ustawienia",
+    "madeBy": "Zrobione z ❤️ przez"
   },
   "MainNav": {
     "dashboard": "Dashboard",
@@ -281,7 +282,7 @@
     },
     "headerTitle": "Uwolnij potencjał",
     "headerDescription": "Wspieraj rozwój aplikacji.",
-    "offer": "OFERTA DOŻYWOTNIA pierwsi 300!",
+    "offer": "OFERTA DOŻYWOTNIA pierwsi 50!",
     "monthly": "Miesięcznie",
     "yearly": "Rocznie",
     "discount": "-20%",
@@ -346,6 +347,30 @@
       "height": "Wzrost (cm)",
       "avatar": "Awatar",
       "saveProfile": "Zapisz Profil",
+      "nutritionTitle": "Cele żywieniowe",
+      "nutritionGoal": "Główny cel",
+      "activityLevel": "Poziom aktywności",
+      "targetCalories": "Docelowe kalorie (kcal)",
+      "targetProteins": "Docelowe białko (g)",
+      "generateMeals": "Generuj pomysły na posiłki",
+      "generatingMeals": "Generowanie planu...",
+      "mealPlanTitle": "Dzienny plan posiłków",
+      "coachAdvice": "Rada trenera",
+      "viewCurrentPlan": "Zobacz obecny plan",
+      "historyTitle": "Historia żywienia",
+      "historyDescription": "Znajdź swoje ostatnie 20 wygenerowanych planów posiłków.",
+      "historyTooltip": "Historia",
+      "goals": {
+        "loss": "Utrata tłuszczu",
+        "maintenance": "Utrzymanie",
+        "muscle": "Budowa mięśni",
+        "performance": "Wydajność CrossFit"
+      },
+      "activity": {
+        "sedentary": "Siedzący",
+        "moderate": "Umiarkowana aktywność",
+        "intense": "Intensywna aktywność"
+      },
       "updateSuccess": "Profil zaktualizowany!",
       "updateSuccessDesc": "Twoje dane zostały zapisane.",
       "updateError": "Nie można zaktualizować profilu.",
@@ -488,17 +513,17 @@
     "description": "Pamięć o bohaterach.",
     "premiumUpsell": {
       "title": "Wszystkie",
-      "description": "{totalWodCount}+ WOD-ów.",
+      "description": "Przejdź na Premium dla {totalWodCount}+ WOD-ów.",
       "button": "Kup Premium"
     }
   },
   "HallOfFamePage": {
     "seo": {
       "title": "Galeria Sław | WODBurner Early Adopters",
-      "description": "Elitarne grono naszych pierwszych 300 wspierających."
+      "description": "Elitarne grono naszych pierwszych 50 wspierających."
     },
     "title": "Galeria Sław",
-    "cardTitle": "Pierwszych 300",
+    "cardTitle": "Pierwszych 50",
     "cardDescription": "Dożywocie dla pierwszych osób, które nas wsparły.",
     "spotsRemaining": "Tylko {spotsLeft} miejsc!",
     "spotsFull": "Lista pełna.",

@@ -135,7 +135,7 @@
       "joinDescription": "Создайте бесплатную учетную запись, чтобы просматривать WOD.",
       "joinButton": "Регистрация / Вход",
       "errorTitle": "Ошибка",
-      "errorDescription": "Не удалось загрузить WOD.",
+      "errorDescription": "Не удалось загурзить WOD.",
       "searchInputPlaceholder": "Поиск по WOD...",
       "sortByLabel": "Сортировка",
       "sort": {
@@ -356,6 +356,10 @@
       "generatingMeals": "Создание плана...",
       "mealPlanTitle": "План питания на день",
       "coachAdvice": "Совет тренера",
+      "viewCurrentPlan": "Посмотреть текущий план",
+      "historyTitle": "История питания",
+      "historyDescription": "Найдите ваши последние 20 сгенерированных планов питания.",
+      "historyTooltip": "История",
       "goals": {
         "loss": "Похудение",
         "maintenance": "Поддержание",
@@ -462,7 +466,7 @@
     "forTime": {
       "title": "На время",
       "description": "Секундомер.",
-      "timeCapLabel": "Лимит (мин)",
+      "timeCapLabel": "Тайм-кап (мин)",
       "timeCapPlaceholder": "напр. 20"
     },
     "amrap": {

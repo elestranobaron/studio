@@ -12,7 +12,8 @@
     "loading": "Se încarcă...",
     "anonymousUser": "Utilizator Anonim",
     "temporaryProfile": "Profil Temporar",
-    "settingsTooltip": "Setări"
+    "settingsTooltip": "Setări",
+    "madeBy": "Creat cu ❤️ de"
   },
   "MainNav": {
     "dashboard": "Panou",
@@ -281,7 +282,7 @@
     },
     "headerTitle": "Deblochează potențialul",
     "headerDescription": "Fii membru Premium.",
-    "offer": "OFERTA PE VIAȚĂ primii 300!",
+    "offer": "OFERTA PE VIAȚĂ primii 50!",
     "monthly": "Lunar",
     "yearly": "Anual",
     "discount": "-20%",
@@ -346,6 +347,30 @@
       "height": "Înălțime (cm)",
       "avatar": "Avatar",
       "saveProfile": "Salvează profilul",
+      "nutritionTitle": "Obiective Nutriție",
+      "nutritionGoal": "Obiectiv Principal",
+      "activityLevel": "Nivel de Activitate",
+      "targetCalories": "Calorii Cintă (kcal)",
+      "targetProteins": "Proteine Cintă (g)",
+      "generateMeals": "Generează Idei Mese",
+      "generatingMeals": "Generare Plan...",
+      "mealPlanTitle": "Plan Alimentar al Zilei",
+      "coachAdvice": "Sfatul Antrenorului",
+      "viewCurrentPlan": "Vezi planul curent",
+      "historyTitle": "Istoric Nutriție",
+      "historyDescription": "Găsește ultimele 20 de planuri alimentare generate.",
+      "historyTooltip": "Istoric",
+      "goals": {
+        "loss": "Pierdere Grăsime",
+        "maintenance": "Menținere",
+        "muscle": "Creștere Musculară",
+        "performance": "Performanță CrossFit"
+      },
+      "activity": {
+        "sedentary": "Sedentar",
+        "moderate": "Activitate Moderată",
+        "intense": "Activitate Intensă"
+      },
       "updateSuccess": "Profil actualizat!",
       "updateSuccessDesc": "Datele tale au fost salvate.",
       "updateError": "Nu s-a putut actualiza profilul.",
@@ -495,10 +520,10 @@
   "HallOfFamePage": {
     "seo": {
       "title": "Hall of Fame | Pionieri",
-      "description": "Primii 300."
+      "description": "Primii 50."
     },
     "title": "Hall of Fame",
-    "cardTitle": "Primii 300",
+    "cardTitle": "Primii 50",
     "cardDescription": "Gratis pe viață primilor susținători.",
     "spotsRemaining": "Doar {spotsLeft} locuri!",
     "spotsFull": "Lista este plină.",

@@ -347,25 +347,29 @@
       "height": "Altura (cm)",
       "avatar": "Avatar",
       "saveProfile": "Salvar Perfil",
-      "nutritionTitle": "Objetivos de nutrição",
-      "nutritionGoal": "Objetivo principal",
-      "activityLevel": "Nível de atividade",
-      "targetCalories": "Calorias alvo (kcal)",
-      "targetProteins": "Proteínas alvo (g)",
-      "generateMeals": "Gerar ideias de refeições",
-      "generatingMeals": "Gerando plano...",
-      "mealPlanTitle": "Plano de refeições do dia",
-      "coachAdvice": "Conselho do treinador",
+      "nutritionTitle": "Objetivos de Nutrição",
+      "nutritionGoal": "Objetivo Principal",
+      "activityLevel": "Nível de Atividade",
+      "targetCalories": "Calorias Cintă (kcal)",
+      "targetProteins": "Proteínas Cintă (g)",
+      "generateMeals": "Gerar Ideias de Refeições",
+      "generatingMeals": "Gerando Plano...",
+      "mealPlanTitle": "Plano de Refeições do Dia",
+      "coachAdvice": "Conselho do Treinador",
+      "viewCurrentPlan": "Ver plano atual",
+      "historyTitle": "Histórico de Nutrição",
+      "historyDescription": "Encontre os seus últimos 20 planos de refeições gerados.",
+      "historyTooltip": "Histórico",
       "goals": {
-        "loss": "Perda de gordura",
+        "loss": "Perda de Gordura",
         "maintenance": "Manutenção",
-        "muscle": "Ganho muscular",
+        "muscle": "Ganho Muscular",
         "performance": "Desempenho CrossFit"
       },
       "activity": {
         "sedentary": "Sedentário",
-        "moderate": "Atividade moderada",
-        "intense": "Atividade intensa"
+        "moderate": "Atividade Moderada",
+        "intense": "Atividade Intensa"
       },
       "updateSuccess": "Perfil atualizado!",
       "updateSuccessDesc": "Suas métricas foram salvas.",
@@ -473,7 +477,7 @@
     "emom": {
       "title": "EMOM",
       "description": "A cada minuto.",
-      "roundsLabel": "Rounds",
+      "roundsLabel": "Rodadas",
       "intervalLabel": "Intervalo",
       "intervalMinutes": "min",
       "intervalSeconds": "seg"
@@ -481,7 +485,7 @@
     "tabata": {
       "title": "Tabata",
       "description": "20s trabalho / 10s descanso.",
-      "roundsLabel": "Rounds"
+      "roundsLabel": "Rodadas"
     }
   },
   "TimersPage": {

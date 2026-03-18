@@ -356,6 +356,10 @@
       "generatingMeals": "正在生成计划...",
       "mealPlanTitle": "每日饮食计划",
       "coachAdvice": "教练建议",
+      "viewCurrentPlan": "查看当前计划",
+      "historyTitle": "营养历史",
+      "historyDescription": "找到您最后生成的20个饮食计划。",
+      "historyTooltip": "历史",
       "goals": {
         "loss": "减脂",
         "maintenance": "维持",

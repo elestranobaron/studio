@@ -82,7 +82,7 @@
     },
     "recap": {
       "maxReps": "최대 반복",
-      "timeCap": "타임 캡"
+      "timeCap": "시간 제한"
     },
     "userScore": {
       "title": "내 점수 비교하기",
@@ -356,6 +356,10 @@
       "generatingMeals": "계획 생성 중...",
       "mealPlanTitle": "오늘의 식단 계획",
       "coachAdvice": "코치의 조언",
+      "viewCurrentPlan": "현재 식단 보기",
+      "historyTitle": "영양 기록",
+      "historyDescription": "최근 생성된 20개의 식단을 확인하세요.",
+      "historyTooltip": "기록",
       "goals": {
         "loss": "체지방 감소",
         "maintenance": "유지",

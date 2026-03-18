@@ -3,7 +3,7 @@
   "RootLayout": {
     "seo": {
       "title": "WODBurner - Je CrossFit Whiteboard & Smart Timer",
-      "description": "De ultieme CrossFit-metgezel. Scan whiteboard-foto's, genereer AI-workouts en gebruik professionele timers."
+      "description": "Je ultieme CrossFit-metgezel. Scan whiteboard-foto's, genereer AI-workouts, bekijk Open-statistieken en houd je prestaties bij."
     }
   },
   "UserNav": {
@@ -160,7 +160,7 @@
     "communityLink": "Of, verken de <communityLink>community</communityLink>."
   },
   "WodCard": {
-    "optionsAlt": "Opties",
+    "optionsAlt": "WOD opties",
     "share": "Delen",
     "unshare": "Niet meer delen",
     "edit": "Bewerken",
@@ -247,7 +247,7 @@
     "featureTitle": "Naar het volgende niveau.",
     "featureDescription": "Maak een account om al je workouts op te slaan.",
     "featureManual": "Handmatig toevoegen",
-    "featureManualDescription": "Bez WOD' toe zonder foto.",
+    "featureManualDescription": "Voeg WOD's toe zonder foto.",
     "featureHistory": "Volledige historie",
     "featureHistoryDescription": "Al je workouts op één plek.",
     "featureTracking": "Prestaties tracken (Binnenkort!)",
@@ -260,7 +260,7 @@
     "authError": "Dienst niet gereed.",
     "sendLinkError": "Kon code niet versturen.",
     "linkSentToast": "Code verstuurd!",
-    "linkSentToastDescription": "Check je inbox (en spam).",
+    "linkSentToastDescription": "Check je inbox.",
     "signInSuccessToast": "Inloggen gelukt!",
     "signInSuccessToastDescription": "Je bent nu ingelogd.",
     "genericError": "Er is iets fout gegaan.",
@@ -356,6 +356,10 @@
       "generatingMeals": "Plan genereren...",
       "mealPlanTitle": "Voedingsplan van de dag",
       "coachAdvice": "Coach-tip",
+      "viewCurrentPlan": "Huidig plan bekijken",
+      "historyTitle": "Voedingsgeschiedenis",
+      "historyDescription": "Vind je laatste 20 gegenereerde voedingsplannen.",
+      "historyTooltip": "Geschiedenis",
       "goals": {
         "loss": "Vetverlies",
         "maintenance": "Onderhoud",
