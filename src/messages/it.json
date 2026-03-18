@@ -356,6 +356,10 @@
       "generatingMeals": "Generazione piano...",
       "mealPlanTitle": "Piano pasti del giorno",
       "coachAdvice": "Consiglio del coach",
+      "viewCurrentPlan": "Visualizza piano attuale",
+      "historyTitle": "Cronologia Nutrizione",
+      "historyDescription": "Trova i tuoi ultimi 20 piani alimentari generati.",
+      "historyTooltip": "Cronologia",
       "goals": {
         "loss": "Perdita di grasso",
         "maintenance": "Mantenimento",

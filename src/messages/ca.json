@@ -356,6 +356,10 @@
       "generatingMeals": "Generant pla...",
       "mealPlanTitle": "Pla de menjars del dia",
       "coachAdvice": "Consell de l'entrenador",
+      "viewCurrentPlan": "Veure el pla actual",
+      "historyTitle": "Historial de nutrició",
+      "historyDescription": "Trobeu els vostres darrers 20 plans de menjars generats.",
+      "historyTooltip": "Historial",
       "goals": {
         "loss": "Pèrdua de greix",
         "maintenance": "Manteniment",
@@ -498,7 +502,7 @@
     "emomDescription": "Cada minut.",
     "tabata": "Tabata",
     "tabataDescription": "Intervals.",
-    "footer": "O selecciona un WOD del dashboard."
+    "footer": "Or selecciona un WOD del dashboard."
   },
   "HeroWodsPage": {
     "seo": {

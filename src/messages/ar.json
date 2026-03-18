@@ -356,6 +356,10 @@
       "generatingMeals": "جاري توليد الخطة...",
       "mealPlanTitle": "خطة وجبات اليوم",
       "coachAdvice": "نصيحة المدرب",
+      "viewCurrentPlan": "عرض الخطة الحالية",
+      "historyTitle": "سجل التغذية",
+      "historyDescription": "ابحث عن آخر 20 خطة وجبات تم إنشاؤها.",
+      "historyTooltip": "السجل",
       "goals": {
         "loss": "فقدان الدهون",
         "maintenance": "المحافظة",

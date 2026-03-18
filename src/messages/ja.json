@@ -356,6 +356,10 @@
       "generatingMeals": "プランを生成中...",
       "mealPlanTitle": "今日の食事プラン",
       "coachAdvice": "コーチのアドバイス",
+      "viewCurrentPlan": "現在のプランを表示",
+      "historyTitle": "栄養履歴",
+      "historyDescription": "最後に生成された20個の食事プランを確認してください。",
+      "historyTooltip": "履歴",
       "goals": {
         "loss": "脂肪減少",
         "maintenance": "維持",

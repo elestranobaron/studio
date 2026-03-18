@@ -356,6 +356,10 @@
       "generatingMeals": "Plan generieren...",
       "mealPlanTitle": "Tages-Ernährungsplan",
       "coachAdvice": "Coach-Tipp",
+      "viewCurrentPlan": "Aktuellen Plan anzeigen",
+      "historyTitle": "Ernährungsverlauf",
+      "historyDescription": "Finde deine letzten 20 erstellten Ernährungspläne.",
+      "historyTooltip": "Verlauf",
       "goals": {
         "loss": "Fettabbau",
         "maintenance": "Erhaltung",
@@ -567,7 +571,7 @@
       "description": "KI wärmt sich auf."
     },
     "errorAlert": {
-      "title": "Fehler",
+      "title": "Fout",
       "description": "Später erneut versuchen."
     },
     "result": {
