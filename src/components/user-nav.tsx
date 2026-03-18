@@ -76,6 +76,9 @@ export function UserNav() {
     )
   }
 
+  // Fallback to email prefix if displayName is missing
+  const userDisplayName = user.displayName || user.email?.split('@')[0] || 'User';
+
   return (
     <div>
         <SidebarMenu>
@@ -101,7 +104,7 @@ export function UserNav() {
                         <AvatarImage src={user.photoURL} alt="User avatar" />
                     )}
                     <AvatarFallback>
-                        {user.isAnonymous ? <UserIcon /> : (user.displayName ? user.displayName.charAt(0) : <UserIcon />)}
+                        {user.isAnonymous ? <UserIcon /> : (userDisplayName.charAt(0).toUpperCase())}
                     </AvatarFallback>
                 </Avatar>
                 <span 
@@ -114,7 +117,7 @@ export function UserNav() {
             </div>
             <div className="flex flex-col truncate">
                 <span className="font-semibold text-sm text-sidebar-foreground">
-                    {user.isAnonymous ? t('anonymousUser') : (user.displayName || user.email || 'User')}
+                    {user.isAnonymous ? t('anonymousUser') : userDisplayName}
                 </span>
                 <span className="text-xs text-sidebar-foreground/70">
                     {user.isAnonymous ? t('temporaryProfile') : user.email}
