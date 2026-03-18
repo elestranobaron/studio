@@ -13,6 +13,7 @@ import { useRouter } from "next/navigation";
 import { Avatar, AvatarImage, AvatarFallback } from "./ui/avatar";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
+import { cn } from "@/lib/utils";
 
 export function UserNav() {
   const t = useTranslations('UserNav');
@@ -64,8 +65,9 @@ export function UserNav() {
             <SidebarMenu>
                 <SidebarMenuItem>
                     <SidebarMenuButton onClick={handleLogin}>
-                        <LogIn />
+                        <LogIn className="text-muted-foreground" />
                         <span>{t('signIn')}</span>
+                        <span className="ml-auto h-2 w-2 rounded-full bg-destructive animate-pulse" />
                     </SidebarMenuButton>
                 </SidebarMenuItem>
             </SidebarMenu>
@@ -92,14 +94,23 @@ export function UserNav() {
             </SidebarMenuItem>
         </SidebarMenu>
         <div className="flex items-center gap-3 p-2">
-            <Avatar className="h-10 w-10">
-                {user.photoURL && (
-                    <AvatarImage src={user.photoURL} alt="User avatar" />
-                )}
-                <AvatarFallback>
-                    {user.isAnonymous ? <UserIcon /> : (user.displayName ? user.displayName.charAt(0) : <UserIcon />)}
-                </AvatarFallback>
-            </Avatar>
+            <div className="relative">
+                <Avatar className="h-10 w-10 border-2 border-transparent">
+                    {user.photoURL && (
+                        <AvatarImage src={user.photoURL} alt="User avatar" />
+                    )}
+                    <AvatarFallback>
+                        {user.isAnonymous ? <UserIcon /> : (user.displayName ? user.displayName.charAt(0) : <UserIcon />)}
+                    </AvatarFallback>
+                </Avatar>
+                <span 
+                    className={cn(
+                        "absolute -bottom-0.5 -right-0.5 h-3.5 w-3.5 rounded-full border-2 border-sidebar-background transition-all duration-500",
+                        user.isAnonymous ? "bg-amber-500" : "bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.6)]"
+                    )} 
+                    title={user.isAnonymous ? t('temporaryProfile') : "Connected"}
+                />
+            </div>
             <div className="flex flex-col truncate">
                 <span className="font-semibold text-sm text-sidebar-foreground">
                     {user.isAnonymous ? t('anonymousUser') : (user.email || 'User')}

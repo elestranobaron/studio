@@ -121,8 +121,7 @@ function LoginClientContent() {
       }
 
       await signInWithCustomToken(auth!, data.token);
-
-      toast({ title: t('signInSuccessToast'), description: t('signInSuccessToastDescription') });
+      // Success toast removed to avoid UI obstruction. Feedback provided by sidebar status dot.
     } catch (err: any) {
       console.error('Verification error:', err);
       let msg = err.message || 'Could not sign in.';
