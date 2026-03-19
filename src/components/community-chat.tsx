@@ -2,13 +2,13 @@
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
-import { useCollection, useUser, useFirebase } from '@/firebase';
+import { useCollection, useUser, useFirebase, useDoc } from '@/firebase';
 import { collection, query, orderBy, doc, writeBatch, serverTimestamp, runTransaction, increment, getDoc, Timestamp, updateDoc } from 'firebase/firestore';
 import type { Message, Reaction, WOD } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { ArrowUp, ArrowDown, MessageSquare, Send, LoaderCircle } from 'lucide-react';
+import { ArrowUp, ArrowDown, MessageSquare, Send, LoaderCircle, User as UserIcon } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
@@ -17,6 +17,25 @@ import { ScrollArea } from './ui/scroll-area';
 
 type MessageWithReplies = Message & { id: string; replies?: MessageWithReplies[] };
 type UserVote = 'up' | 'down' | null;
+
+function AuthorAvatar({ userId, fallbackName }: { userId: string; fallbackName: string }) {
+    const { firestore } = useFirebase();
+    const userRef = useMemo(() => firestore ? doc(firestore, 'users', userId) : null, [firestore, userId]);
+    const { data: profile } = useDoc(userRef);
+
+    const displayName = profile?.displayName || fallbackName;
+    const photoURL = profile?.photoURL;
+
+    return (
+        <div className="flex items-center gap-3">
+            <Avatar className="h-8 w-8">
+                {photoURL && <AvatarImage src={photoURL} alt={displayName} />}
+                <AvatarFallback>{displayName?.[0]?.toUpperCase() || <UserIcon className="h-4 w-4" />}</AvatarFallback>
+            </Avatar>
+            <span className="font-semibold text-xs">{displayName}</span>
+        </div>
+    );
+}
 
 function Comment({ message, onReply, onVote, userVote }: { message: MessageWithReplies; onReply: (parentId: string) => void; onVote: (messageId: string, vote: 'up' | 'down') => void; userVote?: UserVote }) {
     const [isReplying, setIsReplying] = useState(false);
@@ -40,16 +59,13 @@ function Comment({ message, onReply, onVote, userVote }: { message: MessageWithR
     
     return (
         <div className="flex items-start gap-3">
-            <Avatar className="h-8 w-8">
-                <AvatarFallback>{message.userDisplayName?.[0]?.toUpperCase()}</AvatarFallback>
-            </Avatar>
             <div className="flex-1 space-y-1">
                 <div className="flex items-center gap-2 text-xs">
-                    <span className="font-semibold">{message.userDisplayName}</span>
+                    <AuthorAvatar userId={message.userId} fallbackName={message.userDisplayName} />
                     <span className="text-muted-foreground">· {getFormattedTimestamp()}</span>
                 </div>
-                <p className="text-sm whitespace-pre-wrap">{message.text}</p>
-                <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                <p className="text-sm whitespace-pre-wrap pl-11">{message.text}</p>
+                <div className="flex items-center gap-4 text-xs text-muted-foreground pl-11">
                     <div className="flex items-center gap-1">
                          <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => onVote(message.id, 'up')}>
                              <ArrowUp className={cn("h-4 w-4", userVote === 'up' && "text-green-500 fill-green-500")} />
@@ -66,7 +82,7 @@ function Comment({ message, onReply, onVote, userVote }: { message: MessageWithR
                 </div>
 
                 {message.replies && message.replies.length > 0 && (
-                    <div className="pt-2 space-y-4">
+                    <div className="pt-2 space-y-4 ml-6 border-l pl-4">
                         {message.replies.map((reply: MessageWithReplies) => (
                             <Comment key={reply.id} message={reply} onReply={onReply} onVote={onVote} userVote={userVote} />
                         ))}

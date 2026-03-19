@@ -1,0 +1,80 @@
+
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isSignedIn() {
+      return request.auth != null;
+    }
+    function isOwner(userId) {
+      return request.auth.uid == userId;
+    }
+
+    // === USERS ===
+    match /users/{userId} {
+      // Allow getting individual profiles for community features (dynamic name/photo)
+      allow get: if isSignedIn();
+      // Only the owner can list all users or write to their own profile
+      allow list, write: if isOwner(userId);
+      allow create: if isSignedIn() && request.auth.uid == userId;
+      
+      // === MEAL PLANS SUBCOLLECTION ===
+      match /mealPlans/{planId} {
+        allow read, write: if isOwner(userId);
+      }
+    }
+
+    // === USER WODS ===
+    match /users/{userId}/wods/{wodId} {
+      allow read, write: if isSignedIn() && isOwner(userId);
+    }
+
+    // === COMMUNITY WODS ===
+    match /communityWods/{wodId} {
+      // Allow anyone to read community WODs, but not list the whole collection
+      allow get: if true;
+      allow list: if isSignedIn();
+      
+      // Allow creation if the user is the owner
+      allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
+      // Allow deletion only by the owner
+      allow delete: if isSignedIn() && resource.data.userId == request.auth.uid;
+      // Allow updates by the owner, or for reactions/commentCount by anyone signed in
+      allow update: if isSignedIn() && (
+        resource.data.userId == request.auth.uid ||
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['reactions', 'commentCount'])
+      );
+
+      // === REACTORS SUBCOLLECTION ===
+      match /reactors/{reactorId} {
+        allow get: if isSignedIn();
+        allow create, update, delete: if isSignedIn() && request.auth.uid == reactorId;
+      }
+      
+      // === MESSAGES SUBCOLLECTION ===
+      match /messages/{messageId} {
+        allow get: if true;
+        allow list: if true;
+        
+        allow create: if isSignedIn()
+                      && request.resource.data.userId == request.auth.uid
+                      && request.resource.data.text.size() <= 280;
+        allow update: if isSignedIn()
+                      && request.resource.data.diff(resource.data).affectedKeys()
+                         .hasOnly(['upvotes', 'downvotes', 'score', 'replyCount']);
+        allow delete: if false; // Deletion is not allowed
+
+        // === VOTERS SUBCOLLECTION FOR MESSAGES ===
+        match /voters/{userId} {
+            allow read: if isSignedIn();
+            allow create, update, delete: if isOwner(userId);
+        }
+      }
+    }
+
+    // === HALL OF FAME ===
+    match /hallOfFame/{userId} {
+      allow read: if true;
+      allow write: if false;
+    }
+  }
+}

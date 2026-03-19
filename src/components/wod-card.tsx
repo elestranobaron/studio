@@ -22,7 +22,7 @@ import {
   Timer,
   Share2,
   LoaderCircle,
-  User,
+  User as UserIcon,
   MessageCircle,
   MoreHorizontal,
   Trash2,
@@ -34,8 +34,8 @@ import {
   Bike,
 } from "lucide-react";
 import { format, isValid } from "date-fns";
-import { useFirebase, useUser } from "@/firebase";
-import { useState } from "react";
+import { useFirebase, useUser, useDoc } from "@/firebase";
+import { useState, useMemo } from "react";
 import {
   doc,
   collection,
@@ -79,6 +79,7 @@ import { HeroLetter } from "./hero-letter";
 import { useTranslations } from "next-intl";
 import { Progress } from "./ui/progress";
 import { CommunityChat, ReactionGrid } from "./community-chat";
+import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 
 function WodIcon({ type }: { type: WOD["type"] }) {
   switch (type) {
@@ -93,6 +94,25 @@ function WodIcon({ type }: { type: WOD["type"] }) {
     default:
       return null;
   }
+}
+
+function AuthorInfo({ userId, fallbackName }: { userId: string; fallbackName?: string }) {
+    const { firestore } = useFirebase();
+    const userRef = useMemo(() => firestore ? doc(firestore, 'users', userId) : null, [firestore, userId]);
+    const { data: profile } = useDoc(userRef);
+
+    const displayName = profile?.displayName || fallbackName || 'Anonymous';
+    const photoURL = profile?.photoURL;
+
+    return (
+        <div className="flex items-center gap-2">
+            <Avatar className="h-5 w-5 border border-primary/10">
+                {photoURL && <AvatarImage src={photoURL} alt={displayName} />}
+                <AvatarFallback className="text-[8px] bg-primary/5">{displayName?.[0]?.toUpperCase() || <UserIcon className="h-2 w-2" />}</AvatarFallback>
+            </Avatar>
+            <span className="truncate max-w-[100px]">{displayName}</span>
+        </div>
+    );
 }
 
 function PersonalWodActions({ wod }: { wod: WOD }) {
@@ -331,11 +351,8 @@ export function WodCard({ wod, source = "personal" }: { wod: WOD; source?: "pers
             <Calendar className="h-4 w-4" />
             <span>{formattedDate}</span>
           </div>
-          {source === "community" && wod.userDisplayName && (
-            <div className="flex items-center gap-2">
-              <User className="h-4 w-4" />
-              <span>{wod.userDisplayName}</span>
-            </div>
+          {source === "community" && (
+            <AuthorInfo userId={wod.userId} fallbackName={wod.userDisplayName} />
           )}
         </div>
       </CardHeader>
@@ -352,10 +369,11 @@ export function WodCard({ wod, source = "personal" }: { wod: WOD; source?: "pers
                     <DialogTitle className="font-headline text-primary text-2xl">{wod.name}</DialogTitle>
                     <DialogDescription>
                       {dialogDescription}
-                      {wod.userDisplayName && (
-                        <span className="block mt-1">
-                            {t("viewWodSharedBy", { displayName: wod.userDisplayName })}
-                        </span>
+                      {wod.userId && (
+                        <div className="mt-2 flex items-center gap-2">
+                            <span>{t("viewWodSharedBy", { displayName: '' })}</span>
+                            <AuthorInfo userId={wod.userId} fallbackName={wod.userDisplayName} />
+                        </div>
                       )}
                     </DialogDescription>
                 </DialogHeader>
