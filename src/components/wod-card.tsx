@@ -98,7 +98,7 @@ function WodIcon({ type }: { type: WOD["type"] }) {
 
 function AuthorInfo({ userId, fallbackName }: { userId: string; fallbackName?: string }) {
     const { firestore } = useFirebase();
-    const userRef = useMemo(() => firestore ? doc(firestore, 'users', userId) : null, [firestore, userId]);
+    const userRef = useMemo(() => (firestore && userId) ? doc(firestore, 'users', userId) : null, [firestore, userId]);
     const { data: profile } = useDoc(userRef);
 
     const displayName = profile?.displayName || fallbackName || 'Anonymous';
